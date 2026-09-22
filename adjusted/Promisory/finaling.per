@@ -1,0 +1,12 @@
+; ADJUSTED RUNTIME - fixed final runtime settings v1
+
+(defrule
+    (true)
+=>
+    (set-strategic-number sn-initial-exploration-required 0)
+    (set-strategic-number sn-wall-targeting-mode 1)
+    (set-strategic-number sn-enable-patrol-attack 1)
+    (set-strategic-number sn-local-targeting-mode 1)
+    (up-get-fact population-cap 0 gl-population-cap)
+    (disable-self)
+)

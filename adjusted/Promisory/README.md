@@ -13,3 +13,25 @@ Rules:
 Example mapping:
 
 `official/raw/Promisory/tsa.per` → `adjusted/Promisory/tsa.per`
+
+## Fixed Runtime v1
+
+The fixed runtime source of truth is `adjusted/config/fixed-parameters.v1.json`.
+
+Fixed modules currently materialized here:
+
+- `const.per`
+- `customConstants.per`
+- `finalingConstants.per`
+- `init.per`
+- `dawn.per`
+- `general.per`
+- `finaling.per`
+- `boarhunting.per`
+- `resign.per`
+- `interaction.per`
+- `event.per`
+- `events.per`
+- `extremebuildings2.per`
+
+Dynamic modules must not override the fixed values documented in `adjusted/PARAMETER_OWNERSHIP.md`.

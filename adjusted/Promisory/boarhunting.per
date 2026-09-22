@@ -1,0 +1,10 @@
+; ADJUSTED RUNTIME - fixed hunting safety v1
+; Hunting activation is infrastructure, not an LLM decision.
+
+(defrule
+    (unit-type-count-total villager >= 8)
+    (strategic-number sn-enable-boar-hunting != 1)
+=>
+    (set-strategic-number sn-enable-boar-hunting 1)
+    (set-strategic-number sn-maximum-hunt-drop-distance 12)
+)

@@ -1,0 +1,13 @@
+; ADJUSTED RUNTIME - fixed early-economy state initialization v1
+
+(defrule
+    (true)
+=>
+    (set-goal sum-villagers 0)
+    (set-goal wood-villagers 0)
+    (set-goal food-villagers 0)
+    (set-goal gold-villagers 0)
+    (set-goal stone-villagers 0)
+    (set-goal villager-addition 0)
+    (disable-self)
+)

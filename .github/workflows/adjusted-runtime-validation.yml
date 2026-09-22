@@ -1,0 +1,25 @@
+name: Adjusted runtime validation
+
+on:
+  pull_request:
+    paths:
+      - 'adjusted/**'
+      - '.github/workflows/adjusted-runtime-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'adjusted/**'
+      - '.github/workflows/adjusted-runtime-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fixed-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check fixed runtime contract
+        run: python3 -B adjusted/tools/check_fixed_runtime.py

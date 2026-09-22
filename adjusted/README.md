@@ -10,3 +10,9 @@ This directory contains project-authored or project-adjusted Age of Empires II A
 - Keep adjusted module filenames aligned with the corresponding official files under `official/raw/Promisory/` whenever a direct counterpart exists.
 
 This separation is intentional so official source, generated output, diffs, rollback, and in-game test candidates remain distinguishable.
+
+## Parameter ownership
+
+- `config/fixed-parameters.v1.json` — authoritative fixed runtime values.
+- `PARAMETER_OWNERSHIP.md` — fixed vs dynamic ownership contract.
+- Strategy-generation models must only choose fields classified as dynamic.
