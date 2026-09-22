@@ -39,7 +39,7 @@ for tpl in templates:
     stem = module.removesuffix(".per")
     official_bytes = (OFFICIAL / module).read_bytes()
     official_text = official_bytes.decode("utf-8")
-    template_text = tpl.read_text(encoding="utf-8")
+    template_text = tpl.read_bytes().decode("utf-8")
     defaults_doc = json.loads((DEFAULTS / f"{stem}.json").read_text(encoding="utf-8"))
     defaults = defaults_doc["answers"]
     keys = set(PH.findall(template_text))
