@@ -51,10 +51,21 @@ def require_int(answers: dict, key: str, low: int, high: int) -> int:
 
 
 def semantic_checks(answers: dict) -> None:
+    if answers["SHORTAGE_RESOURCE"] not in ("food", "wood", "gold", "stone"):
+        raise ClozeError("SHORTAGE_RESOURCE must be food, wood, gold, or stone")
+    require_int(answers, "SHORTAGE_STOCK", 0, 10000)
+    require_int(answers, "PRESSURE_COUNT", 1, 200)
+    require_int(answers, "FORT_COUNT", 1, 30)
+    require_int(answers, "MILITARY_DISADVANTAGE", 1, 100)
+
     for age in AGES:
         total = sum(require_int(answers, f"{age}_{r}", 0, 100) for r in ("FOOD", "WOOD", "GOLD", "STONE"))
         if total != 100:
             raise ClozeError(f"{age} economy totals {total}, expected 100")
+
+        shortage_total = sum(require_int(answers, f"{age}_SHORTAGE_{r}", 0, 100) for r in ("FOOD", "WOOD", "GOLD", "STONE"))
+        if shortage_total != 100:
+            raise ClozeError(f"{age} shortage economy totals {shortage_total}, expected 100")
 
         require_int(answers, f"{age}_LAND_EXPLORERS", 0, 5)
         require_int(answers, f"{age}_BOAT_EXPLORERS", 0, 3)
@@ -64,12 +75,28 @@ def semantic_checks(answers: dict) -> None:
         if sum(caps) != target:
             raise ClozeError(f"{age} unit caps total {sum(caps)}, military target is {target}")
 
+        for prefix in ("PRESSURE", "FORT"):
+            reaction_target = require_int(answers, f"{prefix}_{age}_MILITARY_TARGET", 0, 200)
+            reaction_caps = [require_int(answers, f"{prefix}_{age}_UNIT_{i}_CAP", 0, 200) for i in range(1, 4)]
+            if sum(reaction_caps) != reaction_target:
+                raise ClozeError(
+                    f"{prefix} {age} unit caps total {sum(reaction_caps)}, military target is {reaction_target}"
+                )
+
         start = require_int(answers, f"{age}_ATTACK_START", 1, 200)
         stop = require_int(answers, f"{age}_ATTACK_STOP", 0, 199)
         if stop >= start:
             raise ClozeError(f"{age}: attack stop must be below attack start")
         require_int(answers, f"{age}_ATTACK_GROUP_SIZE", 1, 60)
         require_int(answers, f"{age}_ATTACK_PERCENT", 0, 100)
+
+        dstart = require_int(answers, f"DISADV_{age}_ATTACK_START", 1, 200)
+        dstop = require_int(answers, f"DISADV_{age}_ATTACK_STOP", 0, 199)
+        if dstop >= dstart:
+            raise ClozeError(f"DISADV {age}: attack stop must be below attack start")
+        require_int(answers, f"DISADV_{age}_ATTACK_GROUP_SIZE", 1, 60)
+        require_int(answers, f"DISADV_{age}_ATTACK_PERCENT", 0, 100)
+
         require_int(answers, f"{age}_HOUSING_HEADROOM", 2, 20)
 
         for i in range(1, 9):
