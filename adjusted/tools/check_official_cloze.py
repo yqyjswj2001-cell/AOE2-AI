@@ -59,4 +59,39 @@ for tpl in templates:
     if set(blank) != keys or any(v is not None for v in blank.values()):
         raise SystemExit(f"{module}: blank answer sheet must contain exactly the placeholders with null values")
 
+
+# Module-specific curation guards: placeholders may only exist in strategic
+# tuning locations, never arbitrary implementation/control-flow literals.
+def chunks(text: str):
+    parts = re.split(r"(?=\(defrule)", text)
+    return [x for x in parts if x]
+
+
+gatherers = (TEMPLATES / "gatherers.per.tpl").read_bytes().decode("utf-8")
+for line in gatherers.splitlines():
+    if "{{" not in line:
+        continue
+    if not re.search(
+        r"\(set-strategic-number\s+sn-(?:food|wood|gold|stone)-gatherer-percentage\s+\{\{",
+        line,
+    ):
+        raise SystemExit(f"gatherers.per: placeholder outside gatherer percentage assignment: {line}")
+
+tsa = (TEMPLATES / "tsa.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(tsa):
+    if "{{" not in chunk:
+        continue
+    if "(set-goal attacking yes)" not in chunk and "(set-goal attacking no)" not in chunk:
+        raise SystemExit("tsa.per: placeholder outside a rule that changes attacking state")
+
+orb = (TEMPLATES / "orb.per.tpl").read_bytes().decode("utf-8")
+for line in orb.splitlines():
+    if "{{" not in line:
+        continue
+    if not re.search(
+        r"sn-(?:minimum-attack-group-size|maximum-attack-group-size|percent-attack-soldiers|number-attack-groups)",
+        line,
+    ):
+        raise SystemExit(f"orb.per: placeholder outside attack-group control: {line}")
+
 print("official-derived cloze PASS", len(official_files), "baseline files,", len(templates), "templates")
