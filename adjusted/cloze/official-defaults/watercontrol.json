@@ -1,0 +1,16 @@
+{
+  "source_file": "watercontrol.per",
+  "source_blob_sha": "cd2cbf481d06163128f8641abbea4eee139d3e62",
+  "answers": {
+    "WATER_ADVANTAGE_001": -15,
+    "WATER_ADVANTAGE_002": 0,
+    "WATER_ADVANTAGE_003": 30,
+    "WATER_ADVANTAGE_004": -5,
+    "WATER_ADVANTAGE_005": 15,
+    "WATER_ADVANTAGE_006": 15,
+    "WATER_ADVANTAGE_007": -5,
+    "WATER_ADVANTAGE_008": 25,
+    "WATER_ADVANTAGE_009": -20,
+    "WATER_ADVANTAGE_010": 15
+  }
+}
