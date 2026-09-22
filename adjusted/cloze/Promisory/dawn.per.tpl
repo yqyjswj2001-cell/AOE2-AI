@@ -1,0 +1,457 @@
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal11 400)
+)
+
+(defrule
+	(goal sum-villagers 0)
+=>
+	(set-goal wood-villagers 0)
+	(set-goal food-villagers 0)
+	(set-goal gold-villagers 0)
+	(set-goal stone-villagers 0))
+
+(defrule
+(or	(and	(strategic-number sn-current-age > dark)
+		(or	(population >= max-civ-pop)
+			(or	(up-compare-goal custom-civ-pop >= up-max-civ)
+				(or	(civilian-population >= up-max-civ)
+					(civilian-population >= 16)))))
+	(building-type-count town-center <= 0))
+=>
+	(up-jump-rule 2))
+(defrule
+;	(strategic-number sn-current-age == dark)
+	(unit-type-count villager <= {{DAWN_VILLAGER_COUNT_001}})
+	(up-pending-objects c: house <= 0)
+	(housing-headroom < 4); 5
+	(population-headroom > 0)
+	(up-compare-goal total-wood-amount < house-cost)
+	(population < up-max-civ)
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_002}})
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_003}})
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal food-villagers c:- 1))
+(defrule
+;	(strategic-number sn-current-age == dark)
+	(unit-type-count villager <= {{DAWN_VILLAGER_COUNT_004}})
+(or	(up-pending-objects c: house >= 1)
+(or	(housing-headroom >= 4); 5
+(or	(population-headroom <= 0)
+(or	(up-compare-goal total-wood-amount >= house-cost)
+	(population >= up-max-civ)))))
+	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_005}})
+	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_006}})
+=>
+	(up-modify-goal wood-villagers c:- 1)
+	(up-modify-goal food-villagers c:+ 1)); end jump
+
+#load-if-defined DARK-AGE-END
+(defrule
+	(building-type-count-total mining-camp >= 1)
+(or	(population >= max-civ-pop)
+(or	(up-compare-goal custom-civ-pop >= up-max-civ)
+(or	(civilian-population >= up-max-civ)
+	(civilian-population >= 16))))
+=>
+	(set-goal sum-villagers 0); test
+	(up-jump-rule 33))
+#end-if
+(defrule
+(or	(and	(strategic-number sn-current-age > dark)
+		(or	(population >= max-civ-pop)
+			(or	(civilian-population >= up-max-civ)
+				(civilian-population >= 16))))
+	(building-type-count town-center < 1))
+=>
+	(set-goal sum-villagers 0); test
+	(up-jump-rule 32))
+(defrule
+	(up-compare-const civilian-percent != 100)
+	(unit-type-count-total villager < 12)
+	(strategic-number sn-current-age <= dark)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 75)
+	(up-jump-rule 31))
+
+(defrule; end neg jump
+	(up-compare-goal sum-villagers g:< villagercount)
+=>
+	(set-goal villager-addition 1))
+
+(defrule
+	(goal villager-addition 1)
+	(housing-headroom < 3)
+	(population-headroom > 0)
+	(up-compare-goal excessWood < house-cost)
+	(up-pending-objects c: house <= 0)
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_007}})
+	(game-time >= {{DAWN_TIME_008}})
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+(or	(up-compare-goal food-villagers < min-food-villagers)
+(or	(building-type-count-total town-center >= 2)
+(or	(and	(up-pending-objects c: villager-class <= 0)
+		(up-compare-goal total-food-amount < vill-cost))
+	(and	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_009}})
+		(unit-type-count villager-forager >= 2))))); mill >= 1
+	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_010}}); 8
+=>
+	(up-modify-goal food-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_011}})
+	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_012}})
+(or	(and	(goal strategy fast-imp)
+		(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_013}}))
+(or	(goal strategy sling)
+	(goal feudalvills -1)))
+=>
+	(up-modify-goal food-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_014}})
+(or	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_015}})
+	(and	(up-compare-goal strategy != s-flush)
+		(and	(up-compare-goal strategy != r-flush)
+			(up-compare-goal maa-var != yes))))
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+
+
+(defrule
+(or	(civ-selected aztec)
+	(and	(up-compare-goal strategy != drush)
+		(up-compare-goal drushmicro != yes)))
+=>
+	(up-jump-rule 3))
+(defrule
+	(unit-type-count-total militiaman-line < drush-militias)
+(or	(gold-amount < {{DAWN_GOLD_AMOUNT_016}})
+	(and	(up-research-status c: ri-loom < research-pending)
+		(gold-amount < {{DAWN_GOLD_AMOUNT_017}})))
+	(building-type-count-total barracks >= 1)
+	(strategic-number sn-gold-gatherer-percentage <= 0)
+=>
+	(set-strategic-number sn-maximum-gold-drop-distance 24)
+	(up-modify-goal food-villagers c:- 1)
+	(up-modify-goal gold-villagers c:+ 1)
+	(up-jump-rule 2)
+	(disable-self))
+(defrule
+(or	(unit-type-count-total militiaman-line >= drush-militias)
+(or	(gold-amount >= {{DAWN_GOLD_AMOUNT_018}})
+(or	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_019}})
+		(gold-amount >= {{DAWN_GOLD_AMOUNT_020}}))
+	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_021}})
+		(gold-amount >= {{DAWN_GOLD_AMOUNT_022}})))))
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+=>
+	(set-strategic-number sn-maximum-gold-drop-distance 8); 6
+	(up-modify-goal gold-villagers c:- 1)
+	(up-modify-goal sum-villagers c:- 1)
+	(set-goal villager-addition 1)
+; tl	(disable-self)
+)
+(defrule
+	(up-research-status c: ri-loom >= research-pending)
+(or	(gold-amount >= {{DAWN_GOLD_AMOUNT_023}})
+(or	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_024}})
+		(gold-amount >= {{DAWN_GOLD_AMOUNT_025}}))
+	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_026}})
+		(gold-amount >= {{DAWN_GOLD_AMOUNT_027}}))))
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+=>
+	(set-strategic-number sn-maximum-gold-drop-distance 8); 6
+	(up-modify-goal gold-villagers c:- 1)
+	(up-modify-goal sum-villagers c:- 1)
+	(set-goal villager-addition 1)
+	(disable-self)) ; end jump
+
+(defrule
+;	(goal villager-addition 1)
+	(up-compare-goal total-food-amount < feudal-food)
+	(research-available feudal-age)
+(or	(up-compare-goal wood-villagers > {{DAWN_GATHERER_TARGET_028}}); 12
+	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_029}})); 15
+	(up-compare-goal wood-villagers > {{DAWN_GATHERER_TARGET_030}}); 4
+=>
+	(up-modify-goal wood-villagers c:- 1)
+	(up-modify-goal food-villagers c:+ 1))
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal strategy-type == dark-war)
+;	(building-type-count-total barracks < 1)
+	(up-compare-goal total-wood-amount < mb-cost)
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_031}})
+(or	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_032}}); 5
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_033}})); 14
+(or	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_034}})
+;	(and	(up-pending-objects c: villager-class > 0)
+		(up-compare-goal totalsheep >= {{DAWN_SHEEP_COUNT_035}}));)
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_036}})
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal strategy-type == dark-war)
+;	(building-type-count-total barracks < 1)
+(or	(up-compare-goal total-wood-amount >= mb-cost)
+(or	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_037}})
+	(and	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_038}}); 5
+		(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_039}})))); 14
+=>
+	(up-modify-goal food-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+
+(defrule
+	(goal villager-addition 1)
+	(goal fishing yes)
+	(up-compare-goal strategy-type >= feudal-war)
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_040}}); 5
+(or	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_041}})
+	(and	(up-pending-objects c: villager-class > 0)
+		(up-compare-goal totalsheep >= {{DAWN_SHEEP_COUNT_042}})))
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_043}})
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(goal fishing yes)
+	(goal strategy grush)
+	(up-compare-goal gr-var >= 3)
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_044}})
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_045}})
+(or	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_046}})
+(or	(up-compare-goal total-food-amount >= vill-cost)
+(or	(up-pending-objects c: villager-class >= 2)
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_047}}))))
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(goal fishing yes)
+	(goal strategy grush)
+	(up-compare-goal gr-var >= 2)
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_048}})
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_049}})
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(goal fishing yes)
+;	(up-compare-goal gr-var <= 1)
+	(up-compare-goal strategy-type >= feudal-war)
+	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_050}})
+(or	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_051}})
+	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_052}}))
+=>
+	(up-modify-goal food-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(goal fishing yes)
+	(up-compare-goal strategy-type >= feudal-war)
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_053}})
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_054}})
+(or	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_055}})
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_056}})); 15
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+
+(defrule
+;	(goal villager-addition 1)
+(or	(up-compare-goal strategy-type2 != water)
+	(up-compare-goal gr-var <= 1))
+(or	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_057}})
+	(up-compare-goal food-villagers g:< wood-villagers))
+	(up-compare-goal wood-villagers > {{DAWN_GATHERER_TARGET_058}})
+=>
+	(up-modify-goal wood-villagers c:- 1)
+	(up-modify-goal food-villagers c:+ 1))
+
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal strategy-type == feudal-war)
+	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_059}})
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_060}}); 14
+(or	(up-compare-goal feudalvills != -1)
+(or	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_061}})
+	(up-resource-amount amount-feudal-town-center <= 0)))
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+(or	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_062}})
+	(up-compare-goal strategy-type == feudal-war))
+(or	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_063}})
+	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_064}})); 14
+	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_065}})
+=>
+	(up-modify-goal food-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal strategy-type >= castle-war)
+	(up-compare-goal food-villagers >= 16); 15
+=>
+	(set-goal temporary-goal9 9)
+	(set-goal temporary-goal10 10)
+	(up-modify-goal temporary-goal9 c:- dw-bonus)
+	(up-modify-goal temporary-goal10 c:- dw-bonus))
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal strategy-type >= castle-war)
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_066}}); 15
+	(up-compare-goal wood-villagers g:< temporary-goal10)
+(or	(and	(up-compare-goal milunits != no)
+		(not	(civ-selected khmer)))
+	(up-compare-goal wood-villagers g:< temporary-goal9))
+=>
+	(up-modify-goal wood-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal strategy-type >= castle-war)
+	(up-compare-goal gold-villagers < {{DAWN_GATHERER_TARGET_067}}); 3
+	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_068}}); 15
+(or	(building-type-count-total mining-camp >= 1)
+	(up-compare-goal total-wood-amount >= camp-cost))
+	(up-compare-goal total-food-amount >= feudal-food)
+	(up-compare-goal total-gold-amount < castleloom-gold)
+(or	(up-compare-goal total-gold-amount < castle-gold)
+	(up-research-status c: ri-loom == research-available))
+=>
+	(up-modify-goal gold-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+(defrule
+;	(goal villager-addition 1)
+	(up-compare-goal gold-villagers >= {{DAWN_GATHERER_TARGET_069}})
+(or	(up-compare-goal strategy != fast-imp)
+	(up-compare-goal gold-villagers >= {{DAWN_GATHERER_TARGET_070}}))
+	(up-compare-goal total-gold-amount >= castle-gold)
+(or	(up-compare-goal total-gold-amount >= castleloom-gold)
+	(up-research-status c: ri-loom >= research-pending))
+=>
+	(up-modify-goal gold-villagers c:- 1)
+	(up-modify-goal food-villagers c:+ 1))
+(defrule
+	(goal villager-addition 1)
+	(up-compare-goal strategy-type >= castle-war)
+	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_071}})
+	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_072}}); 14
+=>
+	(up-modify-goal food-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+
+(defrule
+	(goal villager-addition 1)
+=>
+;	(chat-to-player my-player-number "Sending leftover villager to food.")
+	(up-modify-goal food-villagers c:+ 1)
+	(up-modify-goal sum-villagers c:+ 1)
+	(set-goal villager-addition 0))
+
+(defrule
+	(goal villager-addition 0)
+=>
+	(set-goal temporary-goal 0)
+	(up-modify-goal temporary-goal g:+ wood-villagers)
+	(up-modify-goal temporary-goal g:+ food-villagers)
+	(up-modify-goal temporary-goal g:+ gold-villagers)
+	(up-modify-goal temporary-goal g:+ stone-villagers))
+
+(defrule
+	(goal villager-addition 0)
+=>
+	(set-goal villager-addition -1)
+;	(up-chat-data-to-player my-player-number "Wood-villagers: %d" g: wood-villagers)
+;	(up-chat-data-to-player my-player-number "Food-villagers: %d" g: food-villagers)
+	(up-modify-sn sn-wood-gatherer-percentage g:= wood-villagers)
+	(up-modify-sn sn-food-gatherer-percentage g:= food-villagers)
+	(up-modify-sn sn-gold-gatherer-percentage g:= gold-villagers)
+	(up-modify-sn sn-stone-gatherer-percentage g:= stone-villagers)
+	(up-modify-sn sn-wood-gatherer-percentage g:%/ temporary-goal)
+	(up-modify-sn sn-food-gatherer-percentage g:%/ temporary-goal)
+	(up-modify-sn sn-gold-gatherer-percentage g:%/ temporary-goal)
+	(up-modify-sn sn-stone-gatherer-percentage g:%/ temporary-goal))
+
+(defrule
+(or	(dropsite-min-distance hunting <= 34)
+(or	(unit-type-count villager-shepherd >= 1)
+(or	(unit-type-count villager-hunter >= 1)
+(or	(unit-type-count villager-fisherman >= 1)
+(or	(unit-type-count villager-forager >= 1)
+(or	(up-compare-goal forage-count >= 1)
+(or	(up-compare-goal mysheep >= 1)
+	(building-type-count-total farm <= 0))))))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(strategic-number sn-gold-gatherer-percentage <= 0)
+=>
+	(up-modify-goal temporary-goal2 g:= villagercount)
+	(up-modify-goal temporary-goal3 g:= villagercount)
+	(up-get-fact building-type-count-total farm temporary-goal)
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-modify-goal temporary-goal g:min food-villagers)
+	(up-modify-goal temporary-goal2 g:- temporary-goal)
+	(up-modify-sn sn-wood-gatherer-percentage g:= temporary-goal2)
+	(up-modify-sn sn-food-gatherer-percentage g:= temporary-goal)
+	(up-modify-sn sn-wood-gatherer-percentage g:%/ temporary-goal3)
+	(up-modify-sn sn-food-gatherer-percentage g:%/ temporary-goal3))
+
+(defrule
+	(up-compare-goal sum-villagers g:< villagercount)
+	(up-compare-goal temporary-goal11 > -10)
+=>
+	(up-modify-goal temporary-goal11 c:- 1)
+	(up-jump-rule -31))
+
+(defrule
+	(goal sum-villagers 0)
+=>
+	(up-modify-goal wood-villagers s:= sn-wood-gatherer-percentage)
+	(up-modify-goal food-villagers s:= sn-food-gatherer-percentage)
+	(up-modify-goal gold-villagers s:= sn-gold-gatherer-percentage)
+	(up-modify-goal stone-villagers s:= sn-stone-gatherer-percentage)
+	(up-modify-goal wood-villagers g:* villagercount)
+	(up-modify-goal food-villagers g:* villagercount)
+	(up-modify-goal gold-villagers g:* villagercount)
+	(up-modify-goal stone-villagers g:* villagercount)
+	(up-modify-goal wood-villagers c:/ 100)
+	(up-modify-goal food-villagers c:/ 100)
+	(up-modify-goal gold-villagers c:/ 100)
+	(up-modify-goal stone-villagers c:/ 100))
