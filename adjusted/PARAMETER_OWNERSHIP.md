@@ -10,6 +10,7 @@ This file defines who is allowed to choose each strategy/runtime field.
 | Civilian explorer percent / cap / minimum | 0 / 0 / 0 |
 | Initial land explore groups / explorers | 0 / 0 |
 | Land/boat explore group min/max size | 1 / 1 |
+| Scout command reissue interval | 15 s |
 | Civilian gatherer percent / cap | 100 / 1000 |
 | Initial resource escrow | 0% on all four resources |
 | Boar hunting initial state | disabled until activation rule |
@@ -20,6 +21,7 @@ This file defines who is allowed to choose each strategy/runtime field.
 | Attack group-size randomness | 0 |
 | Initial attack delay | 0 |
 | Initial attack / defend groups | 0 / 0 |
+| Active attack-group engine count | 1000 |
 | Baseline attack / defend group min/max | 1 / 1 |
 | Patrol attack | enabled |
 | Local targeting mode | 1 |
