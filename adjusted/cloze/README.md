@@ -23,12 +23,14 @@ That last condition is enforced in CI.
 
 Official-derived templates currently exist for:
 
-- `gatherers.per` — gatherer percentage values;
-- `tsa.per` — military-population and military-superiority thresholds;
-- `orb.per` — active attack-group values.
+- `gatherers.per` — 346 gatherer-percentage blanks;
+- `tsa.per` — 348 military population/superiority threshold blanks;
+- `orb.per` — 10 active attack-group blanks;
+- `scoutcontrol.per` — 45 exploration count/time/tactical threshold blanks;
+- `trade.per` — 266 market/resource/count threshold blanks;
+- `escrow.per` — 448 age-up/research/economy/military threshold blanks.
 
-The remaining dynamic modules will be migrated in the same way, in small
-batches. Until a module is migrated, its adjusted baseline remains the exact
+The remaining dynamic modules will be migrated in the same way, three at a time. Until a module is migrated, its adjusted baseline remains the exact
 official file.
 
 Blank answer sheets live in `answers/`.
