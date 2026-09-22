@@ -1,0 +1,22 @@
+; ADJUSTED RUNTIME - fixed target recovery v1
+
+(defrule
+(or (strategic-number sn-focus-player-number <= 0)
+(or (not (player-in-game focus-player))
+    (stance-toward focus-player ally)))
+    (strategic-number sn-target-player-number >= 1)
+    (not (stance-toward target-player ally))
+    (player-in-game target-player)
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+)
+
+(defrule
+(or (strategic-number sn-target-player-number <= 0)
+(or (not (player-in-game target-player))
+    (stance-toward target-player ally)))
+=>
+    (up-find-player enemy find-closest temporary-goal)
+    (up-modify-sn sn-target-player-number g:= temporary-goal)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
