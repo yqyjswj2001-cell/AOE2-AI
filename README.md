@@ -5,6 +5,7 @@ Private reference repository for Age of Empires II AI source materials copied fr
 ## Contents
 
 - `official/raw/Promisory/` — preserved AoE2DE built-in AI `.per` modules.
+- `adjusted/Promisory/` — project-adjusted/generated Promisory modules used for development and game testing.
 - `official/raw/AI (HD version).per` — preserved HD-version AI reference.
 - `official/constants/` — AI/XS constants and related reference files.
 
@@ -16,4 +17,4 @@ The DE `Promisory` copy was recorded in the source repository as originating fro
 
 The source repository states that the 36 `.per` modules were copied and SHA-256 checked file-by-file.
 
-This repository is a private reference/archive and is not a Microsoft or Forgotten Empires official repository. Files under `official/` should be treated as reference originals rather than project-authored strategy templates.
+This repository is a private reference/archive and is not a Microsoft or Forgotten Empires official repository. Files under `official/` should be treated as reference originals rather than project-authored strategy templates. Project changes belong under `adjusted/`.
