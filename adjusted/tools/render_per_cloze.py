@@ -161,6 +161,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--templates", type=Path, default=DEFAULT_TEMPLATES)
     parser.add_argument("--answers", type=Path)
+    parser.add_argument("--answers-dir", type=Path)
     parser.add_argument("--out", type=Path)
     parser.add_argument("--make-blank", type=Path)
     args = parser.parse_args(argv)
@@ -171,13 +172,26 @@ def main(argv=None) -> int:
         args.make_blank.write_text(json.dumps(blank, indent=2) + "\n", encoding="utf-8")
         return 0
 
-    if args.answers is None or args.out is None:
-        parser.error("--answers and --out are required unless --make-blank is used")
+    if args.out is None or (args.answers is None and args.answers_dir is None):
+        parser.error("--out and either --answers or --answers-dir are required unless --make-blank is used")
+    if args.answers is not None and args.answers_dir is not None:
+        parser.error("use either --answers or --answers-dir, not both")
 
     try:
-        answers = json.loads(args.answers.read_text(encoding="utf-8-sig"))
-        if not isinstance(answers, dict):
-            raise ClozeError("answers must be a JSON object")
+        if args.answers is not None:
+            answers = json.loads(args.answers.read_text(encoding="utf-8-sig"))
+            if not isinstance(answers, dict):
+                raise ClozeError("answers must be a JSON object")
+        else:
+            answers = {}
+            for path in sorted(args.answers_dir.glob("*.json")):
+                part = json.loads(path.read_text(encoding="utf-8-sig"))
+                if not isinstance(part, dict):
+                    raise ClozeError(f"{path.name}: answers must be a JSON object")
+                for key, value in part.items():
+                    if key in answers and answers[key] != value:
+                        raise ClozeError(f"{key}: conflicting values across answer files")
+                    answers[key] = value
         render(args.templates, answers, args.out)
     except (OSError, json.JSONDecodeError, ClozeError, KeyError) as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False, indent=2))
