@@ -80,4 +80,4 @@ Fields that should be removed from future LLM decision blocks because they are f
 - `tsa.enabled`
 - `orb.enabled`
 
-The remaining dynamic fields are now represented by `adjusted/schema/dynamic-strategy.v1.schema.json` as age-scoped base plans plus typed, priority-ordered reactions.
+The remaining dynamic fields are exposed as blanks inside `adjusted/cloze/Promisory/*.per.tpl`. The AI fills only the matching module answer sheet; rule structure remains fixed.
