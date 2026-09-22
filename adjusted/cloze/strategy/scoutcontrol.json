@@ -1,0 +1,27 @@
+{
+  "module": "scoutcontrol.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "SCOUT_001",
+      "category": "轻骑兵战术窗口",
+      "meaning": "继续启用轻骑兵群微操的对局时间上限；只在严格早于所填时间时启用。",
+      "unit": "游戏秒",
+      "context": "轻骑兵微操关闭后的周期重评中，在对局早期、脚本处理足够快、远程主力群较小且尚未转骑士时，决定是否继续由轻骑兵群作战。",
+      "effect": "开启轻骑兵群微操。",
+      "group_id": "scoutcontrol:rule:9",
+      "constraints_note": ""
+    },
+    {
+      "key": "SCOUT_002",
+      "category": "轻骑兵战术窗口",
+      "meaning": "启用轻骑兵群微操的最低轻骑兵系规模边界；现有数量必须严格多于所填值。",
+      "unit": "个单位",
+      "context": "轻骑兵微操关闭后的周期重评中，在对局早期、脚本处理足够快、远程主力群较小且尚未转骑士时，决定是否继续由轻骑兵群作战。",
+      "effect": "开启轻骑兵群微操。",
+      "group_id": "scoutcontrol:rule:9",
+      "constraints_note": ""
+    }
+  ]
+}

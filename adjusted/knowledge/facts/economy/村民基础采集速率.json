@@ -1,0 +1,650 @@
+{
+  "meta": {
+    "schema_version": "1.0",
+    "pack_id": "aoe2de-official-economy-production-base-v1",
+    "generated_at": "2026-08-24T19:04:51+08:00",
+    "game_version": "101.103.48987.0",
+    "dat_version": "VER 8.9",
+    "standard_civilization_count": 53,
+    "standard_civilizations": [
+      "Britons",
+      "Franks",
+      "Goths",
+      "Teutons",
+      "Japanese",
+      "Chinese",
+      "Byzantines",
+      "Persians",
+      "Saracens",
+      "Turks",
+      "Vikings",
+      "Mongols",
+      "Celts",
+      "Spanish",
+      "Aztecs",
+      "Mayans",
+      "Huns",
+      "Koreans",
+      "Italians",
+      "Indians",
+      "Incas",
+      "Magyars",
+      "Slavs",
+      "Portuguese",
+      "Ethiopians",
+      "Malians",
+      "Berbers",
+      "Khmer",
+      "Malay",
+      "Burmese",
+      "Vietnamese",
+      "Bulgarians",
+      "Tatars",
+      "Cumans",
+      "Lithuanians",
+      "Burgundians",
+      "Sicilians",
+      "Poles",
+      "Bohemians",
+      "Dravidians",
+      "Bengalis",
+      "Gurjaras",
+      "Romans",
+      "Armenians",
+      "Georgians",
+      "Shu",
+      "Wu",
+      "Wei",
+      "Jurchens",
+      "Khitans",
+      "Muisca",
+      "Mapuche",
+      "Tupi"
+    ],
+    "parser": {
+      "name": "genieutils-py",
+      "version": "0.1.2",
+      "role": "binary parser only"
+    },
+    "truth_boundary": {
+      "base_values": "Gaia base DAT records before civilization/technology effects",
+      "effective_gather_income": null,
+      "runtime_validation": "Unverified"
+    },
+    "availability_anomalies": [
+      {
+        "kind": "availability_entity_has_no_creatable_dat_record",
+        "id": 320,
+        "dat_internal_name": "ARROW8",
+        "availability_names_en_raw": [
+          "Siege Onager"
+        ],
+        "civilizations": [
+          "Georgians"
+        ],
+        "action": "excluded_from_actionable_catalog"
+      }
+    ]
+  },
+  "item_count": 8,
+  "items": [
+    {
+      "key": "food_sheep",
+      "label_zh": "食物：羊等家畜",
+      "resource": "food",
+      "official_worker_unit_ids": [
+        590,
+        592
+      ],
+      "official_worker_internal_names": [
+        "VFSHE",
+        "VMSHE"
+      ],
+      "worker_work_rate_raw_per_game_second": 0.33,
+      "worker_work_rates_raw": [
+        0.33
+      ],
+      "raw_linear_projection_per_minute": 19.8,
+      "carry_capacities_raw": [
+        10
+      ],
+      "target_unit_ids": [],
+      "target_work_rates_raw": [],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 110,
+          "class_id": 58,
+          "unit_id": -1,
+          "resource_in": 0,
+          "resource_out": 0,
+          "resource_multiplier": 216,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 151,
+          "class_id": 58,
+          "unit_id": -1,
+          "resource_in": -1,
+          "resource_out": 3,
+          "resource_multiplier": 563,
+          "work_value_1": 0.05,
+          "gather_type": 1
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "raw work rate 与其乘以 60 的线性投影不是实战净收入；步行、碰撞、存放、目标对象、科技和文明修正尚未计入。"
+    },
+    {
+      "key": "food_hunt",
+      "label_zh": "食物：鹿、野猪等狩猎",
+      "resource": "food",
+      "official_worker_unit_ids": [
+        122,
+        216
+      ],
+      "official_worker_internal_names": [
+        "VMHUN",
+        "VFHUN"
+      ],
+      "worker_work_rate_raw_per_game_second": 0.41,
+      "worker_work_rates_raw": [
+        0.41
+      ],
+      "raw_linear_projection_per_minute": 24.6,
+      "carry_capacities_raw": [
+        35
+      ],
+      "target_unit_ids": [],
+      "target_work_rates_raw": [],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 48,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 810,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 822,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 936,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 1139,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 1301,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 2589,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": 9,
+          "unit_id": -1,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": 38,
+          "unit_id": -1,
+          "resource_in": 15,
+          "resource_out": 0,
+          "resource_multiplier": 268,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 151,
+          "class_id": 9,
+          "unit_id": -1,
+          "resource_in": -1,
+          "resource_out": 3,
+          "resource_multiplier": 563,
+          "work_value_1": 0.05,
+          "gather_type": 1
+        },
+        {
+          "action_type": 151,
+          "class_id": 10,
+          "unit_id": -1,
+          "resource_in": -1,
+          "resource_out": 3,
+          "resource_multiplier": 563,
+          "work_value_1": 0.05,
+          "gather_type": 1
+        },
+        {
+          "action_type": 151,
+          "class_id": 38,
+          "unit_id": -1,
+          "resource_in": -1,
+          "resource_out": 3,
+          "resource_multiplier": 563,
+          "work_value_1": 0.05,
+          "gather_type": 1
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "raw work rate 与其乘以 60 的线性投影不是实战净收入；步行、碰撞、存放、目标对象、科技和文明修正尚未计入。"
+    },
+    {
+      "key": "food_berries",
+      "label_zh": "食物：浆果",
+      "resource": "food",
+      "official_worker_unit_ids": [
+        120,
+        354
+      ],
+      "official_worker_internal_names": [
+        "VMFOR",
+        "VFFOR"
+      ],
+      "worker_work_rate_raw_per_game_second": 0.31,
+      "worker_work_rates_raw": [
+        0.31
+      ],
+      "raw_linear_projection_per_minute": 18.6,
+      "carry_capacities_raw": [
+        10
+      ],
+      "target_unit_ids": [],
+      "target_work_rates_raw": [],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 5,
+          "class_id": -1,
+          "unit_id": 262,
+          "resource_in": 16,
+          "resource_out": 0,
+          "resource_multiplier": 190,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 5,
+          "class_id": 7,
+          "unit_id": -1,
+          "resource_in": 16,
+          "resource_out": 0,
+          "resource_multiplier": 296,
+          "work_value_1": 1,
+          "gather_type": 0
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "raw work rate 与其乘以 60 的线性投影不是实战净收入；步行、碰撞、存放、目标对象、科技和文明修正尚未计入。"
+    },
+    {
+      "key": "food_farm",
+      "label_zh": "食物：农田",
+      "resource": "food",
+      "official_worker_unit_ids": [
+        214,
+        259
+      ],
+      "official_worker_internal_names": [
+        "VFFAR",
+        "VMFAR"
+      ],
+      "worker_work_rate_raw_per_game_second": 0.53,
+      "worker_work_rates_raw": [
+        0.53
+      ],
+      "raw_linear_projection_per_minute": 31.8,
+      "carry_capacities_raw": [
+        10
+      ],
+      "target_unit_ids": [
+        50,
+        1187
+      ],
+      "target_work_rates_raw": [
+        0.4
+      ],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 5,
+          "class_id": -1,
+          "unit_id": 50,
+          "resource_in": 16,
+          "resource_out": 0,
+          "resource_multiplier": 190,
+          "work_value_1": 1,
+          "gather_type": 1
+        },
+        {
+          "action_type": 5,
+          "class_id": -1,
+          "unit_id": 1187,
+          "resource_in": 16,
+          "resource_out": 0,
+          "resource_multiplier": 190,
+          "work_value_1": 1,
+          "gather_type": 1
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "raw work rate 与其乘以 60 的线性投影不是实战净收入；步行、碰撞、存放、目标对象、科技和文明修正尚未计入。"
+    },
+    {
+      "key": "food_shore_fish",
+      "label_zh": "食物：岸边鱼",
+      "resource": "food",
+      "official_worker_unit_ids": [
+        56,
+        57
+      ],
+      "official_worker_internal_names": [
+        "VMFIS",
+        "VFFIS"
+      ],
+      "worker_work_rate_raw_per_game_second": 0.43,
+      "worker_work_rates_raw": [
+        0.43
+      ],
+      "raw_linear_projection_per_minute": 25.8,
+      "carry_capacities_raw": [
+        10
+      ],
+      "target_unit_ids": [],
+      "target_work_rates_raw": [],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 5,
+          "class_id": 5,
+          "unit_id": -1,
+          "resource_in": 17,
+          "resource_out": 0,
+          "resource_multiplier": 219,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 5,
+          "class_id": 31,
+          "unit_id": -1,
+          "resource_in": 17,
+          "resource_out": 0,
+          "resource_multiplier": 219,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 5,
+          "class_id": 33,
+          "unit_id": -1,
+          "resource_in": 17,
+          "resource_out": 0,
+          "resource_multiplier": 219,
+          "work_value_1": 1,
+          "gather_type": 0
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "raw work rate 与其乘以 60 的线性投影不是实战净收入；步行、碰撞、存放、目标对象、科技和文明修正尚未计入。"
+    },
+    {
+      "key": "wood",
+      "label_zh": "木材",
+      "resource": "wood",
+      "official_worker_unit_ids": [
+        123,
+        218
+      ],
+      "official_worker_internal_names": [
+        "VMLUM",
+        "VFLUM"
+      ],
+      "worker_work_rate_raw_per_game_second": 0.39,
+      "worker_work_rates_raw": [
+        0.39
+      ],
+      "raw_linear_projection_per_minute": 23.4,
+      "carry_capacities_raw": [
+        10
+      ],
+      "target_unit_ids": [],
+      "target_work_rates_raw": [],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 253,
+          "resource_in": 1,
+          "resource_out": -1,
+          "resource_multiplier": 189,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": 15,
+          "unit_id": -1,
+          "resource_in": 1,
+          "resource_out": -1,
+          "resource_multiplier": 189,
+          "work_value_1": 1,
+          "gather_type": 0
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "raw work rate 与其乘以 60 的线性投影不是实战净收入；步行、碰撞、存放、目标对象、科技和文明修正尚未计入。"
+    },
+    {
+      "key": "gold",
+      "label_zh": "黄金",
+      "resource": "gold",
+      "official_worker_unit_ids": [
+        579,
+        581
+      ],
+      "official_worker_internal_names": [],
+      "worker_work_rate_raw_per_game_second": 0.38,
+      "worker_work_rates_raw": [
+        0.38
+      ],
+      "raw_linear_projection_per_minute": 22.8,
+      "carry_capacities_raw": [
+        10
+      ],
+      "target_unit_ids": [],
+      "target_work_rates_raw": [],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 5,
+          "class_id": -1,
+          "unit_id": 102,
+          "resource_in": 2,
+          "resource_out": -1,
+          "resource_multiplier": 79,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 248,
+          "resource_in": 2,
+          "resource_out": 2,
+          "resource_multiplier": 79,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 352,
+          "resource_in": 56,
+          "resource_out": -1,
+          "resource_multiplier": -1,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 839,
+          "resource_in": 2,
+          "resource_out": 2,
+          "resource_multiplier": 79,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 151,
+          "class_id": 8,
+          "unit_id": -1,
+          "resource_in": -1,
+          "resource_out": 0,
+          "resource_multiplier": 512,
+          "work_value_1": 0.25,
+          "gather_type": 1
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "worker IDs/work rate 已由精确目标 DAT 验收纠正；raw work rate×60 仍不是实战净收入，步行、碰撞、存放、目标对象、科技和文明修正尚未完整计入。",
+      "worker_identity_basis": "TARGET_DAT_STANDARD_RESOURCE_TECH_TARGETS",
+      "correction_note_zh": "2026-09-19 本机精确目标 DAT 验收确认 Gold Miner task forms 为 579/581，raw work rate≈0.38；旧 124/220、0.36 实为 Stone Miner 形态，已纠正。internal name 未在已冻结 snapshot 中提取，因此不猜。"
+    },
+    {
+      "key": "stone",
+      "label_zh": "石料（与黄金共用采矿工作形态）",
+      "resource": "stone",
+      "official_worker_unit_ids": [
+        124,
+        220
+      ],
+      "official_worker_internal_names": [
+        "VMMIN",
+        "VFMIN"
+      ],
+      "worker_work_rate_raw_per_game_second": 0.36,
+      "worker_work_rates_raw": [
+        0.36
+      ],
+      "raw_linear_projection_per_minute": 21.6,
+      "carry_capacities_raw": [
+        10
+      ],
+      "target_unit_ids": [],
+      "target_work_rates_raw": [],
+      "gather_task_fields_raw": [
+        {
+          "action_type": 5,
+          "class_id": -1,
+          "unit_id": 102,
+          "resource_in": 2,
+          "resource_out": -1,
+          "resource_multiplier": 79,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 248,
+          "resource_in": 2,
+          "resource_out": 2,
+          "resource_multiplier": 79,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 352,
+          "resource_in": 56,
+          "resource_out": -1,
+          "resource_multiplier": -1,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 110,
+          "class_id": -1,
+          "unit_id": 839,
+          "resource_in": 2,
+          "resource_out": 2,
+          "resource_multiplier": 79,
+          "work_value_1": 1,
+          "gather_type": 0
+        },
+        {
+          "action_type": 151,
+          "class_id": 8,
+          "unit_id": -1,
+          "resource_in": -1,
+          "resource_out": 0,
+          "resource_multiplier": 512,
+          "work_value_1": 0.25,
+          "gather_type": 1
+        }
+      ],
+      "effective_income_per_villager_per_minute": null,
+      "effective_income_status": "Unverified: requires controlled in-game measurement",
+      "truth_boundary_zh": "raw work rate 与其乘以 60 的线性投影不是实战净收入；步行、碰撞、存放、目标对象、科技和文明修正尚未计入。"
+    }
+  ]
+}

@@ -268,7 +268,7 @@
 	(players-current-age target-player >= castle-age)
 	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_019}})
 	(current-age <= feudal-age)
-;	(players-military-population target-player >= {{TSA_ENEMY_MILITARY_003}})
+;	(players-military-population target-player >= 2)
 (or	(and	(or	(players-unit-type-count target-player scout-cavalry-line >= 6)
 			(players-unit-type-count target-player knight-line >= 3))
 		(unit-type-count spearman-line <= 3))
@@ -1118,7 +1118,7 @@
 (or	(strategic-number camels >= 7)
 	(strategic-number spears >= 12))))); 10
 ;(or	(goal attacking yes)
-;	(military-population >= {{TSA_MY_MILITARY_034}}))
+;	(military-population >= 10))
 =>
 	(chat-local-to-self "3.")
 ;	(set-goal attacking no)
@@ -1132,7 +1132,7 @@
 (or	(strategic-number camels >= 6)
 	(strategic-number spears >= 10))))); 8
 ;(or	(goal attacking yes)
-;	(military-population >= {{TSA_MY_MILITARY_035}}))
+;	(military-population >= 10))
 =>
 	(chat-local-to-self "4.")
 ;	(set-goal attacking no)
@@ -1146,7 +1146,7 @@
 (or	(players-unit-type-count target-player pikeman >= 6); 5
 	(players-unit-type-count target-player halberdier >= 3))))
 ;(or	(goal attacking yes)
-;	(military-population >= {{TSA_MY_MILITARY_036}}))
+;	(military-population >= 10))
 =>
 	(chat-local-to-self "5.")
 ;	(set-goal attacking no)
@@ -1387,8 +1387,8 @@
 	(up-projectile-detected projectile-watch-tower < 3000)
 (or	(up-research-status c: ri-padded-archer-armor < research-complete)
 	(up-research-status c: ri-fletching < research-complete))
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_114}})
-	(military-population < {{TSA_MY_MILITARY_046}})
+	(strategic-number sn-military-superiority <= 1)
+	(military-population < 25)
 =>
 	(set-goal attacking no)
 	(up-modify-sn sn-maximum-town-size c:max 10)
@@ -2711,10 +2711,10 @@
 ; test	(population < max-pop); attack at some point
 	(game-time < max-delay); 3300
 (or	(game-time < 2400); 1800
-(or	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_171}})
-(or	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_172}})
+(or	(strategic-number sn-military-superiority >= 3)
+(or	(and	(strategic-number sn-military-superiority >= 2)
 		(game-time < 3000)); 3000
-	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_173}})
+	(and	(strategic-number sn-military-superiority >= 1)
 		(game-time < 2700))))); 2400
 =>
 ;	(chat-local-to-self "Wait longer with attacking on this difficulty level.")
@@ -2736,10 +2736,10 @@
 	(population < max-pop); attack at some point
 	(game-time < max-delay); 2700
 (or	(game-time < 1800); 900
-(or	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_174}})
-(or	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_175}})
+(or	(strategic-number sn-military-superiority >= 3)
+(or	(and	(strategic-number sn-military-superiority >= 2)
 		(game-time < 2400)); 1800
-	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_176}})
+	(and	(strategic-number sn-military-superiority >= 1)
 		(game-time < 2100))))); 1350
 =>
 ;	(chat-local-to-self "Wait longer with attacking on this difficulty level.")
@@ -2763,10 +2763,10 @@
 	(population < max-pop); attack at some point
 	(game-time < max-delay); 1500
 (or	(game-time < 900)
-(or	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_177}})
-(or	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_178}})
+(or	(strategic-number sn-military-superiority >= 3)
+(or	(and	(strategic-number sn-military-superiority >= 2)
 		(game-time < 1500))
-	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_179}})
+	(and	(strategic-number sn-military-superiority >= 1)
 		(game-time < 1200)))))
 =>
 ;	(chat-local-to-self "Wait longer with attacking on this difficulty level.")
@@ -2858,9 +2858,9 @@
 	(set-goal attacking no))
 (defrule
 	(up-compare-goal attacking != no)
-	(military-population <= {{TSA_MY_MILITARY_068}})
+	(military-population <= 1)
 ;(or	(strategic-number sn-total-number-explorers >= 1)
-;	(military-population <= {{TSA_MY_MILITARY_069}}))
+;	(military-population <= 0))
 (nand	(population >= max-pop)
 	(strategic-number sn-current-age >= imperial))
 =>

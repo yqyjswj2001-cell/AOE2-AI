@@ -12257,7 +12257,7 @@
 	(goal paphosciv no)
     (players-military-population my-player-number > 30)
     (can-train armored-elephant)
-    (unit-type-count-total armored-elephant < {{UNITS_ARMORED_ELEPHANT_012}})
+    (unit-type-count-total armored-elephant < 1)
     (unit-type-count-total elite-armored-elephant < 1)
 	(unit-type-count-total armored-elephant-line < 1)
 =>
@@ -13578,7 +13578,7 @@
 (defrule
 	(research-completed ri-onager)
 	(strategic-number sn-corner-cut-state < 5)
-	(unit-type-count-total mangonel-line < {{UNITS_MANGONEL_LINE_015}})
+	(unit-type-count-total mangonel-line < 2)
 	(unit-type-count-total trade-cart > 1)
 =>
 	(train mangonel-line)

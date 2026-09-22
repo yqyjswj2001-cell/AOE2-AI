@@ -13,7 +13,7 @@
    (unit-type-count scout-cavalry-line > {{SCOUT_002}})
    (up-compare-const diff-fp == 1)
    (up-group-size c: ranged-group1 < 5)
-   (unit-type-count knight-line < {{SCOUT_003}})
+   (unit-type-count knight-line < 1)
 =>
    (set-goal modern-scout-micro yes)
 )
@@ -32,7 +32,7 @@
 
 (defrule
    (current-age == feudal-age)
-   (game-time > {{SCOUT_004}})
+   (game-time > 5)
 =>
    (xs-script-call "VerifyLoad")
    (disable-self)
@@ -56,7 +56,7 @@
 )
 
 (defrule 
-   (game-time > {{SCOUT_005}})
+   (game-time > 2)
 =>
    (up-find-player enemy find-closest temporary-goal)
    (set-strategic-number sn-target-player-number 2)
@@ -88,13 +88,13 @@
 )
 
 (defrule
-   (players-building-type-count target-player town-center < {{SCOUT_006}})
+   (players-building-type-count target-player town-center < 1)
 =>
    (up-get-point position-flank enemy-x)
 )
 
 (defrule
-   (players-building-type-count target-player town-center > {{SCOUT_007}})
+   (players-building-type-count target-player town-center > 0)
 =>
    (up-full-reset-search)
    (up-find-remote c: town-center c: 1)
@@ -116,21 +116,21 @@
 (defrule
    (goal modern-scout-micro yes)
    (up-group-size c: 12 < 2)
-   (unit-type-count scout-cavalry > {{SCOUT_008}})
+   (unit-type-count scout-cavalry > 2)
    (up-timer-status 6 != timer-running)
 =>
    (up-full-reset-search)
    (up-find-local c: scout-cavalry c: 40)
    (up-target-point position-self-x action-move -1 -1)
    (set-goal scout-action scout-retreat)
-   (enable-timer 6 {{SCOUT_009}})
+   (enable-timer 6 15)
 )
 ;Create group
 
 (defrule
    (goal modern-scout-micro yes)
-   (unit-type-count scout-cavalry-line > {{SCOUT_010}})
-   (strategic-number sn-five-turns == {{SCOUT_011}})
+   (unit-type-count scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 2)
    ;(up-group-size c: 12 < 1)
 =>
    (up-full-reset-search)
@@ -141,8 +141,8 @@
 
 (defrule
    (goal modern-scout-micro yes)
-   (unit-type-count scout-cavalry-line > {{SCOUT_012}})
-   (strategic-number sn-five-turns == {{SCOUT_013}})
+   (unit-type-count scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 2)
    ;(up-group-size c: 12 < 1)
    (up-set-target-object search-local c: 0)
 =>
@@ -197,7 +197,7 @@
 (defrule
    (goal modern-scout-micro yes)
    (up-group-size c: 12 > 3)
-   (strategic-number sn-twenty-turns == {{SCOUT_014}})
+   (strategic-number sn-twenty-turns == 12)
 =>
    (up-full-reset-search)
    (set-goal temporary-goal 20)
@@ -207,7 +207,7 @@
 )
 
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_015}})
+   (strategic-number sn-twenty-turns == 12)
    (goal modern-scout-micro yes)
    (up-group-size c: 12 > 3)
    (player-valid focus-player)
@@ -235,7 +235,7 @@
 
 
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_016}})
+   (strategic-number sn-twenty-turns == 12)
    (goal modern-scout-micro yes)
    (up-group-size c: 12 > 3)
    (player-valid focus-player)
@@ -247,7 +247,7 @@
    (up-jump-rule -2)
 )
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_017}})
+   (strategic-number sn-twenty-turns == 12)
    (goal modern-scout-micro yes)
    (up-group-size c: 12 > 3)
    (player-valid focus-player)
@@ -266,7 +266,7 @@
    (or(up-group-size c: 12 < 4)
    (and(up-compare-goal temporary-goal3 < 1)
    (and(up-compare-goal remote-total < 1)
-   (strategic-number sn-twenty-turns == {{SCOUT_018}})))))
+   (strategic-number sn-twenty-turns == 12)))))
 =>
    (set-goal multi-group-reinforcing no)
 )
@@ -288,7 +288,7 @@
 
 ;We generate two candidate points which are 90 and 270 degree rotations around the obstacle
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_019}})
+   (strategic-number sn-twenty-turns == 12)
    (goal multi-group-reinforcing yes)
    (up-set-target-object search-remote c: 0);The search previously shouldn't be cleared
 =>
@@ -309,7 +309,7 @@
 ;Lerp to within 30 tiles
 
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_020}})
+   (strategic-number sn-twenty-turns == 12)
    (goal multi-group-reinforcing yes)
    (up-point-distance point-x input-origin-x > 30)
    (up-set-target-object search-remote c: 0)
@@ -320,7 +320,7 @@
 )
 
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_021}})
+   (strategic-number sn-twenty-turns == 12)
    (goal multi-group-reinforcing yes)
    (up-point-distance point2-x input-origin-x > 30)
    (up-set-target-object search-remote c: 0)
@@ -331,7 +331,7 @@
 )
 ;Pick the point that is closer
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_022}})
+   (strategic-number sn-twenty-turns == 12)
    (goal multi-group-reinforcing yes)
    (up-compare-goal temporary-goal4 g:>= temporary-goal5)
 =>
@@ -341,7 +341,7 @@
 
 (defrule
    (up-compare-goal temporary-goal4 g:< temporary-goal5)
-   (strategic-number sn-twenty-turns == {{SCOUT_023}})
+   (strategic-number sn-twenty-turns == 12)
    (goal multi-group-reinforcing yes)
 =>
    (up-bound-point pivot-point-x point2-x)
@@ -372,8 +372,8 @@
 (defrule
    (goal modern-scout-micro yes)
    (goal multi-group-reinforcing no)
-   (unit-type-count-total scout-cavalry-line > {{SCOUT_024}})
-   (strategic-number sn-five-turns == {{SCOUT_025}})
+   (unit-type-count-total scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 3)
    ;(up-compare-goal scout-group-x > 1)
    ;(up-compare-goal scout-group-y > 1)
 =>
@@ -388,8 +388,8 @@
 (defrule
    (goal modern-scout-micro yes)
    (goal multi-group-reinforcing yes)
-   (unit-type-count-total scout-cavalry-line > {{SCOUT_026}})
-   (strategic-number sn-five-turns == {{SCOUT_027}})
+   (unit-type-count-total scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 3)
    (up-compare-goal scout-group-x > 1)
    (up-compare-goal scout-group-y > 1)
 =>
@@ -404,8 +404,8 @@
 (defrule
    (goal modern-scout-micro yes)
    (goal multi-group-reinforcing yes)
-   (unit-type-count-total scout-cavalry-line > {{SCOUT_028}})
-   (strategic-number sn-five-turns == {{SCOUT_029}})
+   (unit-type-count-total scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 3)
    (up-compare-goal scout-group-x > 1)
    (up-compare-goal scout-group-y > 1)
 =>
@@ -421,7 +421,7 @@
 (defrule
    (goal modern-scout-micro yes)
    (goal multi-group-reinforcing yes)
-   (strategic-number sn-five-turns == {{SCOUT_030}})
+   (strategic-number sn-five-turns == 2)
 =>
    (up-full-reset-search)
    (up-set-target-point pivot-point-x)
@@ -658,7 +658,7 @@
 
 (defrule
    (goal modern-scout-micro yes)
-   (strategic-number sn-focus-player-number > {{SCOUT_031}})
+   (strategic-number sn-focus-player-number > -1)
    (players-stance focus-player enemy)
 =>
    (up-full-reset-search)
@@ -690,7 +690,7 @@
 
 (defrule
    (goal temporary-goal5 5555)
-   (strategic-number sn-focus-player-number > {{SCOUT_032}})
+   (strategic-number sn-focus-player-number > -1)
    (players-stance focus-player enemy)
 =>
    (up-find-remote c: spearman-line c: 40)
@@ -754,7 +754,7 @@
    (up-modify-goal scout-radius c:+ 5)
    (up-modify-goal scout-radius c:max 40)
    (up-modify-goal scout-radius c:min 120)
-   (enable-timer 6 {{SCOUT_033}})
+   (enable-timer 6 25)
    (up-jump-rule 12)
 )
 
@@ -781,10 +781,10 @@
 (defrule
    (or(up-projectile-detected projectile-town-center < 2000)
    (up-point-distance scout-group-x enemy-x < 6))
-   (players-building-type-count target-player town-center > {{SCOUT_034}})
+   (players-building-type-count target-player town-center > 0)
 =>
    (set-goal scout-action scout-retreat)
-   (enable-timer 6 {{SCOUT_035}})
+   (enable-timer 6 15)
    (up-modify-goal scout-radius c:+ 5)
    (up-modify-goal scout-radius c:min 35)
    (up-jump-rule 19)
@@ -857,12 +857,12 @@
 
 (defrule
    (goal scout-action scout-civ-attack-block)
-   (strategic-number sn-two-turns == {{SCOUT_036}})
+   (strategic-number sn-two-turns == 1)
    (up-group-size c: 12 < 4)
    (up-compare-goal enemy-str > 5)
 =>
    (set-goal scout-action scout-retreat)
-   (enable-timer 6 {{SCOUT_037}})
+   (enable-timer 6 8)
    ;(chat-to-player my-player-number "Wait for 4th scout to engage")
    (up-jump-rule 15)
 )
@@ -872,7 +872,7 @@
    (set-goal scout-action scout-retreat)
    (up-modify-goal scout-radius c:+ 5)
    (up-modify-goal scout-radius c:max 40)
-   (enable-timer 6 {{SCOUT_038}})
+   (enable-timer 6 40)
    (up-jump-rule 14)
 )
 
@@ -952,7 +952,7 @@
    (up-compare-goal enemy-str < 1))
 =>
    (set-goal scout-action scout-retreat)
-   (enable-timer 6 {{SCOUT_039}})
+   (enable-timer 6 11)
    (up-jump-rule 7)
 )
 
@@ -964,7 +964,7 @@
    (up-point-distance scout-group-x enemy-x < 20)
 =>
    (set-goal scout-action scout-retreat)
-   (enable-timer 6 {{SCOUT_040}})
+   (enable-timer 6 10)
    (up-modify-goal scout-waypoint c:+ 1)
    (up-jump-rule 7)
 )
@@ -977,7 +977,7 @@
    (up-point-distance scout-group-x enemy-x >= 20)
 =>
    (set-goal scout-action scout-retreat)
-   (enable-timer 6 {{SCOUT_041}})
+   (enable-timer 6 30)
    (up-modify-goal scout-waypoint c:+ 1)
    (up-jump-rule 6)
 )
@@ -1025,7 +1025,7 @@
    (up-compare-goal temporary-goal2 > 0)
 =>
    (set-goal scout-action scout-retreat)
-   (enable-timer 6 {{SCOUT_042}})
+   (enable-timer 6 3)
    (up-jump-rule 3)
 )
 
@@ -1310,7 +1310,7 @@
 ; )
 
 (defrule
-   (strategic-number sn-twenty-turns == {{SCOUT_043}})
+   (strategic-number sn-twenty-turns == 3)
    (goal scout-action scout-retreat)
 =>
    (generate-random-number 100)
@@ -1318,7 +1318,7 @@
 
 (defrule
    (goal scout-action scout-retreat)
-   (strategic-number sn-twenty-turns == {{SCOUT_044}})
+   (strategic-number sn-twenty-turns == 3)
    (random-number < 5)
 =>
    (up-modify-goal scout-waypoint c:+ 1)
@@ -1326,7 +1326,7 @@
 
 (defrule
    (goal scout-action scout-retreat)
-   (strategic-number sn-twenty-turns == {{SCOUT_045}})
+   (strategic-number sn-twenty-turns == 3)
    (random-number > 95)
 =>
    (up-modify-goal scout-waypoint c:- 1)

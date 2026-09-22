@@ -2530,7 +2530,7 @@
 =>
 	(up-jump-rule 2))
 (defrule
-	(unit-type-count-total villager-gold >= {{RESEARCH_ECON_RI_GOLD_MINING_010}})
+	(unit-type-count-total villager-gold >= 1)
 (or	(food-amount >= imperial-fs)
 (or	(strategic-number sn-current-age >= imperial)
 	(unit-type-count villager-gold >= {{RESEARCH_ECON_RI_GOLD_MINING_011}}))); 10
@@ -2544,7 +2544,7 @@
 =>
 	(research ri-gold-mining))
 (defrule
-	(unit-type-count-total villager-gold >= {{RESEARCH_ECON_RI_GOLD_MINING_012}})
+	(unit-type-count-total villager-gold >= 1)
 	(up-research-status c: ri-bow-saw >= research-pending)
 	(up-research-status c: ri-heavy-plow >= research-pending)
 (or	(building-type-count-total town-center >= 2)
@@ -2651,7 +2651,7 @@
 	(strategic-number sn-current-age <= feudal)
 	(food-amount >= db-food-buffer)
 	(strategic-number sn-gold-gatherer-percentage >= 1)
-	(unit-type-count villager-gold >= {{RESEARCH_ECON_RI_GOLD_MINING_025}})
+	(unit-type-count villager-gold >= 1)
 	(up-research-status c: ri-double-bit-axe != research-available)
 	(up-research-status c: ri-horse-collar != research-available)
 	(up-research-status c: ri-wheel-barrow != research-available)
@@ -2663,7 +2663,7 @@
 #load-if-not-defined DIFFICULTY-EASY
 #load-if-not-defined DIFFICULTY-MODERATE
 (defrule
-	(unit-type-count-total villager-gold >= {{RESEARCH_ECON_RI_GOLD_SHAFT_MINING_026}})
+	(unit-type-count-total villager-gold >= 1)
 (or	(unit-type-count villager-gold >= {{RESEARCH_ECON_RI_GOLD_SHAFT_MINING_027}}); 10 ;12 (lowered cost)
 (or	(food-amount >= {{RESEARCH_ECON_RI_GOLD_SHAFT_MINING_028}})
 	(strategic-number sn-current-age >= imperial)))
@@ -4079,11 +4079,11 @@
 (defrule
 (or	(building-type-count watch-tower >= 2)
 (or	(building-type-count castle >= 2)
-(or	(unit-type-count-total archery-class >= {{RESEARCH_MIL_RI_FLETCHING_095}})
+(or	(unit-type-count-total archery-class >= 1)
 (or	(up-compare-goal skirmisher-set >= 1)
-(or	(unit-type-count-total elephant-archer >= {{RESEARCH_MIL_RI_FLETCHING_096}})
-(or	(unit-type-count-total slinger >= {{RESEARCH_MIL_RI_FLETCHING_097}})
-	(unit-type-count-total cavalry-archer-class >= {{RESEARCH_MIL_RI_FLETCHING_098}})))))))
+(or	(unit-type-count-total elephant-archer >= 1)
+(or	(unit-type-count-total slinger >= 1)
+	(unit-type-count-total cavalry-archer-class >= 1)))))))
 ;	(up-research-status c: ri-wheel-barrow >= research-pending)
 	(can-research ri-fletching)
 =>
@@ -4112,11 +4112,11 @@
 (defrule
 (or	(building-type-count krepost >= 2)
 (or	(up-compare-goal caravel-set >= 3)
-(or	(unit-type-count-total rattan-archer >= {{RESEARCH_MIL_RI_FLETCHING_102}})
-(or	(unit-type-count-total elite-rattan-archer >= {{RESEARCH_MIL_RI_FLETCHING_103}})
-(or	(unit-type-count-total camel-archer >= {{RESEARCH_MIL_RI_FLETCHING_104}})
-(or	(unit-type-count-total elite-camel-archer >= {{RESEARCH_MIL_RI_FLETCHING_105}})
-	(unit-type-count-total genoese-crossbowman >= {{RESEARCH_MIL_RI_FLETCHING_106}})))))))
+(or	(unit-type-count-total rattan-archer >= 1)
+(or	(unit-type-count-total elite-rattan-archer >= 1)
+(or	(unit-type-count-total camel-archer >= 1)
+(or	(unit-type-count-total elite-camel-archer >= 1)
+	(unit-type-count-total genoese-crossbowman >= 1)))))))
 	(can-research ri-fletching)
 =>
 	(research ri-fletching)); end jump

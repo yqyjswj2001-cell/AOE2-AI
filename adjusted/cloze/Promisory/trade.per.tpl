@@ -53,7 +53,7 @@
 	(sell-commodity stone))
 ;================================================================
 (defrule
-	(building-type-count feitoria >= {{TRADE_012}})
+	(building-type-count feitoria >= 1)
 	(up-compare-goal excessStone >= {{TRADE_013}})
 (or	(goal uugoal no)
 	(up-compare-goal excessStone >= {{TRADE_014}}))
@@ -73,8 +73,8 @@
 ;================================================================
 #load-if-not-defined WONDER-RACE
 (defrule
-	(building-type-count-total town-center <= {{TRADE_019}})
-	(unit-type-count-total villager >= {{TRADE_020}})
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
 	(up-compare-goal excessWood >= tc-100-wood)
 	(commodity-buying-price stone g:> excessGold)
 	(stone-amount < tc-stone)
@@ -83,9 +83,9 @@
 	;(chat-local-to-self text-selling-wood)
 	(sell-commodity wood))
 (defrule
-	(building-type-count-total town-center <= {{TRADE_021}})
-	(unit-type-count-total villager >= {{TRADE_022}})
-	(up-compare-goal excessFood >= {{TRADE_023}})
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
+	(up-compare-goal excessFood >= 100)
 (or	(and	(commodity-buying-price wood g:> excessGold)
 		(wood-amount < tc-wood))
 	(and	(commodity-buying-price stone g:> excessGold)
@@ -95,8 +95,8 @@
 	;(chat-local-to-self text-selling-food)
 	(sell-commodity food))
 (defrule
-	(building-type-count-total town-center <= {{TRADE_024}})
-	(unit-type-count-total villager >= {{TRADE_025}})
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
 	(up-compare-goal excessStone >= threetc-stone)
 	(commodity-buying-price wood g:> excessGold)
 	(wood-amount < tc-wood)
@@ -105,24 +105,24 @@
 	;(chat-local-to-self text-selling-stone)
 	(sell-commodity stone))
 (defrule
-	(building-type-count-total town-center <= {{TRADE_026}})
-	(unit-type-count-total villager >= {{TRADE_027}})
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
 (or	(up-compare-goal excessGold >= 400)
 (or	(unit-type-count villager-wood <= 0)
-	(building-type-count-total lumber-camp <= {{TRADE_028}})))
-	(wood-amount < {{TRADE_029}})
+	(building-type-count-total lumber-camp <= 0)))
+	(wood-amount < 275)
 ;	(stone-amount >= tc-stone)
 	(can-buy-commodity wood)
 =>
 	;(chat-local-to-self text-buying-wood-town-center)
 	(buy-commodity wood))
 (defrule
-	(building-type-count-total town-center <= {{TRADE_030}})
-	(unit-type-count-total villager >= {{TRADE_031}})
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
 (or	(up-compare-goal excessGold >= 400)
 (or	(unit-type-count villager-stone <= 0)
-	(building-type-count-total mining-camp <= {{TRADE_032}})))
-	(wood-amount >= {{TRADE_033}})
+	(building-type-count-total mining-camp <= 0)))
+	(wood-amount >= 275)
 	(stone-amount < tc-stone)
 	(can-buy-commodity stone)
 =>
@@ -144,10 +144,10 @@
 (defrule
 (or	(goal researchplan yes); 180
 (or	(goal uugoal yes)
-	(unit-type-count villager-stone <= {{TRADE_036}}))); (strategic-number sn-military-superiority >= 2); 1
+	(unit-type-count villager-stone <= 0))); (strategic-number sn-military-superiority >= 2); 1
 ;	(goal underattack no)
 ;	(goal escrowing no)
-	(building-type-count-total castle == {{TRADE_037}})
+	(building-type-count-total castle == 0)
 	(stone-amount < castle-stone)
 	(up-compare-goal excessGold >= {{TRADE_038}})
 	(strategic-number sn-current-age >= imperial)
@@ -274,12 +274,12 @@
 ;================================================================
 (defrule
 	(goal wwonder yes)
-	(building-type-count-total town-center >= {{TRADE_057}})
-	(building-type-count-total wonder < {{TRADE_058}})
-	(players-building-type-count any-ally wonder == {{TRADE_059}})
-	(wood-amount >= {{TRADE_060}}); 1000
-	(gold-amount >= {{TRADE_061}})
-	(stone-amount < {{TRADE_062}})
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total wonder < 1)
+	(players-building-type-count any-ally wonder == 0)
+	(wood-amount >= 1100); 1000
+	(gold-amount >= 1300)
+	(stone-amount < 1000)
 	(goal underattack no)
 	(can-buy-commodity stone)
 =>
@@ -294,7 +294,7 @@
 		(up-compare-goal relic-count >= 3))); 5
 	(wall-completed-percentage 2 < 100)
 	(up-compare-goal excessGold >= {{TRADE_063}})
-	(stone-amount < {{TRADE_064}})
+	(stone-amount < 100)
 	(can-buy-commodity stone)
 =>
 	;(chat-local-to-self text-buying-stone-walls)
@@ -303,7 +303,7 @@
 ;================================================================
 (defrule
 	(goal escrowing no)
-	(stone-amount < {{TRADE_065}})
+	(stone-amount < 125)
 	(up-compare-goal excessGold >= {{TRADE_066}})
 (or	(up-compare-goal relic-count >= 3)
 	(up-compare-goal tradeunits >= 15))
@@ -331,9 +331,9 @@
 ;================================================================
 (defrule
 	(up-compare-goal total-stone-amount g:< cost-stone)
-	(unit-type-count villager-stone <= {{TRADE_071}})
-	(up-compare-goal excessStone <= {{TRADE_072}})
-	(up-compare-goal excessGold >= {{TRADE_073}})
+	(unit-type-count villager-stone <= 0)
+	(up-compare-goal excessStone <= 0)
+	(up-compare-goal excessGold >= 25)
 	(can-buy-commodity stone)
 =>
 	;(chat-local-to-self text-buying-stone)
@@ -407,9 +407,9 @@
 ;================================================================
 (defrule
 	(gold-amount g:< cost-gold)
-	(unit-type-count villager-gold <= {{TRADE_092}})
-	(up-compare-goal excessGold <= {{TRADE_093}})
-	(up-compare-goal excessFood >= {{TRADE_094}}); 17
+	(unit-type-count villager-gold <= 0)
+	(up-compare-goal excessGold <= 0)
+	(up-compare-goal excessFood >= 300); 17
 	(can-sell-commodity food)
 =>
 	;(chat-local-to-self text-selling-food)
@@ -447,7 +447,7 @@
 (or	(up-compare-goal relic-count >= 3)
 (or	(players-building-type-count any-ally market >= 1)
 (or	(players-building-type-count any-ally port >= 1)
-	(players-building-type-count any-ally dock >= {{TRADE_103}}))))
+	(players-building-type-count any-ally dock >= 1))))
 (or	(up-compare-goal relic-count >= 3)
 	(up-compare-goal tradeunits >= 15))
 	(can-buy-commodity food)
@@ -471,9 +471,9 @@
 ;================================================================
 (defrule
 	(up-compare-goal total-food-amount g:< cost-food)
-	(unit-type-count villager-food <= {{TRADE_108}})
-	(up-compare-goal excessFood <= {{TRADE_109}})
-	(up-compare-goal excessGold >= {{TRADE_110}})
+	(unit-type-count villager-food <= 0)
+	(up-compare-goal excessFood <= 0)
+	(up-compare-goal excessGold >= 25)
 	(can-buy-commodity food)
 =>
 	;(chat-local-to-self text-buying-food)
@@ -487,7 +487,7 @@
 	(up-compare-goal custom-civ-pop < min-number-vills)
 (or	(up-compare-goal tradeunits >= 12)
 (or	(up-compare-goal relic-count >= 3)
-	(up-compare-goal excessGold >= {{TRADE_111}})))
+	(up-compare-goal excessGold >= 900)))
 	(goal underattack no)
 	(goal defend no)
 	(can-buy-commodity food)
@@ -498,8 +498,8 @@
 (defrule
 	(up-train-site-ready c: villager)
 	(up-compare-goal excessFood < vill-cost)
-	(building-type-count town-center >= {{TRADE_112}})
-	(unit-type-count-total villager <= {{TRADE_113}})
+	(building-type-count town-center >= 1)
+	(unit-type-count-total villager <= 1)
 	(goal underattack no)
 	(can-buy-commodity food)
 =>
@@ -602,9 +602,9 @@
 ;================================================================
 (defrule
 	(gold-amount g:< cost-gold)
-	(unit-type-count villager-gold <= {{TRADE_135}})
-	(up-compare-goal excessGold <= {{TRADE_136}})
-	(up-compare-goal excessWood >= {{TRADE_137}}); 17
+	(unit-type-count villager-gold <= 0)
+	(up-compare-goal excessGold <= 0)
+	(up-compare-goal excessWood >= 300); 17
 	(can-sell-commodity wood)
 =>
 	;(chat-local-to-self text-selling-wood)
@@ -685,7 +685,7 @@
 (or	(up-compare-goal relic-count >= 3)
 (or	(players-building-type-count any-ally market >= 1)
 (or	(players-building-type-count any-ally port >= 1)
-	(players-building-type-count any-ally dock >= {{TRADE_145}}))))
+	(players-building-type-count any-ally dock >= 1))))
 (or	(up-compare-goal relic-count >= 3)
 	(up-compare-goal tradeunits >= 15))
 	(can-buy-commodity wood)
@@ -708,16 +708,16 @@
 	(buy-commodity wood))
 ;================================================================
 (defrule
-	(unit-type-count villager <= {{TRADE_150}})
-	(building-type-count town-center <= {{TRADE_151}})
-	(building-type-count market >= {{TRADE_152}})
+	(unit-type-count villager <= 0)
+	(building-type-count town-center <= 0)
+	(building-type-count market >= 1)
 	(player-in-game any-ally)
-	(players-building-type-count any-ally market >= {{TRADE_153}})
-	(wood-amount < {{TRADE_154}})
+	(players-building-type-count any-ally market >= 1)
+	(wood-amount < 100)
 ; nn	(up-compare-goal excessGold >= 300);
 	(housing-headroom >= 1)
-	(unit-type-count-total 178 <= {{TRADE_155}}); Dead trade cart (empty)
-	(unit-type-count-total 205 <= {{TRADE_156}}); Dead trade cart (full)
+	(unit-type-count-total 178 <= 0); Dead trade cart (empty)
+	(unit-type-count-total 205 <= 0); Dead trade cart (full)
 	(can-buy-commodity wood)
 =>
 	;(chat-local-to-self text-buying-wood)
@@ -725,9 +725,9 @@
 ;================================================================
 (defrule
 	(wood-amount g:< cost-wood)
-	(unit-type-count villager-wood <= {{TRADE_157}})
-	(up-compare-goal excessWood <= {{TRADE_158}})
-	(up-compare-goal excessGold >= {{TRADE_159}})
+	(unit-type-count villager-wood <= 0)
+	(up-compare-goal excessWood <= 0)
+	(up-compare-goal excessGold >= 25)
 	(can-buy-commodity wood)
 =>
 	;(chat-local-to-self text-buying-wood)
@@ -737,7 +737,7 @@
 ;================================================================
 (defrule
 ;	(strategic-number sn-current-age == dark)
-	(building-type-count town-center >= {{TRADE_160}})
+	(building-type-count town-center >= 1)
 	(up-compare-goal total-food-amount < feudal-food)
 	(research-available feudal-age)
 	(can-buy-commodity food)
@@ -747,7 +747,7 @@
 ;================================================================
 (defrule
 ;	(strategic-number sn-current-age == feudal)
-	(building-type-count town-center >= {{TRADE_161}})
+	(building-type-count town-center >= 1)
 ;	(building-type-count blacksmith >= 1)
 	(up-compare-goal total-food-amount < castle-food)
 	(gold-amount >= castle-gs)
@@ -759,7 +759,7 @@
 ;================================================================
 (defrule
 ;	(strategic-number sn-current-age == feudal)
-	(building-type-count town-center >= {{TRADE_162}})
+	(building-type-count town-center >= 1)
 ;	(building-type-count blacksmith >= 1)
 	(gold-amount < castle-gold)
 	(up-compare-goal total-food-amount >= castle-fs)
@@ -771,13 +771,13 @@
 ;================================================================
 (defrule
 ;	(strategic-number sn-current-age == feudal)
-	(building-type-count town-center >= {{TRADE_163}})
+	(building-type-count town-center >= 1)
 ;	(building-type-count blacksmith >= 1)
 (or	(up-compare-goal total-food-amount >= castle-f2)
 	(wood-amount >= {{TRADE_164}})); test
 (or	(gold-amount < castle-gold)
 	(up-compare-goal total-food-amount < castle-food))
-	(wood-amount >= {{TRADE_165}})
+	(wood-amount >= 100)
 	(research-available castle-age)
 	(can-sell-commodity wood)
 =>
@@ -787,7 +787,7 @@
 (defrule
 ;	(goal underattack no)
 ;	(strategic-number sn-current-age == castlea)
-	(building-type-count town-center >= {{TRADE_166}})
+	(building-type-count town-center >= 1)
 ;	(goal dreitc yes)
 (or	(goal strategy fast-imp)
 (or	(population >= up-max-civ)
@@ -804,7 +804,7 @@
 (defrule
 ;	(goal underattack no)
 ;	(strategic-number sn-current-age == castlea)
-	(building-type-count town-center >= {{TRADE_167}})
+	(building-type-count town-center >= 1)
 ;	(goal dreitc yes)
 (or	(goal strategy fast-imp)
 (or	(population >= up-max-civ)
@@ -824,7 +824,7 @@
 (defrule
 ;	(goal underattack no)
 ;	(strategic-number sn-current-age == castlea)
-	(building-type-count town-center >= {{TRADE_168}})
+	(building-type-count town-center >= 1)
 ;	(goal dreitc yes)
 (or	(goal strategy fast-imp)
 (or	(population >= up-max-civ)
@@ -832,7 +832,7 @@
 	(up-compare-flag escrow-flag == 2))))
 ;	(food-amount < imperial-food)
 	(gold-amount < imperial-gold)
-	(wood-amount >= {{TRADE_169}}); 300
+	(wood-amount >= 100); 300
 	(research-available imperial-age)
 	(can-sell-commodity wood)
 =>
@@ -847,7 +847,7 @@
 	(up-compare-flag escrow-flag == 2))
 	(gold-amount < {{TRADE_170}})
 	(goal underattack no)
-	(building-type-count town-center >= {{TRADE_171}})
+	(building-type-count town-center >= 1)
 	(can-sell-commodity wood)
 =>
 	;(chat-local-to-self text-selling-wood-next-age)
@@ -863,7 +863,7 @@
 	(up-compare-goal excessWood >= {{TRADE_174}}))
 	(gold-amount < {{TRADE_175}})
 	(goal underattack no)
-	(building-type-count town-center >= {{TRADE_176}})
+	(building-type-count town-center >= 1)
 	(can-sell-commodity wood)
 =>
 	;(chat-local-to-self text-selling-wood-next-age)
@@ -889,7 +889,7 @@
 (or	(commodity-selling-price food > 23)
 	(food-amount >= {{TRADE_178}}))
 	(current-age >= imperial-age)
-	(building-type-count castle >= {{TRADE_179}})
+	(building-type-count castle >= 1)
 	(up-research-status c: my-unique-unit-upgrade < research-pending)
 	(can-sell-commodity food)
 =>
@@ -906,7 +906,7 @@
 (or	(commodity-buying-price food < 150)
 	(gold-amount >= {{TRADE_180}}))
 	(current-age >= imperial-age)
-	(building-type-count castle >= {{TRADE_181}})
+	(building-type-count castle >= 1)
 	(up-research-status c: my-unique-unit-upgrade < research-pending)
 	(can-buy-commodity food)
 =>
@@ -924,7 +924,7 @@
 (or	(commodity-selling-price wood > 23)
 	(wood-amount >= {{TRADE_183}}))
 	(current-age >= imperial-age)
-	(building-type-count castle >= {{TRADE_184}})
+	(building-type-count castle >= 1)
 	(up-research-status c: my-unique-unit-upgrade < research-pending)
 	(can-sell-commodity wood)
 =>
@@ -941,7 +941,7 @@
 (or	(commodity-buying-price wood < 150)
 	(gold-amount >= {{TRADE_185}}))
 	(current-age >= imperial-age)
-	(building-type-count castle >= {{TRADE_186}})
+	(building-type-count castle >= 1)
 	(up-research-status c: my-unique-unit-upgrade < research-pending)
 	(can-buy-commodity wood)
 =>
@@ -953,12 +953,12 @@
 (or	(and	(unit-type-count-total knight-line >= 18)
 		(up-research-status c: ri-bloodlines >= research-pending))
 	(goal palagoal yes))
-	(gold-amount < {{TRADE_187}})
-	(food-amount >= {{TRADE_188}})
+	(gold-amount < 750)
+	(food-amount >= 1400)
 	(research-completed ri-cavalier)
 	(up-research-status c: ri-plate-barding >= research-pending)
 	(research-available ri-paladin)
-	(building-type-count stable >= {{TRADE_189}})
+	(building-type-count stable >= 1)
 	(up-research-status c: ri-paladin < research-pending)
 	(current-age >= imperial-age)
 	(can-sell-commodity food)
@@ -971,12 +971,12 @@
 (or	(and	(unit-type-count-total knight-line >= 18)
 		(up-research-status c: ri-bloodlines >= research-pending))
 	(goal palagoal yes))
-	(gold-amount >= {{TRADE_190}}); 900
-	(food-amount < {{TRADE_191}})
+	(gold-amount >= 950); 900
+	(food-amount < 1300)
 	(research-completed ri-cavalier)
 	(up-research-status c: ri-plate-barding >= research-pending)
 	(research-available ri-paladin)
-	(building-type-count stable >= {{TRADE_192}})
+	(building-type-count stable >= 1)
 	(up-research-status c: ri-paladin < research-pending)
 	(current-age >= imperial-age)
 	(can-buy-commodity food)
@@ -992,10 +992,10 @@
 	(research-completed ri-cavalier)
 	(up-research-status c: ri-plate-barding >= research-pending)
 	(research-available ri-paladin)
-	(building-type-count stable >= {{TRADE_193}})
+	(building-type-count stable >= 1)
 	(up-research-status c: ri-paladin < research-pending)
-	(food-amount >= {{TRADE_194}})
-	(gold-amount < {{TRADE_195}})
+	(food-amount >= 800)
+	(gold-amount < 750)
 	(wood-amount >= {{TRADE_196}})
 	(can-sell-commodity wood)
 =>
@@ -1006,12 +1006,12 @@
 ; j	(goal underattack no)
 (or	(unit-type-count-total two-handed-swordsman >= 5)
 	(goal champgoal yes))
-	(gold-amount < {{TRADE_197}})
-	(food-amount >= {{TRADE_198}})
+	(gold-amount < 350)
+	(food-amount >= 850)
 	(research-completed ri-two-handed-swordsman)
 	(up-research-status c: ri-scale-mail >= research-pending); for now
 	(research-available ri-champion)
-	(building-type-count barracks >= {{TRADE_199}})
+	(building-type-count barracks >= 1)
 	(up-research-status c: ri-champion < research-pending)
 	(current-age >= imperial-age)
 	(can-sell-commodity food)
@@ -1023,12 +1023,12 @@
 ; j	(goal underattack no)
 (or	(unit-type-count-total two-handed-swordsman >= 5)
 	(goal champgoal yes))
-	(gold-amount >= {{TRADE_200}}); 500
-	(food-amount < {{TRADE_201}})
+	(gold-amount >= 550); 500
+	(food-amount < 750)
 	(research-completed ri-two-handed-swordsman)
 	(up-research-status c: ri-scale-mail >= research-pending); for now
 	(research-available ri-champion)
-	(building-type-count barracks >= {{TRADE_202}})
+	(building-type-count barracks >= 1)
 	(up-research-status c: ri-champion < research-pending)
 	(current-age >= imperial-age)
 	(can-buy-commodity food)
@@ -1044,10 +1044,10 @@
 	(research-completed ri-two-handed-swordsman)
 	(up-research-status c: ri-scale-mail >= research-pending); for now
 	(research-available ri-champion)
-	(building-type-count barracks >= {{TRADE_203}})
+	(building-type-count barracks >= 1)
 	(up-research-status c: ri-champion < research-pending)
-	(food-amount >= {{TRADE_204}})
-	(gold-amount < {{TRADE_205}})
+	(food-amount >= 450)
+	(gold-amount < 350)
 	(wood-amount >= {{TRADE_206}})
 	(can-sell-commodity wood)
 =>
@@ -1055,8 +1055,8 @@
 	(sell-commodity wood))
 #else; WR
 (defrule
-	(gold-amount >= {{TRADE_207}})
-	(stone-amount < {{TRADE_208}})
+	(gold-amount >= 1200)
+	(stone-amount < 1000)
 	(current-age >= imperial-age)
 	(can-buy-commodity stone)
 =>
@@ -1064,16 +1064,16 @@
 	(buy-commodity stone))
 (defrule
 (or	(gold-amount < 1000)
-	(wood-amount < {{TRADE_209}}))
-	(stone-amount >= {{TRADE_210}})
+	(wood-amount < 1000))
+	(stone-amount >= 1100)
 	(current-age >= imperial-age)
 	(can-sell-commodity stone)
 =>
 	;(chat-local-to-self text-selling-stone-wonder)
 	(sell-commodity stone))
 (defrule
-	(gold-amount >= {{TRADE_211}})
-	(wood-amount < {{TRADE_212}})
+	(gold-amount >= 1200)
+	(wood-amount < 1000)
 	(current-age >= imperial-age)
 	(can-buy-commodity wood)
 =>
@@ -1081,17 +1081,17 @@
 	(buy-commodity wood))
 (defrule
 (or	(gold-amount < 1000)
-	(stone-amount < {{TRADE_213}}))
-	(wood-amount >= {{TRADE_214}})
+	(stone-amount < 1000))
+	(wood-amount >= 1100)
 	(current-age >= imperial-age)
 	(can-sell-commodity wood)
 =>
 	;(chat-local-to-self text-selling-wood-wonder)
 	(sell-commodity wood))
 (defrule
-	(food-amount >= {{TRADE_215}})
+	(food-amount >= 100)
 (or	(building-available wonder)
-	(food-amount >= {{TRADE_216}}))
+	(food-amount >= 200))
 	(current-age >= imperial-age)
 	(can-sell-commodity food)
 =>
@@ -1102,7 +1102,7 @@
 #load-if-defined COMMENT-OUT
 (defrule
 	(or(players-tribute-memory every-ally food < 400)
-	(game-time > {{TRADE_217}}))
+	(game-time > 1800))
 =>
 	(up-jump-rule 4);for peformance reasons
 )
@@ -1111,11 +1111,11 @@
 
 (defrule
 	(up-research-status c: imperial-age < research-pending)
-	(food-amount > {{TRADE_218}})
-	(gold-amount < {{TRADE_219}})
+	(food-amount > 1150)
+	(gold-amount < 800)
 	(can-buy-commodity gold)
 	(current-age == castle-age)
-	(game-time < {{TRADE_220}})
+	(game-time < 1700)
 ;	(players-tribute-memory any-ally food > 500)
 	(can-sell-commodity food)
 =>
@@ -1125,8 +1125,8 @@
 
 (defrule
 	(up-research-status c: imperial-age < research-pending)
-	(gold-amount > {{TRADE_221}})
-	(food-amount < {{TRADE_222}})
+	(gold-amount > 950)
+	(food-amount < 1000)
 	(can-buy-commodity food)
 ;	(players-tribute-memory any-ally food > 500)
 ;	(players-tribute-memory any-ally gold > 100)
@@ -1147,12 +1147,12 @@
 ;	(building-type-count-total university > 0))
 ;	(nand(building-type-count-total university > 0)
 ;	(building-type-count-total monastery > 0))
-	(building-type-count-total castle < {{TRADE_224}})
+	(building-type-count-total castle < 1)
 ;	(players-tribute-memory any-ally food > 500)
 	(game-time < {{TRADE_225}})
-	(wood-amount < {{TRADE_226}})
+	(wood-amount < 250)
 	(can-buy-commodity wood)
-	(gold-amount > {{TRADE_227}})
+	(gold-amount > 950)
 	(current-age == castle-age)
 ;	(up-research-status c: imperial-age < status-pending)
 =>
@@ -1161,21 +1161,21 @@
 )
 
 (defrule
-	(building-type-count-total monastery < {{TRADE_228}})
+	(building-type-count-total monastery < 1)
 	(or(building-type-count-total siege-workshop < 1)
-	(building-type-count-total university < {{TRADE_229}}))
-	(gold-amount > {{TRADE_230}})
+	(building-type-count-total university < 1))
+	(gold-amount > 1100)
 	(can-buy-commodity stone)
-	(stone-amount < {{TRADE_231}})
-	(building-type-count-total castle < {{TRADE_232}})
+	(stone-amount < 650)
+	(building-type-count-total castle < 1)
 =>
 	(buy-commodity stone)
 )
 (defrule
-	(food-amount > {{TRADE_233}})
+	(food-amount > 1100)
 	(or(gold-amount < 800)
 	(and(food-amount > 1300)
-	(gold-amount < {{TRADE_234}})))
+	(gold-amount < 1000)))
 	(can-sell-commodity food)
 ;	(players-tribute-memory any-ally food > 500)
 	(game-time < {{TRADE_235}})
@@ -1190,10 +1190,10 @@
 (defrule
 	(research-completed ri-elite-eagle-warrior)
 	(unit-type-count-total eagle-warrior-line > {{TRADE_236}})
-	(building-type-count-total castle < {{TRADE_237}})
+	(building-type-count-total castle < 1)
 	(not(research-completed my-unique-research))
-	(gold-amount > {{TRADE_238}})
-	(stone-amount < {{TRADE_239}})
+	(gold-amount > 900)
+	(stone-amount < 650)
 	(can-buy-commodity stone)
 =>
 	(buy-commodity stone)
@@ -1217,8 +1217,8 @@
 ;----------------------------  
 (defrule
 	(up-gaia-type-count-total c: wood >= 30)
-	(gold-amount <= {{TRADE_245}})
-    (unit-type-count-total merchant-ship > {{TRADE_246}})
+	(gold-amount <= 1500)
+    (unit-type-count-total merchant-ship > 0)
     (or (up-research-status c: ri-merchant-ratio-wood >= research-complete)
         (up-research-status c: ri-merchant-ratio-gold >= research-complete))
 	(can-research ri-merchant-ratio-gold)
@@ -1228,8 +1228,8 @@
 
 (defrule
 	(up-gaia-type-count-total c: wood >= 30)
-	(gold-amount <= {{TRADE_247}})
-    (unit-type-count-total merchant-ship > {{TRADE_248}})
+	(gold-amount <= 1500)
+    (unit-type-count-total merchant-ship > 0)
     (up-research-status c: ri-merchant-ratio-balanced >= research-complete)
 	(can-research ri-merchant-ratio-wood)
 =>
@@ -1238,10 +1238,10 @@
 	
 (defrule
 	(up-gaia-type-count-total c: wood >= 30)
-	(wood-amount > {{TRADE_249}})
-	(wood-amount < {{TRADE_250}})
-	(gold-amount > {{TRADE_251}})
-    (unit-type-count-total merchant-ship > {{TRADE_252}})
+	(wood-amount > 1000)
+	(wood-amount < 3000)
+	(gold-amount > 1500)
+    (unit-type-count-total merchant-ship > 0)
     (or (up-research-status c: ri-merchant-ratio-gold >= research-complete)
         (up-research-status c: ri-merchant-ratio-balanced >= research-complete))
 	(can-research ri-merchant-ratio-balanced)
@@ -1251,10 +1251,10 @@
 
 (defrule
 	(up-gaia-type-count-total c: wood >= 30)
-	(wood-amount > {{TRADE_253}})
-	(wood-amount < {{TRADE_254}})
-	(gold-amount > {{TRADE_255}})
-    (unit-type-count-total merchant-ship > {{TRADE_256}})
+	(wood-amount > 1000)
+	(wood-amount < 3000)
+	(gold-amount > 1500)
+    (unit-type-count-total merchant-ship > 0)
     (up-research-status c: ri-merchant-ratio-wood >= research-complete)
 	(can-research ri-merchant-ratio-gold)
 =>
@@ -1263,9 +1263,9 @@
 
 (defrule ;low on wood
 	(up-gaia-type-count-total c: wood >= 30)
-	(wood-amount <= {{TRADE_257}})
-	(gold-amount > {{TRADE_258}})
-    (unit-type-count-total merchant-ship > {{TRADE_259}})
+	(wood-amount <= 500)
+	(gold-amount > 1500)
+    (unit-type-count-total merchant-ship > 0)
     (or (up-research-status c: ri-merchant-ratio-balanced >= research-complete)
         (up-research-status c: ri-merchant-ratio-wood >= research-complete))
 	(can-research ri-merchant-ratio-wood)
@@ -1275,9 +1275,9 @@
 
 (defrule
 	(up-gaia-type-count-total c: wood >= 30)
-	(wood-amount <= {{TRADE_260}})
-	(gold-amount > {{TRADE_261}})
-    (unit-type-count-total merchant-ship > {{TRADE_262}})
+	(wood-amount <= 500)
+	(gold-amount > 1500)
+    (unit-type-count-total merchant-ship > 0)
     (up-research-status c: ri-merchant-ratio-gold >= research-complete)
 	(can-research ri-merchant-ratio-balanced)
 =>
@@ -1286,8 +1286,8 @@
 
 	(defrule ;wood starvation
 	(up-gaia-type-count-total c: wood < 30)
-	(wood-amount < {{TRADE_263}})
-	(unit-type-count-total merchant-ship > {{TRADE_264}})
+	(wood-amount < 1000)
+	(unit-type-count-total merchant-ship > 0)
     (or (up-research-status c: ri-merchant-ratio-balanced >= research-complete)
         (up-research-status c: ri-merchant-ratio-wood >= research-complete))
 	(can-research ri-merchant-ratio-wood)
@@ -1297,8 +1297,8 @@
 
 (defrule
 	(up-gaia-type-count-total c: wood < 30)
-	(wood-amount < {{TRADE_265}})
-	(unit-type-count-total merchant-ship > {{TRADE_266}})
+	(wood-amount < 1000)
+	(unit-type-count-total merchant-ship > 0)
     (up-research-status c: ri-merchant-ratio-gold >= research-complete)
 	(can-research ri-merchant-ratio-balanced)
 =>

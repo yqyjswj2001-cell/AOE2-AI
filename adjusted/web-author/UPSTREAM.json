@@ -1,0 +1,77 @@
+{
+  "repository": "https://github.com/yqyjswj2001-cell/aoe2-ai-studio",
+  "commit": "bb36e88dd2a5d4ea1841da2f647753106bf7421b",
+  "retrieved": "2026-09-22",
+  "license": "MIT for reused scripts; game data rights unchanged",
+  "scope": "Web author skill adapted to parameter-only workflow; briefing removed; real usage metering retained with explicit session scope",
+  "files": [
+    {
+      "path": "LICENSE",
+      "git_blob_sha": "be78f51c1f867e30a2fc25b5d6200c2d2fcd03bd"
+    },
+    {
+      "path": "tools/author_agent/metering.py",
+      "git_blob_sha": "781afaebd5b7ea2d4ef5492b0524839dafbadb6c"
+    },
+    {
+      "path": "tools/author_agent/usage_formats.py",
+      "git_blob_sha": "f04a23315a41ddccad5ab438b9719b6417417232"
+    },
+    {
+      "path": "tools/author_agent/multi_agent_usage.py",
+      "git_blob_sha": "b8e89432b6515d7cd6b89c3a7c513b347ae76095"
+    },
+    {
+      "path": "tools/author_agent/usage.py",
+      "git_blob_sha": "d99b38b7816b881200f76f58ca2199fb1ccc4908"
+    },
+    {
+      "path": "tools/author_agent/metered_controller.py",
+      "git_blob_sha": "9c6faa3ca79e70cf587ba43c4ec9b24ab665a90a"
+    },
+    {
+      "path": "tools/author_agent/metering_http.py",
+      "git_blob_sha": "824c5ae43a150e823fb46407962e4ab5072bf65a"
+    },
+    {
+      "path": "tools/author_agent/usage-ui.js",
+      "git_blob_sha": "8f01131c063cf2a47785fed896076c449f630c49"
+    },
+    {
+      "path": "tools/author_agent/usage-ui.css",
+      "git_blob_sha": "900542298365afb621396c2e242ba3446c2666a5"
+    },
+    {
+      "path": "tools/author_agent/METERING.md",
+      "git_blob_sha": "6f16ad1489d642ee34c3b69b89391646e4148a1a"
+    },
+    {
+      "path": "tests/metering/test_metering.py",
+      "git_blob_sha": "114b775aa23bca6a4ccdfc314eebb62e8315fb22"
+    },
+    {
+      "path": "tests/metering/test_multi_agent_usage.py",
+      "git_blob_sha": "3deb18e96b25364483228c976f239a591607356e"
+    },
+    {
+      "path": "skills/aoe2-author/SKILL.md",
+      "git_blob_sha": "4cfb964c3ba476fb0341302be746decb192c0b63"
+    },
+    {
+      "path": "AGENT_WORKFLOW.md",
+      "git_blob_sha": "cbedd6df9b5c42b4606012f3b00c1edd811ebc9e"
+    },
+    {
+      "path": "REPO_MAP.md",
+      "git_blob_sha": "098e9add4495ff22ac958a4573ec9df9a0d4243e"
+    },
+    {
+      "path": "tools/author_agent/README.md",
+      "git_blob_sha": "adf63636e94c933a12a1ff4f0b420892b7b583c8"
+    },
+    {
+      "path": "tools/author_agent/WEB_SESSION.md",
+      "git_blob_sha": "9ab744e6a398790f19ac20d696c706962e7a7363"
+    }
+  ]
+}

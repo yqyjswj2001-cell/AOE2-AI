@@ -6,6 +6,13 @@ import json
 import re
 from pathlib import Path
 
+from cloze_boundary import (
+    BoundaryError, validate_no_noncode_placeholders,
+    validate_strategy_answers,
+)
+
+from strategy_catalog import load_catalog, validate_classified_template, validate_classified_answers
+
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TEMPLATES = ROOT / "adjusted/cloze/Promisory"
 DEFAULT_DEFAULTS = ROOT / "adjusted/cloze/official-defaults"
@@ -35,7 +42,7 @@ def validate_value(key: str, value, official_default):
 
 def render_one(template: Path, answers_path: Path, defaults_path: Path) -> str:
     source = template.read_bytes().decode("utf-8")
-    answers = json.loads(answers_path.read_text(encoding="utf-8-sig"))
+    answers = json.loads(answers_path.read_text(encoding="utf-8-sig")) if answers_path.exists() else {}
     defaults_doc = json.loads(defaults_path.read_text(encoding="utf-8-sig"))
     defaults = defaults_doc["answers"]
 
@@ -52,6 +59,16 @@ def render_one(template: Path, answers_path: Path, defaults_path: Path) -> str:
         if answers[key] is None:
             raise ClozeError(f"{template.name}: unanswered blank {key}")
         values[key] = validate_value(key, answers[key], defaults[key])
+
+    module = template.name.removesuffix(".tpl")
+    try:
+        validate_no_noncode_placeholders(module, source)
+        catalog = load_catalog()
+        official = (ROOT / "official/raw/Promisory" / module).read_bytes().decode("utf-8")
+        validate_classified_template(module, official, source, catalog)
+        validate_classified_answers(module, answers, catalog)
+    except BoundaryError as exc:
+        raise ClozeError(str(exc)) from exc
 
     rendered = PLACEHOLDER.sub(lambda m: values[m.group(1)], source)
     if PLACEHOLDER.search(rendered):
@@ -71,13 +88,20 @@ def main(argv=None) -> int:
         templates = sorted(args.templates.glob("*.per.tpl"))
         if not templates:
             raise ClozeError("no templates found")
-        args.out.mkdir(parents=True, exist_ok=True)
+        catalog = load_catalog()
+        if {p.name.removesuffix(".tpl") for p in templates} != set(catalog["modules"]):
+            raise ClozeError("complete reviewed template set is required; missing or extra module")
+        rendered_modules = {}
         for template in templates:
             module = template.name.removesuffix(".tpl")
             answer_file = args.answers_dir / f"{module.removesuffix('.per')}.json"
             defaults_file = args.defaults / f"{module.removesuffix('.per')}.json"
             rendered = render_one(template, answer_file, defaults_file)
-            (args.out / module).write_bytes(rendered.encode("utf-8"))
+            rendered_modules[module] = rendered.encode("utf-8")
+        # Validate the whole answer bundle before creating or changing output.
+        args.out.mkdir(parents=True, exist_ok=True)
+        for module, data in rendered_modules.items():
+            (args.out / module).write_bytes(data)
     except (OSError, json.JSONDecodeError, ClozeError, KeyError) as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False, indent=2))
         return 2

@@ -1,0 +1,2727 @@
+{
+  "module": "escrow.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "ESCROW_001",
+      "category": "投资与战局门槛",
+      "meaning": "箭船系舰队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "重型箭船研究可用、船坞存在且安全，经济和基础箭船规模达标；持续生产、更大舰队或资源充裕均可支持升级。",
+      "effect": "按箭船规模与黄金储备预留重型箭船研究。",
+      "group_id": "escrow:rule:302",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_002",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "重型箭船研究可用、船坞存在且安全，经济和基础箭船规模达标；持续生产、更大舰队或资源充裕均可支持升级。",
+      "effect": "按箭船规模与黄金储备预留重型箭船研究。",
+      "group_id": "escrow:rule:302",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_004",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "精锐箭船研究可用、船坞存在且安全，经济和基础箭船规模达标；持续生产、更大舰队或资源充裕支持升级。",
+      "effect": "按箭船规模与黄金储备预留精锐箭船研究。",
+      "group_id": "escrow:rule:321",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_005",
+      "category": "投资与战局门槛",
+      "meaning": "撞击船系舰队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "重型撞击船研究可用、船坞存在且安全；经济和舰队有基础，持续造船或资源充裕支持升级。",
+      "effect": "按撞击船规模与黄金储备预留重型撞击船研究。",
+      "group_id": "escrow:rule:339",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_006",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "重型撞击船研究可用、船坞存在且安全；经济和舰队有基础，持续造船或资源充裕支持升级。",
+      "effect": "按撞击船规模与黄金储备预留重型撞击船研究。",
+      "group_id": "escrow:rule:339",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_007",
+      "category": "投资与战局门槛",
+      "meaning": "撞击船系舰队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "精锐撞击船研究可用、船坞存在且安全；基础舰队、生产意向和木金储备共同决定升级。",
+      "effect": "按撞击船规模与黄金储备预留精锐撞击船研究。",
+      "group_id": "escrow:rule:358",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_008",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "精锐撞击船研究可用、船坞存在且安全；基础舰队、生产意向和木金储备共同决定升级。",
+      "effect": "按撞击船规模与黄金储备预留精锐撞击船研究。",
+      "group_id": "escrow:rule:358",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_010",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "重型投石船研究可用、船坞存在且安全；基础舰队、生产意向和食金储备共同决定升级。",
+      "effect": "按投石船规模与黄金储备预留重型投石船研究。",
+      "group_id": "escrow:rule:378",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_020",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "非最低两档难度，安全且可升城堡，有城镇中心；食金已接近升级需求时检查经济人口基础。",
+      "effect": "启动升城堡预留并跳过其他升城判断。",
+      "group_id": "escrow:rule:753",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_021",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升城堡，军事优势达到基础要求；敌方进入升城阶段或更高军事优势补充判断，同时食物和黄金来源须足够。",
+      "effect": "按战局与资源准备程度预留升城堡成本。",
+      "group_id": "escrow:rule:761",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_023",
+      "category": "投资与战局门槛",
+      "meaning": "食物总量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且可升城堡，军事优势达到基础要求；敌方进入升城阶段或更高军事优势补充判断，同时食物和黄金来源须足够。",
+      "effect": "按战局与资源准备程度预留升城堡成本。",
+      "group_id": "escrow:rule:761",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_024",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升城堡、尚未主动进攻；敌人时代仍较早，但经济对比提示对方可能升级，食金来源已具基础。",
+      "effect": "响应对方潜在升级而预留升城堡成本。",
+      "group_id": "escrow:rule:775",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_025",
+      "category": "投资与战局门槛",
+      "meaning": "相对目标敌人的经济优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升城堡、尚未主动进攻；敌人时代仍较早，但经济对比提示对方可能升级，食金来源已具基础。",
+      "effect": "响应对方潜在升级而预留升城堡成本。",
+      "group_id": "escrow:rule:775",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_026",
+      "category": "投资与战局门槛",
+      "meaning": "食物总量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且可升城堡、尚未主动进攻；敌人时代仍较早，但经济对比提示对方可能升级，食金来源已具基础。",
+      "effect": "响应对方潜在升级而预留升城堡成本。",
+      "group_id": "escrow:rule:775",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_027",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升城堡，军事优势与食物储备达标，黄金来自库存、采集或贸易。",
+      "effect": "利用军事优势启动升城堡预留。",
+      "group_id": "escrow:rule:790",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_028",
+      "category": "投资与战局门槛",
+      "meaning": "食物总量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且可升城堡，军事优势与食物储备达标，黄金来自库存、采集或贸易。",
+      "effect": "利用军事优势启动升城堡预留。",
+      "group_id": "escrow:rule:790",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_029",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "安全且可升城堡，食物接近升级需求、食金收入有保障；军事优势或经济人口成熟提供升级理由。",
+      "effect": "以经济人口规模作为升城堡预留的备选依据。",
+      "group_id": "escrow:rule:803",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_031",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "较高难度下安全且可升帝王，采用快速帝王计划；食金够用或经济人口较高仍需同时满足最低经济人口条件。",
+      "effect": "决定快速帝王预留的经济基础。",
+      "group_id": "escrow:rule:826",
+      "constraints_note": "快速帝王基本经济人口门槛应不高于资源未齐时的备选高门槛。 关联键：ESCROW_031, ESCROW_032。"
+    },
+    {
+      "key": "ESCROW_032",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "较高难度下安全且可升帝王，采用快速帝王计划；食金够用或经济人口较高仍需同时满足最低经济人口条件。",
+      "effect": "决定快速帝王预留的经济基础。",
+      "group_id": "escrow:rule:826",
+      "constraints_note": "快速帝王基本经济人口门槛应不高于资源未齐时的备选高门槛。 关联键：ESCROW_031, ESCROW_032。"
+    },
+    {
+      "key": "ESCROW_033",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，当前无军事发展要求；食物库存或食村支持升级，黄金库存、采金或贸易也能支持。",
+      "effect": "在经济路线中预留帝王资源。",
+      "group_id": "escrow:rule:836",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_034",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "安全且可升帝王，当前无军事发展要求；食物库存或食村支持升级，黄金库存、采金或贸易也能支持。",
+      "effect": "在经济路线中预留帝王资源。",
+      "group_id": "escrow:rule:836",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_035",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，食金总量接近升级需求，采集或贸易可填补余下缺口。",
+      "effect": "按食村和经济人口规模启动帝王预留。",
+      "group_id": "escrow:rule:848",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_036",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "安全且可升帝王，食金总量接近升级需求，采集或贸易可填补余下缺口。",
+      "effect": "按食村和经济人口规模启动帝王预留。",
+      "group_id": "escrow:rule:848",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_037",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "安全且可升帝王，食金总量已足；人口成熟、军事优势、村民规模或城镇中心规模至少满足一项。",
+      "effect": "允许城镇中心规模成为立即升帝王的理由。",
+      "group_id": "escrow:rule:861",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_040",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，食物接近需求且食村持续供给，黄金库存或收入达标。",
+      "effect": "以食村和经济人口基础决定帝王预留时机。",
+      "group_id": "escrow:rule:884",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_041",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "安全且可升帝王，食物接近需求且食村持续供给，黄金库存或收入达标。",
+      "effect": "以食村和经济人口基础决定帝王预留时机。",
+      "group_id": "escrow:rule:884",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_042",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升帝王，城内敌军压力较低，军事优势达标，食金库存或收入支持升级。",
+      "effect": "在较安全战局中预留帝王成本。",
+      "group_id": "escrow:rule:899",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_043",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，城内敌军压力较低，军事优势达标，食金库存或收入支持升级。",
+      "effect": "在较安全战局中预留帝王成本。",
+      "group_id": "escrow:rule:899",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_044",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "安全且可升帝王，城内敌军压力较低，军事优势达标，食金库存或收入支持升级。",
+      "effect": "在较安全战局中预留帝王成本。",
+      "group_id": "escrow:rule:899",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_045",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升帝王，食金库存或收入支持升级，以较厚食村和经济人口基础允许一定军事劣势。",
+      "effect": "决定升帝王时对战局风险的容忍度。",
+      "group_id": "escrow:rule:912",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_046",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，食金库存或收入支持升级，以较厚食村和经济人口基础允许一定军事劣势。",
+      "effect": "决定升帝王时对战局风险的容忍度。",
+      "group_id": "escrow:rule:912",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_047",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "安全且可升帝王，食金库存或收入支持升级，以较厚食村和经济人口基础允许一定军事劣势。",
+      "effect": "决定升帝王时对战局风险的容忍度。",
+      "group_id": "escrow:rule:912",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_048",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，采用石墙路线，食物收入充足，黄金可来自采集、贸易或圣物。",
+      "effect": "为石墙路线预留帝王升级。",
+      "group_id": "escrow:rule:924",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_049",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "安全且可升帝王，采用石墙路线，食物收入充足，黄金可来自采集、贸易或圣物。",
+      "effect": "为石墙路线预留帝王升级。",
+      "group_id": "escrow:rule:924",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_050",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升帝王，经济人口或总人口已接近规划上限。",
+      "effect": "按军事优势决定人口成熟后的帝王预留。",
+      "group_id": "escrow:rule:938",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_051",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升帝王，经济与总人口成熟；敌方已进帝王阶段或本方优势更高，还要有足够食金采集基础。",
+      "effect": "响应时代压力预留帝王成本。",
+      "group_id": "escrow:rule:948",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_052",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升帝王，经济与总人口成熟；敌方已进帝王阶段或本方优势更高，还要有足够食金采集基础。",
+      "effect": "响应时代压力预留帝王成本。",
+      "group_id": "escrow:rule:948",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_053",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，经济与总人口成熟；敌方已进帝王阶段或本方优势更高，还要有足够食金采集基础。",
+      "effect": "响应时代压力预留帝王成本。",
+      "group_id": "escrow:rule:948",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_054",
+      "category": "投资与战局门槛",
+      "meaning": "采金村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，经济与总人口成熟；敌方已进帝王阶段或本方优势更高，还要有足够食金采集基础。",
+      "effect": "响应时代压力预留帝王成本。",
+      "group_id": "escrow:rule:948",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_055",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升帝王，食金库存或收入可支持；基础军事优势达标，并由经济人口或更高优势提供额外保障。",
+      "effect": "在优势战局中启动帝王预留。",
+      "group_id": "escrow:rule:961",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_056",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全且可升帝王，食金库存或收入可支持；基础军事优势达标，并由经济人口或更高优势提供额外保障。",
+      "effect": "在优势战局中启动帝王预留。",
+      "group_id": "escrow:rule:961",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_057",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且可升帝王，食金库存或收入可支持；基础军事优势达标，并由经济人口或更高优势提供额外保障。",
+      "effect": "在优势战局中启动帝王预留。",
+      "group_id": "escrow:rule:961",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_058",
+      "category": "投资与战局门槛",
+      "meaning": "食物总量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "封建初期食金接近升城准备，马厩、靶场或市场已具备；快速帝王资源保护仍先于此判断。",
+      "effect": "暂缓独轮车，把资源与城镇中心时间留给升城准备。",
+      "group_id": "escrow:rule:1026",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_059",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "封建初期食金接近升城准备，马厩、靶场或市场已具备；快速帝王资源保护仍先于此判断。",
+      "effect": "暂缓独轮车，把资源与城镇中心时间留给升城准备。",
+      "group_id": "escrow:rule:1026",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_061",
+      "category": "投资与战局门槛",
+      "meaning": "进入当前时代后的时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "封建初期食金接近升城准备，马厩、靶场或市场已具备；快速帝王资源保护仍先于此判断。",
+      "effect": "暂缓独轮车，把资源与城镇中心时间留给升城准备。",
+      "group_id": "escrow:rule:1026",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_064",
+      "category": "投资与战局门槛",
+      "meaning": "食物总量的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "独轮车可评估，但村民规模和食物总量偏低，食村也不足。",
+      "effect": "暂缓下一条独轮车投资判断。",
+      "group_id": "escrow:rule:1047",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_065",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "独轮车可评估，但村民规模和食物总量偏低，食村也不足。",
+      "effect": "暂缓下一条独轮车投资判断。",
+      "group_id": "escrow:rule:1047",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_066",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "独轮车可评估，但村民规模和食物总量偏低，食村也不足。",
+      "effect": "暂缓下一条独轮车投资判断。",
+      "group_id": "escrow:rule:1047",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_067",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "独轮车可研究，村民规模、敌军少或军事优势提供安全理由，食物或已排队村民提供生产保障。",
+      "effect": "预留独轮车研究成本。",
+      "group_id": "escrow:rule:1054",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_069",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "资源支援路线、已进入城堡或多城镇中心正在升城；食物和村民队列能支持经济科技。",
+      "effect": "按村民规模预留独轮车研究成本。",
+      "group_id": "escrow:rule:1066",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_071",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "资源支援路线、已进入城堡或多城镇中心正在升城；食物和村民队列能支持经济科技。",
+      "effect": "按村民规模预留独轮车研究成本。",
+      "group_id": "escrow:rule:1066",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_072",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "手推车评估前检查住房、弓锯、城镇中心、安全与研究可用性；城镇中心较少时还检查村民规模。",
+      "effect": "限制经济尚弱时投资手推车。",
+      "group_id": "escrow:rule:1078",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_073",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "手推车可研究且安全、基础科技完备；人口、富余食木或军事优势提供理由，还须保障村民与食物基础。",
+      "effect": "预留手推车研究成本。",
+      "group_id": "escrow:rule:1088",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_074",
+      "category": "投资与战局门槛",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "手推车可研究且安全、基础科技完备；人口、富余食木或军事优势提供理由，还须保障村民与食物基础。",
+      "effect": "预留手推车研究成本。",
+      "group_id": "escrow:rule:1088",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_075",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "手推车可研究且安全、基础科技完备；人口、富余食木或军事优势提供理由，还须保障村民与食物基础。",
+      "effect": "预留手推车研究成本。",
+      "group_id": "escrow:rule:1088",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_076",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "偏向城堡作战的路线尚未升城，食物缓冲不足或缺铁匠铺与建造木材，村民规模也不够。",
+      "effect": "暂缓双刃斧，保护升城前置。",
+      "group_id": "escrow:rule:1100",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_077",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "双刃斧可研究、伐木场存在且安全；封建前后有食物/村民队列保障，或人口、敌军少、军事优势提供理由。",
+      "effect": "达到村民规模后预留双刃斧。",
+      "group_id": "escrow:rule:1121",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_078",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "双刃斧可研究、伐木场存在且安全；封建前后有食物/村民队列保障，或人口、敌军少、军事优势提供理由。",
+      "effect": "达到村民规模后预留双刃斧。",
+      "group_id": "escrow:rule:1121",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_079",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "双刃斧可研究且安全，采用早期军事、资源支援路线或已经开始升城。",
+      "effect": "按村民规模决定双刃斧投资。",
+      "group_id": "escrow:rule:1133",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_080",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "弓锯可研究且安全，独轮车与村民生产保护已放行；多城镇中心发展、资源、人口或军事优势提供依据。",
+      "effect": "决定弓锯研究预留时机。",
+      "group_id": "escrow:rule:1163",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_081",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "弓锯可研究且安全，独轮车与村民生产保护已放行；多城镇中心发展、资源、人口或军事优势提供依据。",
+      "effect": "决定弓锯研究预留时机。",
+      "group_id": "escrow:rule:1174",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_084",
+      "category": "投资与战局门槛",
+      "meaning": "农田总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "封建早期仍有浆果或猎物，农田较多但食物紧张，箭羽、独轮车和升城仍可研究。",
+      "effect": "延后农田科技，把资源留给其他发展需要。",
+      "group_id": "escrow:rule:1216",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_085",
+      "category": "投资与战局门槛",
+      "meaning": "食物总量的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "封建早期仍有浆果或猎物，农田较多但食物紧张，箭羽、独轮车和升城仍可研究。",
+      "effect": "延后农田科技，把资源留给其他发展需要。",
+      "group_id": "escrow:rule:1216",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_086",
+      "category": "投资与战局门槛",
+      "meaning": "进入当前时代后的时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "封建早期仍有浆果或猎物，农田较多但食物紧张，箭羽、独轮车和升城仍可研究。",
+      "effect": "延后农田科技，把资源留给其他发展需要。",
+      "group_id": "escrow:rule:1216",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_087",
+      "category": "投资与战局门槛",
+      "meaning": "渔船现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "渔船经济较大，陆地村民和木材有限，食村比例低，而且仍存在可捕鱼资源。",
+      "effect": "在依赖捕鱼时延后农田科技。",
+      "group_id": "escrow:rule:1233",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_088",
+      "category": "投资与战局门槛",
+      "meaning": "村民现存数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "渔船经济较大，陆地村民和木材有限，食村比例低，而且仍存在可捕鱼资源。",
+      "effect": "在依赖捕鱼时延后农田科技。",
+      "group_id": "escrow:rule:1233",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_089",
+      "category": "投资与战局门槛",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "渔船经济较大，陆地村民和木材有限，食村比例低，而且仍存在可捕鱼资源。",
+      "effect": "在依赖捕鱼时延后农田科技。",
+      "group_id": "escrow:rule:1233",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_090",
+      "category": "投资与战局门槛",
+      "meaning": "食物采集比例的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "百分比",
+      "context": "渔船经济较大，陆地村民和木材有限，食村比例低，而且仍存在可捕鱼资源。",
+      "effect": "在依赖捕鱼时延后农田科技。",
+      "group_id": "escrow:rule:1233",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_091",
+      "category": "投资与战局门槛",
+      "meaning": "食物采集比例的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "百分比",
+      "context": "渔船经济较大，陆地村民和木材有限，食村比例低，而且仍存在可捕鱼资源。",
+      "effect": "在依赖捕鱼时延后农田科技。",
+      "group_id": "escrow:rule:1233",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_092",
+      "category": "投资与战局门槛",
+      "meaning": "村民现存数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "已有成规模渔船，但陆地村民规模仍小。",
+      "effect": "延后农田科技投资。",
+      "group_id": "escrow:rule:1244",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_093",
+      "category": "投资与战局门槛",
+      "meaning": "浆果村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "封建前后仍有浆果采集，农田不多且无待建农田；村民、木材较紧但已有军队，铁匠铺或研究资源也未齐。",
+      "effect": "优先基础与军事建设，暂缓农田科技。",
+      "group_id": "escrow:rule:1256",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_094",
+      "category": "投资与战局门槛",
+      "meaning": "农田总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "封建前后仍有浆果采集，农田不多且无待建农田；村民、木材较紧但已有军队，铁匠铺或研究资源也未齐。",
+      "effect": "优先基础与军事建设，暂缓农田科技。",
+      "group_id": "escrow:rule:1256",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_095",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "个",
+      "context": "封建前后仍有浆果采集，农田不多且无待建农田；村民、木材较紧但已有军队，铁匠铺或研究资源也未齐。",
+      "effect": "优先基础与军事建设，暂缓农田科技。",
+      "group_id": "escrow:rule:1256",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_097",
+      "category": "投资与战局门槛",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "封建前后仍有浆果采集，农田不多且无待建农田；村民、木材较紧但已有军队，铁匠铺或研究资源也未齐。",
+      "effect": "优先基础与军事建设，暂缓农田科技。",
+      "group_id": "escrow:rule:1256",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_098",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人口",
+      "context": "封建前后仍有浆果采集，农田不多且无待建农田；村民、木材较紧但已有军队，铁匠铺或研究资源也未齐。",
+      "effect": "优先基础与军事建设，暂缓农田科技。",
+      "group_id": "escrow:rule:1256",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_099",
+      "category": "投资与战局门槛",
+      "meaning": "食物库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "封建前后仍有浆果采集，农田不多且无待建农田；村民、木材较紧但已有军队，铁匠铺或研究资源也未齐。",
+      "effect": "优先基础与军事建设，暂缓农田科技。",
+      "group_id": "escrow:rule:1256",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_100",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "马轭可研究且安全，捕鱼、村民生产和快速升本保护已放行；人口、敌军少或军事优势支持投资。",
+      "effect": "达到村民规模后预留马轭。",
+      "group_id": "escrow:rule:1284",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_101",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "马轭可研究且安全，捕鱼、村民生产和快速升本保护已放行；人口、敌军少或军事优势支持投资。",
+      "effect": "达到村民规模后预留马轭。",
+      "group_id": "escrow:rule:1284",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_104",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "马轭可研究且安全；支援路线、已有对应军事建筑的封建路线或已开始升城可进入。",
+      "effect": "按村民规模投资马轭。",
+      "group_id": "escrow:rule:1296",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_105",
+      "category": "投资与战局门槛",
+      "meaning": "靶场总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "马轭可研究，采用远程封建进攻的散兵变体或剑士变体，并有相应生产建筑。",
+      "effect": "按军事建筑和村民规模投资马轭。",
+      "group_id": "escrow:rule:1308",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_107",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "马轭可研究，采用远程封建进攻的散兵变体或剑士变体，并有相应生产建筑。",
+      "effect": "按军事建筑和村民规模投资马轭。",
+      "group_id": "escrow:rule:1308",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_111",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "座",
+      "context": "重犁评估时城镇中心较少、经济人口不高，石料可支持扩张但木材紧张，进入当前时代不久。",
+      "effect": "优先城镇中心扩张而推迟重犁。",
+      "group_id": "escrow:rule:1345",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_112",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "重犁评估时城镇中心较少、经济人口不高，石料可支持扩张但木材紧张，进入当前时代不久。",
+      "effect": "优先城镇中心扩张而推迟重犁。",
+      "group_id": "escrow:rule:1345",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_113",
+      "category": "投资与战局门槛",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "重犁评估时城镇中心较少、经济人口不高，石料可支持扩张但木材紧张，进入当前时代不久。",
+      "effect": "优先城镇中心扩张而推迟重犁。",
+      "group_id": "escrow:rule:1345",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_114",
+      "category": "投资与战局门槛",
+      "meaning": "进入当前时代后的时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "重犁评估时城镇中心较少、经济人口不高，石料可支持扩张但木材紧张，进入当前时代不久。",
+      "effect": "优先城镇中心扩张而推迟重犁。",
+      "group_id": "escrow:rule:1345",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_116",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "重犁可研究且前置保护已放行；木材、多城镇中心目标、经济成熟或石料不足扩张支持投资。",
+      "effect": "按村民总量预留重犁。",
+      "group_id": "escrow:rule:1368",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_130",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "剑士可研究且安全；剑士变体、超出民兵计划的兵力或帝王阶段允许评估，步兵发展方向也影响判断。",
+      "effect": "按民兵系规模预留剑士升级。",
+      "group_id": "escrow:rule:1489",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_131",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "剑士可研究且安全；剑士变体、超出民兵计划的兵力或帝王阶段允许评估，步兵发展方向也影响判断。",
+      "effect": "按民兵系规模预留剑士升级。",
+      "group_id": "escrow:rule:1489",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_132",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "剑士可研究且安全，敌方属于既定克制类别，步兵生产、补给科技进度或民兵规模支持应对。",
+      "effect": "预留剑士升级以响应敌军方向。",
+      "group_id": "escrow:rule:1501",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_134",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "长剑士可研究且安全，步兵目标、敌军类别或生产意向支持升级，也可由更大民兵规模触发。",
+      "effect": "按民兵系数量预留长剑士升级。",
+      "group_id": "escrow:rule:1516",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_135",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "长剑士可研究且安全，步兵目标、敌军类别或生产意向支持升级，也可由更大民兵规模触发。",
+      "effect": "按民兵系数量预留长剑士升级。",
+      "group_id": "escrow:rule:1516",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_137",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "双手剑士可研究且安全，有步兵终局目标，或生产方向与敌情/数量支持，也可由大部队独立触发。",
+      "effect": "按民兵系规模预留双手剑士升级。",
+      "group_id": "escrow:rule:1532",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_138",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "双手剑士可研究且安全，有步兵终局目标，或生产方向与敌情/数量支持，也可由大部队独立触发。",
+      "effect": "按民兵系规模预留双手剑士升级。",
+      "group_id": "escrow:rule:1532",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_140",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "冠军剑士可研究且安全，有步兵终局目标，或生产方向与敌情/数量支持，也可由大部队独立触发。",
+      "effect": "按民兵系规模预留冠军剑士升级。",
+      "group_id": "escrow:rule:1548",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_141",
+      "category": "投资与战局门槛",
+      "meaning": "民兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "冠军剑士可研究且安全，有步兵终局目标，或生产方向与敌情/数量支持，也可由大部队独立触发。",
+      "effect": "按民兵系规模预留冠军剑士升级。",
+      "group_id": "escrow:rule:1548",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_142",
+      "category": "投资与战局门槛",
+      "meaning": "鹰勇士系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "安全、兵营与精锐鹰勇士研究可用；石墙路线、重装鹰勇士或鹰勇士系规模可提供理由。",
+      "effect": "预留精锐鹰勇士升级。",
+      "group_id": "escrow:rule:1557",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_145",
+      "category": "投资与战局门槛",
+      "meaning": "骑士系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "重装骑士可研究且安全，骑士系有规模；经济成熟、骑兵护甲进度或黄金储备支持投资。",
+      "effect": "按骑士规模和黄金储备预留重装骑士。",
+      "group_id": "escrow:rule:1575",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_146",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "重装骑士可研究且安全，骑士系有规模；经济成熟、骑兵护甲进度或黄金储备支持投资。",
+      "effect": "按骑士规模和黄金储备预留重装骑士。",
+      "group_id": "escrow:rule:1575",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_147",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "游侠评估前检查经济人口、骑兵护甲、研究可用性、战况和马厩。",
+      "effect": "经济或执行前置不足时跳过游侠。",
+      "group_id": "escrow:rule:1594",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_149",
+      "category": "投资与战局门槛",
+      "meaning": "骑士系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "游侠可研究且安全，血统已进入研究，骑士规模达标；末级骑兵护甲或黄金支持升级。",
+      "effect": "按骑士规模与黄金保障预留游侠。",
+      "group_id": "escrow:rule:1603",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_150",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "游侠可研究且安全，血统已进入研究，骑士规模达标；末级骑兵护甲或黄金支持升级。",
+      "effect": "按骑士规模与黄金保障预留游侠。",
+      "group_id": "escrow:rule:1603",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_151",
+      "category": "投资与战局门槛",
+      "meaning": "骑士系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "明确选择游侠路线，骑士规模、黄金或末级攻防科技进度至少满足一项准备。",
+      "effect": "满足最低骑士规模后预留游侠。",
+      "group_id": "escrow:rule:1612",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_153",
+      "category": "投资与战局门槛",
+      "meaning": "侦察骑兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "轻骑兵可研究；较大侦察骑兵规模、特色科技或持续生产意向可触发。",
+      "effect": "按持续生产路线中的侦察骑兵数量预留轻骑兵。",
+      "group_id": "escrow:rule:1629",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_155",
+      "category": "投资与战局门槛",
+      "meaning": "侦察骑兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "翼骑兵可研究，其他高优先升级未互锁；部队和生产方向支持，末级护甲已不再等待或有额外食金缓冲。",
+      "effect": "决定翼骑兵时机并协调护甲投资。",
+      "group_id": "escrow:rule:1655",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_157",
+      "category": "投资与战局门槛",
+      "meaning": "侦察骑兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "蒙古文明安全发展，侦察骑兵有规模且中级护甲已研究中；铁铸、生产意向、更多骑兵或特色单位升级进度支持投资。",
+      "effect": "按蒙古特定科技组合预留翼骑兵。",
+      "group_id": "escrow:rule:1667",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_158",
+      "category": "投资与战局门槛",
+      "meaning": "侦察骑兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "蒙古文明安全发展，侦察骑兵有规模且中级护甲已研究中；铁铸、生产意向、更多骑兵或特色单位升级进度支持投资。",
+      "effect": "按蒙古特定科技组合预留翼骑兵。",
+      "group_id": "escrow:rule:1667",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_160",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "弩兵研究、靶场或箭羽准备不足，或经济人口尚未满足基础。",
+      "effect": "暂缓弩兵预留。",
+      "group_id": "escrow:rule:1694",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_161",
+      "category": "投资与战局门槛",
+      "meaning": "弓兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "弩兵可研究，双刃斧已开始，当前生产弓兵或采用相应进攻路线。",
+      "effect": "按弓兵规模预留弩兵。",
+      "group_id": "escrow:rule:1703",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_162",
+      "category": "投资与战局门槛",
+      "meaning": "弓兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "弩兵可研究且安全，黄金库存、采集、贸易或圣物提供支持。",
+      "effect": "按弓兵规模预留弩兵。",
+      "group_id": "escrow:rule:1713",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_163",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "劲弩手可研究且安全，靶场与攻击科技前置满足，经济基础与黄金来源支持。",
+      "effect": "按经济人口或弓兵数量决定劲弩手投资。",
+      "group_id": "escrow:rule:1723",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_164",
+      "category": "投资与战局门槛",
+      "meaning": "弓兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "劲弩手可研究且安全，靶场与攻击科技前置满足，经济基础与黄金来源支持。",
+      "effect": "按经济人口或弓兵数量决定劲弩手投资。",
+      "group_id": "escrow:rule:1732",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_165",
+      "category": "投资与战局门槛",
+      "meaning": "散兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "精锐掷矛手可研究，靶场、经济和基础散兵规模满足。",
+      "effect": "持续生产或散兵数量达标时预留升级。",
+      "group_id": "escrow:rule:1749",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_167",
+      "category": "投资与战局门槛",
+      "meaning": "骑射手系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "重装骑射可研究且安全，经济、靶场、骑射基础及黄金收入齐备，有骑射方向或规模理由。",
+      "effect": "按骑射数量预留重装骑射升级。",
+      "group_id": "escrow:rule:1774",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_169",
+      "category": "投资与战局门槛",
+      "meaning": "敌方骑兵威胁指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "长枪兵可研究；敌骑兵/马厩威胁、金矿紧缺、生产长枪意向或已有枪兵规模可触发。",
+      "effect": "为对抗骑兵预留长枪兵升级。",
+      "group_id": "escrow:rule:1793",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_170",
+      "category": "投资与战局门槛",
+      "meaning": "长枪兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "长枪兵可研究；敌骑兵/马厩威胁、金矿紧缺、生产长枪意向或已有枪兵规模可触发。",
+      "effect": "为对抗骑兵预留长枪兵升级。",
+      "group_id": "escrow:rule:1793",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_171",
+      "category": "投资与战局门槛",
+      "meaning": "长枪兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "长枪兵可研究；敌骑兵/马厩威胁、金矿紧缺、生产长枪意向或已有枪兵规模可触发。",
+      "effect": "为对抗骑兵预留长枪兵升级。",
+      "group_id": "escrow:rule:1793",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_173",
+      "category": "投资与战局门槛",
+      "meaning": "长枪兵系部队总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "没有生产长枪兵且其规模较小，特色单位或游侠已登记升级并有较多部队受益。",
+      "effect": "推迟戟兵，优先完成其他兵种升级。",
+      "group_id": "escrow:rule:1822",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_174",
+      "category": "投资与战局门槛",
+      "meaning": "本文明特色单位总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "没有生产长枪兵且其规模较小，特色单位或游侠已登记升级并有较多部队受益。",
+      "effect": "推迟戟兵，优先完成其他兵种升级。",
+      "group_id": "escrow:rule:1822",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_175",
+      "category": "投资与战局门槛",
+      "meaning": "骑士系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "没有生产长枪兵且其规模较小，特色单位或游侠已登记升级并有较多部队受益。",
+      "effect": "推迟戟兵，优先完成其他兵种升级。",
+      "group_id": "escrow:rule:1822",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_176",
+      "category": "投资与战局门槛",
+      "meaning": "长枪兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "戟兵可研究且通过互锁；金矿紧缺、长枪生产意向与规模或较大枪兵部队可触发。",
+      "effect": "按枪兵规模预留戟兵。",
+      "group_id": "escrow:rule:1832",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_177",
+      "category": "投资与战局门槛",
+      "meaning": "长枪兵系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "戟兵可研究且通过互锁；金矿紧缺、长枪生产意向与规模或较大枪兵部队可触发。",
+      "effect": "按枪兵规模预留戟兵。",
+      "group_id": "escrow:rule:1832",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_178",
+      "category": "投资与战局门槛",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "重型弩炮可研究且安全，经济和弩炮规模满足，木食由库存或采集保障。",
+      "effect": "按木食保障程度投资重型弩炮。",
+      "group_id": "escrow:rule:1849",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_179",
+      "category": "投资与战局门槛",
+      "meaning": "食物库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "重型弩炮可研究且安全，经济和弩炮规模满足，木食由库存或采集保障。",
+      "effect": "按木食保障程度投资重型弩炮。",
+      "group_id": "escrow:rule:1849",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_196",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事人口指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "血统通过受益单位和经济安全检查，开始升城后可直接考虑；封建军事路线另检查本方军队规模。",
+      "effect": "决定封建阶段血统预留时机。",
+      "group_id": "escrow:rule:1925",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_198",
+      "category": "投资与战局门槛",
+      "meaning": "帝王骆驼总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵一级护甲可研究，逐项检查帝王骆驼、侦察骑兵、骑兵类与特色骑兵等是否全不足，帝王游侠路线有例外。",
+      "effect": "受益骑兵不足时推迟一级护甲。",
+      "group_id": "escrow:rule:1939",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_199",
+      "category": "投资与战局门槛",
+      "meaning": "侦察骑兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵一级护甲可研究，逐项检查帝王骆驼、侦察骑兵、骑兵类与特色骑兵等是否全不足，帝王游侠路线有例外。",
+      "effect": "受益骑兵不足时推迟一级护甲。",
+      "group_id": "escrow:rule:1939",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_200",
+      "category": "投资与战局门槛",
+      "meaning": "骑兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵一级护甲可研究，逐项检查帝王骆驼、侦察骑兵、骑兵类与特色骑兵等是否全不足，帝王游侠路线有例外。",
+      "effect": "受益骑兵不足时推迟一级护甲。",
+      "group_id": "escrow:rule:1939",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_201",
+      "category": "投资与战局门槛",
+      "meaning": "马扎尔骠骑总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵一级护甲可研究，逐项检查帝王骆驼、侦察骑兵、骑兵类与特色骑兵等是否全不足，帝王游侠路线有例外。",
+      "effect": "受益骑兵不足时推迟一级护甲。",
+      "group_id": "escrow:rule:1939",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_202",
+      "category": "投资与战局门槛",
+      "meaning": "贵族铁骑总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵一级护甲可研究，逐项检查帝王骆驼、侦察骑兵、骑兵类与特色骑兵等是否全不足，帝王游侠路线有例外。",
+      "effect": "受益骑兵不足时推迟一级护甲。",
+      "group_id": "escrow:rule:1939",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_203",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事人口指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "骑兵一级护甲已通过部队与安全检查，升城后可直接考虑；封建军事路线另看军队规模。",
+      "effect": "决定封建阶段骑兵一级护甲时机。",
+      "group_id": "escrow:rule:1952",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_205",
+      "category": "投资与战局门槛",
+      "meaning": "帝王骆驼总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵二级护甲可研究，各类受益骑兵规模不足时暂缓，帝王游侠路线有例外，且与升帝王预留互锁。",
+      "effect": "按受益部队规模决定二级骑兵护甲投资。",
+      "group_id": "escrow:rule:1966",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_206",
+      "category": "投资与战局门槛",
+      "meaning": "侦察骑兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵二级护甲可研究，各类受益骑兵规模不足时暂缓，帝王游侠路线有例外，且与升帝王预留互锁。",
+      "effect": "按受益部队规模决定二级骑兵护甲投资。",
+      "group_id": "escrow:rule:1966",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_207",
+      "category": "投资与战局门槛",
+      "meaning": "骑兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵二级护甲可研究，各类受益骑兵规模不足时暂缓，帝王游侠路线有例外，且与升帝王预留互锁。",
+      "effect": "按受益部队规模决定二级骑兵护甲投资。",
+      "group_id": "escrow:rule:1966",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_208",
+      "category": "投资与战局门槛",
+      "meaning": "马扎尔骠骑总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵二级护甲可研究，各类受益骑兵规模不足时暂缓，帝王游侠路线有例外，且与升帝王预留互锁。",
+      "effect": "按受益部队规模决定二级骑兵护甲投资。",
+      "group_id": "escrow:rule:1966",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_209",
+      "category": "投资与战局门槛",
+      "meaning": "贵族铁骑总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵二级护甲可研究，各类受益骑兵规模不足时暂缓，帝王游侠路线有例外，且与升帝王预留互锁。",
+      "effect": "按受益部队规模决定二级骑兵护甲投资。",
+      "group_id": "escrow:rule:1966",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_211",
+      "category": "投资与战局门槛",
+      "meaning": "帝王骆驼总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵末级护甲可研究，检查帝王骆驼、侦察骑兵、骑兵类及特色骑兵，且与特色单位/骑士升级互锁。",
+      "effect": "受益部队不足时推迟末级骑兵护甲。",
+      "group_id": "escrow:rule:1991",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_212",
+      "category": "投资与战局门槛",
+      "meaning": "侦察骑兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵末级护甲可研究，检查帝王骆驼、侦察骑兵、骑兵类及特色骑兵，且与特色单位/骑士升级互锁。",
+      "effect": "受益部队不足时推迟末级骑兵护甲。",
+      "group_id": "escrow:rule:1991",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_213",
+      "category": "投资与战局门槛",
+      "meaning": "骑兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵末级护甲可研究，检查帝王骆驼、侦察骑兵、骑兵类及特色骑兵，且与特色单位/骑士升级互锁。",
+      "effect": "受益部队不足时推迟末级骑兵护甲。",
+      "group_id": "escrow:rule:1991",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_214",
+      "category": "投资与战局门槛",
+      "meaning": "马扎尔骠骑总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵末级护甲可研究，检查帝王骆驼、侦察骑兵、骑兵类及特色骑兵，且与特色单位/骑士升级互锁。",
+      "effect": "受益部队不足时推迟末级骑兵护甲。",
+      "group_id": "escrow:rule:1991",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_215",
+      "category": "投资与战局门槛",
+      "meaning": "贵族铁骑总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑兵末级护甲可研究，检查帝王骆驼、侦察骑兵、骑兵类及特色骑兵，且与特色单位/骑士升级互锁。",
+      "effect": "受益部队不足时推迟末级骑兵护甲。",
+      "group_id": "escrow:rule:1991",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_222",
+      "category": "投资与战局门槛",
+      "meaning": "远程步兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "未进攻，远程步兵和骑射都不多，经济人口、食村与食物储备偏弱。",
+      "effect": "推迟箭羽，等待军队与经济成长。",
+      "group_id": "escrow:rule:2027",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_223",
+      "category": "投资与战局门槛",
+      "meaning": "骑射类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "未进攻，远程步兵和骑射都不多，经济人口、食村与食物储备偏弱。",
+      "effect": "推迟箭羽，等待军队与经济成长。",
+      "group_id": "escrow:rule:2027",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_224",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "未进攻，远程步兵和骑射都不多，经济人口、食村与食物储备偏弱。",
+      "effect": "推迟箭羽，等待军队与经济成长。",
+      "group_id": "escrow:rule:2027",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_225",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "未进攻，远程步兵和骑射都不多，经济人口、食村与食物储备偏弱。",
+      "effect": "推迟箭羽，等待军队与经济成长。",
+      "group_id": "escrow:rule:2027",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_226",
+      "category": "投资与战局门槛",
+      "meaning": "食物总量的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "未进攻，远程步兵和骑射都不多，经济人口、食村与食物储备偏弱。",
+      "effect": "推迟箭羽，等待军队与经济成长。",
+      "group_id": "escrow:rule:2027",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_227",
+      "category": "投资与战局门槛",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "未进攻，远程步兵和骑射都不多，经济人口、食村与食物储备偏弱。",
+      "effect": "推迟箭羽，等待军队与经济成长。",
+      "group_id": "escrow:rule:2027",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_228",
+      "category": "投资与战局门槛",
+      "meaning": "骑射类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "箭羽可研究且经济保护放行，远程部队规模或弓兵/骑射路线提供理由。",
+      "effect": "按骑射规模作为备选理由预留箭羽。",
+      "group_id": "escrow:rule:2039",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_237",
+      "category": "投资与战局门槛",
+      "meaning": "骑射类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "锥子箭可研究且安全，黄金与经济齐备，远程路线或军队规模支持投资。",
+      "effect": "按骑射规模作为备选理由预留锥子箭。",
+      "group_id": "escrow:rule:2080",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_247",
+      "category": "投资与战局门槛",
+      "meaning": "骑射类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "护腕可研究且安全，黄金与经济齐备，远程路线或军队规模支持投资。",
+      "effect": "按骑射规模作为备选理由预留护腕。",
+      "group_id": "escrow:rule:2122",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_250",
+      "category": "投资与战局门槛",
+      "meaning": "敌方长枪兵威胁指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "游侠路线没有劲弩手研究可用，排除已有特色单位方向的西班牙例外，敌方长枪兵威胁较多。",
+      "effect": "预留化学以准备对抗长枪兵。",
+      "group_id": "escrow:rule:2148",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_252",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "化学可研究且安全，大学存在，弹道学不再等待研究，相关远程部队或舰队有规模。",
+      "effect": "按经济人口与舰队规模投资化学。",
+      "group_id": "escrow:rule:2158",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_253",
+      "category": "投资与战局门槛",
+      "meaning": "战舰系舰队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "化学可研究且安全，大学存在，弹道学不再等待研究，相关远程部队或舰队有规模。",
+      "effect": "按经济人口与舰队规模投资化学。",
+      "group_id": "escrow:rule:2158",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_255",
+      "category": "投资与战局门槛",
+      "meaning": "长船系舰队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "弹道学可研究且安全，大学和经济基础齐备，远程部队或舰队达标。",
+      "effect": "以长船规模作为备选理由投资弹道学。",
+      "group_id": "escrow:rule:2180",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_257",
+      "category": "投资与战局门槛",
+      "meaning": "步兵类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "步兵一级护甲可研究且安全，兵力、经济、时代与铁匠铺满足；帝王步兵/石墙路线或更大步兵规模支持。",
+      "effect": "按步兵规模投资一级护甲。",
+      "group_id": "escrow:rule:2199",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_258",
+      "category": "投资与战局门槛",
+      "meaning": "步兵类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "步兵一级护甲可研究且安全，兵力、经济、时代与铁匠铺满足；帝王步兵/石墙路线或更大步兵规模支持。",
+      "effect": "按步兵规模投资一级护甲。",
+      "group_id": "escrow:rule:2199",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_260",
+      "category": "投资与战局门槛",
+      "meaning": "步兵类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "步兵二级护甲可研究且安全，经济和铁匠铺齐备；帝王步兵/石墙路线或更大步兵规模支持。",
+      "effect": "按步兵规模投资二级护甲。",
+      "group_id": "escrow:rule:2217",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_261",
+      "category": "投资与战局门槛",
+      "meaning": "步兵类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "步兵二级护甲可研究且安全，经济和铁匠铺齐备；帝王步兵/石墙路线或更大步兵规模支持。",
+      "effect": "按步兵规模投资二级护甲。",
+      "group_id": "escrow:rule:2217",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_263",
+      "category": "投资与战局门槛",
+      "meaning": "步兵类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "步兵末级护甲可研究且安全，锻造等前置齐备；冠军或精锐鹰勇士升级进度或更大步兵规模支持。",
+      "effect": "按步兵规模投资末级护甲。",
+      "group_id": "escrow:rule:2236",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_264",
+      "category": "投资与战局门槛",
+      "meaning": "步兵类别总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "步兵末级护甲可研究且安全，锻造等前置齐备；冠军或精锐鹰勇士升级进度或更大步兵规模支持。",
+      "effect": "按步兵规模投资末级护甲。",
+      "group_id": "escrow:rule:2236",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_265",
+      "category": "投资与战局门槛",
+      "meaning": "食物库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "炮舰可研究且安全，码头与人口/海军条件齐备，研究计划、木材或食物充裕提供理由。",
+      "effect": "以食物储备作为备选理由投资炮舰。",
+      "group_id": "escrow:rule:2253",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_266",
+      "category": "投资与战局门槛",
+      "meaning": "战舰系舰队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "战舰升级可研究且安全，码头和经济齐备，已有各类舰队或正在造战舰且数量达标。",
+      "effect": "按战舰生产路线的数量预留升级。",
+      "group_id": "escrow:rule:2267",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_268",
+      "category": "投资与战局门槛",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "大型战舰可研究且安全，码头、经济与舰队基础齐备，持续生产、更大舰队或食木储量支持。",
+      "effect": "按舰队规模与木材储备投资大型战舰。",
+      "group_id": "escrow:rule:2286",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_269",
+      "category": "投资与战局门槛",
+      "meaning": "喷火船系舰队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "快速喷火船可研究且安全，码头、经济与舰队基础齐备，持续生产、更大舰队或木金储量支持。",
+      "effect": "按舰队规模与黄金储备投资快速喷火船。",
+      "group_id": "escrow:rule:2303",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_270",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "快速喷火船可研究且安全，码头、经济与舰队基础齐备，持续生产、更大舰队或木金储量支持。",
+      "effect": "按舰队规模与黄金储备投资快速喷火船。",
+      "group_id": "escrow:rule:2303",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_271",
+      "category": "投资与战局门槛",
+      "meaning": "当前关注敌人的传教士数量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "目标敌人僧侣或传教士较多，修道院与异端可用，经济人口达标且不属被排除的早期进攻/石墙路线。",
+      "effect": "投资异端以应对招降。",
+      "group_id": "escrow:rule:2313",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_273",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "目标敌人僧侣或传教士较多，修道院与异端可用，经济人口达标且不属被排除的早期进攻/石墙路线。",
+      "effect": "投资异端以应对招降。",
+      "group_id": "escrow:rule:2313",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_274",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "市场可建，本方仍有城镇中心和村民；死亡竞赛早期开局不足或已存在市场时排除。",
+      "effect": "决定是否进入首座市场预留。",
+      "group_id": "escrow:rule:2328",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_276",
+      "category": "投资与战局门槛",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "游戏秒",
+      "context": "已过开局等待且安全，有盟友和敌人；支援路线或帝王贸易车路线需要盟友市场。",
+      "effect": "为支援或贸易预留市场建设资源。",
+      "group_id": "escrow:rule:2338",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_278",
+      "category": "投资与战局门槛",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "游戏秒",
+      "context": "已过开局等待且安全，食木金出现严重不均衡。",
+      "effect": "为资源兑换预留市场建设。",
+      "group_id": "escrow:rule:2351",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_279",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "已过开局等待且安全，食木金出现严重不均衡。",
+      "effect": "为资源兑换预留市场建设。",
+      "group_id": "escrow:rule:2351",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_280",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "已过开局等待且安全，食木金出现严重不均衡。",
+      "effect": "为资源兑换预留市场建设。",
+      "group_id": "escrow:rule:2351",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_281",
+      "category": "投资与战局门槛",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "安全且可升城堡，食物足够但黄金不足，额外食物或无采金也是造市场的理由。",
+      "effect": "按黄金缺口决定补建市场。",
+      "group_id": "escrow:rule:2375",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_285",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "骑士快攻或城堡前压，城镇中心较少且敌石墙少；城内敌弓、敌塔或敌城堡形成紧急例外。",
+      "effect": "不紧急时暂缓首座攻城武器厂。",
+      "group_id": "escrow:rule:2409",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_286",
+      "category": "投资与战局门槛",
+      "meaning": "目标敌人的石墙数量的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "骑士快攻或城堡前压，城镇中心较少且敌石墙少；城内敌弓、敌塔或敌城堡形成紧急例外。",
+      "effect": "不紧急时暂缓首座攻城武器厂。",
+      "group_id": "escrow:rule:2409",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_287",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人口",
+      "context": "骑士快攻或城堡前压，城镇中心较少且敌石墙少；城内敌弓、敌塔或敌城堡形成紧急例外。",
+      "effect": "不紧急时暂缓首座攻城武器厂。",
+      "group_id": "escrow:rule:2409",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_288",
+      "category": "投资与战局门槛",
+      "meaning": "团队军事优势指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "仍在封建且未进攻，或团队优势不足。",
+      "effect": "暂缓攻城武器厂。",
+      "group_id": "escrow:rule:2422",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_289",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "边位达到计划军事阶段，军事优势和兵力良好、敌军少且时代早，本方安全不需防守；敌塔或市场支持进攻。",
+      "effect": "预留攻城武器厂加强压制。",
+      "group_id": "escrow:rule:2428",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_290",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人口",
+      "context": "边位达到计划军事阶段，军事优势和兵力良好、敌军少且时代早，本方安全不需防守；敌塔或市场支持进攻。",
+      "effect": "预留攻城武器厂加强压制。",
+      "group_id": "escrow:rule:2428",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_291",
+      "category": "投资与战局门槛",
+      "meaning": "目标敌人军事人口指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "边位达到计划军事阶段，军事优势和兵力良好、敌军少且时代早，本方安全不需防守；敌塔或市场支持进攻。",
+      "effect": "预留攻城武器厂加强压制。",
+      "group_id": "escrow:rule:2428",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_292",
+      "category": "投资与战局门槛",
+      "meaning": "目标敌人的市场数量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "边位达到计划军事阶段，军事优势和兵力良好、敌军少且时代早，本方安全不需防守；敌塔或市场支持进攻。",
+      "effect": "预留攻城武器厂加强压制。",
+      "group_id": "escrow:rule:2428",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_298",
+      "category": "投资与战局门槛",
+      "meaning": "敌方弓兵威胁指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "城堡阶段未进攻，受敌弓威胁且本方或团队劣势，散兵与哥特近卫等现有反制部队不足。",
+      "effect": "预留攻城武器厂反制敌弓。",
+      "group_id": "escrow:rule:2459",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_299",
+      "category": "投资与战局门槛",
+      "meaning": "团队军事优势指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "城堡阶段未进攻，受敌弓威胁且本方或团队劣势，散兵与哥特近卫等现有反制部队不足。",
+      "effect": "预留攻城武器厂反制敌弓。",
+      "group_id": "escrow:rule:2459",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_300",
+      "category": "投资与战局门槛",
+      "meaning": "哥特近卫总类总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "城堡阶段未进攻，受敌弓威胁且本方或团队劣势，散兵与哥特近卫等现有反制部队不足。",
+      "effect": "预留攻城武器厂反制敌弓。",
+      "group_id": "escrow:rule:2459",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_301",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "进入帝王计划阶段，总人口达到经济规划规模，军事形势允许且城堡较少。",
+      "effect": "预留工坊补充攻城能力。",
+      "group_id": "escrow:rule:2474",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_302",
+      "category": "投资与战局门槛",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "进入帝王计划阶段，总人口达到经济规划规模，军事形势允许且城堡较少。",
+      "effect": "预留工坊补充攻城能力。",
+      "group_id": "escrow:rule:2474",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_303",
+      "category": "投资与战局门槛",
+      "meaning": "敌方远程步兵威胁指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "边位面对远程主力，敌步骑较少，本方城堡少且军事不占优，当前是早期军事或常规路线。",
+      "effect": "预留工坊抵御远程压力，并协调城镇中心投资。",
+      "group_id": "escrow:rule:2484",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_304",
+      "category": "投资与战局门槛",
+      "meaning": "敌方步兵威胁指标的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "指标值",
+      "context": "边位面对远程主力，敌步骑较少，本方城堡少且军事不占优，当前是早期军事或常规路线。",
+      "effect": "预留工坊抵御远程压力，并协调城镇中心投资。",
+      "group_id": "escrow:rule:2484",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_305",
+      "category": "投资与战局门槛",
+      "meaning": "敌方骑兵威胁指标的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "指标值",
+      "context": "边位面对远程主力，敌步骑较少，本方城堡少且军事不占优，当前是早期军事或常规路线。",
+      "effect": "预留工坊抵御远程压力，并协调城镇中心投资。",
+      "group_id": "escrow:rule:2484",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_306",
+      "category": "投资与战局门槛",
+      "meaning": "城堡现存数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "边位面对远程主力，敌步骑较少，本方城堡少且军事不占优，当前是早期军事或常规路线。",
+      "effect": "预留工坊抵御远程压力，并协调城镇中心投资。",
+      "group_id": "escrow:rule:2484",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_307",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "边位面对远程主力，敌步骑较少，本方城堡少且军事不占优，当前是早期军事或常规路线。",
+      "effect": "预留工坊抵御远程压力，并协调城镇中心投资。",
+      "group_id": "escrow:rule:2484",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_308",
+      "category": "投资与战局门槛",
+      "meaning": "当前关注敌人的弩炮系部队数量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "边位发现敌人有多工坊或弩炮规模，敌进攻方向或更多弩炮确认威胁。",
+      "effect": "预留工坊反制弩炮。",
+      "group_id": "escrow:rule:2500",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_309",
+      "category": "投资与战局门槛",
+      "meaning": "当前关注敌人的弩炮系部队数量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "边位发现敌人有多工坊或弩炮规模，敌进攻方向或更多弩炮确认威胁。",
+      "effect": "预留工坊反制弩炮。",
+      "group_id": "escrow:rule:2500",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_321",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "城堡阶段已有城镇中心和修道院，经济人口足够，且食村/无军事需求或城镇中心规模支持，缺大学与城堡。",
+      "effect": "按经济规模补工坊作为升帝王前置。",
+      "group_id": "escrow:rule:2545",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_322",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "城堡阶段已有城镇中心和修道院，经济人口足够，且食村/无军事需求或城镇中心规模支持，缺大学与城堡。",
+      "effect": "按经济规模补工坊作为升帝王前置。",
+      "group_id": "escrow:rule:2545",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_325",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "城堡阶段经济人口达标，已有修道院而无大学/城堡，食物或黄金已够帝王成本之一。",
+      "effect": "补工坊解锁帝王研究。",
+      "group_id": "escrow:rule:2560",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_332",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "城堡前压路线能建城堡或正在升城，本方仍有城镇中心与村民，首堡尚缺且经济基础满足。",
+      "effect": "预留首座前压城堡。",
+      "group_id": "escrow:rule:2587",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_334",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "快速帝王尚在准备，军用建筑不足、木材余量低且经济人口不高。",
+      "effect": "暂缓城镇中心，优先快速帝王前置。",
+      "group_id": "escrow:rule:2666",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_340",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "敌方属于既定近战压力类别，本方已有多个城镇中心，军事弱、食物余量少且经济人口不高。",
+      "effect": "推迟新增城镇中心。",
+      "group_id": "escrow:rule:2703",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_341",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "敌方属于既定近战压力类别，本方已有多个城镇中心，军事弱、食物余量少且经济人口不高。",
+      "effect": "推迟新增城镇中心。",
+      "group_id": "escrow:rule:2703",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_342",
+      "category": "投资与战局门槛",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源盈余差额",
+      "context": "敌方属于既定近战压力类别，本方已有多个城镇中心，军事弱、食物余量少且经济人口不高。",
+      "effect": "推迟新增城镇中心。",
+      "group_id": "escrow:rule:2703",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_343",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "敌方属于既定近战压力类别，本方已有多个城镇中心，军事弱、食物余量少且经济人口不高。",
+      "effect": "推迟新增城镇中心。",
+      "group_id": "escrow:rule:2703",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_344",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "封建边位优势不足，或城镇中心已达阶段限制；支援路线缺市场是另一排除项。",
+      "effect": "推迟扩张，优先军事或支援基础。",
+      "group_id": "escrow:rule:2711",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_346",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "奇观竞赛或保卫奇观模式，已有城镇中心，时间、盟友奇观或人口成熟条件满足。",
+      "effect": "停止城镇中心预留，转向模式目标。",
+      "group_id": "escrow:rule:2720",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_347",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "奇观竞赛或保卫奇观模式，已有城镇中心，时间、盟友奇观或人口成熟条件满足。",
+      "effect": "停止城镇中心预留，转向模式目标。",
+      "group_id": "escrow:rule:2720",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_350",
+      "category": "投资与战局门槛",
+      "meaning": "村民总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "死亡竞赛早期村民不足，或已有多个城镇中心但木材、农田和食物保障不足。",
+      "effect": "暂缓扩张以保护起步经济。",
+      "group_id": "escrow:rule:2763",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_351",
+      "category": "投资与战局门槛",
+      "meaning": "食物村民现存数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "死亡竞赛早期村民不足，或已有多个城镇中心但木材、农田和食物保障不足。",
+      "effect": "暂缓扩张以保护起步经济。",
+      "group_id": "escrow:rule:2763",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_357",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "水图城内威胁低，木石由库存或采集保障，城镇中心尚少。",
+      "effect": "继续水图经济扩张。",
+      "group_id": "escrow:rule:2786",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_358",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "计划偏帝王作战，木石由库存或采集保障，城镇中心尚少。",
+      "effect": "为后期经济增开城镇中心。",
+      "group_id": "escrow:rule:2800",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_359",
+      "category": "投资与战局门槛",
+      "meaning": "农田总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "无军事发展需求或农田成熟，木石来源足够，现有城镇中心未达目标。",
+      "effect": "按农田基础和目标建筑数扩张。",
+      "group_id": "escrow:rule:2813",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_360",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "无军事发展需求或农田成熟，木石来源足够，现有城镇中心未达目标。",
+      "effect": "按农田基础和目标建筑数扩张。",
+      "group_id": "escrow:rule:2813",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_361",
+      "category": "投资与战局门槛",
+      "meaning": "农田总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "内位或无军事需求路线，经济科技已不再等待，城镇中心未达上限，农田与木石来源满足。",
+      "effect": "按农田规模和伐木条件继续扩张。",
+      "group_id": "escrow:rule:2836",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_362",
+      "category": "投资与战局门槛",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "内位或无军事需求路线，经济科技已不再等待，城镇中心未达上限，农田与木石来源满足。",
+      "effect": "按农田规模和伐木条件继续扩张。",
+      "group_id": "escrow:rule:2836",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_363",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "远程封建进攻路线，靶场生产基础已建，军事优势、木村与石料满足。",
+      "effect": "按军事建筑和经济供给增开城镇中心。",
+      "group_id": "escrow:rule:2849",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_364",
+      "category": "投资与战局门槛",
+      "meaning": "靶场总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "远程封建进攻路线，靶场生产基础已建，军事优势、木村与石料满足。",
+      "effect": "按军事建筑和经济供给增开城镇中心。",
+      "group_id": "escrow:rule:2849",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_365",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "远程封建进攻路线，靶场生产基础已建，军事优势、木村与石料满足。",
+      "effect": "按军事建筑和经济供给增开城镇中心。",
+      "group_id": "escrow:rule:2849",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_366",
+      "category": "投资与战局门槛",
+      "meaning": "伐木村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "远程封建进攻路线，靶场生产基础已建，军事优势、木村与石料满足。",
+      "effect": "按军事建筑和经济供给增开城镇中心。",
+      "group_id": "escrow:rule:2849",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_367",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "侦察骑兵封建进攻路线，马厩基础已建，军事优势、木村与石料满足。",
+      "effect": "在侦察骑兵路线中增开城镇中心。",
+      "group_id": "escrow:rule:2861",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_368",
+      "category": "投资与战局门槛",
+      "meaning": "马厩总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "侦察骑兵封建进攻路线，马厩基础已建，军事优势、木村与石料满足。",
+      "effect": "在侦察骑兵路线中增开城镇中心。",
+      "group_id": "escrow:rule:2861",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_369",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "侦察骑兵封建进攻路线，马厩基础已建，军事优势、木村与石料满足。",
+      "effect": "在侦察骑兵路线中增开城镇中心。",
+      "group_id": "escrow:rule:2861",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_370",
+      "category": "投资与战局门槛",
+      "meaning": "伐木村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "侦察骑兵封建进攻路线，马厩基础已建，军事优势、木村与石料满足。",
+      "effect": "在侦察骑兵路线中增开城镇中心。",
+      "group_id": "escrow:rule:2861",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_371",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "弓兵快攻已有靶场规模，军事优势或经济人口成熟，木石来源满足。",
+      "effect": "在弓兵快攻中扩张经济。",
+      "group_id": "escrow:rule:2873",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_372",
+      "category": "投资与战局门槛",
+      "meaning": "靶场总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "弓兵快攻已有靶场规模，军事优势或经济人口成熟，木石来源满足。",
+      "effect": "在弓兵快攻中扩张经济。",
+      "group_id": "escrow:rule:2873",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_373",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "弓兵快攻已有靶场规模，军事优势或经济人口成熟，木石来源满足。",
+      "effect": "在弓兵快攻中扩张经济。",
+      "group_id": "escrow:rule:2873",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_374",
+      "category": "投资与战局门槛",
+      "meaning": "对手经济对比指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "骑士路线特定变体，经济领先却军事落后，已有多个城镇中心，马厩、木村、木材和食物准备不足。",
+      "effect": "推迟扩张，优先补军事基础。",
+      "group_id": "escrow:rule:2887",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_375",
+      "category": "投资与战局门槛",
+      "meaning": "对手军事对比指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "骑士路线特定变体，经济领先却军事落后，已有多个城镇中心，马厩、木村、木材和食物准备不足。",
+      "effect": "推迟扩张，优先补军事基础。",
+      "group_id": "escrow:rule:2887",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_376",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "骑士路线特定变体，经济领先却军事落后，已有多个城镇中心，马厩、木村、木材和食物准备不足。",
+      "effect": "推迟扩张，优先补军事基础。",
+      "group_id": "escrow:rule:2887",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_377",
+      "category": "投资与战局门槛",
+      "meaning": "马厩总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "骑士路线特定变体，经济领先却军事落后，已有多个城镇中心，马厩、木村、木材和食物准备不足。",
+      "effect": "推迟扩张，优先补军事基础。",
+      "group_id": "escrow:rule:2887",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_378",
+      "category": "投资与战局门槛",
+      "meaning": "伐木村民现存数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑士路线特定变体，经济领先却军事落后，已有多个城镇中心，马厩、木村、木材和食物准备不足。",
+      "effect": "推迟扩张，优先补军事基础。",
+      "group_id": "escrow:rule:2887",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_379",
+      "category": "投资与战局门槛",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "骑士路线特定变体，经济领先却军事落后，已有多个城镇中心，马厩、木村、木材和食物准备不足。",
+      "effect": "推迟扩张，优先补军事基础。",
+      "group_id": "escrow:rule:2887",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_380",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "骑士快攻早期变体已有马厩，木石由库存或采集保障，城镇中心未达目标。",
+      "effect": "预留新增城镇中心。",
+      "group_id": "escrow:rule:2898",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_381",
+      "category": "投资与战局门槛",
+      "meaning": "马厩总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "骑士快攻早期变体已有马厩，木石由库存或采集保障，城镇中心未达目标。",
+      "effect": "预留新增城镇中心。",
+      "group_id": "escrow:rule:2898",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_382",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "骑士快攻已有马厩和军队规模，军事优势或骑士队列提供保障，木石齐备。",
+      "effect": "在骑士生产有保障时扩张。",
+      "group_id": "escrow:rule:2911",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_383",
+      "category": "投资与战局门槛",
+      "meaning": "马厩总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "骑士快攻已有马厩和军队规模，军事优势或骑士队列提供保障，木石齐备。",
+      "effect": "在骑士生产有保障时扩张。",
+      "group_id": "escrow:rule:2911",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_384",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人口",
+      "context": "骑士快攻已有马厩和军队规模，军事优势或骑士队列提供保障，木石齐备。",
+      "effect": "在骑士生产有保障时扩张。",
+      "group_id": "escrow:rule:2911",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_385",
+      "category": "投资与战局门槛",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "骑士快攻已有马厩，经济人口成熟且弓锯已进入研究，木石来源可用。",
+      "effect": "按经济人口与建筑规模增开城镇中心。",
+      "group_id": "escrow:rule:2926",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_386",
+      "category": "投资与战局门槛",
+      "meaning": "马厩总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "骑士快攻已有马厩，经济人口成熟且弓锯已进入研究，木石来源可用。",
+      "effect": "按经济人口与建筑规模增开城镇中心。",
+      "group_id": "escrow:rule:2926",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_387",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "骑士快攻已有马厩，经济人口成熟且弓锯已进入研究，木石来源可用。",
+      "effect": "按经济人口与建筑规模增开城镇中心。",
+      "group_id": "escrow:rule:2926",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_393",
+      "category": "投资与战局门槛",
+      "meaning": "敌方远程步兵威胁指标的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "指标值",
+      "context": "紧急投石车入口综合防御/受攻击状态、敌远程数量、军事优势、住房、帝王进度及位置。",
+      "effect": "足以自保时跳过紧急投石车投入。",
+      "group_id": "escrow:rule:2987",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_394",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "紧急投石车入口综合防御/受攻击状态、敌远程数量、军事优势、住房、帝王进度及位置。",
+      "effect": "足以自保时跳过紧急投石车投入。",
+      "group_id": "escrow:rule:2987",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_395",
+      "category": "投资与战局门槛",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "紧急投石车入口综合防御/受攻击状态、敌远程数量、军事优势、住房、帝王进度及位置。",
+      "effect": "足以自保时跳过紧急投石车投入。",
+      "group_id": "escrow:rule:2997",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_398",
+      "category": "投资与战局门槛",
+      "meaning": "采金村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "需要防守投石车，木金由库存、采集或贸易支持，敌方远程步兵达到威胁规模。",
+      "effect": "预留投石车抵御远程军队。",
+      "group_id": "escrow:rule:3025",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_399",
+      "category": "投资与战局门槛",
+      "meaning": "伐木村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "需要防守投石车，木金由库存、采集或贸易支持，敌方远程步兵达到威胁规模。",
+      "effect": "预留投石车抵御远程军队。",
+      "group_id": "escrow:rule:3025",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_400",
+      "category": "投资与战局门槛",
+      "meaning": "敌方弓兵威胁指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "需要防守投石车，木金由库存、采集或贸易支持，敌方远程步兵达到威胁规模。",
+      "effect": "预留投石车抵御远程军队。",
+      "group_id": "escrow:rule:3025",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_401",
+      "category": "投资与战局门槛",
+      "meaning": "采金村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "需要投石车反制已确认的敌弩炮压力，木金库存不足时可由采集能力保障。",
+      "effect": "预留反弩炮的投石车。",
+      "group_id": "escrow:rule:3038",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_402",
+      "category": "投资与战局门槛",
+      "meaning": "伐木村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "需要投石车反制已确认的敌弩炮压力，木金库存不足时可由采集能力保障。",
+      "effect": "预留反弩炮的投石车。",
+      "group_id": "escrow:rule:3038",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_403",
+      "category": "投资与战局门槛",
+      "meaning": "目标敌人的箭塔数量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "敌塔进入附近安全范围且检测到塔弹，本方缺少火炮或巨型投石机等现成拆塔手段。",
+      "effect": "预留投石车处理迫近箭塔。",
+      "group_id": "escrow:rule:3050",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_404",
+      "category": "投资与战局门槛",
+      "meaning": "火炮系部队总数的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "个",
+      "context": "敌塔进入附近安全范围且检测到塔弹，本方缺少火炮或巨型投石机等现成拆塔手段。",
+      "effect": "预留投石车处理迫近箭塔。",
+      "group_id": "escrow:rule:3050",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_405",
+      "category": "投资与战局门槛",
+      "meaning": "巨型投石机总类总数的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "个",
+      "context": "敌塔进入附近安全范围且检测到塔弹，本方缺少火炮或巨型投石机等现成拆塔手段。",
+      "effect": "预留投石车处理迫近箭塔。",
+      "group_id": "escrow:rule:3050",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_407",
+      "category": "投资与战局门槛",
+      "meaning": "僧侣总数的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "个",
+      "context": "僧侣可训练且快速帝王保护放行，争夺圣物模式或安全且圣物较多，现有僧侣与指定对象数量受限制。",
+      "effect": "预留取圣物僧侣。",
+      "group_id": "escrow:rule:3076",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_409",
+      "category": "投资与战局门槛",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "单人无盟友且城墙闭合，还有多件圣物，时间、现有僧侣和指定对象计数限制招募。",
+      "effect": "在安全时期补取圣物僧侣。",
+      "group_id": "escrow:rule:3086",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_411",
+      "category": "投资与战局门槛",
+      "meaning": "僧侣总数的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "个",
+      "context": "单人无盟友且城墙闭合，还有多件圣物，时间、现有僧侣和指定对象计数限制招募。",
+      "effect": "在安全时期补取圣物僧侣。",
+      "group_id": "escrow:rule:3086",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_417",
+      "category": "投资与战局门槛",
+      "meaning": "远程步兵类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_418",
+      "category": "投资与战局门槛",
+      "meaning": "骑射类别总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_419",
+      "category": "投资与战局门槛",
+      "meaning": "骑射手系部队总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_420",
+      "category": "投资与战局门槛",
+      "meaning": "象射手总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_421",
+      "category": "投资与战局门槛",
+      "meaning": "投石手总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_422",
+      "category": "投资与战局门槛",
+      "meaning": "热那亚弩手总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_423",
+      "category": "投资与战局门槛",
+      "meaning": "藤甲弓兵总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_424",
+      "category": "投资与战局门槛",
+      "meaning": "精锐藤甲弓兵总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_425",
+      "category": "投资与战局门槛",
+      "meaning": "骆驼弓骑兵总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_426",
+      "category": "投资与战局门槛",
+      "meaning": "精锐骆驼弓骑兵总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "指环可研究，靶场和经济人口满足且快速帝王保护已放行，逐项检查相关远程单位是否都不足。",
+      "effect": "受益远程部队都少时推迟指环。",
+      "group_id": "escrow:rule:3138",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_430",
+      "category": "投资与战局门槛",
+      "meaning": "折算经济人口的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "支援路线下安全，市场及铸币/银行业可用，银行业另需经济人口基础。",
+      "effect": "预留支援市场科技。",
+      "group_id": "escrow:rule:3170",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_431",
+      "category": "投资与战局门槛",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源盈余差额",
+      "context": "补给可研究且未重复预留，经济人口少时需额外黄金，受攻击时不评估。",
+      "effect": "限制经济弱时投资补给。",
+      "group_id": "escrow:rule:3180",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_433",
+      "category": "投资与战局门槛",
+      "meaning": "全部敌人的城堡数量的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "座",
+      "context": "没有其他预留时，检查敌城堡、克里波斯、火炮塔、箭塔与石墙是否全部缺少。",
+      "effect": "无重型攻城目标时跳过巨型投石机。",
+      "group_id": "escrow:rule:3238",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_434",
+      "category": "投资与战局门槛",
+      "meaning": "全部敌人的克里波斯数量的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "座",
+      "context": "没有其他预留时，检查敌城堡、克里波斯、火炮塔、箭塔与石墙是否全部缺少。",
+      "effect": "无重型攻城目标时跳过巨型投石机。",
+      "group_id": "escrow:rule:3238",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_435",
+      "category": "投资与战局门槛",
+      "meaning": "全部敌人的火炮塔数量的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "座",
+      "context": "没有其他预留时，检查敌城堡、克里波斯、火炮塔、箭塔与石墙是否全部缺少。",
+      "effect": "无重型攻城目标时跳过巨型投石机。",
+      "group_id": "escrow:rule:3238",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_436",
+      "category": "投资与战局门槛",
+      "meaning": "全部敌人的箭塔数量的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "座",
+      "context": "没有其他预留时，检查敌城堡、克里波斯、火炮塔、箭塔与石墙是否全部缺少。",
+      "effect": "无重型攻城目标时跳过巨型投石机。",
+      "group_id": "escrow:rule:3238",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_437",
+      "category": "投资与战局门槛",
+      "meaning": "全部敌人的石墙数量的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "座",
+      "context": "没有其他预留时，检查敌城堡、克里波斯、火炮塔、箭塔与石墙是否全部缺少。",
+      "effect": "无重型攻城目标时跳过巨型投石机。",
+      "group_id": "escrow:rule:3238",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_439",
+      "category": "投资与战局门槛",
+      "meaning": "巨型投石机总类总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "巨型投石机可训练、安全且有城堡，贸易、住房、经济与军事支持攻城，没有其他紧急攻城请求。",
+      "effect": "按现有巨型投石机规模决定训练预留。",
+      "group_id": "escrow:rule:3253",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_441",
+      "category": "投资与战局门槛",
+      "meaning": "鹰勇士系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "鹰勇士升级可用且安全，兵营存在，石墙帝王方向或鹰勇士规模达标。",
+      "effect": "预留鹰勇士升级。",
+      "group_id": "escrow:rule:3286",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_445",
+      "category": "投资与战局门槛",
+      "meaning": "火炮系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "重型火炮研究可用且安全，经济与工坊满足，生产意向或已有火炮规模支持投资。",
+      "effect": "按火炮规模预留重型火炮升级。",
+      "group_id": "escrow:rule:3321",
+      "constraints_note": ""
+    },
+    {
+      "key": "ESCROW_446",
+      "category": "投资与战局门槛",
+      "meaning": "火炮系部队总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "重型火炮研究可用且安全，经济与工坊满足，生产意向或已有火炮规模支持投资。",
+      "effect": "按火炮规模预留重型火炮升级。",
+      "group_id": "escrow:rule:3321",
+      "constraints_note": ""
+    }
+  ]
+}

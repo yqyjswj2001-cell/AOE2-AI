@@ -6,6 +6,18 @@ import json
 import re
 from pathlib import Path
 
+from curated_defconst import (
+    MODULE_PROFILES, CuratedDefconstError, eligible_defconst_spans,
+)
+
+from cloze_boundary import (
+    BoundaryError, validate_no_noncode_placeholders,
+    validate_strategy_answers,
+)
+
+from strategy_catalog import load_catalog, validate_classified_template, validate_classified_answers, validate_author_cards
+
+CATALOG = load_catalog()
 ROOT = Path(__file__).resolve().parents[2]
 OFFICIAL = ROOT / "official/raw/Promisory"
 ADJUSTED = ROOT / "adjusted/Promisory"
@@ -33,6 +45,9 @@ for name in official_files:
 templates = sorted(TEMPLATES.glob("*.per.tpl"))
 if not templates:
     raise SystemExit("no official-derived cloze templates")
+if set(CATALOG["modules"]) != {tpl.name.removesuffix(".tpl") for tpl in templates}:
+    raise SystemExit("template modules differ from complete reviewed inventory")
+validate_author_cards(CATALOG, ROOT / "adjusted/cloze/strategy")
 
 for tpl in templates:
     module = tpl.name.removesuffix(".tpl")
@@ -40,9 +55,27 @@ for tpl in templates:
     official_bytes = (OFFICIAL / module).read_bytes()
     official_text = official_bytes.decode("utf-8")
     template_text = tpl.read_bytes().decode("utf-8")
+    if module in MODULE_PROFILES:
+        try:
+            eligible = {(span.start, span.end) for span in eligible_defconst_spans(module, official_text)}
+            for row in CATALOG["modules"][module]["parameters"]:
+                if row["decision"] == "dynamic" and (row["source_start"], row["source_end"]) not in eligible:
+                    raise CuratedDefconstError(f"{row['key']}: outside original defconst strategy allowlist")
+        except CuratedDefconstError as exc:
+            raise SystemExit(str(exc)) from exc
+    if module == "finalingConstants.per" and template_text != official_text:
+        raise SystemExit("finalingConstants.per: all constants remain fixed")
     defaults_doc = json.loads((DEFAULTS / f"{stem}.json").read_text(encoding="utf-8"))
     defaults = defaults_doc["answers"]
     keys = set(PH.findall(template_text))
+    if len(PH.findall(template_text)) != len(keys):
+        raise SystemExit(f"{module}: each placeholder must have a unique key")
+    try:
+        validate_no_noncode_placeholders(module, template_text)
+        validate_classified_template(module, official_text, template_text, CATALOG)
+        validate_classified_answers(module, defaults, CATALOG)
+    except BoundaryError as exc:
+        raise SystemExit(str(exc)) from exc
 
     if set(defaults) != keys:
         raise SystemExit(f"{module}: defaults/placeholders differ")
@@ -335,4 +368,5 @@ for chunk in chunks(resign):
             raise SystemExit(f"resign.per: invalid resign-strategy placeholder: {line}")
 
 
-print("official-derived cloze PASS", len(official_files), "baseline files,", len(templates), "templates")
+blank_count = sum(len(PH.findall(tpl.read_bytes().decode("utf-8"))) for tpl in templates)
+print("official-derived cloze PASS", len(official_files), "baseline files,", len(templates), "templates,", blank_count, "unique blanks")

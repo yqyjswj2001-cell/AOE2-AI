@@ -319,7 +319,7 @@
 	(up-jump-rule 1))
 
 (defrule
-	(unit-type-count-total arrow-ship-line >= {{ESCROW_003}})
+	(unit-type-count-total arrow-ship-line >= 3)
 (or	(unit-type-count-total arrow-ship-line >= 7)
 (or	(goal trainarrowship yes)
 (or	(food-amount >= 150)
@@ -376,7 +376,7 @@
 	(up-jump-rule 1))
 
 (defrule
-	(unit-type-count-total mangonel-ship-line >= {{ESCROW_009}})
+	(unit-type-count-total mangonel-ship-line >= 3)
 (or	(unit-type-count-total mangonel-ship-line >= 8)
 (or	(goal traincatapultship yes)
 (or	(food-amount >= 350)
@@ -457,8 +457,8 @@
 ;=============================================================
 (defrule
 	(goal strategy castledrop)
-	(building-type-count-total castle <= {{ESCROW_011}})
-	(building-type-count-total town-center >= {{ESCROW_012}})
+	(building-type-count-total castle <= 0)
+	(building-type-count-total town-center >= 1)
 	(up-compare-goal total-stone-amount < castle-tc-stone)
 	(goal inseln no)
 	(goal cozy no)
@@ -477,8 +477,8 @@
 (defrule
 	(up-compare-flag escrow-flag2 == 524288)
 	(up-pending-objects c: town-center == 0)
-	(building-type-count-total town-center <= {{ESCROW_013}})
-	(players-military-population any-ally >= {{ESCROW_014}})
+	(building-type-count-total town-center <= 0)
+	(players-military-population any-ally >= 18)
 	(goal inseln no)
 	(up-compare-goal migration-state != 1)
 	(can-build-with-escrow town-center)
@@ -538,9 +538,9 @@
 	(up-compare-goal migration-state != 1)
 	(can-build town-center)
 	(or(up-compare-const sd-game != 1)
-	(building-type-count-total town-center < {{ESCROW_015}}))
+	(building-type-count-total town-center < 1))
 	(nand(up-compare-goal migmaptype > 1)
-	(game-time < {{ESCROW_016}}))
+	(game-time < 60))
 =>
 	(chat-to-player my-player-number "TC.5")
 	(up-modify-sn sn-camp-max-distance s:= sn-safe-town-size)
@@ -594,8 +594,8 @@
 (defrule
 	(up-compare-flag escrow-flag2 == 4194304)
 	(goal underattack no)
-	(unit-type-count-total 213 <= {{ESCROW_017}}); Dead female builder
-	(unit-type-count-total 225 <= {{ESCROW_018}}); Dead male builder
+	(unit-type-count-total 213 <= 1); Dead female builder
+	(unit-type-count-total 225 <= 1); Dead male builder
 	(can-build-with-escrow castle)
 ;	(goal increase-ts 0)
 =>
@@ -609,7 +609,7 @@
 	(up-compare-flag escrow-flag2 == 4194304)
 (or	(goal underattack yes)
 (or	(unit-type-count-total 213 >= 2); Dead female builder
-	(unit-type-count-total 225 >= {{ESCROW_019}}))); Dead male builder
+	(unit-type-count-total 225 >= 2))); Dead male builder
 	(can-build-with-escrow castle)
 ;	(goal increase-ts 0)
 =>
@@ -761,7 +761,7 @@
 (defrule
 	(strategic-number sn-military-superiority >= {{ESCROW_021}})
 (or	(up-compare-goal enemyState >= fcastlea);(players-current-age target-player >= castle-age)
-	(strategic-number sn-military-superiority >= {{ESCROW_022}})); 1
+	(strategic-number sn-military-superiority >= 0)); 1
 	(up-compare-goal total-food-amount >= {{ESCROW_023}}); (food-amount >= 400)
 (or	(unit-type-count villager-food >= 15); 18
 	(up-compare-goal total-food-amount >= castle-f2)); 600); (food-amount >= 550)
@@ -820,7 +820,7 @@
 ;(or	(and	(up-compare-const michi-style == yes)
 ;		(goal defend no))
 (or	(up-research-status c: imperial-age != research-available)
-	(building-type-count town-center <= {{ESCROW_030}})));)
+	(building-type-count town-center <= 0)));)
 =>
 	(up-jump-rule 12))
 (defrule
@@ -872,11 +872,11 @@
 (defrule
 	(goal milunits no)
 (or	(up-compare-goal total-food-amount >= imperial-food)
-	(unit-type-count villager-food >= {{ESCROW_038}}))
+	(unit-type-count villager-food >= 42))
 (or	(up-compare-goal total-gold-amount >= imperial-gold)
 (or	(unit-type-count villager-gold >= 7)
 	(up-compare-goal tradeunits >= 18)))
-	(up-compare-goal custom-civ-pop >= {{ESCROW_039}})
+	(up-compare-goal custom-civ-pop >= 95)
 =>
 	(up-add-research-cost c: imperial-age c: 1)
 	(up-modify-flag escrow-flag c:+ 2)
@@ -1029,18 +1029,18 @@
 	(current-age == feudal-age)
 (or	(building-type-count-total stable >= 1)
 (or	(building-type-count-total archery-range >= 1)
-	(building-type-count-total market >= {{ESCROW_060}})))
+	(building-type-count-total market >= 1)))
 ;	(building-type-count-total blacksmith >= 1)
 	(current-age-time < {{ESCROW_061}}); 180
 =>
 	(up-jump-rule 4))
 (defrule
 (or	(and	(unit-type-count villager-food < 9)
-		(food-amount < {{ESCROW_062}}))
+		(food-amount < 175))
 (or	(goal underattack yes)
 (or	(building-type-count-total town-center <= 0)
 (or	(and	(up-research-status c: castle-age == research-pending)
-		(building-type-count-total town-center <= {{ESCROW_063}}))
+		(building-type-count-total town-center <= 1))
 	(up-research-status c: ri-wheel-barrow != research-available)))))
 =>
 	(up-jump-rule 3))
@@ -1058,7 +1058,7 @@
 (or	(unit-type-count-total villager >= 39); 38
 (or	(up-compare-goal total-food-amount >= 125); 110
 	(and	(up-pending-objects c: villager >= 2)
-		(up-compare-goal total-food-amount >= {{ESCROW_068}}))))
+		(up-compare-goal total-food-amount >= 25))))
 =>
 	(up-add-research-cost c: ri-wheel-barrow c: 1)
 	(up-modify-flag escrow-flag c:+ 16)
@@ -1070,7 +1070,7 @@
 		(building-type-count town-center >= {{ESCROW_069}}))));
 (or	(up-compare-goal total-food-amount >= 125); 110
 	(and	(up-pending-objects c: villager >= 2)
-		(up-compare-goal total-food-amount >= {{ESCROW_070}})))
+		(up-compare-goal total-food-amount >= 25)))
 	(unit-type-count-total villager >= {{ESCROW_071}}); 27
 =>
 	(up-add-research-cost c: ri-wheel-barrow c: 1)
@@ -1200,9 +1200,9 @@
 =>
 	(up-jump-rule 9))
 (defrule
-	(up-compare-goal total-food-amount < {{ESCROW_082}});	(food-amount < 125)
+	(up-compare-goal total-food-amount < 125);	(food-amount < 125)
 	(up-pending-objects c: villager < 2)
-	(unit-type-count villager-food < {{ESCROW_083}}); 15
+	(unit-type-count villager-food < 12); 15
 	(goal trainvillager yes)
 	(housing-headroom >= 1)
 	(up-compare-goal custom-civ-pop < up-max-civ)
@@ -1261,7 +1261,7 @@
 ;(or
 	(up-pending-objects c: farm == 0)
 	(unit-type-count-total villager <= {{ESCROW_095}});); test
-	(unit-type-count-total villager <= {{ESCROW_096}}); 33
+	(unit-type-count-total villager <= 30); 33
 	(goal sk-var no)
 	(wood-amount < {{ESCROW_097}}); 250
 	(military-population >= {{ESCROW_098}})
@@ -1296,9 +1296,9 @@
 (defrule
 (or	(goal strategy sling)
 (or	(and	(up-compare-goal strategy-type <= feudal-war)
-		(building-type-count-total blacksmith >= {{ESCROW_102}}))
+		(building-type-count-total blacksmith >= 1))
 (or	(and	(goal strategy s-flush)
-		(building-type-count-total stable >= {{ESCROW_103}}))
+		(building-type-count-total stable >= 1))
 	(strategic-number sn-current-age >= fcastlea))))
 	(unit-type-count-total villager >= {{ESCROW_104}}); 24
 =>
@@ -1310,7 +1310,7 @@
 		(and	(goal sk-var yes)
 			(building-type-count-total archery-range >= {{ESCROW_105}})))
 	(and	(goal maa-var yes)
-		(building-type-count-total barracks >= {{ESCROW_106}})))
+		(building-type-count-total barracks >= 1)))
 	(unit-type-count-total villager >= {{ESCROW_107}}); 22
 =>
 	(up-add-research-cost c: ri-horse-collar c: 1)
@@ -1329,10 +1329,10 @@
 =>
 	(up-jump-rule 4))
 (defrule
-	(up-compare-goal total-food-amount < {{ESCROW_108}})
+	(up-compare-goal total-food-amount < 225)
 (or	(up-compare-goal total-food-amount < 175);	(food-amount < 175)
-	(up-compare-goal excessFood < {{ESCROW_109}}))
-	(unit-type-count villager-food < {{ESCROW_110}})
+	(up-compare-goal excessFood < 175))
+	(unit-type-count villager-food < 19)
 	(population < max-civ-pop)
 	(up-compare-goal custom-civ-pop < up-max-civ)
 	(goal trainvillager yes)
@@ -1358,7 +1358,7 @@
 (or	(up-compare-goal excessFood >= 225); 275
 (or	(unit-type-count villager-food >= 19)
 (or	(unit-type-count-total villager >= 36)
-	(unit-type-count-total villager >= {{ESCROW_115}})))))
+	(unit-type-count-total villager >= 42)))))
 (or	(goal dreitc yes); (building-type-count-total town-center >= 3)
 	(up-compare-goal total-stone-amount < tc-stone))
 =>
@@ -1382,7 +1382,7 @@
 		(and	(wall-completed-percentage 2 < 100)
 			(wall-completed-percentage 1 < 100)))
 (or	(up-compare-flag escrow-flag == 64)
-	(building-type-count town-center <= {{ESCROW_117}}))))
+	(building-type-count town-center <= 0))))
 =>
 	(up-jump-rule 4))
 (defrule
@@ -1392,20 +1392,20 @@
 ;(or	(unit-type-count-total villager >= 9)
 ;	(and	(unit-type-count-total villager >= 8)
 ;		(up-compare-goal mysheep <= 1))); 2
-	(gold-amount >= {{ESCROW_118}})
+	(gold-amount >= 50)
 =>
 	(up-add-research-cost c: ri-loom c: 1)
 	(up-modify-flag escrow-flag c:+ 64)
 	(up-jump-rule 3))
 (defrule
-	(gold-amount >= {{ESCROW_119}})
+	(gold-amount >= 190)
 (or	(up-compare-goal total-food-amount < 560); (food-amount < 520))
 (or	(and	(up-compare-goal total-food-amount < 720); (food-amount < 710)
-		(gold-amount >= {{ESCROW_120}}))
+		(gold-amount >= 230))
 	(and	(up-compare-goal total-food-amount < 760); (food-amount < 710)
-		(gold-amount >= {{ESCROW_121}}))))
+		(gold-amount >= 250))))
 	(current-age == feudal-age)
-	(gold-amount >= {{ESCROW_122}})
+	(gold-amount >= 50)
 =>
 	(up-add-research-cost c: ri-loom c: 1)
 	(up-modify-flag escrow-flag c:+ 64)
@@ -1432,13 +1432,13 @@
 (or	(strategic-number sn-current-age <= feudal)
 (or	(and	(unit-type-count-total trade-cart <= 0)
 		(and	(unit-type-count-total trade-cog <= 0)
-			(unit-type-count-total merchant-ship <= {{ESCROW_123}})))
+			(unit-type-count-total merchant-ship <= 0)))
 (or	(and	(players-building-type-count every-ally market <= 0)
 		(and	(players-building-type-count every-ally dock <= 0)
-			(players-building-type-count every-ally port <= {{ESCROW_124}})))
+			(players-building-type-count every-ally port <= 0)))
 (or	(up-research-status c: ri-cartography != research-available)
 (or	(goal underattack yes)
-	(building-type-count market <= {{ESCROW_125}}))))))
+	(building-type-count market <= 0))))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -1457,13 +1457,13 @@
 (defrule
 (or	(and	(unit-type-count-total trade-cart <= 0)
 		(and	(unit-type-count-total trade-cog <= 0)
-			(unit-type-count-total merchant-ship <= {{ESCROW_126}})))
+			(unit-type-count-total merchant-ship <= 0)))
 (or	(and	(players-building-type-count every-ally market <= 0)
 		(and	(players-building-type-count every-ally dock <= 0)
-			(players-building-type-count every-ally port <= {{ESCROW_127}})))
+			(players-building-type-count every-ally port <= 0)))
 (or	(up-research-status c: ri-caravan != research-available)
 (or	(goal underattack yes)
-	(building-type-count market <= {{ESCROW_128}})))))
+	(building-type-count market <= 0)))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -1483,7 +1483,7 @@
 (or	(up-research-status c: ri-man-at-arms != research-available)
 (or	(goal underattack yes)
 (or	(up-compare-goal custom-civ-pop < 17)
-	(building-type-count barracks <= {{ESCROW_129}}))))
+	(building-type-count barracks <= 0))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -1510,7 +1510,7 @@
 (or	(up-research-status c: ri-long-swordsman != research-available)
 (or	(goal underattack yes)
 (or	(up-compare-goal custom-civ-pop < 25)
-	(building-type-count barracks <= {{ESCROW_133}}))))
+	(building-type-count barracks <= 0))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -1526,7 +1526,7 @@
 (or	(up-research-status c: ri-two-handed-swordsman != research-available)
 (or	(goal underattack yes)
 (or	(up-compare-goal custom-civ-pop < 30)
-	(building-type-count barracks <= {{ESCROW_136}}))))
+	(building-type-count barracks <= 0))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -1542,7 +1542,7 @@
 (or	(up-research-status c: ri-champion != research-available)
 (or	(up-compare-goal custom-civ-pop < 35)
 (or	(goal underattack yes)
-	(building-type-count barracks <= {{ESCROW_139}}))))
+	(building-type-count barracks <= 0))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -1559,7 +1559,7 @@
 (or	(unit-type-count-total heavy-eagle-warrior >= 11)
 	(unit-type-count-total eagle-warrior-line >= {{ESCROW_142}})))
 	(goal underattack no)
-	(building-type-count barracks >= {{ESCROW_143}})
+	(building-type-count barracks >= 1)
 	(research-available ri-elite-eagle-warrior)
 =>
 	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
@@ -1569,7 +1569,7 @@
 (or	(up-research-status c: ri-cavalier != research-available)
 (or	(goal underattack yes)
 (or	(not	(research-available ri-cavalier))
-	(building-type-count stable <= {{ESCROW_144}})))))
+	(building-type-count stable <= 0)))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -1597,7 +1597,7 @@
 			(up-compare-goal custom-civ-pop < {{ESCROW_147}})))
 (or	(up-research-status c: ri-paladin != research-available)
 (or	(goal underattack yes)
-	(building-type-count stable <= {{ESCROW_148}}))))
+	(building-type-count stable <= 0))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -1623,7 +1623,7 @@
 (or	(up-compare-goal custom-civ-pop < 15)
 (or	(up-research-status c: ri-light-cavalry != research-available)
 (or	(unit-type-count-total scout-cavalry-line < 2)
-	(building-type-count stable <= {{ESCROW_152}}))))
+	(building-type-count stable <= 0))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -1638,7 +1638,7 @@
 (or	(up-compare-goal custom-civ-pop < 45)
 (or	(up-compare-goal underattack != no)
 (or	(up-research-status c: ri-hussar != research-available)
-	(building-type-count stable <= {{ESCROW_154}}))))
+	(building-type-count stable <= 0))))
 =>
 	(up-jump-rule 3))
 (defrule
@@ -1659,7 +1659,7 @@
 		(unit-type-count-total scout-cavalry-line >= {{ESCROW_155}})))); 9
 (or	(up-research-status c: ri-plate-barding != research-available)
 	(and	(up-compare-goal excessFood >= 850)
-		(up-compare-goal excessGold >= {{ESCROW_156}})))
+		(up-compare-goal excessGold >= 800)))
 =>
 	(up-add-research-cost c: ri-hussar c: 1)
 	(up-modify-flag escrow-flag c:+ 131072)
@@ -1682,7 +1682,7 @@
 (or	(up-compare-goal custom-civ-pop < 25)
 (or	(up-research-status c: ri-heavy-camel != research-available)
 (or	(up-compare-goal camel-set < 4); 6
-	(building-type-count stable <= {{ESCROW_159}}))))
+	(building-type-count stable <= 0))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -1760,7 +1760,7 @@
 (or	(unit-type-count villager-gold >= 2)
 (or	(up-compare-goal tradeunits >= 6)
 	(up-compare-goal relic-count >= 2)))))(goal trainskirm yes)
-	(unit-type-count-total skirmisher-line >= {{ESCROW_166}}); 10
+	(unit-type-count-total skirmisher-line >= 9); 10
 =>
 	(up-add-research-cost c: ri-elite-skirmisher c: 1)
 	(up-modify-flag escrow-flag c:+ 2097152)); end jumps
@@ -1787,7 +1787,7 @@
 (or	(up-compare-goal custom-civ-pop < 24)
 ;(or	(goal underattack yes)
 (or	(up-research-status c: ri-pikeman != research-available)
-	(building-type-count barracks <= {{ESCROW_168}})));)
+	(building-type-count barracks <= 0)));)
 =>
 	(up-jump-rule 2))
 (defrule
@@ -1816,7 +1816,7 @@
 (or	(up-compare-goal custom-civ-pop < 33)
 (or	(goal underattack yes)
 (or	(up-research-status c: ri-halberdier != research-available)
-	(building-type-count barracks <= {{ESCROW_172}}))))
+	(building-type-count barracks <= 0))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -1892,30 +1892,30 @@
 (or	(up-compare-goal custom-civ-pop < 30)
 (or	(up-research-status c: ri-bloodlines != research-available)
 (or	(goal underattack yes)
-	(building-type-count stable <= {{ESCROW_180}}))))
+	(building-type-count stable <= 0))))
 =>
 	(up-jump-rule 3))
 (defrule
-	(unit-type-count-total imperial-camel < {{ESCROW_181}})
-	(unit-type-count-total missionary < {{ESCROW_182}})
-	(unit-type-count-total scout-cavalry-class < {{ESCROW_183}})
-	(unit-type-count-total cavalry-class < {{ESCROW_184}})
-	(unit-type-count-total magyar-huszar < {{ESCROW_185}})
-	(unit-type-count-total boyar < {{ESCROW_186}})
-	(unit-type-count-total cavalry-archer-class < {{ESCROW_187}})
+	(unit-type-count-total imperial-camel < 8)
+	(unit-type-count-total missionary < 8)
+	(unit-type-count-total scout-cavalry-class < 8)
+	(unit-type-count-total cavalry-class < 8)
+	(unit-type-count-total magyar-huszar < 8)
+	(unit-type-count-total boyar < 8)
+	(unit-type-count-total cavalry-archer-class < 8)
 	(up-compare-goal battle-elephant-set < 8)
-	(unit-type-count-total ballista-elephant < {{ESCROW_188}})
-	(unit-type-count-total elite-ballista-elephant < {{ESCROW_189}})
-	(unit-type-count-total cavalry-cannon-class < {{ESCROW_190}})
-	(unit-type-count-total genitour < {{ESCROW_191}})
-	(unit-type-count-total elite-genitour < {{ESCROW_192}})
-	(unit-type-count-total genitour-placeholder < {{ESCROW_193}})
-	(unit-type-count-total cavalry-cannon-class < {{ESCROW_194}})
+	(unit-type-count-total ballista-elephant < 8)
+	(unit-type-count-total elite-ballista-elephant < 8)
+	(unit-type-count-total cavalry-cannon-class < 8)
+	(unit-type-count-total genitour < 8)
+	(unit-type-count-total elite-genitour < 8)
+	(unit-type-count-total genitour-placeholder < 8)
+	(unit-type-count-total cavalry-cannon-class < 8)
 =>
 	(set-goal temporary-goal9 1634453))
 (defrule
 	(goal temporary-goal9 1634453)
-	(unit-type-count-total elephant-archer < {{ESCROW_195}})
+	(unit-type-count-total elephant-archer < 8)
 	(up-compare-goal steppe-lancer-set < 8)
 	(up-compare-goal war-chariot-set < 8)
 (nand	(goal palagoal yes)
@@ -1933,7 +1933,7 @@
 (or	(up-compare-goal custom-civ-pop < 24)
 (or	(up-research-status c: ri-scale-barding != research-available)
 (or	(goal underattack yes)
-	(building-type-count blacksmith <= {{ESCROW_197}}))))
+	(building-type-count blacksmith <= 0))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -1960,7 +1960,7 @@
 (or	(up-compare-goal custom-civ-pop < 32)
 (or	(up-research-status c: ri-chain-barding != research-available)
 (or	(goal underattack yes)
-	(building-type-count blacksmith <= {{ESCROW_204}}))))
+	(building-type-count blacksmith <= 0))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -1985,7 +1985,7 @@
 (or	(up-compare-goal custom-civ-pop < 40)
 (or	(up-research-status c: ri-plate-barding != research-available)
 (or	(goal underattack yes)
-	(building-type-count blacksmith <= {{ESCROW_210}}))))
+	(building-type-count blacksmith <= 0))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -2011,16 +2011,16 @@
 (or	(up-research-status c: ri-fletching != research-available)
 (or	(up-compare-goal custom-civ-pop < 24)
 (or	(goal underattack yes)
-	(building-type-count blacksmith <= {{ESCROW_216}})))))
+	(building-type-count blacksmith <= 0)))))
 =>
 	(up-jump-rule 3))
 (defrule
-	(up-compare-goal custom-civ-pop < {{ESCROW_217}}); 30
-	(unit-type-count-total villager-food < {{ESCROW_218}})
-	(up-compare-goal total-food-amount < {{ESCROW_219}}); 100
-	(food-amount < {{ESCROW_220}});
+	(up-compare-goal custom-civ-pop < 27); 30
+	(unit-type-count-total villager-food < 18)
+	(up-compare-goal total-food-amount < 150); 100
+	(food-amount < 100);
 (or	(up-pending-objects c: villager < 2)
-	(up-compare-goal total-food-amount < {{ESCROW_221}}))
+	(up-compare-goal total-food-amount < 50))
 ; hm	(goal attacking no)
 =>
 	(up-jump-rule 2))
@@ -2051,21 +2051,21 @@
 (or	(building-type-count blacksmith <= 0)
 (or	(up-research-status c: ri-bodkin-arrow != research-available)
 	(and	(up-research-status c: ri-crossbow < research-pending)
-		(unit-type-count-total archer-line >= {{ESCROW_229}}))))
+		(unit-type-count-total archer-line >= 4))))
 =>
 	(up-jump-rule 3))
 (defrule
 	(population < max-civ-pop)
 	(up-compare-goal custom-civ-pop < up-max-civ)
 	(up-pending-objects c: villager <= 0)
-	(food-amount < {{ESCROW_230}})
+	(food-amount < 70)
 	(up-research-status c: ri-wheel-barrow != research-pending)
-	(unit-type-count-total archery-class < {{ESCROW_231}})
-	(unit-type-count-total cavalry-archer-class < {{ESCROW_232}})
-	(unit-type-count-total slinger < {{ESCROW_233}})
-	(unit-type-count-total galley-line < {{ESCROW_234}})
-	(unit-type-count-total arrow-ship-line < {{ESCROW_235}})
-	(unit-type-count-total longboat-line < {{ESCROW_236}})
+	(unit-type-count-total archery-class < 10)
+	(unit-type-count-total cavalry-archer-class < 10)
+	(unit-type-count-total slinger < 10)
+	(unit-type-count-total galley-line < 10)
+	(unit-type-count-total arrow-ship-line < 10)
+	(unit-type-count-total longboat-line < 10)
 =>
 	(up-jump-rule 2))
 (defrule
@@ -2092,22 +2092,22 @@
 (or	(up-research-status c: ri-bracer != research-available)
 (or	(building-type-count blacksmith <= 0)
 	(and	(up-research-status c: ri-arbalest < research-pending)
-		(unit-type-count-total archer-line >= {{ESCROW_238}})))); 5
+		(unit-type-count-total archer-line >= 9)))); 5
 =>
 	(up-jump-rule 3))
 (defrule
 	(population < max-civ-pop)
 	(up-compare-goal custom-civ-pop < up-max-civ)
-	(up-compare-goal custom-civ-pop < {{ESCROW_239}})
+	(up-compare-goal custom-civ-pop < 120)
 	(up-pending-objects c: villager <= 0)
-	(food-amount < {{ESCROW_240}})
+	(food-amount < 70)
 	(up-research-status c: ri-wheel-barrow != research-pending)
-	(unit-type-count-total archery-class < {{ESCROW_241}})
-	(unit-type-count-total cavalry-archer-class < {{ESCROW_242}})
-	(unit-type-count-total slinger < {{ESCROW_243}})
-	(unit-type-count-total galley-line < {{ESCROW_244}})
-	(unit-type-count-total arrow-ship-line < {{ESCROW_245}})
-	(unit-type-count-total longboat-line < {{ESCROW_246}})
+	(unit-type-count-total archery-class < 10)
+	(unit-type-count-total cavalry-archer-class < 10)
+	(unit-type-count-total slinger < 10)
+	(unit-type-count-total galley-line < 10)
+	(unit-type-count-total arrow-ship-line < 10)
+	(unit-type-count-total longboat-line < 10)
 =>
 	(up-jump-rule 2))
 (defrule
@@ -2135,12 +2135,12 @@
 (or	(up-research-status c: ri-chemistry != research-available)
 (or	(up-compare-const hc-available == 0)
 (or	(up-compare-goal custom-civ-pop < 33)
-	(building-type-count university <= {{ESCROW_248}})))))
+	(building-type-count university <= 0)))))
 =>
 	(up-jump-rule 2))
 (defrule
 	(goal strategy fast-imp)
-	(building-type-count-total archery-range >= {{ESCROW_249}})
+	(building-type-count-total archery-range >= 1)
 =>
 	(up-add-research-cost c: ri-chemistry c: 1)
 	(up-modify-flag escrow-flag2 c:+ 1024)
@@ -2157,7 +2157,7 @@
 	(up-jump-rule 1)); end jump
 (defrule
 	(up-research-status c: ri-chemistry == research-available)
-	(building-type-count university >= {{ESCROW_251}})
+	(building-type-count university >= 1)
 	(goal underattack no)
 	(up-compare-goal custom-civ-pop >= {{ESCROW_252}})
 	(up-research-status c: ri-ballistics != research-available)
@@ -2174,7 +2174,7 @@
 (or	(goal underattack yes)
 (or	(up-research-status c: ri-ballistics != research-available)
 (or	(up-compare-goal custom-civ-pop < 33)
-	(building-type-count university <= {{ESCROW_254}}))))
+	(building-type-count university <= 0))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -2193,7 +2193,7 @@
 (or	(up-compare-goal custom-civ-pop < 24)
 (or	(up-research-status c: ri-scale-mail != research-available)
 (or	(goal underattack yes)
-	(building-type-count blacksmith <= {{ESCROW_256}}))))))
+	(building-type-count blacksmith <= 0))))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -2211,7 +2211,7 @@
 (or	(up-compare-goal custom-civ-pop < 33)
 (or	(up-research-status c: ri-chain-mail != research-available)
 (or	(goal underattack yes)
-	(building-type-count blacksmith <= {{ESCROW_259}})))))
+	(building-type-count blacksmith <= 0)))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -2230,7 +2230,7 @@
 (or	(up-compare-goal custom-civ-pop < 40)
 (or	(up-research-status c: ri-plate-mail != research-available)
 (or	(goal underattack yes)
-	(building-type-count blacksmith <= {{ESCROW_262}}))))))
+	(building-type-count blacksmith <= 0))))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -2284,7 +2284,7 @@
 =>
 	(up-jump-rule 1))
 (defrule
-	(unit-type-count-total galley-line >= {{ESCROW_267}})
+	(unit-type-count-total galley-line >= 3)
 (or	(unit-type-count-total galley-line >= 7)
 (or	(goal traingalley yes)
 (or	(food-amount >= 200)
@@ -2314,7 +2314,7 @@
 (or	(players-unit-type-count focus-player monk >= 13)
 	(players-unit-type-count focus-player missionary >= {{ESCROW_271}}))
 	(research-available ri-heresy)
-	(building-type-count monastery >= {{ESCROW_272}})
+	(building-type-count monastery >= 1)
 	(up-compare-goal custom-civ-pop >= {{ESCROW_273}})
 	(up-compare-goal strategy != stonewall)
 	(up-compare-goal strategy != r-flush)
@@ -2332,7 +2332,7 @@
 (or	(and	(up-compare-const dm-game == 1)
 		(and	(game-time < 210)
 			(unit-type-count-total villager < {{ESCROW_274}})))
-	(building-type-count-total market >= {{ESCROW_275}})))))
+	(building-type-count-total market >= 1)))))
 =>
 	(up-jump-rule 5))
 (defrule
@@ -2343,7 +2343,7 @@
 (or	(goal strategy sling)
 	(and	(goal tradecarts yes)
 		(and	(strategic-number sn-current-age >= imperial)
-			(players-building-type-count any-ally market >= {{ESCROW_277}}))))
+			(players-building-type-count any-ally market >= 1))))
 =>
 	(up-add-object-cost c: market c: 1)
 	(up-modify-flag escrow-flag2 c:+ 1048576)
@@ -2391,9 +2391,9 @@
 	(food-amount >= castle-food)
 	(gold-amount >= castle-gold)
 	(up-research-status c: castle-age != research-available)
-	(building-type-count blacksmith >= {{ESCROW_282}})
-	(building-type-count-total stable <= {{ESCROW_283}})
-	(building-type-count-total archery-range <= {{ESCROW_284}})
+	(building-type-count blacksmith >= 1)
+	(building-type-count-total stable <= 0)
+	(building-type-count-total archery-range <= 0)
 =>
 	(up-add-object-cost c: market c: 1)
 	(up-modify-flag escrow-flag2 c:+ 1048576)); end jump
@@ -2446,11 +2446,11 @@
 	(current-age == castle-age)
 	(strategic-number sn-current-age <= castlea)
 	(up-research-status c: imperial-age <= research-unavailable)
-	(building-type-count-total monastery >= {{ESCROW_293}})
-	(building-type-count-total siege-workshop <= {{ESCROW_294}})
-	(building-type-count-total university <= {{ESCROW_295}})
-	(building-type-count-total castle <= {{ESCROW_296}})
-	(building-type-count-total krepost <= {{ESCROW_297}})
+	(building-type-count-total monastery >= 1)
+	(building-type-count-total siege-workshop <= 0)
+	(building-type-count-total university <= 0)
+	(building-type-count-total castle <= 0)
+	(building-type-count-total krepost <= 0)
 =>
 	(up-add-object-cost c: siege-workshop c: 1)
 	(up-modify-flag escrow-flag2 c:+ 2097153)
@@ -2510,11 +2510,11 @@
 	(up-jump-rule 6))
 (defrule
 	(goal position-goal flank)
-	(strategic-number skirmsarchers >= {{ESCROW_310}})
-	(strategic-number infantry < {{ESCROW_311}})
-	(strategic-number cavalry < {{ESCROW_312}})
-	(military-population < {{ESCROW_313}})
-	(building-type-count castle < {{ESCROW_314}}); test
+	(strategic-number skirmsarchers >= 10)
+	(strategic-number infantry < 7)
+	(strategic-number cavalry < 3)
+	(military-population < 2)
+	(building-type-count castle < 1); test
 =>
 	(disable-self))
 ;	(up-add-object-cost c: siege-workshop c: 1)
@@ -2529,29 +2529,29 @@
 =>
 	(up-jump-rule 3))
 (defrule ; go up 1
-	(building-type-count-total town-center >= {{ESCROW_315}})
-	(building-type-count-total monastery >= {{ESCROW_316}})
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total monastery >= 1)
 	(strategic-number sn-current-age == castlea)
 (or	(up-compare-goal custom-civ-pop >= up-max-civ)
 	(and	(population >= up-max-civ)
 		(goal milunits no)))
-	(building-type-count-total university < {{ESCROW_317}})
-	(building-type-count castle < {{ESCROW_318}})
+	(building-type-count-total university < 1)
+	(building-type-count castle < 1)
 =>
 	(up-add-object-cost c: siege-workshop c: 1)
 	(up-modify-flag escrow-flag2 c:+ 2097153)
 	(set-goal increase-ts 0)
 	(up-jump-rule 3))
 (defrule ; go up 2
-	(building-type-count-total town-center >= {{ESCROW_319}})
-	(building-type-count-total monastery >= {{ESCROW_320}})
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total monastery >= 1)
 	(strategic-number sn-current-age == castlea)
 	(up-compare-goal custom-civ-pop >= {{ESCROW_321}})
 (or	(and	(unit-type-count villager-food >= 25)
 		(goal milunits no))
 	(building-type-count-total town-center >= {{ESCROW_322}}))
-	(building-type-count-total university < {{ESCROW_323}})
-	(building-type-count castle < {{ESCROW_324}})
+	(building-type-count-total university < 1)
+	(building-type-count castle < 1)
 =>
 	(up-add-object-cost c: siege-workshop c: 1)
 	(up-modify-flag escrow-flag2 c:+ 2097153)
@@ -2561,9 +2561,9 @@
 	(up-compare-goal custom-civ-pop >= {{ESCROW_325}}); (building-type-count-total town-center >= 3)
 ; test	(goal milunits no)
 	(strategic-number sn-current-age == castlea)
-	(building-type-count-total monastery >= {{ESCROW_326}})
-	(building-type-count-total university < {{ESCROW_327}})
-	(building-type-count castle < {{ESCROW_328}})
+	(building-type-count-total monastery >= 1)
+	(building-type-count-total university < 1)
+	(building-type-count castle < 1)
 (or	(food-amount >= imperial-food)
 	(gold-amount >= imperial-gold))
 =>
@@ -2589,9 +2589,9 @@
 (or	(building-available castle)
 	(up-research-status c: castle-age == research-pending))
 ;	(up-compare-goal total-stone-amount >= castle-stone); hmm
-	(building-type-count-total town-center >= {{ESCROW_329}})
-	(unit-type-count-total villager >= {{ESCROW_330}})
-	(building-type-count-total castle < {{ESCROW_331}})
+	(building-type-count-total town-center >= 1)
+	(unit-type-count-total villager >= 1)
+	(building-type-count-total castle < 1)
 (or	(up-compare-goal custom-civ-pop >= up-max-civ)
 	(up-compare-goal custom-civ-pop >= {{ESCROW_332}}))
 =>
@@ -2628,7 +2628,7 @@
 	(up-jump-rule 27))
 (defrule
 	(goal feudalvills -1)
-	(building-type-count-total town-center == {{ESCROW_333}})
+	(building-type-count-total town-center == 1)
 	(up-resource-amount amount-feudal-town-center >= 1)
 	(strategic-number sn-current-age <= feudal)
 	(strategic-number sn-current-age >= dfeudal)
@@ -2673,12 +2673,12 @@
 	(up-compare-goal excessWood < tc-350-wood); tc-175-wood
 	(up-compare-goal custom-civ-pop < {{ESCROW_334}})
 (or	(building-type-count-total archery-range <= 1)
-	(building-type-count-total siege-workshop <= {{ESCROW_335}}))
+	(building-type-count-total siege-workshop <= 0))
 =>
 	(up-jump-rule 23))
 (defrule
-	(game-time < {{ESCROW_336}})
-	(building-type-count-total town-center >= {{ESCROW_337}})
+	(game-time < 600)
+	(building-type-count-total town-center >= 1)
 	(up-compare-goal custom-civ-pop < up-max-civ)
 =>
 	(up-modify-goal temporary-goal g:= villagercounttotal)
@@ -2692,8 +2692,8 @@
 	(up-modify-goal temporary-goal3 c:* 6)
 	(up-modify-goal temporary-goal3 c:+ 1))
 (defrule
-	(game-time < {{ESCROW_338}})
-	(building-type-count-total town-center >= {{ESCROW_339}})
+	(game-time < 600)
+	(building-type-count-total town-center >= 1)
 	(up-compare-goal custom-civ-pop < up-max-civ)
 	(up-compare-goal temporary-goal g:< temporary-goal3)
 =>
@@ -2714,7 +2714,7 @@
 			(and	(goal position-goal flank)
 				(strategic-number sn-military-superiority <= {{ESCROW_344}}))))
 	(and	(goal strategy sling)
-		(building-type-count-total market < {{ESCROW_345}})))
+		(building-type-count-total market < 1)))
 =>
 	(up-jump-rule 19))
 (defrule
@@ -2732,7 +2732,7 @@
 (defrule
 (or	(and	(goal migration-state 1)
 		(and	(up-compare-goal relocating <= 0)
-			(unit-type-count-total transport-ship <= {{ESCROW_348}})))
+			(unit-type-count-total transport-ship <= 0)))
 	(and	(game-time < 600)
 		(or	(goal nomaden yes)
 			(goal landnomad yes))))
@@ -2741,7 +2741,7 @@
 (defrule
 (or	(and	(goal migration-state 1)
 		(and	(unit-type-count-total transport-ship <= 0)
-			(wood-amount < {{ESCROW_349}})))
+			(wood-amount < 400)))
 	(and	(building-type-count-total town-center <= 0)
 		(and	(building-type-count-total lumber-camp <= 0)
 			(and	(wood-amount < 375)
@@ -2774,13 +2774,13 @@
 (defrule
 	(up-pending-objects c: town-center >= 1)
 (or	(and	(up-compare-goal strategy-type <= castle-war)
-		(up-compare-goal excessFood < {{ESCROW_352}})); 200
-	(up-compare-goal excessFood < {{ESCROW_353}})); 150
+		(up-compare-goal excessFood < 200)); 200
+	(up-compare-goal excessFood < 150)); 150
 	(wood-amount < tc-wood)
 (or	(building-type-count-total farm g:< maxfarms)
-	(up-compare-goal excessFood < {{ESCROW_354}})); hm
-	(unit-type-count villager-food < {{ESCROW_355}}); 18
-	(unit-type-count villager-wood < {{ESCROW_356}}); 18
+	(up-compare-goal excessFood < 50)); hm
+	(unit-type-count villager-food < 18); 18
+	(unit-type-count villager-wood < 21); 18
 =>
 	(up-jump-rule 12))
 (defrule
@@ -2938,9 +2938,9 @@
 	(up-modify-flag escrow-flag2 c:+ 524288)
 	(up-jump-rule 1)); end first jump
 (defrule
-	(building-type-count-total town-center < {{ESCROW_388}})
+	(building-type-count-total town-center < 1)
 (or	(unit-type-count villager-wood >= 1)
-	(wood-amount >= {{ESCROW_389}})); < 1
+	(wood-amount >= 275)); < 1
 (or	(unit-type-count villager-stone >= 1)
 	(up-compare-goal total-stone-amount >= tc-stone))
 ;	(goal increase-ts 0); set instead
@@ -2959,9 +2959,9 @@
 (defrule
 	(goal landnomad 3)
 (not	(up-pending-placement c: lumber-camp))
-	(unit-type-count-total villager >= {{ESCROW_390}})
-	(building-type-count-total town-center <= {{ESCROW_391}})
-	(building-type-count-total lumber-camp <= {{ESCROW_392}})
+	(unit-type-count-total villager >= 1)
+	(building-type-count-total town-center <= 0)
+	(building-type-count-total lumber-camp <= 0)
 =>
 	(up-modify-sn sn-maximum-food-drop-distance c:max 16); 20
 	(set-strategic-number sn-maximum-wood-drop-distance 28); 30
@@ -3012,14 +3012,14 @@
 (or	(up-compare-goal mangonel-set >= 2)
 (or	(military-population >= 13); 6
 (or	(strategic-number sn-military-superiority >= 1)
-	(building-type-count siege-workshop <= {{ESCROW_396}})))))));)
+	(building-type-count siege-workshop <= 0)))))));)
 =>
 	(up-jump-rule 4))
 (defrule
 (or	(up-pending-objects c: mangonel-line >= 1)
 (or	(up-pending-objects c: 699 >= 1)
 	(up-pending-objects c: 701 >= 1)))
-	(building-type-count siege-workshop <= {{ESCROW_397}})
+	(building-type-count siege-workshop <= 1)
 =>
 	(up-jump-rule 3))
 (defrule
@@ -3062,7 +3062,7 @@
 (or	(not	(unit-available monk))
 (or	(goal underattack yes)
 (or	(housing-headroom <= 0)
-	(building-type-count-total monastery <= {{ESCROW_406}}))))
+	(building-type-count-total monastery <= 0))))
 =>
 	(up-jump-rule 3))
 (defrule
@@ -3078,7 +3078,7 @@
 (or	(up-compare-const ctr-game == 1)
 	(and	(strategic-number sn-military-superiority >= 0)
 		(and	(up-gaia-type-count-total c: relic >= 2); 2-4
-			(unit-type-count 134 <= {{ESCROW_408}}))))
+			(unit-type-count 134 <= 0))))
 =>
 	(up-add-object-cost c: monk c: 1)
 	(up-modify-flag escrow-flag2 c:+ 33554432)
@@ -3092,7 +3092,7 @@
 ;	(goal defend no)
 ;	(strategic-number sn-military-superiority >= 0)
 	(game-time < {{ESCROW_409}})
-	(unit-type-count 134 <= {{ESCROW_410}})
+	(unit-type-count 134 <= 0)
 	(unit-type-count-total monk <= {{ESCROW_411}})
 =>
 	(up-add-object-cost c: monk c: 1)
@@ -3104,10 +3104,10 @@
 	(up-jump-rule 2))
 (defrule
 	(research-available ri-imperial-skirmisher)
-	(building-type-count archery-range >= {{ESCROW_412}})
-	(up-compare-goal custom-civ-pop >= {{ESCROW_413}})
+	(building-type-count archery-range >= 1)
+	(up-compare-goal custom-civ-pop >= 25)
 	(goal underattack no)
-	(unit-type-count-total skirmisher-line >= {{ESCROW_414}})
+	(unit-type-count-total skirmisher-line >= 8)
 =>
 	(up-modify-goal cost-wood c:max 300)
 	(up-modify-goal cost-gold c:max 450)
@@ -3115,8 +3115,8 @@
 	(up-modify-flag escrow-flag2 c:+ 67108864))
 (defrule
 	(research-available ri-imperial-camel)
-	(building-type-count stable >= {{ESCROW_415}})
-	(up-compare-goal custom-civ-pop >= {{ESCROW_416}})
+	(building-type-count stable >= 1)
+	(up-compare-goal custom-civ-pop >= 25)
 	(goal underattack no)
 	(up-compare-goal camel-set >= 8)
 =>
@@ -3153,7 +3153,7 @@
 (or	(goal attacking yes)
 (or	(goal dreitc yes)
 (or	(and	(up-compare-goal total-stone-amount < tc-stone)
-		(unit-type-count villager-stone <= {{ESCROW_427}}))
+		(unit-type-count villager-stone <= 0))
 (or	(up-compare-goal custom-civ-pop >= up-max-civ)
 	(population >= max-civ-pop)))))
 =>
@@ -3162,7 +3162,7 @@
 (defrule
 	(goal strategy sling)
 	(research-available ri-coinage)
-	(building-type-count market >= {{ESCROW_428}})
+	(building-type-count market >= 1)
 	(goal underattack no)
 =>
 	(up-add-research-cost c: ri-coinage c: 1)
@@ -3170,7 +3170,7 @@
 (defrule
 	(goal strategy sling)
 	(research-available ri-banking)
-	(building-type-count market >= {{ESCROW_429}})
+	(building-type-count market >= 1)
 	(up-compare-goal custom-civ-pop >= {{ESCROW_430}})
 	(goal underattack no)
 =>
@@ -3204,7 +3204,7 @@
 (defrule
 	(up-compare-flag escrow-flag3 != 2)
 	(research-available ri-conscription)
-	(building-type-count castle >= {{ESCROW_432}})
+	(building-type-count castle >= 1)
 (or	(population >= max-pop)
 (or	(up-compare-goal custom-civ-pop >= 60)
 	(up-compare-goal custom-civ-pop >= up-max-civ)))
@@ -3247,7 +3247,7 @@
 (defrule
 (or	(up-compare-goal underattack != no)
 (or	(not	(unit-available trebuchet))
-	(building-type-count castle <= {{ESCROW_438}})))
+	(building-type-count castle <= 0)))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -3272,7 +3272,7 @@
 (or	(up-compare-goal custom-civ-pop < 67)
 (or	(up-research-status c: ri-elite-battle-elephant != research-available)
 (or	(goal underattack yes)
-	(building-type-count stable <= {{ESCROW_440}})))))
+	(building-type-count stable <= 0)))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -3288,7 +3288,7 @@
 		(goal strategy stonewall))
 	(unit-type-count-total eagle-warrior-line >= {{ESCROW_441}}))
 	(goal underattack no)
-	(building-type-count barracks >= {{ESCROW_442}})
+	(building-type-count barracks >= 1)
 	(research-available ri-eagle-warrior)
 =>
 	(up-add-research-cost c: ri-eagle-warrior c: 1)
@@ -3300,7 +3300,7 @@
 (or	(up-compare-goal custom-civ-pop < 60)
 (or	(up-research-status c: ri-elite-steppe-lancer != research-available)
 (or	(goal underattack yes)
-	(building-type-count stable <= {{ESCROW_443}})))))
+	(building-type-count stable <= 0)))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -3315,7 +3315,7 @@
 (or	(up-compare-goal custom-civ-pop < 60)
 (or	(up-research-status c: ri-houfnice != research-available)
 (or	(goal underattack yes)
-	(building-type-count siege-workshop <= {{ESCROW_444}}))))
+	(building-type-count siege-workshop <= 0))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -3332,7 +3332,7 @@
 (or	(up-compare-goal custom-civ-pop < 60)
 (or	(up-research-status c: ri-elite-war-chariot != research-available)
 (or	(goal underattack yes)
-	(building-type-count stable <= {{ESCROW_447}})))))
+	(building-type-count stable <= 0)))))
 =>
 	(up-jump-rule 1))
 
@@ -3350,7 +3350,7 @@
 (or	(up-compare-goal custom-civ-pop < 60)
 (or	(up-research-status c: ri-elite-hoplite != research-available)
 (or	(goal underattack yes)
-	(building-type-count barracks <= {{ESCROW_448}})))))
+	(building-type-count barracks <= 0)))))
 =>
 	(up-jump-rule 1))
 

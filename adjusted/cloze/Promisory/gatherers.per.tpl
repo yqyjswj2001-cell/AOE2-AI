@@ -156,10 +156,10 @@
 (or	(up-compare-flag escrow-flag == 2)
 	(building-type-count-total town-center >= 3))
 =>
-	(set-strategic-number sn-wood-gatherer-percentage  {{GATHERERS_WOOD_013}})
-	(set-strategic-number sn-food-gatherer-percentage  {{GATHERERS_FOOD_013}})
-	(set-strategic-number sn-gold-gatherer-percentage  {{GATHERERS_GOLD_013}}); 16
-	(set-strategic-number sn-stone-gatherer-percentage  {{GATHERERS_STONE_013}})); end jump
+	(set-strategic-number sn-wood-gatherer-percentage  42)
+	(set-strategic-number sn-food-gatherer-percentage  44)
+	(set-strategic-number sn-gold-gatherer-percentage  16); 16
+	(set-strategic-number sn-stone-gatherer-percentage  0)); end jump
 
 
 (defrule
@@ -508,10 +508,10 @@
 	(population >= max-civ-pop))))
 	(strategic-number sn-current-age >= fcastlea)
 =>
-	(set-strategic-number sn-wood-gatherer-percentage  {{GATHERERS_WOOD_039}})
-	(set-strategic-number sn-food-gatherer-percentage  {{GATHERERS_FOOD_039}})
-	(set-strategic-number sn-gold-gatherer-percentage   {{GATHERERS_GOLD_039}})
-	(set-strategic-number sn-stone-gatherer-percentage  {{GATHERERS_STONE_039}}))
+	(set-strategic-number sn-wood-gatherer-percentage  45)
+	(set-strategic-number sn-food-gatherer-percentage  55)
+	(set-strategic-number sn-gold-gatherer-percentage   0)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
 (defrule
 (or	(building-type-count-total town-center >= 3)
 (or	(up-compare-goal custom-civ-pop >= up-max-civ)
@@ -820,7 +820,7 @@
 	(dropsite-min-distance stone s:<= sn-maximum-stone-drop-distance); castledrop feud
 =>
 	(up-modify-sn sn-stone-gatherer-percentage s:+ sn-gold-gatherer-percentage)
-	(set-strategic-number sn-gold-gatherer-percentage {{GATHERERS_GOLD_059}}))
+	(set-strategic-number sn-gold-gatherer-percentage 0))
 (defrule
 	(strategic-number sn-current-age >= fcastlea)
 	(dropsite-min-distance stone s:<= sn-maximum-stone-drop-distance); castledrop castle
@@ -1128,9 +1128,9 @@
 	(set-strategic-number sn-gold-gatherer-percentage   {{GATHERERS_GOLD_078}})
 	(set-strategic-number sn-stone-gatherer-percentage  {{GATHERERS_STONE_077}}))
 ;	(up-modify-sn sn-wood-gatherer-percentage g:+ sn-gold-gatherer-percentage)
-;	(set-strategic-number sn-gold-gatherer-percentage {{GATHERERS_GOLD_079}})
+;	(set-strategic-number sn-gold-gatherer-percentage 0)
 ;	(up-modify-sn sn-wood-gatherer-percentage g:+ sn-stone-gatherer-percentage)
-;	(set-strategic-number sn-stone-gatherer-percentage {{GATHERERS_STONE_078}}))
+;	(set-strategic-number sn-stone-gatherer-percentage 0))
 
 (defrule
 (or	(up-compare-goal strategy != usual)
@@ -1159,7 +1159,7 @@
 	(up-modify-sn sn-gold-gatherer-percentage c:max 1)
 	(up-modify-sn sn-wood-gatherer-percentage g:+ sn-gold-gatherer-percentage)
 	(up-modify-sn sn-food-gatherer-percentage g:+ sn-gold-gatherer-percentage)
-	(set-strategic-number sn-gold-gatherer-percentage {{GATHERERS_GOLD_080}}))
+	(set-strategic-number sn-gold-gatherer-percentage 0))
 (defrule
 	(strategic-number sn-current-age >= imperial)
 	(cc-players-unit-type-count 0 stone-mine <= 0)
@@ -1169,7 +1169,7 @@
 	(up-modify-sn sn-stone-gatherer-percentage c:max 1)
 	(up-modify-sn sn-wood-gatherer-percentage g:+ sn-stone-gatherer-percentage)
 	(up-modify-sn sn-food-gatherer-percentage g:+ sn-stone-gatherer-percentage)
-	(set-strategic-number sn-stone-gatherer-percentage {{GATHERERS_STONE_079}})); end jump
+	(set-strategic-number sn-stone-gatherer-percentage 0)); end jump
 
 #load-if-defined DARK-AGE-END
 (defrule
@@ -2072,7 +2072,7 @@
 (or	(dropsite-min-distance stone <= -1)
 	(dropsite-min-distance stone >= 255)))
 =>
-	(set-strategic-number sn-stone-gatherer-percentage {{GATHERERS_STONE_081}}))
+	(set-strategic-number sn-stone-gatherer-percentage 0))
 
 (defrule
 	(true)
@@ -2150,10 +2150,10 @@
 (or	(civilian-population >= up-max-civ)
 	(civilian-population >= 16))))))
 =>
-	(set-strategic-number sn-wood-gatherer-percentage  {{GATHERERS_WOOD_079}})
-	(set-strategic-number sn-food-gatherer-percentage  {{GATHERERS_FOOD_079}})
-	(set-strategic-number sn-gold-gatherer-percentage  {{GATHERERS_GOLD_082}})
-	(set-strategic-number sn-stone-gatherer-percentage {{GATHERERS_STONE_082}}))
+	(set-strategic-number sn-wood-gatherer-percentage  34)
+	(set-strategic-number sn-food-gatherer-percentage  0)
+	(set-strategic-number sn-gold-gatherer-percentage  33)
+	(set-strategic-number sn-stone-gatherer-percentage 33))
 (defrule
 (or	(dropsite-min-distance wood <= 3)
 	(building-type-count-total lumber-camp >= 1))
@@ -2171,10 +2171,10 @@
 	(and	(up-compare-const diff-fp != 1)
 		(goal trainvillager no)))
 =>
-	(set-strategic-number sn-wood-gatherer-percentage 	 {{GATHERERS_WOOD_080}}); 25
-	(set-strategic-number sn-food-gatherer-percentage	 {{GATHERERS_FOOD_080}}); 75
-	(set-strategic-number sn-gold-gatherer-percentage 	  {{GATHERERS_GOLD_083}})
-	(set-strategic-number sn-stone-gatherer-percentage 	  {{GATHERERS_STONE_083}}))
+	(set-strategic-number sn-wood-gatherer-percentage 	 30); 25
+	(set-strategic-number sn-food-gatherer-percentage	 70); 75
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
 (defrule
 	(unit-type-count-total villager < 16)
 	(current-age >= feudal-age)
@@ -2182,10 +2182,10 @@
 	(and	(up-compare-const diff-fp != 1)
 		(goal trainvillager no)))
 =>
-	(set-strategic-number sn-wood-gatherer-percentage 	 {{GATHERERS_WOOD_081}})
-	(set-strategic-number sn-food-gatherer-percentage	 {{GATHERERS_FOOD_081}})
-	(set-strategic-number sn-gold-gatherer-percentage 	 {{GATHERERS_GOLD_084}})
-	(set-strategic-number sn-stone-gatherer-percentage 	  {{GATHERERS_STONE_084}}))
+	(set-strategic-number sn-wood-gatherer-percentage 	 36)
+	(set-strategic-number sn-food-gatherer-percentage	 47)
+	(set-strategic-number sn-gold-gatherer-percentage 	 17)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
 (defrule
 	(unit-type-count-total villager < 16)
 	(current-age >= castle-age)
@@ -2193,10 +2193,10 @@
 	(and	(up-compare-const diff-fp != 1)
 		(goal trainvillager no)))
 =>
-	(set-strategic-number sn-wood-gatherer-percentage 	 {{GATHERERS_WOOD_082}})
-	(set-strategic-number sn-food-gatherer-percentage	 {{GATHERERS_FOOD_082}})
-	(set-strategic-number sn-gold-gatherer-percentage 	 {{GATHERERS_GOLD_085}})
-	(set-strategic-number sn-stone-gatherer-percentage 	  {{GATHERERS_STONE_085}}))
+	(set-strategic-number sn-wood-gatherer-percentage 	 36)
+	(set-strategic-number sn-food-gatherer-percentage	 47)
+	(set-strategic-number sn-gold-gatherer-percentage 	 17)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
 (defrule
 	(unit-type-count-total villager < 16)
 	(current-age >= imperial-age)
@@ -2204,20 +2204,20 @@
 	(and	(up-compare-const diff-fp != 1)
 		(goal trainvillager no)))
 =>
-	(set-strategic-number sn-wood-gatherer-percentage 	 {{GATHERERS_WOOD_083}})
-	(set-strategic-number sn-food-gatherer-percentage	 {{GATHERERS_FOOD_083}})
-	(set-strategic-number sn-gold-gatherer-percentage 	 {{GATHERERS_GOLD_086}})
-	(set-strategic-number sn-stone-gatherer-percentage 	  {{GATHERERS_STONE_086}}))
+	(set-strategic-number sn-wood-gatherer-percentage 	 33)
+	(set-strategic-number sn-food-gatherer-percentage	 45)
+	(set-strategic-number sn-gold-gatherer-percentage 	 16)
+	(set-strategic-number sn-stone-gatherer-percentage 	  6))
 (defrule
 	(building-type-count-total town-center <= 0)
 	(unit-type-count-total villager >= 1)
 	(strategic-number sn-wood-gatherer-percentage < 100)
 	(wood-amount < 275)
 =>
-	(set-strategic-number sn-wood-gatherer-percentage 	{{GATHERERS_WOOD_084}})
-	(set-strategic-number sn-food-gatherer-percentage	  {{GATHERERS_FOOD_084}})
-	(set-strategic-number sn-gold-gatherer-percentage 	  {{GATHERERS_GOLD_087}})
-	(set-strategic-number sn-stone-gatherer-percentage 	  {{GATHERERS_STONE_087}}))
+	(set-strategic-number sn-wood-gatherer-percentage 	100)
+	(set-strategic-number sn-food-gatherer-percentage	  0)
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
 (defrule
 	(building-type-count-total town-center <= 0)
 	(unit-type-count-total villager >= 1)
@@ -2225,10 +2225,10 @@
 	(wood-amount >= 275)
 	(stone-amount < tc-stone)
 =>
-	(set-strategic-number sn-wood-gatherer-percentage 	  {{GATHERERS_WOOD_085}})
-	(set-strategic-number sn-food-gatherer-percentage	  {{GATHERERS_FOOD_085}})
-	(set-strategic-number sn-gold-gatherer-percentage 	  {{GATHERERS_GOLD_088}})
-	(set-strategic-number sn-stone-gatherer-percentage 	{{GATHERERS_STONE_088}}))
+	(set-strategic-number sn-wood-gatherer-percentage 	  0)
+	(set-strategic-number sn-food-gatherer-percentage	  0)
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	100))
 
 
 ;(defrule

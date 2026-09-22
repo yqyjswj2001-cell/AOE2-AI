@@ -1,0 +1,68 @@
+{
+  "schema": "reviewed-developer-metadata-corrections-v1",
+  "source": "http://userpatch.aiscripters.net/reference.html",
+  "reviewed_date": "2026-09-12",
+  "boundary": "Developer documentation examples can reveal metadata contradictions. This is not current DE runtime proof.",
+  "commands": {
+    "up-remove-objects": {
+      "name": "up-remove-objects",
+      "description": "Remove search results whose selected data satisfy the comparison.",
+      "section": "Action",
+      "note": "The raw metadata labels parameter 3 as typeOp, but the developer's own example uses a plain < comparison. The demonstrated < subset is independently recorded here; other operators require separate verification.",
+      "parameters": [
+        {
+          "name": "SearchSource",
+          "type": "Const"
+        },
+        {
+          "name": "ObjectData",
+          "type": "Const"
+        },
+        {
+          "name": "rel-op"
+        },
+        {
+          "name": "value"
+        }
+      ],
+      "documented_operator_subset": [
+        "<"
+      ],
+      "source_example": "(up-remove-objects search-local object-data-hitpoints < 20)",
+      "source_example_description": "Remove objects from the local search results with less than 20 hitpoints.",
+      "runtime_verified": false
+    },
+    "up-object-data": {
+      "name": "up-object-data",
+      "description": "Compare data of the current target object.",
+      "section": "Fact",
+      "note": "Developer example uses a plain > comparison. The raw metadata compare field must not be assumed to mean a c:/g: prefixed operator.",
+      "parameters": [
+        {
+          "name": "ObjectData",
+          "type": "Const"
+        },
+        {
+          "name": "rel-op"
+        },
+        {
+          "name": "value"
+        }
+      ],
+      "documented_operator_subset": [
+        ">"
+      ],
+      "source_example": "(up-object-data object-data-garrison-count > 3)",
+      "runtime_verified": false
+    }
+  },
+  "source_sha256": "c51be0f45ff6f008812735be90ca59c698f28cd9e5147f4a9d724e92aed657f8",
+  "documented_symbol_usages": {
+    "villager-class": {
+      "command": "up-find-local",
+      "source_example": "(up-find-local c: villager-class c: 3)",
+      "numeric_value": null,
+      "runtime_verified": false
+    }
+  }
+}

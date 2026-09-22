@@ -111,10 +111,10 @@
 =>
 	(up-jump-rule 19))
 (defrule
-	(strategic-number sn-military-superiority <= {{RESIGN_SUPERIORITY_001}})
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_002}}); test
+	(strategic-number sn-military-superiority <= -3)
+(or	(and	(strategic-number teamsuperiority <= -3); test
 		(nand	(player-in-game any-ally)
-			(players-population any-ally >= {{RESIGN_PLAYER_POP_003}})))
+			(players-population any-ally >= 75)))
 	(not	(player-in-game any-ally)))
 	(unit-type-count-total villager < 1)
 	(unit-type-count-total monk < 1)
@@ -229,81 +229,81 @@
 (or	(population < sixty-pop)
 	(strategic-number teambalance < 0))
 	(goal attacking no)
-	(population < {{RESIGN_POPULATION_004}});this rule causes a lot of problems in FFA games with treaty - best to disable for now
+	(population < 5);this rule causes a lot of problems in FFA games with treaty - best to disable for now
 =>
 	(set-goal resign yes))
 (defrule
 	(player-in-game any-human-enemy)
 (not	(player-in-game any-ally))
-	(population < {{RESIGN_POPULATION_005}})
-(or	(population < {{RESIGN_POPULATION_006}})
-	(players-population any-enemy >= {{RESIGN_PLAYER_POP_007}}))
-(or	(population < {{RESIGN_POPULATION_008}})
-	(players-population any-enemy >= {{RESIGN_PLAYER_POP_009}}))
-(or	(population < {{RESIGN_POPULATION_010}})
-	(players-population any-enemy >= {{RESIGN_PLAYER_POP_011}}))
-	(players-population any-enemy >= {{RESIGN_PLAYER_POP_012}})
+	(population < 30)
+(or	(population < 24)
+	(players-population any-enemy >= 60))
+(or	(population < 18)
+	(players-population any-enemy >= 48))
+(or	(population < 12)
+	(players-population any-enemy >= 36))
+	(players-population any-enemy >= 24)
 =>
 	(set-goal resign yes))
 (defrule
 	(player-in-game any-human-enemy)
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_013}}); test
+(or	(and	(strategic-number teamsuperiority <= -3); test
 		(nand	(player-in-game any-ally)
 			(players-population any-ally >= ten-pop)))
 	(not	(player-in-game any-ally)))
 	(population < ten-pop)
 	(players-population any-enemy >= thirty-pop)
 	(goal underattack yes)
-	(strategic-number sn-military-superiority <= {{RESIGN_SUPERIORITY_014}})
+	(strategic-number sn-military-superiority <= -3)
 =>
 	(set-goal resign yes))
 (defrule
 (or	(player-in-game any-human-enemy)
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_015}}); test
+(or	(and	(strategic-number teamsuperiority <= -3); test
 		(nand	(player-in-game any-ally)
-			(players-population any-ally >= {{RESIGN_PLAYER_POP_016}})))
+			(players-population any-ally >= 30)))
 	(not	(player-in-game any-ally))))
-	(population < {{RESIGN_POPULATION_017}})
-	(players-population any-enemy >= {{RESIGN_PLAYER_POP_018}})
+	(population < 30)
+	(players-population any-enemy >= 75)
 ;(not	(player-in-game every-ally))
 =>
 	(set-goal resign yes))
 (defrule
 (or	(player-in-game any-human-enemy)
 	(not	(player-in-game any-human-ally)))
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_019}}); test
+(or	(and	(strategic-number teamsuperiority <= -3); test
 		(nand	(player-in-game any-ally)
 			(players-population any-ally >= thirty-pop)))
 	(not	(player-in-game any-ally)))
 	(population < thirty-pop)
 	(players-population any-enemy >= sixty-pop)
-	(strategic-number sn-military-superiority <= {{RESIGN_SUPERIORITY_020}})
+	(strategic-number sn-military-superiority <= -3)
 ;(not	(player-in-game every-ally))
 =>
 	(set-goal resign yes))
 (defrule
 	(player-in-game any-human-enemy)
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_021}}); test
+(or	(and	(strategic-number teamsuperiority <= -3); test
 		(nand	(player-in-game any-ally)
-			(players-population any-ally >= {{RESIGN_PLAYER_POP_022}})))
+			(players-population any-ally >= 80)))
 	(not	(player-in-game any-ally)))
-	(population < {{RESIGN_POPULATION_023}})
-	(players-population any-enemy >= {{RESIGN_PLAYER_POP_024}})
-	(strategic-number sn-military-superiority <= {{RESIGN_SUPERIORITY_025}})
+	(population < 80)
+	(players-population any-enemy >= 144)
+	(strategic-number sn-military-superiority <= -3)
 ;(not	(player-in-game every-ally))
 =>
 	(set-goal resign yes))
 (defrule
 ;(not	(player-in-game any-human-ally))
 	(up-compare-const de-game != 1)
-	(population < {{RESIGN_POPULATION_026}})
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_027}}); test
-		(players-population every-ally < {{RESIGN_PLAYER_POP_028}}))
+	(population < 110)
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(players-population every-ally < 110))
 	(not	(player-in-game any-ally)))
 (or	(player-resigned any-ally)
-(or	(players-population every-enemy >= {{RESIGN_PLAYER_POP_029}})
-	(up-compare-goal teamsuperiority-number < {{RESIGN_TEAM_SCORE_030}})))
-	(players-population any-enemy >= {{RESIGN_PLAYER_POP_031}})
+(or	(players-population every-enemy >= 168)
+	(up-compare-goal teamsuperiority-number < -200)))
+	(players-population any-enemy >= 168)
 	(player-in-game every-enemy)
 =>
 	(set-goal resign yes))
@@ -318,7 +318,7 @@
 =>
 	(up-jump-rule 2))
 (defrule
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_032}}); test
+(or	(and	(strategic-number teamsuperiority <= -3); test
 		(and	(players-population every-ally < sixty-pop)
 			(players-military-population every-ally < ten-pop)))
 	(not	(player-in-game any-ally)))
@@ -329,7 +329,7 @@
 	(set-goal resign yes))
 (defrule
 	(population < thirty-pop)
-(or	(and	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_033}}); test
+(or	(and	(strategic-number teamsuperiority <= -3); test
 		(and	(players-population every-ally < thirty-pop)
 			(players-military-population every-ally < ten-pop)))
 	(not	(player-in-game any-ally)))
@@ -437,14 +437,14 @@
 =>
 	(resign))
 (defrule
-	(game-time >= {{RESIGN_TIME_034}})
-	(game-time < {{RESIGN_TIME_035}})
+	(game-time >= 480)
+	(game-time < 2400)
 	(building-type-count town-center <= 0)
 	(civilian-population <= 0)
 	(building-type-count monastery <= 0)
 	(unit-type-count-total monk <= 0)
 	(building-type-count market <= 0)
-	(strategic-number teamsuperiority <= {{RESIGN_SUPERIORITY_036}})
+	(strategic-number teamsuperiority <= -3)
 	(military-population <= 1)
 	(up-compare-goal my-pop g:< target-pop)
 (not	(player-in-game any-human-ally))
@@ -705,9 +705,9 @@
 (defrule
 	(up-compare-goal fastresign >= 1)
 	(population-cap >= 200)
-	(population < {{RESIGN_POPULATION_037}})
-	(players-population every-ally < {{RESIGN_PLAYER_POP_038}})
-	(players-population every-enemy > {{RESIGN_PLAYER_POP_039}})
+	(population < 80)
+	(players-population every-ally < 100)
+	(players-population every-enemy > 170)
 =>
 	(set-goal resign yes)
 ;	(disable-self)
@@ -753,7 +753,7 @@
 
 (defrule
 	(up-compare-goal fastresign >= 1)
-	(game-time > {{RESIGN_TIME_040}})
+	(game-time > 1700)
 	(up-compare-goal temporary-goal2 g:< temporary-goal)
 ;	(not(game-type 3));scenario
 	(not(player-in-game any-human-ally))

@@ -1,0 +1,107 @@
+{
+  "module": "watercontrol.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "WATER_ADVANTAGE_001",
+      "category": "海战风险选择",
+      "meaning": "短距离后撤区间的严格下界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队在两次攻击之间评估局部加权战力，尚未完全撤退或锁定射击时，按轻微劣势区间选择短距离后撤。",
+      "effect": "选择短距离后撤动作，拉开与敌舰距离。",
+      "group_id": "watercontrol:rule:601",
+      "constraints_note": "WATER_ADVANTAGE_001与002构成严格开区间；若下界不小于上界，这条短退区间路径永不触发。这是战术可达性说明，未强行禁止作者关闭该路径。"
+    },
+    {
+      "key": "WATER_ADVANTAGE_002",
+      "category": "海战风险选择",
+      "meaning": "短距离后撤区间的严格上界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队在两次攻击之间评估局部加权战力，尚未完全撤退或锁定射击时，按轻微劣势区间选择短距离后撤。",
+      "effect": "选择短距离后撤动作，拉开与敌舰距离。",
+      "group_id": "watercontrol:rule:601",
+      "constraints_note": "WATER_ADVANTAGE_001与002构成严格开区间；若下界不小于上界，这条短退区间路径永不触发。这是战术可达性说明，未强行禁止作者关闭该路径。"
+    },
+    {
+      "key": "WATER_ADVANTAGE_003",
+      "category": "海战风险选择",
+      "meaning": "面对喷火船时触发短退的严格上界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队在两次攻击之间面对喷火船，尚未完全撤退或锁定射击时，根据加权战力差决定短距离后撤。",
+      "effect": "面对喷火船时选择短距离后撤动作。",
+      "group_id": "watercontrol:rule:601",
+      "constraints_note": ""
+    },
+    {
+      "key": "WATER_ADVANTAGE_004",
+      "category": "海战风险选择",
+      "meaning": "横向走位区间的包含下界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队在两次攻击之间，尚未进入短退、完全撤退或锁定射击动作时，按战力接近区间选择横向走位。",
+      "effect": "选择横向走位，避免正面追入。",
+      "group_id": "watercontrol:rule:616",
+      "constraints_note": "WATER_ADVANTAGE_004与005构成包含下界、排除上界的区间；若下界不小于上界，横移路径永不触发。未新增未经确认的硬限制。"
+    },
+    {
+      "key": "WATER_ADVANTAGE_005",
+      "category": "海战风险选择",
+      "meaning": "横向走位区间的严格上界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队在两次攻击之间，尚未进入短退、完全撤退或锁定射击动作时，按战力接近区间选择横向走位。",
+      "effect": "选择横向走位，避免正面追入。",
+      "group_id": "watercontrol:rule:616",
+      "constraints_note": "WATER_ADVANTAGE_004与005构成包含下界、排除上界的区间；若下界不小于上界，横移路径永不触发。未新增未经确认的硬限制。"
+    },
+    {
+      "key": "WATER_ADVANTAGE_006",
+      "category": "海战风险选择",
+      "meaning": "追击敌舰所需优势的严格下界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队在两次攻击之间有有效敌方目标，且其他退让、横移或射击动作未占用时，根据优势选择追击。",
+      "effect": "移动追击当前敌舰。",
+      "group_id": "watercontrol:rule:630",
+      "constraints_note": ""
+    },
+    {
+      "key": "WATER_ADVANTAGE_007",
+      "category": "海战风险选择",
+      "meaning": "完全撤退所用战力差的严格上界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队战力差落入严重劣势且距离撤退点仍远，当前攻击节奏允许移动时，转为完全撤退。",
+      "effect": "全体受控舰船向既定撤退点回撤。",
+      "group_id": "watercontrol:rule:645",
+      "constraints_note": ""
+    },
+    {
+      "key": "WATER_ADVANTAGE_008",
+      "category": "海战风险选择",
+      "meaning": "等待海军升级时暂避的战力差严格上界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "箭羽、锥子箭、护腕、战舰或重型战舰升级正在进行时，按当前战力差决定先退避等待升级。",
+      "effect": "受控舰船先撤退，等待正在进行的海军升级。",
+      "group_id": "watercontrol:rule:653",
+      "constraints_note": ""
+    },
+    {
+      "key": "WATER_ADVANTAGE_009",
+      "category": "海战风险选择",
+      "meaning": "允许射击敌舰所用战力差的严格下界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队尚未进入完全撤退，武器攻击时机与目标射程条件满足时，根据战力差决定直接对敌舰开火。",
+      "effect": "选择射击当前敌舰。",
+      "group_id": "watercontrol:rule:697",
+      "constraints_note": ""
+    },
+    {
+      "key": "WATER_ADVANTAGE_010",
+      "category": "海战风险选择",
+      "meaning": "允许攻击码头及岸防所用战力差的严格下界；衡量的是加权战力差，不是船只数量。",
+      "unit": "加权战力分",
+      "context": "舰队暂无有效敌舰目标、攻击时机允许且附近发现码头或岸防建筑时，根据战力差决定打击岸上目标。",
+      "effect": "选择攻击附近码头或岸防建筑。",
+      "group_id": "watercontrol:rule:757",
+      "constraints_note": ""
+    }
+  ]
+}

@@ -89,7 +89,7 @@
 )
 (defrule
 	(up-research-status c: ri-capped-ram >= research-available)
-(or	(unit-type-count battering-ram-line <= {{FINAL_PRODUCTION_005}})
+(or	(unit-type-count battering-ram-line <= 0)
 	(military-population >= {{FINAL_PRODUCTION_006}}))
 	(can-train battering-ram-line)
 =>

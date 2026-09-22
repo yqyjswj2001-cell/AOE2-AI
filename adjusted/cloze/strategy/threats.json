@@ -1,0 +1,67 @@
+{
+  "module": "threats.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "THREATS_TARGET_SWITCH_001",
+      "category": "多敌人威胁分配",
+      "meaning": "进入目标切换评估所容许的当前敌军人口上限。",
+      "unit": "人口",
+      "context": "多敌人重选目标阶段：当前目标军队较弱、下一个距离候选敌人军队较强，同时我方军队足以应对该候选敌人，决定是否跳过原目标。",
+      "effect": "把攻击目标与当前焦点切换到该候选敌人。",
+      "group_id": "threats:rule:39",
+      "constraints_note": ""
+    },
+    {
+      "key": "THREATS_TARGET_SWITCH_002",
+      "category": "多敌人威胁分配",
+      "meaning": "进入目标切换评估要求的候选敌军人口下限。",
+      "unit": "人口",
+      "context": "多敌人重选目标阶段：当前目标军队较弱、下一个距离候选敌人军队较强，同时我方军队足以应对该候选敌人，决定是否跳过原目标。",
+      "effect": "把攻击目标与当前焦点切换到该候选敌人。",
+      "group_id": "threats:rule:39",
+      "constraints_note": ""
+    },
+    {
+      "key": "THREATS_TARGET_SWITCH_003",
+      "category": "多敌人威胁分配",
+      "meaning": "当前目标极弱路径的敌军人口上限；此路径无需再满足 THREATS_TARGET_SWITCH_005 或 THREATS_TARGET_SWITCH_006。",
+      "unit": "人口",
+      "context": "多敌人重选目标阶段：当前目标军队较弱、下一个距离候选敌人军队较强，同时我方军队足以应对该候选敌人，决定是否跳过原目标。",
+      "effect": "把攻击目标与当前焦点切换到该候选敌人。",
+      "group_id": "threats:rule:39",
+      "constraints_note": ""
+    },
+    {
+      "key": "THREATS_TARGET_SWITCH_004",
+      "category": "多敌人威胁分配",
+      "meaning": "当前目标中等弱势路径的敌军人口上限，须同时满足 THREATS_TARGET_SWITCH_005。",
+      "unit": "人口",
+      "context": "多敌人重选目标阶段：当前目标军队较弱、下一个距离候选敌人军队较强，同时我方军队足以应对该候选敌人，决定是否跳过原目标。",
+      "effect": "把攻击目标与当前焦点切换到该候选敌人。",
+      "group_id": "threats:rule:39",
+      "constraints_note": ""
+    },
+    {
+      "key": "THREATS_TARGET_SWITCH_005",
+      "category": "多敌人威胁分配",
+      "meaning": "配合 THREATS_TARGET_SWITCH_004 使用的候选敌军人口下限。",
+      "unit": "人口",
+      "context": "多敌人重选目标阶段：当前目标军队较弱、下一个距离候选敌人军队较强，同时我方军队足以应对该候选敌人，决定是否跳过原目标。",
+      "effect": "把攻击目标与当前焦点切换到该候选敌人。",
+      "group_id": "threats:rule:39",
+      "constraints_note": ""
+    },
+    {
+      "key": "THREATS_TARGET_SWITCH_006",
+      "category": "多敌人威胁分配",
+      "meaning": "可独立替代极弱/中弱路径的候选敌军人口下限；仍须满足 THREATS_TARGET_SWITCH_001 与 THREATS_TARGET_SWITCH_002。",
+      "unit": "人口",
+      "context": "多敌人重选目标阶段：当前目标军队较弱、下一个距离候选敌人军队较强，同时我方军队足以应对该候选敌人，决定是否跳过原目标。",
+      "effect": "把攻击目标与当前焦点切换到该候选敌人。",
+      "group_id": "threats:rule:39",
+      "constraints_note": ""
+    }
+  ]
+}

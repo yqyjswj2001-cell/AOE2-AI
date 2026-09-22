@@ -1,0 +1,616 @@
+{
+  "source": "http://userpatch.aiscripters.net/download/1.5",
+  "archive_sha256": "9d5b7284c6ae9ad4d283172f6857d78c626460b57e2973d31f4a01fb40e58796",
+  "archive_entry": "UserPatch/Reference/Scripting/UserPatchConst.per",
+  "constant_file_sha256": "503e08cfac7d08e27fcc9f427b51609025810ae8b52ee26e831b2d8b9ca3ecef",
+  "runtime_verified": false,
+  "schema": "selected-developer-constant-values-v1",
+  "boundary": "Selected literal constants from the developer constant file; not a complete enum catalog and not current DE engine acceptance.",
+  "constants": {
+    "stance-aggressive": {
+      "value": 0,
+      "line": 145,
+      "source_text": "(defconst stance-aggressive 0)"
+    },
+    "position-center": {
+      "value": 0,
+      "line": 394,
+      "source_text": "(defconst position-center 0)"
+    },
+    "position-opposite": {
+      "value": 1,
+      "line": 395,
+      "source_text": "(defconst position-opposite 1)"
+    },
+    "position-corner": {
+      "value": 2,
+      "line": 396,
+      "source_text": "(defconst position-corner 2)"
+    },
+    "position-enemy": {
+      "value": 3,
+      "line": 397,
+      "source_text": "(defconst position-enemy 3)"
+    },
+    "position-border": {
+      "value": 4,
+      "line": 398,
+      "source_text": "(defconst position-border 4)"
+    },
+    "position-mirror": {
+      "value": 5,
+      "line": 399,
+      "source_text": "(defconst position-mirror 5)"
+    },
+    "position-flank": {
+      "value": 6,
+      "line": 400,
+      "source_text": "(defconst position-flank 6)"
+    },
+    "position-zero": {
+      "value": 7,
+      "line": 401,
+      "source_text": "(defconst position-zero 7)"
+    },
+    "position-map-size": {
+      "value": 8,
+      "line": 402,
+      "source_text": "(defconst position-map-size 8)"
+    },
+    "position-self": {
+      "value": 9,
+      "line": 403,
+      "source_text": "(defconst position-self 9)"
+    },
+    "position-target": {
+      "value": 10,
+      "line": 404,
+      "source_text": "(defconst position-target 10)"
+    },
+    "position-focus": {
+      "value": 11,
+      "line": 405,
+      "source_text": "(defconst position-focus 11)"
+    },
+    "position-object": {
+      "value": 12,
+      "line": 406,
+      "source_text": "(defconst position-object 12)"
+    },
+    "position-point": {
+      "value": 13,
+      "line": 407,
+      "source_text": "(defconst position-point 13)"
+    },
+    "search-local": {
+      "value": 1,
+      "line": 412,
+      "source_text": "(defconst search-local 1)"
+    },
+    "search-remote": {
+      "value": 2,
+      "line": 413,
+      "source_text": "(defconst search-remote 2)"
+    },
+    "action-default": {
+      "value": 0,
+      "line": 453,
+      "source_text": "(defconst action-default 0)\t;target-point -> action-move"
+    },
+    "action-move": {
+      "value": 1,
+      "line": 454,
+      "source_text": "(defconst action-move 1)\t;target-point + target-objects"
+    },
+    "action-patrol": {
+      "value": 2,
+      "line": 455,
+      "source_text": "(defconst action-patrol 2)\t;target-point + target-objects"
+    },
+    "action-guard": {
+      "value": 3,
+      "line": 456,
+      "source_text": "(defconst action-guard 3)\t;target-point -> action-move"
+    },
+    "action-follow": {
+      "value": 4,
+      "line": 457,
+      "source_text": "(defconst action-follow 4)\t;target-point -> action-move"
+    },
+    "action-stop": {
+      "value": 5,
+      "line": 458,
+      "source_text": "(defconst action-stop 5)\t;target-point + target-objects"
+    },
+    "action-ground": {
+      "value": 6,
+      "line": 459,
+      "source_text": "(defconst action-ground 6)\t;target-point + target-objects"
+    },
+    "action-garrison": {
+      "value": 7,
+      "line": 460,
+      "source_text": "(defconst action-garrison 7)\t;target-point -> action-move"
+    },
+    "action-delete": {
+      "value": 8,
+      "line": 461,
+      "source_text": "(defconst action-delete 8)\t;target-point + target-objects"
+    },
+    "action-unload": {
+      "value": 9,
+      "line": 462,
+      "source_text": "(defconst action-unload 9)\t;target-objects -> action-none"
+    },
+    "action-train": {
+      "value": 10,
+      "line": 463,
+      "source_text": "(defconst action-train 10)\t;target-objects -> action-none"
+    },
+    "action-gather": {
+      "value": 11,
+      "line": 464,
+      "source_text": "(defconst action-gather 11)\t;target-point + target-objects"
+    },
+    "action-lock": {
+      "value": 12,
+      "line": 465,
+      "source_text": "(defconst action-lock 12)\t;target-objects -> action-none"
+    },
+    "action-work": {
+      "value": 13,
+      "line": 466,
+      "source_text": "(defconst action-work 13)\t;target-objects -> action-none"
+    },
+    "action-ungarrison": {
+      "value": 14,
+      "line": 467,
+      "source_text": "(defconst action-ungarrison 14)\t;target-objects -> action-none"
+    },
+    "action-drop-relic": {
+      "value": 15,
+      "line": 468,
+      "source_text": "(defconst action-drop-relic 15)\t;target-objects -> action-none"
+    },
+    "action-pack": {
+      "value": 16,
+      "line": 469,
+      "source_text": "(defconst action-pack 16)\t;target-objects -> action-none"
+    },
+    "action-unpack": {
+      "value": 17,
+      "line": 470,
+      "source_text": "(defconst action-unpack 17)\t;target-objects -> action-none"
+    },
+    "action-none": {
+      "value": 18,
+      "line": 471,
+      "source_text": "(defconst action-none 18)\t;target-point + target-objects"
+    },
+    "object-data-index": {
+      "value": -1,
+      "line": 567,
+      "source_text": "(defconst object-data-index -1)\t\t\t\t;only use with up-remove-objects"
+    },
+    "object-data-id": {
+      "value": 0,
+      "line": 568,
+      "source_text": "(defconst object-data-id 0)"
+    },
+    "object-data-type": {
+      "value": 1,
+      "line": 569,
+      "source_text": "(defconst object-data-type 1)"
+    },
+    "object-data-class": {
+      "value": 2,
+      "line": 570,
+      "source_text": "(defconst object-data-class 2)"
+    },
+    "object-data-category": {
+      "value": 3,
+      "line": 571,
+      "source_text": "(defconst object-data-category 3)"
+    },
+    "object-data-cmdid": {
+      "value": 4,
+      "line": 572,
+      "source_text": "(defconst object-data-cmdid 4)"
+    },
+    "object-data-action": {
+      "value": 5,
+      "line": 573,
+      "source_text": "(defconst object-data-action 5)"
+    },
+    "object-data-order": {
+      "value": 6,
+      "line": 574,
+      "source_text": "(defconst object-data-order 6)"
+    },
+    "object-data-target": {
+      "value": 7,
+      "line": 575,
+      "source_text": "(defconst object-data-target 7)"
+    },
+    "object-data-point-x": {
+      "value": 8,
+      "line": 576,
+      "source_text": "(defconst object-data-point-x 8)"
+    },
+    "object-data-point-y": {
+      "value": 9,
+      "line": 577,
+      "source_text": "(defconst object-data-point-y 9)"
+    },
+    "object-data-hitpoints": {
+      "value": 10,
+      "line": 578,
+      "source_text": "(defconst object-data-hitpoints 10)"
+    },
+    "object-data-maxhp": {
+      "value": 11,
+      "line": 579,
+      "source_text": "(defconst object-data-maxhp 11)"
+    },
+    "object-data-range": {
+      "value": 12,
+      "line": 580,
+      "source_text": "(defconst object-data-range 12)"
+    },
+    "object-data-speed": {
+      "value": 13,
+      "line": 581,
+      "source_text": "(defconst object-data-speed 13)"
+    },
+    "object-data-dropsite": {
+      "value": 14,
+      "line": 582,
+      "source_text": "(defconst object-data-dropsite 14)"
+    },
+    "object-data-resource": {
+      "value": 15,
+      "line": 583,
+      "source_text": "(defconst object-data-resource 15)"
+    },
+    "object-data-carry": {
+      "value": 16,
+      "line": 584,
+      "source_text": "(defconst object-data-carry 16)"
+    },
+    "object-data-garrisoned": {
+      "value": 17,
+      "line": 585,
+      "source_text": "(defconst object-data-garrisoned 17)"
+    },
+    "object-data-garrison-count": {
+      "value": 18,
+      "line": 586,
+      "source_text": "(defconst object-data-garrison-count 18)"
+    },
+    "object-data-status": {
+      "value": 19,
+      "line": 587,
+      "source_text": "(defconst object-data-status 19)\t\t\t;0:incomplete, 2:active, 3:resource, >=4:inactive"
+    },
+    "object-data-player": {
+      "value": 20,
+      "line": 588,
+      "source_text": "(defconst object-data-player 20)"
+    },
+    "object-data-attack-stance": {
+      "value": 21,
+      "line": 589,
+      "source_text": "(defconst object-data-attack-stance 21)"
+    },
+    "object-data-action-time": {
+      "value": 22,
+      "line": 590,
+      "source_text": "(defconst object-data-action-time 22)"
+    },
+    "object-data-target-id": {
+      "value": 23,
+      "line": 591,
+      "source_text": "(defconst object-data-target-id 23)"
+    },
+    "object-data-formation-id": {
+      "value": 24,
+      "line": 592,
+      "source_text": "(defconst object-data-formation-id 24)"
+    },
+    "object-data-patrolling": {
+      "value": 25,
+      "line": 593,
+      "source_text": "(defconst object-data-patrolling 25)"
+    },
+    "object-data-strike-armor": {
+      "value": 26,
+      "line": 594,
+      "source_text": "(defconst object-data-strike-armor 26)"
+    },
+    "object-data-pierce-armor": {
+      "value": 27,
+      "line": 595,
+      "source_text": "(defconst object-data-pierce-armor 27)"
+    },
+    "object-data-base-attack": {
+      "value": 28,
+      "line": 596,
+      "source_text": "(defconst object-data-base-attack 28)"
+    },
+    "object-data-locked": {
+      "value": 29,
+      "line": 597,
+      "source_text": "(defconst object-data-locked 29)"
+    },
+    "object-data-garrison-id": {
+      "value": 30,
+      "line": 598,
+      "source_text": "(defconst object-data-garrison-id 30)"
+    },
+    "object-data-train-count": {
+      "value": 31,
+      "line": 599,
+      "source_text": "(defconst object-data-train-count 31)"
+    },
+    "object-data-tasks-count": {
+      "value": 32,
+      "line": 600,
+      "source_text": "(defconst object-data-tasks-count 32)\t\t;increased for internal tasks performed on the object (may be more than 1 per event)"
+    },
+    "object-data-attacker-count": {
+      "value": 33,
+      "line": 601,
+      "source_text": "(defconst object-data-attacker-count 33)\t;not increased for certain situations like hunting"
+    },
+    "object-data-attacker-id": {
+      "value": 34,
+      "line": 602,
+      "source_text": "(defconst object-data-attacker-id 34)\t\t;not set for certain situations like hunting"
+    },
+    "object-data-under-attack": {
+      "value": 35,
+      "line": 603,
+      "source_text": "(defconst object-data-under-attack 35)\t\t;not set for certain situations like hunting"
+    },
+    "object-data-attack-timer": {
+      "value": 36,
+      "line": 604,
+      "source_text": "(defconst object-data-attack-timer 36)\t\t;resets to 60s for each attack (buildings only)"
+    },
+    "object-data-point-z": {
+      "value": 37,
+      "line": 605,
+      "source_text": "(defconst object-data-point-z 37)"
+    },
+    "object-data-precise-x": {
+      "value": 38,
+      "line": 606,
+      "source_text": "(defconst object-data-precise-x 38)\t\t;point x100.0"
+    },
+    "object-data-precise-y": {
+      "value": 39,
+      "line": 607,
+      "source_text": "(defconst object-data-precise-y 39)"
+    },
+    "object-data-precise-z": {
+      "value": 40,
+      "line": 608,
+      "source_text": "(defconst object-data-precise-z 40)"
+    },
+    "object-data-researching": {
+      "value": 41,
+      "line": 609,
+      "source_text": "(defconst object-data-researching 41)"
+    },
+    "object-data-tile-position": {
+      "value": 42,
+      "line": 610,
+      "source_text": "(defconst object-data-tile-position 42)\t\t;match with sn-target-point-adjustment"
+    },
+    "object-data-tile-inverse": {
+      "value": 43,
+      "line": 611,
+      "source_text": "(defconst object-data-tile-inverse 43)"
+    },
+    "object-data-distance": {
+      "value": 44,
+      "line": 612,
+      "source_text": "(defconst object-data-distance 44)\t\t;based on target-point"
+    },
+    "object-data-precise-distance": {
+      "value": 45,
+      "line": 613,
+      "source_text": "(defconst object-data-precise-distance 45)\t;distance x100"
+    },
+    "object-data-full-distance": {
+      "value": 46,
+      "line": 614,
+      "source_text": "(defconst object-data-full-distance 46)"
+    },
+    "object-data-map-zone-id": {
+      "value": 47,
+      "line": 615,
+      "source_text": "(defconst object-data-map-zone-id 47)"
+    },
+    "object-data-on-mainland": {
+      "value": 48,
+      "line": 616,
+      "source_text": "(defconst object-data-on-mainland 48)\t\t;compares map-zone-id to home TC map-zone-id"
+    },
+    "object-data-idling": {
+      "value": 49,
+      "line": 617,
+      "source_text": "(defconst object-data-idling 49)"
+    },
+    "object-data-move-x": {
+      "value": 50,
+      "line": 618,
+      "source_text": "(defconst object-data-move-x 50)"
+    },
+    "object-data-move-y": {
+      "value": 51,
+      "line": 619,
+      "source_text": "(defconst object-data-move-y 51)"
+    },
+    "object-data-precise-move-x": {
+      "value": 52,
+      "line": 620,
+      "source_text": "(defconst object-data-precise-move-x 52)"
+    },
+    "object-data-precise-move-y": {
+      "value": 53,
+      "line": 621,
+      "source_text": "(defconst object-data-precise-move-y 53)"
+    },
+    "object-data-reload-time": {
+      "value": 54,
+      "line": 622,
+      "source_text": "(defconst object-data-reload-time 54)\t\t;in milliseconds"
+    },
+    "object-data-next-attack": {
+      "value": 55,
+      "line": 623,
+      "source_text": "(defconst object-data-next-attack 55)\t\t;in milliseconds"
+    },
+    "object-data-train-site": {
+      "value": 56,
+      "line": 624,
+      "source_text": "(defconst object-data-train-site 56)"
+    },
+    "object-data-train-time": {
+      "value": 57,
+      "line": 625,
+      "source_text": "(defconst object-data-train-time 57)\t\t;in seconds"
+    },
+    "object-data-blast-radius": {
+      "value": 58,
+      "line": 626,
+      "source_text": "(defconst object-data-blast-radius 58)\t\t;radius x100.0"
+    },
+    "object-data-blast-level": {
+      "value": 59,
+      "line": 627,
+      "source_text": "(defconst object-data-blast-level 59)"
+    },
+    "object-data-progress-type": {
+      "value": 60,
+      "line": 628,
+      "source_text": "(defconst object-data-progress-type 60)"
+    },
+    "object-data-progress-value": {
+      "value": 61,
+      "line": 629,
+      "source_text": "(defconst object-data-progress-value 61)"
+    },
+    "object-data-min-range": {
+      "value": 62,
+      "line": 630,
+      "source_text": "(defconst object-data-min-range 62)"
+    },
+    "object-data-target-time": {
+      "value": 63,
+      "line": 631,
+      "source_text": "(defconst object-data-target-time 63)\t\t;in milliseconds (not for villagers)"
+    },
+    "object-data-heresy": {
+      "value": 64,
+      "line": 632,
+      "source_text": "(defconst object-data-heresy 64)\t\t;checks amount-heresy"
+    },
+    "object-data-faith": {
+      "value": 65,
+      "line": 633,
+      "source_text": "(defconst object-data-faith 65)\t\t\t;checks amount-convert-resistance"
+    },
+    "object-data-redemption": {
+      "value": 66,
+      "line": 634,
+      "source_text": "(defconst object-data-redemption 66)\t\t;checks amount-convert-building"
+    },
+    "object-data-atonement": {
+      "value": 67,
+      "line": 635,
+      "source_text": "(defconst object-data-atonement 67)\t\t;checks amount-convert-priest"
+    },
+    "object-data-theocracy": {
+      "value": 68,
+      "line": 636,
+      "source_text": "(defconst object-data-theocracy 68)\t\t;checks amount-theocracy"
+    },
+    "object-data-spies": {
+      "value": 69,
+      "line": 637,
+      "source_text": "(defconst object-data-spies 69)\t\t\t;checks amount-spies"
+    },
+    "object-data-ballistics": {
+      "value": 70,
+      "line": 638,
+      "source_text": "(defconst object-data-ballistics 70)"
+    },
+    "object-data-gather-type": {
+      "value": 71,
+      "line": 639,
+      "source_text": "(defconst object-data-gather-type 71)\t\t;food, wood, gold, stone, or -1 for none"
+    },
+    "object-data-language-id": {
+      "value": 72,
+      "line": 640,
+      "source_text": "(defconst object-data-language-id 72)\t\t;can use to check villager types"
+    },
+    "object-data-group-flag": {
+      "value": 73,
+      "line": 641,
+      "source_text": "(defconst object-data-group-flag 73)\t\t;group id from 0 to 9 or -2 for none"
+    },
+    "object-data-hero-flags": {
+      "value": 74,
+      "line": 642,
+      "source_text": "(defconst object-data-hero-flags 74)\t\t;combined hero status flags"
+    },
+    "object-data-hero": {
+      "value": 75,
+      "line": 643,
+      "source_text": "(defconst object-data-hero 75)\t\t\t;has actual hero flag set"
+    },
+    "object-data-auto-heal": {
+      "value": 76,
+      "line": 644,
+      "source_text": "(defconst object-data-auto-heal 76)\t\t;will hero heal (non-berserk)"
+    },
+    "object-data-no-convert": {
+      "value": 77,
+      "line": 645,
+      "source_text": "(defconst object-data-no-convert 77)\t\t;cannot be converted"
+    },
+    "object-data-frame-delay": {
+      "value": 78,
+      "line": 646,
+      "source_text": "(defconst object-data-frame-delay 78)\t\t;number of frames for projectile delay"
+    },
+    "object-data-attack-count": {
+      "value": 79,
+      "line": 647,
+      "source_text": "(defconst object-data-attack-count 79)\t\t;consecutive attack count"
+    },
+    "object-data-to-precise": {
+      "value": 80,
+      "line": 648,
+      "source_text": "(defconst object-data-to-precise 80)\t\t;precise distance to a precise target-point"
+    },
+    "object-data-base-type": {
+      "value": 81,
+      "line": 649,
+      "source_text": "(defconst object-data-base-type 81)\t\t;object base type id"
+    },
+    "object-data-upgrade-type": {
+      "value": 82,
+      "line": 650,
+      "source_text": "(defconst object-data-upgrade-type 82)\t\t;object upgrade type id"
+    },
+    "find-attacker": {
+      "value": 0,
+      "line": 725,
+      "source_text": "(defconst find-attacker 0)"
+    }
+  }
+}

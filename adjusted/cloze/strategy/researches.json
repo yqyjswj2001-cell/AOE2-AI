@@ -1,0 +1,2847 @@
+{
+  "module": "researches.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "RESEARCH_MIL_RI_PLATE_BARDING_001",
+      "category": "研究投入时机",
+      "meaning": "骑士系总计数的判断门槛；本分支要求严格多于所填值。",
+      "unit": "个单位",
+      "context": "帝王时代能够研究骑兵钢板甲，且弓兵规模/升级状态没有抢占本分支时，按骑士规模决定投入。",
+      "effect": "开始研究骑兵钢板甲。",
+      "group_id": "researches:rule:2092",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_WHEEL_BARROW_002",
+      "category": "研究投入时机",
+      "meaning": "村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "采用输送资源且铸币并非当前可研究项目，或封建作战的村民经济与升城堡/铁匠铺准备条件满足时。",
+      "effect": "开始研究独轮车。",
+      "group_id": "researches:rule:2264",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_WHEEL_BARROW_003",
+      "category": "研究投入时机",
+      "meaning": "村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已经进入城堡转型阶段，或村民规模足够，或封建作战已启动基础伐木和农田升级且木材有余量时。",
+      "effect": "开始研究独轮车。",
+      "group_id": "researches:rule:2276",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_WHEEL_BARROW_004",
+      "category": "研究投入时机",
+      "meaning": "木材库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "已经进入城堡转型阶段，或村民规模足够，或封建作战已启动基础伐木和农田升级且木材有余量时。",
+      "effect": "开始研究独轮车。",
+      "group_id": "researches:rule:2276",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_WHEEL_BARROW_005",
+      "category": "研究投入时机",
+      "meaning": "农夫当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "村民经济以农田为主，城堡转型、升城堡储粮不足或卡人口等时机符合固定分支时。",
+      "effect": "开始研究独轮车。",
+      "group_id": "researches:rule:2287",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_HAND_CART_006",
+      "category": "研究投入时机",
+      "meaning": "触发大经济研究时机的村民下限；多城镇中心可替代此项。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "村民数量或城镇中心数量已形成经济规模，同时最低村民或经济人口接近上限的条件允许时。",
+      "effect": "开始研究手推车。",
+      "group_id": "researches:rule:2297",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_HAND_CART_007",
+      "category": "研究投入时机",
+      "meaning": "第二道经济成熟检查中的村民下限；最低村民条件或人口压力也可替代。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "村民数量或城镇中心数量已形成经济规模，同时最低村民或经济人口接近上限的条件允许时。",
+      "effect": "开始研究手推车。",
+      "group_id": "researches:rule:2297",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_BOW_SAW_008",
+      "category": "研究投入时机",
+      "meaning": "村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "城堡转型、独轮车已开始、村民规模扩大、三城镇中心计划或经济人口接近上限等路径之一成立时。",
+      "effect": "开始研究弓锯。",
+      "group_id": "researches:rule:2348",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_HEAVY_PLOW_009",
+      "category": "研究投入时机",
+      "meaning": "村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓锯已开始，且村民规模、三城镇中心计划、军事优势或经济人口空间等条件允许时。",
+      "effect": "开始研究重犁。",
+      "group_id": "researches:rule:2487",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_011",
+      "category": "研究投入时机",
+      "meaning": "在帝王时代或食物储备条件未满足时，允许提前研究的采金人手下限。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "正在采金，升时代所需食物储备或时代已满足，且基础经济升级优先级没有占用本分支时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2532",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_013",
+      "category": "研究投入时机",
+      "meaning": "村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "正在采金、弓锯和重犁已经开始，城镇中心/村民规模/独轮车等经济条件成熟，且升帝王黄金储备不足或采金人手足够时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2546",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_014",
+      "category": "研究投入时机",
+      "meaning": "采金村民当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "正在采金、弓锯和重犁已经开始，城镇中心/村民规模/独轮车等经济条件成熟，且升帝王黄金储备不足或采金人手足够时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2546",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_015",
+      "category": "研究投入时机",
+      "meaning": "采金村民当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "黄金余量偏低且已有多个城镇中心和弓锯，重犁/手推车/村民规模/三城镇中心计划满足时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2559",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_016",
+      "category": "研究投入时机",
+      "meaning": "村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "黄金余量偏低且已有多个城镇中心和弓锯，重犁/手推车/村民规模/三城镇中心计划满足时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2559",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_017",
+      "category": "研究投入时机",
+      "meaning": "采金村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已有海军和海上生产建筑、发现敌船且有采金分配；城堡转型及基础经济升级条件满足时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2571",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_018",
+      "category": "研究投入时机",
+      "meaning": "采金村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "封建远程快攻采用弓兵而非纯投矛变体，经济升级和铁匠铺齐备且有军事产能或市场时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2585",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_019",
+      "category": "研究投入时机",
+      "meaning": "采金村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "海军快攻已启用采金分配和基础伐木升级，海上生产建筑已就绪；木材余量或多建筑条件允许时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2600",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_020",
+      "category": "研究投入时机",
+      "meaning": "木材库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "海军快攻已启用采金分配和基础伐木升级，海上生产建筑已就绪；木材余量或多建筑条件允许时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2600",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_021",
+      "category": "研究投入时机",
+      "meaning": "采金村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "采用输送资源战术、经济升级已开始且铸币不占用当前研究时机，木材或市场条件允许时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2614",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_022",
+      "category": "研究投入时机",
+      "meaning": "木材库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "采用输送资源战术、经济升级已开始且铸币不占用当前研究时机，木材或市场条件允许时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2614",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_023",
+      "category": "研究投入时机",
+      "meaning": "采金村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "采用弓兵快攻，已有伐木升级和独轮车，且多城镇中心或经济人口与军事产能条件成熟时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2637",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_MINING_024",
+      "category": "研究投入时机",
+      "meaning": "己方经济人口的判断门槛；本分支要求不少于所填值。",
+      "unit": "人口",
+      "context": "采用弓兵快攻，已有伐木升级和独轮车，且多城镇中心或经济人口与军事产能条件成熟时。",
+      "effect": "开始研究采金术。",
+      "group_id": "researches:rule:2637",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_SHAFT_MINING_027",
+      "category": "研究投入时机",
+      "meaning": "食物富余或帝王条件未满足时，允许提前投入升级的采金人手下限。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "正在采金，采金人手已形成规模，或食物储量充足，或已经到帝王阶段时。",
+      "effect": "开始研究竖井采金术。",
+      "group_id": "researches:rule:2665",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_SHAFT_MINING_028",
+      "category": "研究投入时机",
+      "meaning": "食物库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "正在采金，采金人手已形成规模，或食物储量充足，或已经到帝王阶段时。",
+      "effect": "开始研究竖井采金术。",
+      "group_id": "researches:rule:2665",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_GOLD_SHAFT_MINING_029",
+      "category": "研究投入时机",
+      "meaning": "采金村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "黄金总量不足升帝王储备，处于城堡作战或更早战略阶段，三城镇中心计划及核心经济升级已成熟时。",
+      "effect": "开始研究竖井采金术。",
+      "group_id": "researches:rule:2674",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_MINING_030",
+      "category": "研究投入时机",
+      "meaning": "进入本研究分支所需的基础采石人手下限。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "三城镇中心计划已启用且未遭袭；帝王阶段，或采石人手和军力优势及手推车进度允许时。",
+      "effect": "开始研究采石术。",
+      "group_id": "researches:rule:2689",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_MINING_031",
+      "category": "研究投入时机",
+      "meaning": "尚未进入帝王时，配合军力优势和手推车进度使用的较高采石人手下限。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "三城镇中心计划已启用且未遭袭；帝王阶段，或采石人手和军力优势及手推车进度允许时。",
+      "effect": "开始研究采石术。",
+      "group_id": "researches:rule:2689",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_MINING_032",
+      "category": "研究投入时机",
+      "meaning": "采石村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "采用输送资源战术并有采石分配，基础经济和采金升级已安排，木材或市场条件允许时。",
+      "effect": "开始研究采石术。",
+      "group_id": "researches:rule:2701",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_MINING_033",
+      "category": "研究投入时机",
+      "meaning": "木材库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "采用输送资源战术并有采石分配，基础经济和采金升级已安排，木材或市场条件允许时。",
+      "effect": "开始研究采石术。",
+      "group_id": "researches:rule:2701",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_MINING_034",
+      "category": "研究投入时机",
+      "meaning": "采石村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "采用前置城堡战术，石料偏低而尚无城堡，基础经济升级及升城堡已开始时。",
+      "effect": "开始研究采石术。",
+      "group_id": "researches:rule:2716",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_SHAFT_MINING_035",
+      "category": "研究投入时机",
+      "meaning": "本研究分支始终要求的基础采石人手下限。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "三城镇中心计划已启用且未遭袭，手推车不等待研究，时代或采石规模成熟，且特色兵城堡需求或采石规模值得投资时。",
+      "effect": "开始研究竖井采石术。",
+      "group_id": "researches:rule:2733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_SHAFT_MINING_036",
+      "category": "研究投入时机",
+      "meaning": "尚未进入帝王时，可替代时代条件的人手下限。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "三城镇中心计划已启用且未遭袭，手推车不等待研究，时代或采石规模成熟，且特色兵城堡需求或采石规模值得投资时。",
+      "effect": "开始研究竖井采石术。",
+      "group_id": "researches:rule:2733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_STONE_SHAFT_MINING_037",
+      "category": "研究投入时机",
+      "meaning": "不走特色兵城堡计划时，可替代该计划的人手下限。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "三城镇中心计划已启用且未遭袭，手推车不等待研究，时代或采石规模成熟，且特色兵城堡需求或采石规模值得投资时。",
+      "effect": "开始研究竖井采石术。",
+      "group_id": "researches:rule:2733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_038",
+      "category": "研究投入时机",
+      "meaning": "冲车系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "攻城单位已经形成投入规模且能够研究攻城工程师时；各兵种规模路径为任选其一。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3805",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_039",
+      "category": "研究投入时机",
+      "meaning": "风琴炮总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "攻城单位已经形成投入规模且能够研究攻城工程师时；各兵种规模路径为任选其一。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3805",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_040",
+      "category": "研究投入时机",
+      "meaning": "精锐风琴炮总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "攻城单位已经形成投入规模且能够研究攻城工程师时；各兵种规模路径为任选其一。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3805",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_041",
+      "category": "研究投入时机",
+      "meaning": "弩炮系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "攻城单位已经形成投入规模且能够研究攻城工程师时；各兵种规模路径为任选其一。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3805",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_042",
+      "category": "研究投入时机",
+      "meaning": "攻城舰总计数的判断门槛；本分支要求严格多于所填值。",
+      "unit": "个单位",
+      "context": "攻城单位已经形成投入规模且能够研究攻城工程师时；各兵种规模路径为任选其一。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3805",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_043",
+      "category": "研究投入时机",
+      "meaning": "手推炮系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "攻城单位已经形成投入规模且能够研究攻城工程师时；各兵种规模路径为任选其一。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3805",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_044",
+      "category": "研究投入时机",
+      "meaning": "巨型投石机组总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "攻城单位已经形成投入规模且能够研究攻城工程师时；各兵种规模路径为任选其一。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3805",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_045",
+      "category": "研究投入时机",
+      "meaning": "胡斯战车系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "胡斯战车或弩炮战象达到投入规模且能够研究攻城工程师时；不同形态各自判断。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3817",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_046",
+      "category": "研究投入时机",
+      "meaning": "弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "胡斯战车或弩炮战象达到投入规模且能够研究攻城工程师时；不同形态各自判断。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3817",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_047",
+      "category": "研究投入时机",
+      "meaning": "精锐弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "胡斯战车或弩炮战象达到投入规模且能够研究攻城工程师时；不同形态各自判断。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:3817",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_048",
+      "category": "研究投入时机",
+      "meaning": "施里瓦姆沙骑兵总计数的判断门槛；本分支要求严格多于所填值。",
+      "unit": "个单位",
+      "context": "施里瓦姆沙骑兵已经形成规模，且骑兵鳞甲或锁甲目前能够研究时。",
+      "effect": "开始研究骑兵鳞甲；开始研究骑兵锁甲。",
+      "group_id": "researches:rule:3832",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_049",
+      "category": "研究投入时机",
+      "meaning": "帝王骆驼兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或弩炮战象，且能够研究骑兵鳞甲时。",
+      "effect": "开始研究骑兵鳞甲。",
+      "group_id": "researches:rule:3855",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_050",
+      "category": "研究投入时机",
+      "meaning": "弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或弩炮战象，且能够研究骑兵鳞甲时。",
+      "effect": "开始研究骑兵鳞甲。",
+      "group_id": "researches:rule:3855",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_051",
+      "category": "研究投入时机",
+      "meaning": "精锐弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或弩炮战象，且能够研究骑兵鳞甲时。",
+      "effect": "开始研究骑兵鳞甲。",
+      "group_id": "researches:rule:3855",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_052",
+      "category": "研究投入时机",
+      "meaning": "侦察骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或弩炮战象，且能够研究骑兵鳞甲时。",
+      "effect": "开始研究骑兵鳞甲。",
+      "group_id": "researches:rule:3855",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_053",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或弩炮战象，且能够研究骑兵鳞甲时。",
+      "effect": "开始研究骑兵鳞甲。",
+      "group_id": "researches:rule:3855",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_054",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或弩炮战象，且能够研究骑兵鳞甲时。",
+      "effect": "开始研究骑兵鳞甲。",
+      "group_id": "researches:rule:3855",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SCALE_BARDING_055",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或弩炮战象，且能够研究骑兵鳞甲时。",
+      "effect": "开始研究骑兵鳞甲。",
+      "group_id": "researches:rule:3855",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHAIN_BARDING_056",
+      "category": "研究投入时机",
+      "meaning": "帝王骆驼兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵锁甲时。",
+      "effect": "开始研究骑兵锁甲。",
+      "group_id": "researches:rule:3886",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHAIN_BARDING_057",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵锁甲时。",
+      "effect": "开始研究骑兵锁甲。",
+      "group_id": "researches:rule:3886",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHAIN_BARDING_058",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵锁甲时。",
+      "effect": "开始研究骑兵锁甲。",
+      "group_id": "researches:rule:3886",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHAIN_BARDING_059",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵锁甲时。",
+      "effect": "开始研究骑兵锁甲。",
+      "group_id": "researches:rule:3886",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHAIN_BARDING_060",
+      "category": "研究投入时机",
+      "meaning": "骑士系总计数的判断门槛；本分支要求严格多于所填值。",
+      "unit": "个单位",
+      "context": "攻城变体启用、骑士数量已形成规模，且能够研究骑兵锁甲时。",
+      "effect": "开始研究骑兵锁甲。",
+      "group_id": "researches:rule:3899",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_061",
+      "category": "研究投入时机",
+      "meaning": "骑士系总计数的判断门槛；本分支要求严格多于所填值。",
+      "unit": "个单位",
+      "context": "攻城变体启用且骑士数量已形成规模时，追加近战攻击升级。",
+      "effect": "开始研究锻造；开始研究铸铁。",
+      "group_id": "researches:rule:3907",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PLATE_BARDING_062",
+      "category": "研究投入时机",
+      "meaning": "帝王骆驼兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵钢板甲时。",
+      "effect": "开始研究骑兵钢板甲。",
+      "group_id": "researches:rule:3917",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PLATE_BARDING_063",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵钢板甲时。",
+      "effect": "开始研究骑兵钢板甲。",
+      "group_id": "researches:rule:3917",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PLATE_BARDING_064",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵钢板甲时。",
+      "effect": "开始研究骑兵钢板甲。",
+      "group_id": "researches:rule:3917",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PLATE_BARDING_065",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵、战象、战车或枪骑兵，且能够研究骑兵钢板甲时。",
+      "effect": "开始研究骑兵钢板甲。",
+      "group_id": "researches:rule:3917",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_066",
+      "category": "研究投入时机",
+      "meaning": "帝王骆驼兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或传教士等受益部队，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3939",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_067",
+      "category": "研究投入时机",
+      "meaning": "传教士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或传教士等受益部队，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3939",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_068",
+      "category": "研究投入时机",
+      "meaning": "侦察骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或传教士等受益部队，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3939",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_069",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或传教士等受益部队，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3939",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_070",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或传教士等受益部队，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3939",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_071",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已拥有一定规模的骑兵或传教士等受益部队，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3939",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_072",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、弩炮战象或骑乘火药单位形成规模，或圣骑士计划进入帝王发展阶段，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3950",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_073",
+      "category": "研究投入时机",
+      "meaning": "弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、弩炮战象或骑乘火药单位形成规模，或圣骑士计划进入帝王发展阶段，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3950",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_074",
+      "category": "研究投入时机",
+      "meaning": "精锐弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、弩炮战象或骑乘火药单位形成规模，或圣骑士计划进入帝王发展阶段，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3950",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_075",
+      "category": "研究投入时机",
+      "meaning": "骑乘火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、弩炮战象或骑乘火药单位形成规模，或圣骑士计划进入帝王发展阶段，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3950",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_076",
+      "category": "研究投入时机",
+      "meaning": "标枪骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、象射手、枪骑兵、战车或骑乘火药单位形成规模，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3960",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_077",
+      "category": "研究投入时机",
+      "meaning": "精锐标枪骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、象射手、枪骑兵、战车或骑乘火药单位形成规模，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3960",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_078",
+      "category": "研究投入时机",
+      "meaning": "标枪骑兵占位类型总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、象射手、枪骑兵、战车或骑乘火药单位形成规模，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3960",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_079",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、象射手、枪骑兵、战车或骑乘火药单位形成规模，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3960",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_080",
+      "category": "研究投入时机",
+      "meaning": "精锐象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、象射手、枪骑兵、战车或骑乘火药单位形成规模，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3960",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLOODLINES_081",
+      "category": "研究投入时机",
+      "meaning": "骑乘火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、象射手、枪骑兵、战车或骑乘火药单位形成规模，且能够研究血统时。",
+      "effect": "开始研究血统。",
+      "group_id": "researches:rule:3960",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_082",
+      "category": "研究投入时机",
+      "meaning": "弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵、战象或弩炮战象形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4012",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_083",
+      "category": "研究投入时机",
+      "meaning": "精锐弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵、战象或弩炮战象形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4012",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_084",
+      "category": "研究投入时机",
+      "meaning": "帝王骆驼兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵、战象或弩炮战象形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4012",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_085",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵、战象或弩炮战象形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4012",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_086",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵、战象或弩炮战象形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4012",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_087",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵、战象或弩炮战象形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4012",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_088",
+      "category": "研究投入时机",
+      "meaning": "标枪骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、骑射手、象射手、枪骑兵或战车形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4023",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_089",
+      "category": "研究投入时机",
+      "meaning": "精锐标枪骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、骑射手、象射手、枪骑兵或战车形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4023",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_090",
+      "category": "研究投入时机",
+      "meaning": "标枪骑兵占位类型总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、骑射手、象射手、枪骑兵或战车形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4023",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_091",
+      "category": "研究投入时机",
+      "meaning": "骑乘火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、骑射手、象射手、枪骑兵或战车形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4023",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_092",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、骑射手、象射手、枪骑兵或战车形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4023",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_093",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "标枪骑兵、骑射手、象射手、枪骑兵或战车形成规模，且能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4023",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_HUSBANDRY_094",
+      "category": "研究投入时机",
+      "meaning": "传教士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "决定版分支中传教士形成规模，血统已开始且进入帝王发展阶段，能够研究畜牧时。",
+      "effect": "开始研究畜牧。",
+      "group_id": "researches:rule:4045",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FLETCHING_099",
+      "category": "研究投入时机",
+      "meaning": "箭船系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭船或龙头战舰形成规模，或已选择相应弓兵/骑射/海军快攻路线，且能够研究箭羽时。",
+      "effect": "开始研究箭羽。",
+      "group_id": "researches:rule:4098",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FLETCHING_100",
+      "category": "研究投入时机",
+      "meaning": "箭船系（arrow-ship-line）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭船或龙头战舰形成规模，或已选择相应弓兵/骑射/海军快攻路线，且能够研究箭羽时。",
+      "effect": "开始研究箭羽。",
+      "group_id": "researches:rule:4098",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FLETCHING_101",
+      "category": "研究投入时机",
+      "meaning": "龙头战舰系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭船或龙头战舰形成规模，或已选择相应弓兵/骑射/海军快攻路线，且能够研究箭羽时。",
+      "effect": "开始研究箭羽。",
+      "group_id": "researches:rule:4098",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_107",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、投石手、骑射手或箭船形成规模，或塔防/城堡达到固定规模，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4124",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_108",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、投石手、骑射手或箭船形成规模，或塔防/城堡达到固定规模，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4124",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_109",
+      "category": "研究投入时机",
+      "meaning": "箭船系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、投石手、骑射手或箭船形成规模，或塔防/城堡达到固定规模，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4124",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_110",
+      "category": "研究投入时机",
+      "meaning": "箭船系（arrow-ship-line）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、投石手、骑射手或箭船形成规模，或塔防/城堡达到固定规模，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4124",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_111",
+      "category": "研究投入时机",
+      "meaning": "龙头战舰系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、投石手、骑射手或箭船形成规模，或塔防/城堡达到固定规模，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4124",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_112",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、投石手、骑射手或箭船形成规模，或塔防/城堡达到固定规模，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4124",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_113",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4145",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_114",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4145",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_115",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4145",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_116",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4145",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_117",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4145",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BODKIN_ARROW_118",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究锥子箭时。",
+      "effect": "开始研究锥子箭。",
+      "group_id": "researches:rule:4145",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_119",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、象射手、投石手、骑射手或热那亚弩手形成规模，或塔防/城堡条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4163",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_120",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、象射手、投石手、骑射手或热那亚弩手形成规模，或塔防/城堡条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4163",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_121",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、象射手、投石手、骑射手或热那亚弩手形成规模，或塔防/城堡条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4163",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_122",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、象射手、投石手、骑射手或热那亚弩手形成规模，或塔防/城堡条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4163",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_123",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、象射手、投石手、骑射手或热那亚弩手形成规模，或塔防/城堡条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4163",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_124",
+      "category": "研究投入时机",
+      "meaning": "箭船系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "海军形成规模，或投矛兵、快帆船、炮塔和城楼等固定分支满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4174",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_125",
+      "category": "研究投入时机",
+      "meaning": "箭船系（arrow-ship-line）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "海军形成规模，或投矛兵、快帆船、炮塔和城楼等固定分支满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4174",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_126",
+      "category": "研究投入时机",
+      "meaning": "龙头战舰系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "海军形成规模，或投矛兵、快帆船、炮塔和城楼等固定分支满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4174",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_127",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4185",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_128",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4185",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_129",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4185",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_130",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4185",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_131",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4185",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BRACER_132",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "藤甲弓兵、骆驼射手、象射手或热那亚弩手形成规模，或堡垒条件满足，且能研究护腕时。",
+      "effect": "开始研究护腕。",
+      "group_id": "researches:rule:4185",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_133",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，弓兵类部队形成规模，且已处于封建作战或城堡转型以后，能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4238",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_134",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，弓兵类部队形成规模，且已处于封建作战或城堡转型以后，能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4238",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_135",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，弓兵类部队形成规模，且已处于封建作战或城堡转型以后，能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4238",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_136",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，弓兵类部队形成规模，且已处于封建作战或城堡转型以后，能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4238",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_137",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，弓兵类部队形成规模，且已处于封建作战或城堡转型以后，能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4238",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_138",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，投矛手或特色远程兵形成规模，且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4251",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_139",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，投矛手或特色远程兵形成规模，且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4251",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_140",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，投矛手或特色远程兵形成规模，且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4251",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_141",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，投矛手或特色远程兵形成规模，且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4251",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_142",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，投矛手或特色远程兵形成规模，且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4251",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_143",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "箭羽已开始，投矛手或特色远程兵形成规模，且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4251",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_144",
+      "category": "研究投入时机",
+      "meaning": "飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4263",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_145",
+      "category": "研究投入时机",
+      "meaning": "精锐飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4263",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_146",
+      "category": "研究投入时机",
+      "meaning": "步行火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4263",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_PADDED_ARCHER_ARMOR_147",
+      "category": "研究投入时机",
+      "meaning": "骑乘火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模且能研究弓兵软甲时。",
+      "effect": "开始研究弓兵软甲。",
+      "group_id": "researches:rule:4263",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_148",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，常规远程兵、象射手或热那亚弩手形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4272",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_149",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，常规远程兵、象射手或热那亚弩手形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4272",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_150",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，常规远程兵、象射手或热那亚弩手形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4272",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_151",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，常规远程兵、象射手或热那亚弩手形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4272",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_152",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，常规远程兵、象射手或热那亚弩手形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4272",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_153",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手或特色远程兵形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4282",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_154",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手或特色远程兵形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4282",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_155",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手或特色远程兵形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4282",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_156",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手或特色远程兵形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4282",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_157",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手或特色远程兵形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4282",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_158",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手或特色远程兵形成规模，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4282",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_159",
+      "category": "研究投入时机",
+      "meaning": "飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵/火药兵形成规模，或弓兵与骑射路线已安排锥子箭，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4294",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_160",
+      "category": "研究投入时机",
+      "meaning": "精锐飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵/火药兵形成规模，或弓兵与骑射路线已安排锥子箭，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4294",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_161",
+      "category": "研究投入时机",
+      "meaning": "步行火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵/火药兵形成规模，或弓兵与骑射路线已安排锥子箭，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4294",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_LEATHER_ARCHER_ARMOR_162",
+      "category": "研究投入时机",
+      "meaning": "骑乘火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵/火药兵形成规模，或弓兵与骑射路线已安排锥子箭，且能研究弓兵皮甲时。",
+      "effect": "开始研究弓兵皮甲。",
+      "group_id": "researches:rule:4294",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_163",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手、骆驼射手或其他远程主力形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4328",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_164",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手、骆驼射手或其他远程主力形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4328",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_165",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手、骆驼射手或其他远程主力形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4328",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_166",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手、骆驼射手或其他远程主力形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4328",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_167",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手、骆驼射手或其他远程主力形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4328",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_168",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，投矛手、骆驼射手或其他远程主力形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4328",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_169",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，象射手、骆驼射手、藤甲弓兵或热那亚弩手形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4340",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_170",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，象射手、骆驼射手、藤甲弓兵或热那亚弩手形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4340",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_171",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，象射手、骆驼射手、藤甲弓兵或热那亚弩手形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4340",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_172",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，象射手、骆驼射手、藤甲弓兵或热那亚弩手形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4340",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_173",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，象射手、骆驼射手、藤甲弓兵或热那亚弩手形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4340",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_174",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "锥子箭已开始，象射手、骆驼射手、藤甲弓兵或热那亚弩手形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4340",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_175",
+      "category": "研究投入时机",
+      "meaning": "飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4351",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_176",
+      "category": "研究投入时机",
+      "meaning": "精锐飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4351",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_177",
+      "category": "研究投入时机",
+      "meaning": "步行火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4351",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_RING_ARCHER_ARMOR_178",
+      "category": "研究投入时机",
+      "meaning": "骑乘火药单位类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵或火药单位形成规模，且能研究弓兵环甲时。",
+      "effect": "开始研究弓兵环甲。",
+      "group_id": "researches:rule:4351",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_179",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投矛手、弓兵、骑射手或本分支的特色远程兵形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4405",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_180",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投矛手、弓兵、骑射手或本分支的特色远程兵形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4405",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_181",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投矛手、弓兵、骑射手或本分支的特色远程兵形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4405",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_182",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投矛手、弓兵、骑射手或本分支的特色远程兵形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4405",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_183",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投矛手、弓兵、骑射手或本分支的特色远程兵形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4405",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_184",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投矛手、弓兵、骑射手或本分支的特色远程兵形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4405",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_185",
+      "category": "研究投入时机",
+      "meaning": "骑射手系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、精锐藤甲弓兵或骆驼射手形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4416",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_186",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、精锐藤甲弓兵或骆驼射手形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4416",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_187",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、精锐藤甲弓兵或骆驼射手形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4416",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_THUMB_RING_188",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑射手、精锐藤甲弓兵或骆驼射手形成规模，且能研究指环时。",
+      "effect": "开始研究指环。",
+      "group_id": "researches:rule:4416",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_189",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、骑射手或箭船形成规模，或既定步兵威胁、圣骑士/长枪应对、升级计划条件满足，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4425",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_190",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、骑射手或箭船形成规模，或既定步兵威胁、圣骑士/长枪应对、升级计划条件满足，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4425",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_191",
+      "category": "研究投入时机",
+      "meaning": "箭船系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、骑射手或箭船形成规模，或既定步兵威胁、圣骑士/长枪应对、升级计划条件满足，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4425",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_192",
+      "category": "研究投入时机",
+      "meaning": "箭船系（arrow-ship-line）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "弓兵、骑射手或箭船形成规模，或既定步兵威胁、圣骑士/长枪应对、升级计划条件满足，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4425",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_193",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投石手、投矛手、快帆船、龙头战舰或弩炮形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4437",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_194",
+      "category": "研究投入时机",
+      "meaning": "龙头战舰系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投石手、投矛手、快帆船、龙头战舰或弩炮形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4437",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_195",
+      "category": "研究投入时机",
+      "meaning": "弩炮系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "投石手、投矛手、快帆船、龙头战舰或弩炮形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4437",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_196",
+      "category": "研究投入时机",
+      "meaning": "弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的特色远程兵或弩炮战象形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4446",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_197",
+      "category": "研究投入时机",
+      "meaning": "飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的特色远程兵或弩炮战象形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4446",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_198",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的特色远程兵或弩炮战象形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4446",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_199",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的特色远程兵或弩炮战象形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4446",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_200",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的特色远程兵或弩炮战象形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4446",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_201",
+      "category": "研究投入时机",
+      "meaning": "精锐标枪骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的特色远程兵或弩炮战象形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4446",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_202",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的特色远程兵或弩炮战象形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4446",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_203",
+      "category": "研究投入时机",
+      "meaning": "精锐弩炮战象总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "城堡、堡垒或塔防达到固定规模，或精锐特色远程兵形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4457",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_204",
+      "category": "研究投入时机",
+      "meaning": "精锐飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "城堡、堡垒或塔防达到固定规模，或精锐特色远程兵形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4457",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_CHEMISTRY_205",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "城堡、堡垒或塔防达到固定规模，或精锐特色远程兵形成规模，且能研究化学时。",
+      "effect": "开始研究化学。",
+      "group_id": "researches:rule:4457",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_206",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求严格多于所填值。",
+      "unit": "个单位",
+      "context": "城堡时代对手弓兵/骑射形成威胁，我方弓兵规模较大，且已有多城镇中心或处于军力劣势，能够研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4485",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_207",
+      "category": "研究投入时机",
+      "meaning": "投矛手系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已允许升级计划，或弓兵、骑射手、投矛手与箭船等规模达到本分支门槛，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4497",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_208",
+      "category": "研究投入时机",
+      "meaning": "步行弓兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已允许升级计划，或弓兵、骑射手、投矛手与箭船等规模达到本分支门槛，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4497",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_209",
+      "category": "研究投入时机",
+      "meaning": "骑射手类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已允许升级计划，或弓兵、骑射手、投矛手与箭船等规模达到本分支门槛，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4497",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_210",
+      "category": "研究投入时机",
+      "meaning": "箭船系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已允许升级计划，或弓兵、骑射手、投矛手与箭船等规模达到本分支门槛，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4497",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_211",
+      "category": "研究投入时机",
+      "meaning": "箭船系（arrow-ship-line）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已允许升级计划，或弓兵、骑射手、投矛手与箭船等规模达到本分支门槛，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4497",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_212",
+      "category": "研究投入时机",
+      "meaning": "龙头战舰系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已允许升级计划，或弓兵、骑射手、投矛手与箭船等规模达到本分支门槛，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4497",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_213",
+      "category": "研究投入时机",
+      "meaning": "象射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "象射手或投石手形成规模，或投矛、海军快攻、城堡及塔防固定路径满足，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4510",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_214",
+      "category": "研究投入时机",
+      "meaning": "投石手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "象射手或投石手形成规模，或投矛、海军快攻、城堡及塔防固定路径满足，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4510",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_215",
+      "category": "研究投入时机",
+      "meaning": "飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵、藤甲弓兵、骆驼射手或热那亚弩手形成规模，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4521",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_216",
+      "category": "研究投入时机",
+      "meaning": "精锐飞镖骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵、藤甲弓兵、骆驼射手或热那亚弩手形成规模，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4521",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_217",
+      "category": "研究投入时机",
+      "meaning": "藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵、藤甲弓兵、骆驼射手或热那亚弩手形成规模，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4521",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_218",
+      "category": "研究投入时机",
+      "meaning": "精锐藤甲弓兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵、藤甲弓兵、骆驼射手或热那亚弩手形成规模，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4521",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_219",
+      "category": "研究投入时机",
+      "meaning": "骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵、藤甲弓兵、骆驼射手或热那亚弩手形成规模，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4521",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_220",
+      "category": "研究投入时机",
+      "meaning": "精锐骆驼射手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵、藤甲弓兵、骆驼射手或热那亚弩手形成规模，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4521",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BALLISTICS_221",
+      "category": "研究投入时机",
+      "meaning": "热那亚弩手总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "飞镖骑兵、藤甲弓兵、骆驼射手或热那亚弩手形成规模，且能研究弹道学时。",
+      "effect": "开始研究弹道学。",
+      "group_id": "researches:rule:4521",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_222",
+      "category": "研究投入时机",
+      "meaning": "侦察骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规骑兵或步兵、马扎尔骠骑兵、贵族铁骑、枪兵或佣兵形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4670",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_223",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规骑兵或步兵、马扎尔骠骑兵、贵族铁骑、枪兵或佣兵形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4670",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_224",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规骑兵或步兵、马扎尔骠骑兵、贵族铁骑、枪兵或佣兵形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4670",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_225",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规骑兵或步兵、马扎尔骠骑兵、贵族铁骑、枪兵或佣兵形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4670",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_226",
+      "category": "研究投入时机",
+      "meaning": "步兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规骑兵或步兵、马扎尔骠骑兵、贵族铁骑、枪兵或佣兵形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4670",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_227",
+      "category": "研究投入时机",
+      "meaning": "枪兵（kamayuk）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规骑兵或步兵、马扎尔骠骑兵、贵族铁骑、枪兵或佣兵形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4670",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_228",
+      "category": "研究投入时机",
+      "meaning": "佣兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规骑兵或步兵、马扎尔骠骑兵、贵族铁骑、枪兵或佣兵形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4670",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_229",
+      "category": "研究投入时机",
+      "meaning": "重型鹰勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "鹰勇士、弯刀勇士、飞刀女兵或爪刀勇士形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4681",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_230",
+      "category": "研究投入时机",
+      "meaning": "弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "鹰勇士、弯刀勇士、飞刀女兵或爪刀勇士形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4681",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_231",
+      "category": "研究投入时机",
+      "meaning": "精锐弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "鹰勇士、弯刀勇士、飞刀女兵或爪刀勇士形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4681",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_232",
+      "category": "研究投入时机",
+      "meaning": "飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "鹰勇士、弯刀勇士、飞刀女兵或爪刀勇士形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4681",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_233",
+      "category": "研究投入时机",
+      "meaning": "精锐飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "鹰勇士、弯刀勇士、飞刀女兵或爪刀勇士形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4681",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_234",
+      "category": "研究投入时机",
+      "meaning": "爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "鹰勇士、弯刀勇士、飞刀女兵或爪刀勇士形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4681",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_235",
+      "category": "研究投入时机",
+      "meaning": "精锐爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "鹰勇士、弯刀勇士、飞刀女兵或爪刀勇士形成规模，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4681",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_236",
+      "category": "研究投入时机",
+      "meaning": "佛兰德长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的枪骑兵、战车、骆驼、战象或佛兰德单位形成规模，或佛兰德革命已开始，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4692",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_FORGING_237",
+      "category": "研究投入时机",
+      "meaning": "佛兰德女长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "本分支的枪骑兵、战车、骆驼、战象或佛兰德单位形成规模，或佛兰德革命已开始，且能研究锻造时。",
+      "effect": "开始研究锻造。",
+      "group_id": "researches:rule:4692",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_238",
+      "category": "研究投入时机",
+      "meaning": "步兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且常规步兵形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4724",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_239",
+      "category": "研究投入时机",
+      "meaning": "枪兵（kamayuk）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且常规步兵形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4724",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_240",
+      "category": "研究投入时机",
+      "meaning": "弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且常规步兵形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4724",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_241",
+      "category": "研究投入时机",
+      "meaning": "精锐弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且常规步兵形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4724",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_242",
+      "category": "研究投入时机",
+      "meaning": "佣兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且常规步兵形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4724",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_243",
+      "category": "研究投入时机",
+      "meaning": "重型鹰勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且鹰勇士/飞刀/爪刀部队形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_244",
+      "category": "研究投入时机",
+      "meaning": "飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且鹰勇士/飞刀/爪刀部队形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_245",
+      "category": "研究投入时机",
+      "meaning": "精锐飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且鹰勇士/飞刀/爪刀部队形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_246",
+      "category": "研究投入时机",
+      "meaning": "爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且鹰勇士/飞刀/爪刀部队形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_247",
+      "category": "研究投入时机",
+      "meaning": "精锐爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度的侍从早期研究分支；进攻、帝王发展阶段或食物余量使该分支可执行，且鹰勇士/飞刀/爪刀部队形成规模时。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4733",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_248",
+      "category": "研究投入时机",
+      "meaning": "步兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模常规步兵或重装长枪兵可触发侍从研究的后续分支。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4742",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_249",
+      "category": "研究投入时机",
+      "meaning": "枪兵（kamayuk）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模常规步兵或重装长枪兵可触发侍从研究的后续分支。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4742",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_250",
+      "category": "研究投入时机",
+      "meaning": "弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模常规步兵或重装长枪兵可触发侍从研究的后续分支。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4742",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_251",
+      "category": "研究投入时机",
+      "meaning": "精锐弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模常规步兵或重装长枪兵可触发侍从研究的后续分支。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4742",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_252",
+      "category": "研究投入时机",
+      "meaning": "重装长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模常规步兵或重装长枪兵可触发侍从研究的后续分支。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4742",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_253",
+      "category": "研究投入时机",
+      "meaning": "佣兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模常规步兵或重装长枪兵可触发侍从研究的后续分支。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4742",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_254",
+      "category": "研究投入时机",
+      "meaning": "重型鹰勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模鹰勇士、佛兰德单位、飞刀或爪刀部队，或佛兰德革命已开始时研究侍从。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4752",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_255",
+      "category": "研究投入时机",
+      "meaning": "佛兰德长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模鹰勇士、佛兰德单位、飞刀或爪刀部队，或佛兰德革命已开始时研究侍从。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4752",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_256",
+      "category": "研究投入时机",
+      "meaning": "飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模鹰勇士、佛兰德单位、飞刀或爪刀部队，或佛兰德革命已开始时研究侍从。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4752",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_257",
+      "category": "研究投入时机",
+      "meaning": "精锐飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模鹰勇士、佛兰德单位、飞刀或爪刀部队，或佛兰德革命已开始时研究侍从。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4752",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_258",
+      "category": "研究投入时机",
+      "meaning": "爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模鹰勇士、佛兰德单位、飞刀或爪刀部队，或佛兰德革命已开始时研究侍从。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4752",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_259",
+      "category": "研究投入时机",
+      "meaning": "精锐爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，较大规模鹰勇士、佛兰德单位、飞刀或爪刀部队，或佛兰德革命已开始时研究侍从。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4752",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SQUIRES_260",
+      "category": "研究投入时机",
+      "meaning": "佛兰德女长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "高于中等难度中，佛兰德女长枪兵达到规模，或帝王步兵/鹰勇士路线的固定升级计划条件满足时研究侍从。",
+      "effect": "开始研究侍从。",
+      "group_id": "researches:rule:4763",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_261",
+      "category": "研究投入时机",
+      "meaning": "重型鹰勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4818",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_262",
+      "category": "研究投入时机",
+      "meaning": "弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4818",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_263",
+      "category": "研究投入时机",
+      "meaning": "步兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4818",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_264",
+      "category": "研究投入时机",
+      "meaning": "枪兵（kamayuk）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4818",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_265",
+      "category": "研究投入时机",
+      "meaning": "佣兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4818",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_266",
+      "category": "研究投入时机",
+      "meaning": "精锐弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "特色步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4829",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_267",
+      "category": "研究投入时机",
+      "meaning": "飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "特色步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4829",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_268",
+      "category": "研究投入时机",
+      "meaning": "精锐飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "特色步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4829",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_269",
+      "category": "研究投入时机",
+      "meaning": "爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "特色步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4829",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_270",
+      "category": "研究投入时机",
+      "meaning": "精锐爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "特色步兵规模已形成，步兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4829",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_271",
+      "category": "研究投入时机",
+      "meaning": "帝王骆驼兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵规模已形成，骑兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4840",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_272",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵规模已形成，骑兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4840",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_273",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵规模已形成，骑兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4840",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_274",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵规模已形成，骑兵锁甲不占当前可研究优先级或有多个铁匠铺，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4840",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_275",
+      "category": "研究投入时机",
+      "meaning": "佛兰德长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "佛兰德单位形成规模或佛兰德革命已开始，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4853",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_IRON_CASTING_276",
+      "category": "研究投入时机",
+      "meaning": "佛兰德女长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "佛兰德单位形成规模或佛兰德革命已开始，且能研究铸铁时。",
+      "effect": "开始研究铸铁。",
+      "group_id": "researches:rule:4853",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_277",
+      "category": "研究投入时机",
+      "meaning": "步兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规步兵、鹰勇士、枪兵、佣兵或骑兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4887",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_278",
+      "category": "研究投入时机",
+      "meaning": "重型鹰勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规步兵、鹰勇士、枪兵、佣兵或骑兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4887",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_279",
+      "category": "研究投入时机",
+      "meaning": "枪兵（kamayuk）总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规步兵、鹰勇士、枪兵、佣兵或骑兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4887",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_280",
+      "category": "研究投入时机",
+      "meaning": "佣兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规步兵、鹰勇士、枪兵、佣兵或骑兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4887",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_281",
+      "category": "研究投入时机",
+      "meaning": "骑兵类总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规步兵、鹰勇士、枪兵、佣兵或骑兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4887",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_282",
+      "category": "研究投入时机",
+      "meaning": "马扎尔骠骑兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规步兵、鹰勇士、枪兵、佣兵或骑兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4887",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_283",
+      "category": "研究投入时机",
+      "meaning": "贵族铁骑总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "常规步兵、鹰勇士、枪兵、佣兵或骑兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4887",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_284",
+      "category": "研究投入时机",
+      "meaning": "弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "战象或本分支特色步兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4898",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_285",
+      "category": "研究投入时机",
+      "meaning": "精锐弯刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "战象或本分支特色步兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4898",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_286",
+      "category": "研究投入时机",
+      "meaning": "飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "战象或本分支特色步兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4898",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_287",
+      "category": "研究投入时机",
+      "meaning": "精锐飞刀女兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "战象或本分支特色步兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4898",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_288",
+      "category": "研究投入时机",
+      "meaning": "爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "战象或本分支特色步兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4898",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_289",
+      "category": "研究投入时机",
+      "meaning": "精锐爪刀勇士总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "战象或本分支特色步兵形成规模，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4898",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_290",
+      "category": "研究投入时机",
+      "meaning": "佛兰德长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "枪骑兵、战车、骆驼或佛兰德单位形成规模，或佛兰德革命已开始，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4909",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_BLAST_FURNACE_291",
+      "category": "研究投入时机",
+      "meaning": "佛兰德女长枪兵总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "枪骑兵、战车、骆驼或佛兰德单位形成规模，或佛兰德革命已开始，且能研究鼓风炉时。",
+      "effect": "开始研究鼓风炉。",
+      "group_id": "researches:rule:4909",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_292",
+      "category": "研究投入时机",
+      "meaning": "八列桨船总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "海军已有基础规模或处于岛屿/团队岛屿地图，升级计划已允许且八列桨船或投石战舰达到规模，能够研究攻城工程师时。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:5223",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_SIEGE_ENGINEERS_293",
+      "category": "研究投入时机",
+      "meaning": "投石战舰系总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "海军已有基础规模或处于岛屿/团队岛屿地图，升级计划已允许且八列桨船或投石战舰达到规模，能够研究攻城工程师时。",
+      "effect": "开始研究攻城工程师。",
+      "group_id": "researches:rule:5223",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_ARSON_294",
+      "category": "研究投入时机",
+      "meaning": "纵火研究分支始终要求的基础步兵规模。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "步兵规模达到基础门槛，并且达到更大规模或人口接近替换阈值；步兵锁甲及攻击/防御/主力步兵路线条件满足时。",
+      "effect": "开始研究纵火。",
+      "group_id": "researches:rule:6119",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_MIL_RI_ARSON_295",
+      "category": "研究投入时机",
+      "meaning": "没有人口压力时，额外要求的步兵规模。此处比较方向为不少于。",
+      "unit": "个单位",
+      "context": "步兵规模达到基础门槛，并且达到更大规模或人口接近替换阈值；步兵锁甲及攻击/防御/主力步兵路线条件满足时。",
+      "effect": "开始研究纵火。",
+      "group_id": "researches:rule:6119",
+      "constraints_note": ""
+    },
+    {
+      "key": "RESEARCH_ECON_RI_HEAVY_PLOW_296",
+      "category": "研究投入时机",
+      "meaning": "对局经过时间的判断门槛；本分支要求严格多于所填值。",
+      "unit": "游戏秒",
+      "context": "契丹文明专用分支中已有多城镇中心和弓锯，军力不落后或对局经过等待时间，且能研究重犁时。",
+      "effect": "开始研究重犁。",
+      "group_id": "researches:rule:6519",
+      "constraints_note": "仅在契丹文明编译分支生效。"
+    },
+    {
+      "key": "RESEARCH_ECON_RI_CROP_ROTATION_297",
+      "category": "研究投入时机",
+      "meaning": "进入当前时代后的经过时间的判断门槛；本分支要求严格多于所填值。",
+      "unit": "游戏秒",
+      "context": "契丹文明专用分支中，进入当前时代经过一定发展时间，且能够研究轮作时。",
+      "effect": "开始研究轮作。",
+      "group_id": "researches:rule:6529",
+      "constraints_note": "仅在契丹文明编译分支生效。"
+    }
+  ]
+}

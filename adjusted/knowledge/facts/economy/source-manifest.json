@@ -1,0 +1,81 @@
+{
+  "pack_id": "aoe2de-official-economy-production-base-v1",
+  "generated_at": "2026-08-24T19:04:51+08:00",
+  "game_version": "101.103.48987.0",
+  "dat_version": "VER 8.9",
+  "parser": {
+    "name": "genieutils-py",
+    "version": "0.1.2",
+    "pypi_project": "https://pypi.org/project/genieutils-py/0.1.2/",
+    "wheel_sha256": "826C03CFA27066292A4DB56EEE90EDF7F2114641A858053A95607B607AD1579E",
+    "role": "parser only; official local files are the numeric sources"
+  },
+  "official_sources": [
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\resources\\_common\\dat\\empires2_x2_p1.dat",
+      "size": 11076546,
+      "last_write_time": "2026-08-23T17:17:46+08:00",
+      "sha256": "CE3530DF36CF0B333A9751CB0FF94460FE904F811FEECEC8AE9794701622B4CF"
+    },
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\resources\\_common\\dat\\futuravailableunits.json",
+      "size": 1259527,
+      "last_write_time": "2026-08-23T17:17:46+08:00",
+      "sha256": "B55DB88A7FCEE3870C25864B6C2FC2BD4CB160BF330EC5432A2F6F0174F15110"
+    },
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\resources\\_common\\dat\\civilizations.json",
+      "size": 53301,
+      "last_write_time": "2026-08-23T17:17:57+08:00",
+      "sha256": "1B2AACFFF03A4B703C2690DFBB9C4C2D57EB4D8A1C38C42A2A87946FEAE519ED"
+    },
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\AoE2DE_s.exe",
+      "size": 71648568,
+      "last_write_time": "2026-08-23T23:57:08+08:00",
+      "sha256": "6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4"
+    },
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\resources\\zh\\strings\\key-value\\key-value-strings-utf8.txt",
+      "size": 1946714,
+      "last_write_time": "2026-08-23T17:17:46+08:00",
+      "sha256": "0CB38813DDB9834FD4E5347C7778A29A1E2B89B97EF7B5A616E47DA4CF31431C"
+    },
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\resources\\zh\\strings\\key-value\\key-value-paphos-strings-utf8.txt",
+      "size": 131475,
+      "last_write_time": "2026-08-23T17:17:56+08:00",
+      "sha256": "416BF157E8F2896C63A366FF265B6DACCF7226FD3EA2468214F7C35AFD132ED3"
+    },
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\resources\\en\\strings\\key-value\\key-value-strings-utf8.txt",
+      "size": 1993150,
+      "last_write_time": "2026-08-23T17:17:46+08:00",
+      "sha256": "FA8BC9C0C90CD17E0CFCE85DB0B9A75C8A6CC67AB580932E86DBAAD41DF9AE4E"
+    },
+    {
+      "path": "S:\\SteamLibrary\\steamapps\\common\\AoE2DE\\resources\\en\\strings\\key-value\\key-value-paphos-strings-utf8.txt",
+      "size": 132607,
+      "last_write_time": "2026-08-23T17:17:52+08:00",
+      "sha256": "F3FA34AC26D273E28B3CC8BFA77B5CD3EF51DFCA119B7C7305BF9C44314BF875"
+    }
+  ],
+  "derived_arithmetic_fields": [
+    "nominal_continuous_cost_per_minute",
+    "raw_linear_projection_per_minute"
+  ],
+  "availability_anomalies": [
+    {
+      "kind": "availability_entity_has_no_creatable_dat_record",
+      "id": 320,
+      "dat_internal_name": "ARROW8",
+      "availability_names_en_raw": [
+        "Siege Onager"
+      ],
+      "civilizations": [
+        "Georgians"
+      ],
+      "action": "excluded_from_actionable_catalog"
+    }
+  ]
+}

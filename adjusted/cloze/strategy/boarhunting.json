@@ -1,0 +1,357 @@
+{
+  "module": "boarhunting.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "BOAR_FOOD_VILLAGERS_001",
+      "category": "早期食物分配",
+      "meaning": "食物村民汇总的判断门槛；本分支要求不少于所填值。",
+      "unit": "计数",
+      "context": "已有一批食物村民、当前没有羊且无法锁定下一只家畜时，降低狩猎人口门槛。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:84",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_MINBOAR_003",
+      "category": "早期食物分配",
+      "meaning": "允许狩猎所需村民数的上限修正；取当前门槛与所填值中较小者。",
+      "unit": "村民数",
+      "context": "已有一批食物村民、当前没有羊且无法锁定下一只家畜时，降低狩猎人口门槛。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:84",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_004",
+      "category": "早期食物分配",
+      "meaning": "对局经过时间的判断门槛；本分支要求不少于所填值。",
+      "unit": "游戏秒",
+      "context": "开局经过等待时间后，羊少且缺磨坊，或当前羊少且村民或伐木配置已经成形时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TOTALSHEEP_005",
+      "category": "早期食物分配",
+      "meaning": "已记录羊只总数的判断门槛；本分支要求不多于所填值。",
+      "unit": "计数",
+      "context": "开局经过等待时间后，羊少且缺磨坊，或当前羊少且村民或伐木配置已经成形时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_MYSHEEP_006",
+      "category": "早期食物分配",
+      "meaning": "我方当前羊只计数的判断门槛；本分支要求不多于所填值。",
+      "unit": "计数",
+      "context": "开局经过等待时间后，羊少且缺磨坊，或当前羊少且村民或伐木配置已经成形时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGERCOUNTTOTAL_007",
+      "category": "早期食物分配",
+      "meaning": "村民总数记录的判断门槛；本分支要求不少于所填值。",
+      "unit": "计数",
+      "context": "开局经过等待时间后，羊少且缺磨坊，或当前羊少且村民或伐木配置已经成形时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_WOOD_VILLAGERS_008",
+      "category": "早期食物分配",
+      "meaning": "伐木村民汇总的判断门槛；本分支要求不少于所填值。",
+      "unit": "计数",
+      "context": "开局经过等待时间后，羊少且缺磨坊，或当前羊少且村民或伐木配置已经成形时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_MINBOAR_009",
+      "category": "早期食物分配",
+      "meaning": "按剩余羊只调整之前，允许狩猎人口门槛的初始上限。",
+      "unit": "村民数",
+      "context": "开局经过等待时间后，羊少且缺磨坊，或当前羊少且村民或伐木配置已经成形时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_MINBOAR_010",
+      "category": "早期食物分配",
+      "meaning": "加上剩余羊只后，允许狩猎人口门槛的最终上限。",
+      "unit": "村民数",
+      "context": "开局经过等待时间后，羊少且缺磨坊，或当前羊少且村民或伐木配置已经成形时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_011",
+      "category": "早期食物分配",
+      "meaning": "村民总计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "村民已成形、当前无羊且近处鹿肉或猎人配置不足；另一条路径是敌方基地离我方很近。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:102",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_HUNTER_013",
+      "category": "早期食物分配",
+      "meaning": "猎人当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "村民已成形、当前无羊且近处鹿肉或猎人配置不足；另一条路径是敌方基地离我方很近。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:102",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_MINBOAR_014",
+      "category": "早期食物分配",
+      "meaning": "允许狩猎所需村民数的上限修正；取当前门槛与所填值中较小者。",
+      "unit": "村民数",
+      "context": "村民已成形、当前无羊且近处鹿肉或猎人配置不足；另一条路径是敌方基地离我方很近。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:102",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_015",
+      "category": "早期食物分配",
+      "meaning": "对局经过时间的判断门槛；本分支要求不少于所填值。",
+      "unit": "游戏秒",
+      "context": "水图，或开局已过一段时间且已知羊少，或牧羊与食物人手已较充足时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:112",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TOTALSHEEP_016",
+      "category": "早期食物分配",
+      "meaning": "已记录羊只总数的判断门槛；本分支要求不多于所填值。",
+      "unit": "计数",
+      "context": "水图，或开局已过一段时间且已知羊少，或牧羊与食物人手已较充足时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:112",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_SHEPHERD_017",
+      "category": "早期食物分配",
+      "meaning": "牧羊村民当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "水图，或开局已过一段时间且已知羊少，或牧羊与食物人手已较充足时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:112",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_FOOD_VILLAGERS_018",
+      "category": "早期食物分配",
+      "meaning": "食物村民汇总的判断门槛；本分支要求不少于所填值。",
+      "unit": "计数",
+      "context": "水图，或开局已过一段时间且已知羊少，或牧羊与食物人手已较充足时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:112",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_MINBOAR_019",
+      "category": "早期食物分配",
+      "meaning": "允许狩猎所需村民数的上限修正；取当前门槛与所填值中较小者。",
+      "unit": "村民数",
+      "context": "水图，或开局已过一段时间且已知羊少，或牧羊与食物人手已较充足时，提前安排狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:112",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_FORAGER_020",
+      "category": "早期食物分配",
+      "meaning": "采果村民当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "敌方较远或尚无敌方建筑信息，且织布/距离、采果人手或食物人手符合延后条件；羊仍较充足时，延后狩猎。",
+      "effect": "提高狩猎所需村民数门槛，暂缓由羊等食物转向狩猎。",
+      "group_id": "boarhunting:rule:120",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_FOOD_021",
+      "category": "早期食物分配",
+      "meaning": "食物村民总计数的判断门槛；本分支要求不多于所填值。",
+      "unit": "个单位",
+      "context": "敌方较远或尚无敌方建筑信息，且织布/距离、采果人手或食物人手符合延后条件；羊仍较充足时，延后狩猎。",
+      "effect": "提高狩猎所需村民数门槛，暂缓由羊等食物转向狩猎。",
+      "group_id": "boarhunting:rule:120",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_SHEPHERD_022",
+      "category": "早期食物分配",
+      "meaning": "牧羊村民当前计数的判断门槛；本分支要求不多于所填值。",
+      "unit": "个单位",
+      "context": "敌方较远或尚无敌方建筑信息，且织布/距离、采果人手或食物人手符合延后条件；羊仍较充足时，延后狩猎。",
+      "effect": "提高狩猎所需村民数门槛，暂缓由羊等食物转向狩猎。",
+      "group_id": "boarhunting:rule:120",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TOTALSHEEP_023",
+      "category": "早期食物分配",
+      "meaning": "已记录羊只总数的判断门槛；本分支要求不少于所填值。",
+      "unit": "计数",
+      "context": "敌方较远或尚无敌方建筑信息，且织布/距离、采果人手或食物人手符合延后条件；羊仍较充足时，延后狩猎。",
+      "effect": "提高狩猎所需村民数门槛，暂缓由羊等食物转向狩猎。",
+      "group_id": "boarhunting:rule:120",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TOTALSHEEP_024",
+      "category": "早期食物分配",
+      "meaning": "已记录羊只总数的判断门槛；本分支要求不多于所填值。",
+      "unit": "计数",
+      "context": "已知羊减少并经过开局等待，或野猪在织布安全距离内或织布已开始且牧羊人较多时，提前安排狩猎；含不列颠未建磨坊分支。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:132",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_025",
+      "category": "早期食物分配",
+      "meaning": "羊只减少路径必须先达到的开局等待下限。此处比较方向为不少于。",
+      "unit": "游戏秒",
+      "context": "已知羊减少并经过开局等待，或野猪在织布安全距离内或织布已开始且牧羊人较多时，提前安排狩猎；含不列颠未建磨坊分支。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:132",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_026",
+      "category": "早期食物分配",
+      "meaning": "非不列颠缺磨坊例外时还需达到的等待下限。此处比较方向为不少于。",
+      "unit": "游戏秒",
+      "context": "已知羊减少并经过开局等待，或野猪在织布安全距离内或织布已开始且牧羊人较多时，提前安排狩猎；含不列颠未建磨坊分支。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:132",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_SHEPHERD_027",
+      "category": "早期食物分配",
+      "meaning": "牧羊村民当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "已知羊减少并经过开局等待，或野猪在织布安全距离内或织布已开始且牧羊人较多时，提前安排狩猎；含不列颠未建磨坊分支。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:132",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TOTALSHEEP_028",
+      "category": "早期食物分配",
+      "meaning": "已记录羊只总数的判断门槛；本分支要求不多于所填值。",
+      "unit": "计数",
+      "context": "食物采集点离投放点较远，或非游牧局正在建伐木场而缺磨坊且羊少时，经过开局等待后提前狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:143",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_029",
+      "category": "早期食物分配",
+      "meaning": "所有提前狩猎路径共用的最早时间。此处比较方向为不少于。",
+      "unit": "游戏秒",
+      "context": "食物采集点离投放点较远，或非游牧局正在建伐木场而缺磨坊且羊少时，经过开局等待后提前狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:143",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_030",
+      "category": "早期食物分配",
+      "meaning": "游牧局额外要求的最早时间。此处比较方向为不少于。",
+      "unit": "游戏秒",
+      "context": "食物采集点离投放点较远，或非游牧局正在建伐木场而缺磨坊且羊少时，经过开局等待后提前狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:143",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_MINBOAR_031",
+      "category": "早期食物分配",
+      "meaning": "允许狩猎所需村民数的上限修正；取当前门槛与所填值中较小者。",
+      "unit": "村民数",
+      "context": "食物采集点离投放点较远，或非游牧局正在建伐木场而缺磨坊且羊少时，经过开局等待后提前狩猎。",
+      "effect": "调低允许狩猎所需的村民数门槛；达到最终门槛后解除狩猎限制。",
+      "group_id": "boarhunting:rule:143",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_048",
+      "category": "早期食物分配",
+      "meaning": "村民当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "仍未允许狩猎，村民规模或开局经过时间已到门槛，且野猪较远或食物人手不足时。",
+      "effect": "解除狩猎限制，使既有采集系统可以恢复狩猎。",
+      "group_id": "boarhunting:rule:232",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_049",
+      "category": "早期食物分配",
+      "meaning": "对局经过时间的判断门槛；本分支要求严格多于所填值。",
+      "unit": "游戏秒",
+      "context": "仍未允许狩猎，村民规模或开局经过时间已到门槛，且野猪较远或食物人手不足时。",
+      "effect": "解除狩猎限制，使既有采集系统可以恢复狩猎。",
+      "group_id": "boarhunting:rule:232",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_FOOD_050",
+      "category": "早期食物分配",
+      "meaning": "食物村民当前计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "仍未允许狩猎，村民规模或开局经过时间已到门槛，且野猪较远或食物人手不足时。",
+      "effect": "解除狩猎限制，使既有采集系统可以恢复狩猎。",
+      "group_id": "boarhunting:rule:232",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TOTAL_FOOD_AMOUNT_052",
+      "category": "早期食物分配",
+      "meaning": "含托管在内的食物总量的判断门槛；本分支要求不少于所填值。",
+      "unit": "食物单位",
+      "context": "仍未允许狩猎，赶鹿流程已经启用，或已无已知野猪且食物储量/村民规模/等待时间达到替代条件时。",
+      "effect": "解除狩猎限制，使既有采集系统可以恢复狩猎。",
+      "group_id": "boarhunting:rule:247",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_VILLAGER_053",
+      "category": "早期食物分配",
+      "meaning": "村民当前计数的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "仍未允许狩猎，赶鹿流程已经启用，或已无已知野猪且食物储量/村民规模/等待时间达到替代条件时。",
+      "effect": "解除狩猎限制，使既有采集系统可以恢复狩猎。",
+      "group_id": "boarhunting:rule:247",
+      "constraints_note": ""
+    },
+    {
+      "key": "BOAR_TIME_054",
+      "category": "早期食物分配",
+      "meaning": "对局经过时间的判断门槛；本分支要求不少于所填值。",
+      "unit": "游戏秒",
+      "context": "仍未允许狩猎，赶鹿流程已经启用，或已无已知野猪且食物储量/村民规模/等待时间达到替代条件时。",
+      "effect": "解除狩猎限制，使既有采集系统可以恢复狩猎。",
+      "group_id": "boarhunting:rule:247",
+      "constraints_note": ""
+    }
+  ]
+}

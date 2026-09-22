@@ -1,0 +1,1297 @@
+{
+  "module": "trade.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "TRADE_001",
+      "category": "资源交易策略",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "已有一定城堡和城镇中心，但正在受攻击，军事优势和兵力不足、黄金短缺，石价还可接受。",
+      "effect": "卖石取得应急黄金。",
+      "group_id": "trade:rule:28",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_002",
+      "category": "资源交易策略",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "已有一定城堡和城镇中心，但正在受攻击，军事优势和兵力不足、黄金短缺，石价还可接受。",
+      "effect": "卖石取得应急黄金。",
+      "group_id": "trade:rule:28",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_003",
+      "category": "资源交易策略",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "已有一定城堡和城镇中心，但正在受攻击，军事优势和兵力不足、黄金短缺，石价还可接受。",
+      "effect": "卖石取得应急黄金。",
+      "group_id": "trade:rule:28",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_004",
+      "category": "资源交易策略",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "指标值",
+      "context": "已有一定城堡和城镇中心，但正在受攻击，军事优势和兵力不足、黄金短缺，石价还可接受。",
+      "effect": "卖石取得应急黄金。",
+      "group_id": "trade:rule:28",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_005",
+      "category": "资源交易策略",
+      "meaning": "本方军事人口的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人口",
+      "context": "已有一定城堡和城镇中心，但正在受攻击，军事优势和兵力不足、黄金短缺，石价还可接受。",
+      "effect": "卖石取得应急黄金。",
+      "group_id": "trade:rule:28",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_006",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "已有一定城堡和城镇中心，但正在受攻击，军事优势和兵力不足、黄金短缺，石价还可接受。",
+      "effect": "卖石取得应急黄金。",
+      "group_id": "trade:rule:28",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_007",
+      "category": "资源交易策略",
+      "meaning": "石料出售价格的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "黄金/市场批次",
+      "context": "已有一定城堡和城镇中心，但正在受攻击，军事优势和兵力不足、黄金短缺，石价还可接受。",
+      "effect": "卖石取得应急黄金。",
+      "group_id": "trade:rule:28",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_008",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的石料余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "石料余量高而黄金不足，特色单位路线要求更多石料余量，出售价格也须达标。",
+      "effect": "卖出富余石料。",
+      "group_id": "trade:rule:44",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_009",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的石料余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "石料余量高而黄金不足，特色单位路线要求更多石料余量，出售价格也须达标。",
+      "effect": "卖出富余石料。",
+      "group_id": "trade:rule:44",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_010",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "石料余量高而黄金不足，特色单位路线要求更多石料余量，出售价格也须达标。",
+      "effect": "卖出富余石料。",
+      "group_id": "trade:rule:44",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_011",
+      "category": "资源交易策略",
+      "meaning": "石料出售价格的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "黄金/市场批次",
+      "context": "石料余量高而黄金不足，特色单位路线要求更多石料余量，出售价格也须达标。",
+      "effect": "卖出富余石料。",
+      "group_id": "trade:rule:44",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_013",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的石料余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "已有商站供给资源，城堡数量满足发展方向，军事劣势或人口未成熟，石料有余而黄金紧张。",
+      "effect": "卖出商站经济中的富余石料。",
+      "group_id": "trade:rule:55",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_014",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的石料余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "已有商站供给资源，城堡数量满足发展方向，军事劣势或人口未成熟，石料有余而黄金紧张。",
+      "effect": "卖出商站经济中的富余石料。",
+      "group_id": "trade:rule:55",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_015",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源盈余差额",
+      "context": "已有商站供给资源，城堡数量满足发展方向，军事劣势或人口未成熟，石料有余而黄金紧张。",
+      "effect": "卖出商站经济中的富余石料。",
+      "group_id": "trade:rule:55",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_016",
+      "category": "资源交易策略",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "已有商站供给资源，城堡数量满足发展方向，军事劣势或人口未成熟，石料有余而黄金紧张。",
+      "effect": "卖出商站经济中的富余石料。",
+      "group_id": "trade:rule:55",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_017",
+      "category": "资源交易策略",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "座",
+      "context": "已有商站供给资源，城堡数量满足发展方向，军事劣势或人口未成熟，石料有余而黄金紧张。",
+      "effect": "卖出商站经济中的富余石料。",
+      "group_id": "trade:rule:55",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_018",
+      "category": "资源交易策略",
+      "meaning": "石料出售价格的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "黄金/市场批次",
+      "context": "已有商站供给资源，城堡数量满足发展方向，军事劣势或人口未成熟，石料有余而黄金紧张。",
+      "effect": "卖出商站经济中的富余石料。",
+      "group_id": "trade:rule:55",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_034",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "石墙鹰勇士尚需精锐升级，或快速帝王尚未转特色单位，黄金也未充裕。",
+      "effect": "暂缓购石，保护当前路线关键投资。",
+      "group_id": "trade:rule:132",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_035",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "石墙鹰勇士尚需精锐升级，或快速帝王尚未转特色单位，黄金也未充裕。",
+      "effect": "暂缓购石，保护当前路线关键投资。",
+      "group_id": "trade:rule:138",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_038",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "进入帝王计划却缺首座城堡，石料不足；研究计划、特色单位或缺采石提供理由，黄金余量还须支持。",
+      "effect": "买入首座城堡所缺石料。",
+      "group_id": "trade:rule:144",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_039",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "进入帝王计划却缺首座城堡，石料不足；研究计划、特色单位或缺采石提供理由，黄金余量还须支持。",
+      "effect": "买入首座城堡所缺石料。",
+      "group_id": "trade:rule:144",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_040",
+      "category": "资源交易策略",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "帝王特色单位路线且安全、无其他预留，城堡未达目标、石料不足，黄金与石价允许。",
+      "effect": "买石增加特色单位生产城堡。",
+      "group_id": "trade:rule:162",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_041",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "帝王特色单位路线且安全、无其他预留，城堡未达目标、石料不足，黄金与石价允许。",
+      "effect": "买石增加特色单位生产城堡。",
+      "group_id": "trade:rule:162",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_042",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "帝王特色单位路线且安全、无其他预留，城堡未达目标、石料不足，黄金与石价允许。",
+      "effect": "买石增加特色单位生产城堡。",
+      "group_id": "trade:rule:162",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_043",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "帝王特色单位路线且安全、无其他预留，城堡未达目标、石料不足，黄金与石价允许。",
+      "effect": "买石增加特色单位生产城堡。",
+      "group_id": "trade:rule:162",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_044",
+      "category": "资源交易策略",
+      "meaning": "采石村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "城镇中心可扩张且缺石，建筑数量、战况、人口、采石能力、木材与已有建设预留共同决定购石。",
+      "effect": "为城镇中心扩张购石。",
+      "group_id": "trade:rule:187",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_045",
+      "category": "资源交易策略",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "城镇中心可扩张且缺石，建筑数量、战况、人口、采石能力、木材与已有建设预留共同决定购石。",
+      "effect": "为城镇中心扩张购石。",
+      "group_id": "trade:rule:197",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_046",
+      "category": "资源交易策略",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "城镇中心可扩张且缺石，建筑数量、战况、人口、采石能力、木材与已有建设预留共同决定购石。",
+      "effect": "为城镇中心扩张购石。",
+      "group_id": "trade:rule:197",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_047",
+      "category": "资源交易策略",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "城镇中心可扩张且缺石，建筑数量、战况、人口、采石能力、木材与已有建设预留共同决定购石。",
+      "effect": "为城镇中心扩张购石。",
+      "group_id": "trade:rule:210",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_048",
+      "category": "资源交易策略",
+      "meaning": "本方军事优势指标的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "指标值",
+      "context": "安全且军事优势允许，贸易或极厚黄金支持，城堡少、石料不足且石价允许。",
+      "effect": "用富余黄金补城堡石料。",
+      "group_id": "trade:rule:237",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_049",
+      "category": "资源交易策略",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "安全且军事优势允许，贸易或极厚黄金支持，城堡少、石料不足且石价允许。",
+      "effect": "用富余黄金补城堡石料。",
+      "group_id": "trade:rule:237",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_050",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "安全且军事优势允许，贸易或极厚黄金支持，城堡少、石料不足且石价允许。",
+      "effect": "用富余黄金补城堡石料。",
+      "group_id": "trade:rule:237",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_051",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "安全且军事优势允许，贸易或极厚黄金支持，城堡少、石料不足且石价允许。",
+      "effect": "用富余黄金补城堡石料。",
+      "group_id": "trade:rule:237",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_052",
+      "category": "资源交易策略",
+      "meaning": "城堡总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "安全时贸易、圣物或大量黄金支持发展，城堡未达扩张门槛、石价可接受。",
+      "effect": "为进一步增加城堡购石。",
+      "group_id": "trade:rule:252",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_053",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "安全时贸易、圣物或大量黄金支持发展，城堡未达扩张门槛、石价可接受。",
+      "effect": "为进一步增加城堡购石。",
+      "group_id": "trade:rule:252",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_054",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "安全时贸易、圣物或大量黄金支持发展，城堡未达扩张门槛、石价可接受。",
+      "effect": "为进一步增加城堡购石。",
+      "group_id": "trade:rule:252",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_055",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "黄金/市场批次",
+      "context": "标准胜利模式下石价高，已有采石村民。",
+      "effect": "跳过奇观或守胜购石，优先采集。",
+      "group_id": "trade:rule:269",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_056",
+      "category": "资源交易策略",
+      "meaning": "采石村民现存数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "标准胜利模式下石价高，已有采石村民。",
+      "effect": "跳过奇观或守胜购石，优先采集。",
+      "group_id": "trade:rule:269",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_063",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "标准胜利且非游牧，已建奇观或持有圣物，石墙尚未闭合，黄金有余。",
+      "effect": "买石保护胜利目标。",
+      "group_id": "trade:rule:289",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_066",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "无其他预留，火炮塔可建，贸易或圣物持续供金，石料少且石价合理。",
+      "effect": "补充火炮塔等防御石料。",
+      "group_id": "trade:rule:304",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_067",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "无其他预留，火炮塔可建，贸易或圣物持续供金，石料少且石价合理。",
+      "effect": "补充火炮塔等防御石料。",
+      "group_id": "trade:rule:304",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_068",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "无其他预留，石料不足建城堡；黄金余量、市场价格、贸易规模或圣物收入支持购买。",
+      "effect": "把富余黄金换成建设石料。",
+      "group_id": "trade:rule:317",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_069",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "无其他预留，石料不足建城堡；黄金余量、市场价格、贸易规模或圣物收入支持购买。",
+      "effect": "把富余黄金换成建设石料。",
+      "group_id": "trade:rule:317",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_070",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "无其他预留，石料不足建城堡；黄金余量、市场价格、贸易规模或圣物收入支持购买。",
+      "effect": "把富余黄金换成建设石料。",
+      "group_id": "trade:rule:317",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_074",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "食物余量较多、黄金紧缺，售价达标或食物积压更大。",
+      "effect": "卖粮缓解缺金。",
+      "group_id": "trade:rule:344",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_075",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "食物余量较多、黄金紧缺，售价达标或食物积压更大。",
+      "effect": "卖粮缓解缺金。",
+      "group_id": "trade:rule:344",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_076",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "食物余量较多、黄金紧缺，售价达标或食物积压更大。",
+      "effect": "卖粮缓解缺金。",
+      "group_id": "trade:rule:344",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_077",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "食物有余，售价高或积压多，黄金仍不足。",
+      "effect": "卖粮增加黄金储备。",
+      "group_id": "trade:rule:354",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_078",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "食物有余，售价高或积压多，黄金仍不足。",
+      "effect": "卖粮增加黄金储备。",
+      "group_id": "trade:rule:354",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_079",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "食物有余，售价高或积压多，黄金仍不足。",
+      "effect": "卖粮增加黄金储备。",
+      "group_id": "trade:rule:354",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_080",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "食物积压、黄金不足，金矿稀缺或售价可接受。",
+      "effect": "用食物交易补后期黄金。",
+      "group_id": "trade:rule:364",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_081",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "食物积压、黄金不足，金矿稀缺或售价可接受。",
+      "effect": "用食物交易补后期黄金。",
+      "group_id": "trade:rule:364",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_082",
+      "category": "资源交易策略",
+      "meaning": "食物出售价格的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "食物积压、黄金不足，金矿稀缺或售价可接受。",
+      "effect": "用食物交易补后期黄金。",
+      "group_id": "trade:rule:364",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_083",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "食物高度积压，黄金较少；更高积压时较早时段也可触发，金矿或售价条件须通过。",
+      "effect": "清理大量食物储备换金。",
+      "group_id": "trade:rule:374",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_084",
+      "category": "资源交易策略",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "食物高度积压，黄金较少；更高积压时较早时段也可触发，金矿或售价条件须通过。",
+      "effect": "清理大量食物储备换金。",
+      "group_id": "trade:rule:374",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_085",
+      "category": "资源交易策略",
+      "meaning": "食物出售价格的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "食物高度积压，黄金较少；更高积压时较早时段也可触发，金矿或售价条件须通过。",
+      "effect": "清理大量食物储备换金。",
+      "group_id": "trade:rule:374",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_086",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源稀少或运距过长，木金不足但食物尚有余量。",
+      "effect": "卖粮取得补木资金。",
+      "group_id": "trade:rule:387",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_087",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源稀少或运距过长，木金不足但食物尚有余量。",
+      "effect": "卖粮取得补木资金。",
+      "group_id": "trade:rule:387",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_088",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源稀少或运距过长，木金不足但食物尚有余量。",
+      "effect": "卖粮取得补木资金。",
+      "group_id": "trade:rule:387",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_089",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源稀少或运距过长，木金不足但食物尚有余量。",
+      "effect": "卖粮取得补木资金。",
+      "group_id": "trade:rule:397",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_090",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源稀少或运距过长，木金不足但食物尚有余量。",
+      "effect": "卖粮取得补木资金。",
+      "group_id": "trade:rule:397",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_091",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源稀少或运距过长，木金不足但食物尚有余量。",
+      "effect": "卖粮取得补木资金。",
+      "group_id": "trade:rule:397",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_095",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "黄金有余但食物不足，补到更高食物档位需逐级更厚黄金余量。",
+      "effect": "分档买粮，平衡食金储备。",
+      "group_id": "trade:rule:420",
+      "constraints_note": "较高食物档位的黄金余量要求应按现有分档非递减。 关联键：TRADE_095, TRADE_096, TRADE_097。"
+    },
+    {
+      "key": "TRADE_096",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "黄金有余但食物不足，补到更高食物档位需逐级更厚黄金余量。",
+      "effect": "分档买粮，平衡食金储备。",
+      "group_id": "trade:rule:420",
+      "constraints_note": "较高食物档位的黄金余量要求应按现有分档非递减。 关联键：TRADE_095, TRADE_096, TRADE_097。"
+    },
+    {
+      "key": "TRADE_097",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "黄金有余但食物不足，补到更高食物档位需逐级更厚黄金余量。",
+      "effect": "分档买粮，平衡食金储备。",
+      "group_id": "trade:rule:420",
+      "constraints_note": "较高食物档位的黄金余量要求应按现有分档非递减。 关联键：TRADE_095, TRADE_096, TRADE_097。"
+    },
+    {
+      "key": "TRADE_098",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "黄金有余但食物不足，补到更高食物档位需逐级更厚黄金余量。",
+      "effect": "分档买粮，平衡食金储备。",
+      "group_id": "trade:rule:420",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_099",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "安全且黄金极多，或贸易/圣物持续供金。",
+      "effect": "将黄金转成较厚食物储备。",
+      "group_id": "trade:rule:432",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_100",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "安全且黄金极多，或贸易/圣物持续供金。",
+      "effect": "将黄金转成较厚食物储备。",
+      "group_id": "trade:rule:432",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_101",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "食物少，有黄金余量，贸易建筑与贸易单位或圣物可持续供金。",
+      "effect": "买粮支持持续生产。",
+      "group_id": "trade:rule:444",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_102",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "食物少，有黄金余量，贸易建筑与贸易单位或圣物可持续供金。",
+      "effect": "买粮支持持续生产。",
+      "group_id": "trade:rule:444",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_104",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "无其他预留、食物偏少，贸易或圣物支持，黄金余量与购粮价格均达标。",
+      "effect": "按价格与储备买粮。",
+      "group_id": "trade:rule:458",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_105",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "无其他预留、食物偏少，贸易或圣物支持，黄金余量与购粮价格均达标。",
+      "effect": "按价格与储备买粮。",
+      "group_id": "trade:rule:458",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_106",
+      "category": "资源交易策略",
+      "meaning": "食物购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "无其他预留、食物偏少，贸易或圣物支持，黄金余量与购粮价格均达标。",
+      "effect": "按价格与储备买粮。",
+      "group_id": "trade:rule:458",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_107",
+      "category": "资源交易策略",
+      "meaning": "食物购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "无其他预留、食物偏少，贸易或圣物支持，黄金余量与购粮价格均达标。",
+      "effect": "按价格与储备买粮。",
+      "group_id": "trade:rule:458",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_114",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源充足或采集点近，木材余量高而黄金紧张；售价正常或积压更大。",
+      "effect": "出售富余木材。",
+      "group_id": "trade:rule:511",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_115",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源充足或采集点近，木材余量高而黄金紧张；售价正常或积压更大。",
+      "effect": "出售富余木材。",
+      "group_id": "trade:rule:511",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_116",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源充足或采集点近，木材余量高而黄金紧张；售价正常或积压更大。",
+      "effect": "出售富余木材。",
+      "group_id": "trade:rule:511",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_117",
+      "category": "资源交易策略",
+      "meaning": "木材出售价格的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "木源可持续、木材有余，售价较高或积压较多，黄金不足。",
+      "effect": "按价格和余量卖木。",
+      "group_id": "trade:rule:525",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_118",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源可持续、木材有余，售价较高或积压较多，黄金不足。",
+      "effect": "按价格和余量卖木。",
+      "group_id": "trade:rule:525",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_119",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源可持续、木材有余，售价较高或积压较多，黄金不足。",
+      "effect": "按价格和余量卖木。",
+      "group_id": "trade:rule:525",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_120",
+      "category": "资源交易策略",
+      "meaning": "木材出售价格的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "木源可持续、木材有余，售价较高或积压较多，黄金不足。",
+      "effect": "按价格和余量卖木。",
+      "group_id": "trade:rule:525",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_121",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源可持续、木材积压且黄金少，金矿稀缺或售价可接受。",
+      "effect": "卖木补后期黄金。",
+      "group_id": "trade:rule:540",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_122",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源可持续、木材积压且黄金少，金矿稀缺或售价可接受。",
+      "effect": "卖木补后期黄金。",
+      "group_id": "trade:rule:540",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_123",
+      "category": "资源交易策略",
+      "meaning": "木材出售价格的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "木源可持续、木材积压且黄金少，金矿稀缺或售价可接受。",
+      "effect": "卖木补后期黄金。",
+      "group_id": "trade:rule:540",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_124",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源可持续且大量积压，黄金未达目标或仍处于较早时间，金矿/售价允许。",
+      "effect": "清理大量木材积压。",
+      "group_id": "trade:rule:554",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_125",
+      "category": "资源交易策略",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "木源可持续且大量积压，黄金未达目标或仍处于较早时间，金矿/售价允许。",
+      "effect": "清理大量木材积压。",
+      "group_id": "trade:rule:554",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_126",
+      "category": "资源交易策略",
+      "meaning": "木材出售价格的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "木源可持续且大量积压，黄金未达目标或仍处于较早时间，金矿/售价允许。",
+      "effect": "清理大量木材积压。",
+      "group_id": "trade:rule:554",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_127",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "木源可持续且有余量，食金都紧张，人口尚未成熟。",
+      "effect": "卖木支持后续资源平衡。",
+      "group_id": "trade:rule:569",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_128",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源可持续且有余量，食金都紧张，人口尚未成熟。",
+      "effect": "卖木支持后续资源平衡。",
+      "group_id": "trade:rule:569",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_129",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "木源可持续且有余量，食金都紧张，人口尚未成熟。",
+      "effect": "卖木支持后续资源平衡。",
+      "group_id": "trade:rule:569",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_130",
+      "category": "资源交易策略",
+      "meaning": "城镇中心总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "座",
+      "context": "仍需扩张城镇中心、人口未满、建造可用，缺石且没有采石，但有木材与食物余量。",
+      "effect": "卖木取得购石资金。",
+      "group_id": "trade:rule:586",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_131",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "仍需扩张城镇中心、人口未满、建造可用，缺石且没有采石，但有木材与食物余量。",
+      "effect": "卖木取得购石资金。",
+      "group_id": "trade:rule:586",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_132",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "仍需扩张城镇中心、人口未满、建造可用，缺石且没有采石，但有木材与食物余量。",
+      "effect": "卖木取得购石资金。",
+      "group_id": "trade:rule:586",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_133",
+      "category": "资源交易策略",
+      "meaning": "采石村民现存数的判定门槛；本分支要求该指标不高于所填值。",
+      "unit": "个",
+      "context": "仍需扩张城镇中心、人口未满、建造可用，缺石且没有采石，但有木材与食物余量。",
+      "effect": "卖木取得购石资金。",
+      "group_id": "trade:rule:586",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_134",
+      "category": "资源交易策略",
+      "meaning": "石料购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "仍需扩张城镇中心、人口未满、建造可用，缺石且没有采石，但有木材与食物余量。",
+      "effect": "卖木取得购石资金。",
+      "group_id": "trade:rule:586",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_138",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "升本黄金保护放行，木少且木源稀缺/运距长；第二层补木也可由高黄金或高食物支持。",
+      "effect": "买木维持生产建设。",
+      "group_id": "trade:rule:632",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_139",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "升本黄金保护放行，木少且木源稀缺/运距长；第二层补木也可由高黄金或高食物支持。",
+      "effect": "买木维持生产建设。",
+      "group_id": "trade:rule:642",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_140",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的食物余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "升本黄金保护放行，木少且木源稀缺/运距长；第二层补木也可由高黄金或高食物支持。",
+      "effect": "买木维持生产建设。",
+      "group_id": "trade:rule:642",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_141",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "升本黄金保护放行且安全，黄金极多或贸易/圣物持续供金。",
+      "effect": "将黄金转成较厚木材储备。",
+      "group_id": "trade:rule:670",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_142",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "升本黄金保护放行且安全，黄金极多或贸易/圣物持续供金。",
+      "effect": "将黄金转成较厚木材储备。",
+      "group_id": "trade:rule:670",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_143",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "升本黄金保护放行，木少、有黄金余量，贸易链或圣物可持续供金。",
+      "effect": "买木支持后续建设。",
+      "group_id": "trade:rule:682",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_144",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "升本黄金保护放行，木少、有黄金余量，贸易链或圣物可持续供金。",
+      "effect": "买木支持后续建设。",
+      "group_id": "trade:rule:682",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_146",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "升本黄金保护放行且无其他预留，木少，贸易/圣物、黄金与市场木价允许。",
+      "effect": "按价格和储备买木。",
+      "group_id": "trade:rule:696",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_147",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的黄金余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "升本黄金保护放行且无其他预留，木少，贸易/圣物、黄金与市场木价允许。",
+      "effect": "按价格和储备买木。",
+      "group_id": "trade:rule:696",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_148",
+      "category": "资源交易策略",
+      "meaning": "木材购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "升本黄金保护放行且无其他预留，木少，贸易/圣物、黄金与市场木价允许。",
+      "effect": "按价格和储备买木。",
+      "group_id": "trade:rule:696",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_149",
+      "category": "资源交易策略",
+      "meaning": "木材购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "升本黄金保护放行且无其他预留，木少，贸易/圣物、黄金与市场木价允许。",
+      "effect": "按价格和储备买木。",
+      "group_id": "trade:rule:696",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_164",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "可升城堡但食金仍有缺口，食物接近需求或木材较多，市场可卖木。",
+      "effect": "卖木取得升城黄金或购粮资金。",
+      "group_id": "trade:rule:772",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_170",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "可升帝王且有黄金缺口，快速帝王、人口成熟或已有预留支持，额外分支要求安全。",
+      "effect": "卖木补升帝王黄金。",
+      "group_id": "trade:rule:842",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_172",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "安全且可升帝王，食金仍缺，木材有余；售价达标或余量更高时允许卖木。",
+      "effect": "按木材余量和售价补升级黄金。",
+      "group_id": "trade:rule:856",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_173",
+      "category": "资源交易策略",
+      "meaning": "木材出售价格的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "黄金/市场批次",
+      "context": "安全且可升帝王，食金仍缺，木材有余；售价达标或余量更高时允许卖木。",
+      "effect": "按木材余量和售价补升级黄金。",
+      "group_id": "trade:rule:856",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_174",
+      "category": "资源交易策略",
+      "meaning": "扣除已规划成本后的木材余量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源盈余差额",
+      "context": "安全且可升帝王，食金仍缺，木材有余；售价达标或余量更高时允许卖木。",
+      "effect": "按木材余量和售价补升级黄金。",
+      "group_id": "trade:rule:856",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_175",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "安全且可升帝王，食金仍缺，木材有余；售价达标或余量更高时允许卖木。",
+      "effect": "按木材余量和售价补升级黄金。",
+      "group_id": "trade:rule:856",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_177",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且当前预留允许特色单位升级，人口成熟，有特色单位规模或方向，城堡和升级可用且未开始。",
+      "effect": "交易食木金配平特色单位精锐升级。",
+      "group_id": "trade:rule:881",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_178",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且当前预留允许特色单位升级，人口成熟，有特色单位规模或方向，城堡和升级可用且未开始。",
+      "effect": "交易食木金配平特色单位精锐升级。",
+      "group_id": "trade:rule:881",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_180",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且当前预留允许特色单位升级，人口成熟，有特色单位规模或方向，城堡和升级可用且未开始。",
+      "effect": "交易食木金配平特色单位精锐升级。",
+      "group_id": "trade:rule:899",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_182",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且当前预留允许特色单位升级，人口成熟，有特色单位规模或方向，城堡和升级可用且未开始。",
+      "effect": "交易食木金配平特色单位精锐升级。",
+      "group_id": "trade:rule:916",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_183",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且当前预留允许特色单位升级，人口成熟，有特色单位规模或方向，城堡和升级可用且未开始。",
+      "effect": "交易食木金配平特色单位精锐升级。",
+      "group_id": "trade:rule:916",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_185",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且当前预留允许特色单位升级，人口成熟，有特色单位规模或方向，城堡和升级可用且未开始。",
+      "effect": "交易食木金配平特色单位精锐升级。",
+      "group_id": "trade:rule:934",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_196",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且预留允许游侠，重装骑士与相关科技齐备，骑士规模或游侠方向支持。",
+      "effect": "按游侠实际食金成本及市场批次缓冲配平资源。",
+      "group_id": "trade:rule:987",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_206",
+      "category": "资源交易策略",
+      "meaning": "木材库存的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "资源单位",
+      "context": "安全且预留允许冠军剑士，双手剑士与相关科技齐备，步兵规模或方向支持。",
+      "effect": "按冠军剑士实际成本及市场批次缓冲配平资源。",
+      "group_id": "trade:rule:1039",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_223",
+      "category": "资源交易策略",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "城堡尚未开始升帝王，金多食少，处于早期窗口且市场可买粮。",
+      "effect": "提前买粮凑升级资源。",
+      "group_id": "trade:rule:1126",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_225",
+      "category": "资源交易策略",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "城堡阶段尚无城堡，处于早期窗口，木少金多且市场可买木。",
+      "effect": "买木支持城堡阶段建设。",
+      "group_id": "trade:rule:1143",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_235",
+      "category": "资源交易策略",
+      "meaning": "游戏经过时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "城堡尚未开始帝王研究，食多金少且处早期窗口，可卖粮。",
+      "effect": "卖出额外食物补黄金。",
+      "group_id": "trade:rule:1174",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_236",
+      "category": "资源交易策略",
+      "meaning": "鹰勇士系部队总数的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "个",
+      "context": "精锐鹰勇士已研究，鹰勇士规模较大，尚无城堡且特色科技未完成，金多石少。",
+      "effect": "买石补城堡以取得特色科技。",
+      "group_id": "trade:rule:1190",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_240",
+      "category": "资源交易策略",
+      "meaning": "食物购买价格的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "黄金/市场批次",
+      "context": "骑士快攻刚进入城堡，村民未成熟，食少金有余且粮价可接受。",
+      "effect": "买粮维持骑士路线早期节奏。",
+      "group_id": "trade:rule:1202",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_241",
+      "category": "资源交易策略",
+      "meaning": "村民总数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "个",
+      "context": "骑士快攻刚进入城堡，村民未成熟，食少金有余且粮价可接受。",
+      "effect": "买粮维持骑士路线早期节奏。",
+      "group_id": "trade:rule:1202",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_242",
+      "category": "资源交易策略",
+      "meaning": "黄金库存的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "资源单位",
+      "context": "骑士快攻刚进入城堡，村民未成熟，食少金有余且粮价可接受。",
+      "effect": "买粮维持骑士路线早期节奏。",
+      "group_id": "trade:rule:1202",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_243",
+      "category": "资源交易策略",
+      "meaning": "食物库存的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "资源单位",
+      "context": "骑士快攻刚进入城堡，村民未成熟，食少金有余且粮价可接受。",
+      "effect": "买粮维持骑士路线早期节奏。",
+      "group_id": "trade:rule:1202",
+      "constraints_note": ""
+    },
+    {
+      "key": "TRADE_244",
+      "category": "资源交易策略",
+      "meaning": "进入当前时代后的时间的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "游戏秒",
+      "context": "骑士快攻刚进入城堡，村民未成熟，食少金有余且粮价可接受。",
+      "effect": "买粮维持骑士路线早期节奏。",
+      "group_id": "trade:rule:1202",
+      "constraints_note": ""
+    }
+  ]
+}

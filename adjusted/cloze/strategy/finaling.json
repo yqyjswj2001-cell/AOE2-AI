@@ -1,0 +1,157 @@
+{
+  "module": "finaling.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "FINAL_PRODUCTION_001",
+      "category": "收尾兵力与资源分配",
+      "meaning": "己方军队人口的判断门槛；本分支要求不少于所填值。",
+      "unit": "人口",
+      "context": "收尾生产阶段，敌人仍有建筑、我方有护送军力且能训练巨型投石机时，按当前投石机数量和人口决定是否继续补充。",
+      "effect": "继续训练trebuchet。",
+      "group_id": "finaling:rule:80",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_002",
+      "category": "收尾兵力与资源分配",
+      "meaning": "人口尚未接近上限时的巨型投石机补充界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "收尾生产阶段，敌人仍有建筑、我方有护送军力且能训练巨型投石机时，按当前投石机数量和人口决定是否继续补充。",
+      "effect": "继续训练trebuchet。",
+      "group_id": "finaling:rule:80",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_003",
+      "category": "收尾兵力与资源分配",
+      "meaning": "己方总人口的判断门槛；本分支要求不少于所填值。",
+      "unit": "人口",
+      "context": "收尾生产阶段，敌人仍有建筑、我方有护送军力且能训练巨型投石机时，按当前投石机数量和人口决定是否继续补充。",
+      "effect": "继续训练trebuchet。",
+      "group_id": "finaling:rule:80",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_004",
+      "category": "收尾兵力与资源分配",
+      "meaning": "收尾阶段本分支的巨型投石机总数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "收尾生产阶段，敌人仍有建筑、我方有护送军力且能训练巨型投石机时，按当前投石机数量和人口决定是否继续补充。",
+      "effect": "继续训练trebuchet。",
+      "group_id": "finaling:rule:80",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_006",
+      "category": "收尾兵力与资源分配",
+      "meaning": "己方军队人口的判断门槛；本分支要求不少于所填值。",
+      "unit": "人口",
+      "context": "收尾生产阶段，冲车升级已经可研究，且能够训练冲车时，按当前冲车存在性或我方军队规模决定补充。",
+      "effect": "继续训练冲车系。",
+      "group_id": "finaling:rule:90",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_007",
+      "category": "收尾兵力与资源分配",
+      "meaning": "黄金库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "收尾生产阶段，能够训练传教士，且黄金储量充足或僧侣类计数尚为空时。",
+      "effect": "继续训练传教士。",
+      "group_id": "finaling:rule:365",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_008",
+      "category": "收尾兵力与资源分配",
+      "meaning": "黄金库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "收尾生产阶段，能够训练僧侣，且黄金储量充足或僧侣类计数尚为空时。",
+      "effect": "继续训练僧侣。",
+      "group_id": "finaling:rule:373",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_COUNTER_TRIGGER_009",
+      "category": "收尾兵力与资源分配",
+      "meaning": "任一敌人的战象系数量的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "收尾生产阶段，对手有一定数量的象类兵种，或我方食物与黄金都有余量，且能训练烈焰骆驼时。",
+      "effect": "继续训练烈焰骆驼。",
+      "group_id": "finaling:rule:380",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_COUNTER_TRIGGER_010",
+      "category": "收尾兵力与资源分配",
+      "meaning": "任一敌人的波斯战象系数量的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "收尾生产阶段，对手有一定数量的象类兵种，或我方食物与黄金都有余量，且能训练烈焰骆驼时。",
+      "effect": "继续训练烈焰骆驼。",
+      "group_id": "finaling:rule:380",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_COUNTER_TRIGGER_011",
+      "category": "收尾兵力与资源分配",
+      "meaning": "任一敌人的象射手系数量的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "收尾生产阶段，对手有一定数量的象类兵种，或我方食物与黄金都有余量，且能训练烈焰骆驼时。",
+      "effect": "继续训练烈焰骆驼。",
+      "group_id": "finaling:rule:380",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_COUNTER_TRIGGER_012",
+      "category": "收尾兵力与资源分配",
+      "meaning": "任一敌人的弩炮战象系数量的判断门槛；本分支要求不少于所填值。",
+      "unit": "个单位",
+      "context": "收尾生产阶段，对手有一定数量的象类兵种，或我方食物与黄金都有余量，且能训练烈焰骆驼时。",
+      "effect": "继续训练烈焰骆驼。",
+      "group_id": "finaling:rule:380",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_013",
+      "category": "收尾兵力与资源分配",
+      "meaning": "食物库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "收尾生产阶段，对手有一定数量的象类兵种，或我方食物与黄金都有余量，且能训练烈焰骆驼时。",
+      "effect": "继续训练烈焰骆驼。",
+      "group_id": "finaling:rule:380",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_014",
+      "category": "收尾兵力与资源分配",
+      "meaning": "黄金库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "收尾生产阶段，对手有一定数量的象类兵种，或我方食物与黄金都有余量，且能训练烈焰骆驼时。",
+      "effect": "继续训练烈焰骆驼。",
+      "group_id": "finaling:rule:380",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_015",
+      "category": "收尾兵力与资源分配",
+      "meaning": "食物库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "收尾生产阶段，食物与黄金储量都达到投入门槛，且能够训练爆破兵时。",
+      "effect": "继续训练爆破兵。",
+      "group_id": "finaling:rule:391",
+      "constraints_note": ""
+    },
+    {
+      "key": "FINAL_PRODUCTION_016",
+      "category": "收尾兵力与资源分配",
+      "meaning": "黄金库存的判断门槛；本分支要求不少于所填值。",
+      "unit": "资源单位",
+      "context": "收尾生产阶段，食物与黄金储量都达到投入门槛，且能够训练爆破兵时。",
+      "effect": "继续训练爆破兵。",
+      "group_id": "finaling:rule:391",
+      "constraints_note": ""
+    }
+  ]
+}

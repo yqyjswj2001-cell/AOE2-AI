@@ -95,7 +95,7 @@
 	(building-available settlement)
 	(wood-amount > 125)
 	(resource-found food)
-	(or(building-type-count-total settlement < {{BUILDINGS_SETTLEMENT_001}})
+	(or(building-type-count-total settlement < 1)
 	(and(dropsite-min-distance food > 4)
 	(game-time > 150)))
 	(building-type-count-total settlement < {{BUILDINGS_SETTLEMENT_002}})
@@ -115,7 +115,7 @@
 	(or(resource-found gold)
 	(or(resource-found stone)
 	(up-gaia-type-count c: deer-class > 0))))
-	(building-type-count-total settlement < {{BUILDINGS_SETTLEMENT_003}})
+	(building-type-count-total settlement < 1)
 	(or(game-time > 180)
 	(unit-type-count-total villager-wood > 0))
 =>
@@ -221,7 +221,7 @@
 
 (defrule
 	(game-time > 600)
-	(building-type-count-total town-center < {{BUILDINGS_TOWN_CENTER_006}})
+	(building-type-count-total town-center < 1)
 	(timer-triggered two-mins)
 	(up-pending-objects c: town-center < 1)
 	(can-build town-center)
@@ -442,7 +442,7 @@
 	(building-type-count-total town-center > 1)
 	(current-age == castle-age)
 	(building-type-count-total university < 1)
-	(building-type-count-total siege-workshop < {{BUILDINGS_SIEGE_WORKSHOP_007}})
+	(building-type-count-total siege-workshop < 1)
 =>
 	(build siege-workshop)
 )
@@ -454,7 +454,7 @@
 	(building-type-count-total town-center > 1)
 	(current-age == castle-age)
 	(building-type-count-total university < 1)
-	(building-type-count-total monastery < {{BUILDINGS_MONASTERY_008}})
+	(building-type-count-total monastery < 1)
 =>
 	(build monastery)
 )
@@ -1077,7 +1077,7 @@
     (housing-headroom < 4)
     (game-time < 400)
     (up-pending-objects c: house < 1)
-    (building-type-count-total house < {{BUILDINGS_HOUSE_009}})
+    (building-type-count-total house < 4)
     (building-type-count-total mill > 0)
     (building-type-count-total lumber-camp < 1)
 	(building-type-count-total town-center > 0)
@@ -1091,7 +1091,7 @@
 	(building-available settlement)
 	(up-compare-const diff-id >= 3)
 	(can-build house)
-	(building-type-count-total house < {{BUILDINGS_HOUSE_010}})
+	(building-type-count-total house < 4)
 	(housing-headroom < 8)
 	(building-type-count-total town-center > 0)
 =>
@@ -2120,7 +2120,7 @@
 	(resource-found wood)
 	(goal buildlumber yes)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp < {{BUILDINGS_LUMBER_CAMP_011}})
+	(building-type-count-total lumber-camp < 1)
 	(unit-type-count villager-wood >= 1)
 (or	(up-compare-goal mysheep >= 1)
 	(up-set-target-by-id g: current-boar))
@@ -2182,7 +2182,7 @@
 	(unit-type-count-total villager >= 16))))
 (or	(building-type-count-total mill >= 1)
 	(goal buildmill no))
-	(building-type-count-total lumber-camp < {{BUILDINGS_LUMBER_CAMP_012}})
+	(building-type-count-total lumber-camp < 1)
 	(can-build lumber-camp)
 	(or(building-type-count-total town-center < 1)
 	(game-time > 40))
@@ -2678,7 +2678,7 @@
 	(can-build lumber-camp)
 	;(wood-amount > 200)
 	(unit-type-count-total villager-wood > 1)
-	(building-type-count-total lumber-camp < {{BUILDINGS_LUMBER_CAMP_016}})
+	(building-type-count-total lumber-camp < 1)
 	(or(building-type-count-total town-center > 0)
 	(wood-amount < 275))
 	(or(game-time > 400)
@@ -3329,7 +3329,7 @@
 	(up-pending-objects c: mining-camp < 1)
 	(game-time > 150)
 	(or(game-time > 2650)
-	(building-type-count-total mining-camp < {{BUILDINGS_MINING_CAMP_018}}))
+	(building-type-count-total mining-camp < 1))
 	(building-type-count-total mining-camp < {{BUILDINGS_MINING_CAMP_019}})
 =>
 	(build mining-camp)
@@ -3525,7 +3525,7 @@
     (civ-selected 42)
     (building-type-count-total town-center > 0)
     (timer-triggered threesec)
-    (building-type-count-total mill < {{BUILDINGS_MILL_020}})
+    (building-type-count-total mill < 1)
     (resource-found food) ;unfortunately it isn't that simple - need to exclude forage from under TC
     (up-find-resource c: forage-bush-class c: 4)
     (up-gaia-type-count c: forage-bush-class >= 4)
@@ -3593,7 +3593,7 @@
 	(or(map-type scandanavia)
 	(cc-players-unit-type-count 0 forage-bush-class < 8))
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < {{BUILDINGS_MILL_021}})
+	(building-type-count-total mill < 1)
 	(not(up-find-remote c: deer c: 1))
 =>
 	(build mill)
@@ -3615,11 +3615,11 @@
 
 (defrule
 	(civ-selected 42)
-	(building-type-count-total mill < {{BUILDINGS_MILL_023}})
+	(building-type-count-total mill < 1)
 	(building-type-count town-center > 0)
 	(game-time > 220)
 	(can-build mill)
-	(building-type-count-total mill < {{BUILDINGS_MILL_024}})
+	(building-type-count-total mill < 1)
 	(wood-amount > 125)
 =>
 	(up-reset-placement c: mill)
@@ -3958,7 +3958,7 @@
 ;	(up-pending-objects c: mill <= 0)
 	(up-compare-goal temporary-goal3 g:>= temporary-goal)
 	(building-type-count-total farm >= 8)
-	(building-type-count-total mill < {{BUILDINGS_MILL_026}})
+	(building-type-count-total mill < 16)
 	(can-build mill)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
@@ -3975,7 +3975,7 @@
 ;	(goal strategy krush))))
 (or	(and	(building-type-count-total farm g:<= maxfarms)
 		(and	(building-type-count-total farm >= 12)
-			(building-type-count-total mill < {{BUILDINGS_MILL_027}})))
+			(building-type-count-total mill < 1)))
 	(building-type-count-total farm >= 24)); 20
 	(building-type-count-total mill < {{BUILDINGS_MILL_028}})
 	(can-build mill)
@@ -3992,7 +3992,7 @@
 (or	(building-type-count-total lumber-camp < 1)
 	(building-type-count-total barracks < 1))
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total mill < {{BUILDINGS_MILL_029}})
+	(building-type-count-total mill < 1)
 	(can-build mill)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
@@ -5614,7 +5614,7 @@
 	(goal strategy krush)
 	(goal siegevar yes)
 	(can-build siege-workshop)
-	(building-type-count-total siege-workshop < {{BUILDINGS_SIEGE_WORKSHOP_036}})
+	(building-type-count-total siege-workshop < 1)
 	(up-research-status c: ri-bow-saw >= research-pending)
 =>
 	(build siege-workshop)
@@ -5666,7 +5666,7 @@
 	(goal strategy krush)
 	(goal siegevar yes)
 	(can-build monastery)
-	(building-type-count-total monastery < {{BUILDINGS_MONASTERY_037}})
+	(building-type-count-total monastery < 1)
 	(building-type-count siege-workshop > 0)
 ;	(timer-triggered threesec)
 =>
@@ -6030,7 +6030,7 @@
 	(or(unit-type-count-total fire-galley-line > 8)
 	(players-unit-type-count target-player galley-line > 2)))));clinker construction matters in this lineup
 	(can-build-with-escrow university)
-	(building-type-count-total university < {{BUILDINGS_UNIVERSITY_038}})
+	(building-type-count-total university < 1)
 	(building-type-count-total town-center > 0)
 	(not(goal increase-ts university))
 =>
@@ -6046,7 +6046,7 @@
 	(set-goal increase-ts 0))
 
 (defrule
-	(building-type-count-total market < {{BUILDINGS_MARKET_039}})
+	(building-type-count-total market < 1)
 	(can-build market)
 	(goal siegevar yes)
 	(up-research-status c: castle-age >= research-pending)
@@ -6347,7 +6347,7 @@
 	(players-building-type-count any-ally port >= 1))
 	(goal tradecarts no)
 (or	(building-type-count-total dock == 10)
-	(building-type-count-total dock <= {{BUILDINGS_DOCK_040}}))
+	(building-type-count-total dock <= 0))
 	(can-build dock)
 =>
 	(set-strategic-number sn-dock-placement-mode -1)
@@ -6363,7 +6363,7 @@
 	(players-building-type-count any-ally port >= 1))
 	(goal tradecarts no)
 (or	(building-type-count-total port == 10)
-	(building-type-count-total port <= {{BUILDINGS_PORT_041}}))
+	(building-type-count-total port <= 0))
 	(can-build port)
 =>
 	(set-strategic-number sn-dock-placement-mode -1)
@@ -6375,7 +6375,7 @@
 	(goal defend no)
 	(goal underattack no)
 	(goal inseln yes)
-	(building-type-count-total dock <= {{BUILDINGS_DOCK_042}})
+	(building-type-count-total dock <= 0)
 (or	(goal increase-ts 0)
 (or	(goal increase-ts barracks)
 (or	(goal increase-ts archery-range)
@@ -6391,7 +6391,7 @@
 	(goal defend no)
 	(goal underattack no)
 	(goal inseln yes)
-	(building-type-count-total shipyard <= {{BUILDINGS_SHIPYARD_043}})
+	(building-type-count-total shipyard <= 0)
 (or	(goal increase-ts 0)
 (or	(goal increase-ts barracks)
 (or	(goal increase-ts archery-range)
@@ -6450,7 +6450,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total dock <= {{BUILDINGS_DOCK_044}})
+	(building-type-count-total dock <= 0)
 	(can-build dock)
 =>
 	(build dock))
@@ -6463,7 +6463,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total port <= {{BUILDINGS_PORT_045}})
+	(building-type-count-total port <= 0)
 	(can-build port)
 =>
 	(build port))
@@ -6476,7 +6476,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total shipyard <= {{BUILDINGS_SHIPYARD_046}})
+	(building-type-count-total shipyard <= 0)
 	(can-build shipyard)
 =>
 	(build shipyard))
@@ -6488,7 +6488,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total dock <= {{BUILDINGS_DOCK_047}})
+	(building-type-count-total dock <= 0)
 	(can-build dock)
 =>
 	(build dock))
@@ -6500,7 +6500,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total port <= {{BUILDINGS_PORT_048}})
+	(building-type-count-total port <= 0)
 	(can-build port)
 =>
 	(build port))
@@ -6512,7 +6512,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total shipyard <= {{BUILDINGS_SHIPYARD_049}})
+	(building-type-count-total shipyard <= 0)
 	(can-build shipyard)
 =>
 	(build shipyard))
@@ -6536,7 +6536,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total dock <= {{BUILDINGS_DOCK_050}})
+	(building-type-count-total dock <= 0)
 	(can-build dock)
 =>
 	(build dock))
@@ -6549,7 +6549,7 @@
 (or	(goal defend no)
 (or	(goal attacking yes)
 	(up-compare-goal biggestenemynavy <= 0)))
-	(building-type-count-total port <= {{BUILDINGS_PORT_051}})
+	(building-type-count-total port <= 0)
 	(can-build port)
 =>
 	(build port)); end jump
@@ -6764,7 +6764,7 @@
 	(strategic-number sn-current-age >= imperial)
 (or	(up-compare-goal excessWood >= 325)
 	(goal enemy-boats yes))
-	(building-type-count-total dock < {{BUILDINGS_DOCK_064}})
+	(building-type-count-total dock < 1)
 	(can-build dock)
 =>
 	(build dock))
@@ -6776,7 +6776,7 @@
 	(strategic-number sn-current-age >= imperial)
 (or	(up-compare-goal excessWood >= 325)
 	(goal enemy-boats yes))
-	(building-type-count-total port < {{BUILDINGS_PORT_065}})
+	(building-type-count-total port < 1)
 	(can-build port)
 =>
 	(build port))
@@ -6788,7 +6788,7 @@
 	(strategic-number sn-current-age >= imperial)
 (or	(up-compare-goal excessWood >= 325)
 	(goal enemy-boats yes))
-	(building-type-count-total shipyard < {{BUILDINGS_SHIPYARD_066}})
+	(building-type-count-total shipyard < 1)
 	(can-build shipyard)
 =>
 	(build shipyard)); end jump
@@ -11563,7 +11563,7 @@
 	(building-type-count-total lumber-camp > 0)
 	(building-type-count-total mill > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < {{BUILDINGS_MILL_069}})
+	(building-type-count-total mill < 2)
 	(building-type-count-total barracks > 0) 
 	(up-compare-goal temporary-goal2 > 4)
 	(can-build mill)
@@ -11907,7 +11907,7 @@
 	(players-building-type-count every-ally market < 1)
 	(cc-players-building-type-count 0 market > 0)
 	(can-build market)
-	(building-type-count-total market < {{BUILDINGS_MARKET_070}}) 
+	(building-type-count-total market < 2) 
 	=>
 	(build market)
 	(chat-local-to-self "Debug: Forced to manually place market")
@@ -12172,7 +12172,7 @@
 	(unit-type-count-total villager > thirty-pop)
 	(can-build monastery)
 	(current-age >= castle-age)
-	(building-type-count-total monastery < {{BUILDINGS_MONASTERY_071}})
+	(building-type-count-total monastery < 1)
 =>
 	(build monastery)
 )
@@ -12180,7 +12180,7 @@
 (defrule
 	(players-military-population my-player-number > 12)
 	(can-build-with-escrow monastery)
-	(building-type-count-total monastery < {{BUILDINGS_MONASTERY_072}})
+	(building-type-count-total monastery < 1)
 	(building-type-count-total town-center > 0)
 	(unit-type-count-total villager > twenty-pop)
 =>
@@ -12393,7 +12393,7 @@
 (defrule
 	(can-build dock)
 	(map-type kawasan)
-	(building-type-count-total dock < {{BUILDINGS_DOCK_073}})
+	(building-type-count-total dock < 1)
 	(or(building-type-count-total lumber-camp > 0)
 	(wood-amount > 251))
 	(building-type-count-total town-center > 0)
@@ -12405,7 +12405,7 @@
 (defrule
 	(can-build port)
 	(map-type kawasan)
-	(building-type-count-total port < {{BUILDINGS_PORT_074}})
+	(building-type-count-total port < 1)
 	(or(building-type-count-total lumber-camp > 0)
 	(wood-amount > 226))
 	(building-type-count-total town-center > 0)
@@ -12531,7 +12531,7 @@
 (defrule
 ;	(goal fleet yes)
 	(goal paphosciv no)
-	(building-type-count-total dock <= {{BUILDINGS_DOCK_075}})
+	(building-type-count-total dock <= 0)
 	(strategic-number sn-current-age == dark)
 	(current-age <= castle-age)
 (or	(cc-players-unit-type-count 0 933 >= 1)
@@ -12548,7 +12548,7 @@
 
 (defrule
 	(goal paphosciv yes)
-	(building-type-count-total port <= {{BUILDINGS_PORT_076}})
+	(building-type-count-total port <= 0)
 	(strategic-number sn-current-age == dark)
 	(current-age <= castle-age)
 (or	(cc-players-unit-type-count 0 933 >= 1)
@@ -12890,7 +12890,7 @@
     (building-type-count-total town-center < 1)
     (wood-amount < 275)
     (can-build mule-cart)
-    (building-type-count-total mule-cart < {{BUILDINGS_MULE_CART_080}})
+    (building-type-count-total mule-cart < 1)
     (resource-found wood)
 =>
     (build mule-cart)

@@ -1,0 +1,2 @@
+# Preserve exact reference bytes, template offsets and pinned fact hashes.
+* -text

@@ -23,27 +23,27 @@
 	(up-jump-rule 2))
 (defrule
 ;	(strategic-number sn-current-age == dark)
-	(unit-type-count villager <= {{DAWN_VILLAGER_COUNT_001}})
+	(unit-type-count villager <= 10)
 	(up-pending-objects c: house <= 0)
 	(housing-headroom < 4); 5
 	(population-headroom > 0)
 	(up-compare-goal total-wood-amount < house-cost)
 	(population < up-max-civ)
-	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_002}})
-	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_003}})
+	(up-compare-goal wood-villagers < 1)
+	(up-compare-goal food-villagers >= 1)
 =>
 	(up-modify-goal wood-villagers c:+ 1)
 	(up-modify-goal food-villagers c:- 1))
 (defrule
 ;	(strategic-number sn-current-age == dark)
-	(unit-type-count villager <= {{DAWN_VILLAGER_COUNT_004}})
+	(unit-type-count villager <= 8)
 (or	(up-pending-objects c: house >= 1)
 (or	(housing-headroom >= 4); 5
 (or	(population-headroom <= 0)
 (or	(up-compare-goal total-wood-amount >= house-cost)
 	(population >= up-max-civ)))))
-	(up-compare-goal wood-villagers >= {{DAWN_GATHERER_TARGET_005}})
-	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_006}})
+	(up-compare-goal wood-villagers >= 1)
+	(up-compare-goal food-villagers < 6)
 =>
 	(up-modify-goal wood-villagers c:- 1)
 	(up-modify-goal food-villagers c:+ 1)); end jump
@@ -88,8 +88,8 @@
 	(population-headroom > 0)
 	(up-compare-goal excessWood < house-cost)
 	(up-pending-objects c: house <= 0)
-	(up-compare-goal wood-villagers < {{DAWN_GATHERER_TARGET_007}})
-	(game-time >= {{DAWN_TIME_008}})
+	(up-compare-goal wood-villagers < 2)
+	(game-time >= 60)
 =>
 	(up-modify-goal wood-villagers c:+ 1)
 	(up-modify-goal sum-villagers c:+ 1)
@@ -100,7 +100,7 @@
 (or	(building-type-count-total town-center >= 2)
 (or	(and	(up-pending-objects c: villager-class <= 0)
 		(up-compare-goal total-food-amount < vill-cost))
-	(and	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_009}})
+	(and	(up-compare-goal food-villagers < 7)
 		(unit-type-count villager-forager >= 2))))); mill >= 1
 	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_010}}); 8
 =>
@@ -140,9 +140,9 @@
 	(up-jump-rule 3))
 (defrule
 	(unit-type-count-total militiaman-line < drush-militias)
-(or	(gold-amount < {{DAWN_GOLD_AMOUNT_016}})
+(or	(gold-amount < 60)
 	(and	(up-research-status c: ri-loom < research-pending)
-		(gold-amount < {{DAWN_GOLD_AMOUNT_017}})))
+		(gold-amount < 110)))
 	(building-type-count-total barracks >= 1)
 	(strategic-number sn-gold-gatherer-percentage <= 0)
 =>
@@ -153,11 +153,11 @@
 	(disable-self))
 (defrule
 (or	(unit-type-count-total militiaman-line >= drush-militias)
-(or	(gold-amount >= {{DAWN_GOLD_AMOUNT_018}})
-(or	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_019}})
-		(gold-amount >= {{DAWN_GOLD_AMOUNT_020}}))
-	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_021}})
-		(gold-amount >= {{DAWN_GOLD_AMOUNT_022}})))))
+(or	(gold-amount >= 110)
+(or	(and	(unit-type-count-total militiaman-line >= 1)
+		(gold-amount >= 90))
+	(and	(unit-type-count-total militiaman-line >= 2)
+		(gold-amount >= 70)))))
 	(strategic-number sn-gold-gatherer-percentage >= 1)
 =>
 	(set-strategic-number sn-maximum-gold-drop-distance 8); 6
@@ -168,11 +168,11 @@
 )
 (defrule
 	(up-research-status c: ri-loom >= research-pending)
-(or	(gold-amount >= {{DAWN_GOLD_AMOUNT_023}})
-(or	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_024}})
-		(gold-amount >= {{DAWN_GOLD_AMOUNT_025}}))
-	(and	(unit-type-count-total militiaman-line >= {{DAWN_MILITIA_COUNT_026}})
-		(gold-amount >= {{DAWN_GOLD_AMOUNT_027}}))))
+(or	(gold-amount >= 60)
+(or	(and	(unit-type-count-total militiaman-line >= 1)
+		(gold-amount >= 40))
+	(and	(unit-type-count-total militiaman-line >= 2)
+		(gold-amount >= 20))))
 	(strategic-number sn-gold-gatherer-percentage >= 1)
 =>
 	(set-strategic-number sn-maximum-gold-drop-distance 8); 6
@@ -331,7 +331,7 @@
 (defrule
 	(goal villager-addition 1)
 	(up-compare-goal strategy-type >= castle-war)
-	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_066}}); 15
+	(up-compare-goal food-villagers >= 16); 15
 	(up-compare-goal wood-villagers g:< temporary-goal10)
 (or	(and	(up-compare-goal milunits != no)
 		(not	(civ-selected khmer)))
@@ -357,7 +357,7 @@
 	(set-goal villager-addition 0))
 (defrule
 ;	(goal villager-addition 1)
-	(up-compare-goal gold-villagers >= {{DAWN_GATHERER_TARGET_069}})
+	(up-compare-goal gold-villagers >= 1)
 (or	(up-compare-goal strategy != fast-imp)
 	(up-compare-goal gold-villagers >= {{DAWN_GATHERER_TARGET_070}}))
 	(up-compare-goal total-gold-amount >= castle-gold)

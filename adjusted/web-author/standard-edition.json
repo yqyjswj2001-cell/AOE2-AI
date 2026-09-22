@@ -1,0 +1,104 @@
+{
+  "schema": "aoe2-standard-edition-v1",
+  "profile_id": "de-standard-2024-no-extra-dlc",
+  "edition": "DE",
+  "label": "标准版（含2024年免费并入内容；未购买额外DLC）",
+  "based_on": "user_declared_standard_no_extra_dlc",
+  "ownership_verified": false,
+  "verified_at": "2026-09-22",
+  "catalog_count": 53,
+  "available_count": 42,
+  "allowed_internal_names": [
+    "Aztecs",
+    "Bengalis",
+    "Berbers",
+    "Bohemians",
+    "Britons",
+    "Bulgarians",
+    "Burgundians",
+    "Burmese",
+    "Byzantines",
+    "Celts",
+    "Chinese",
+    "Cumans",
+    "Dravidians",
+    "Ethiopians",
+    "Franks",
+    "Goths",
+    "Gurjaras",
+    "Huns",
+    "Incas",
+    "Indians",
+    "Italians",
+    "Japanese",
+    "Khmer",
+    "Koreans",
+    "Lithuanians",
+    "Magyars",
+    "Malay",
+    "Malians",
+    "Mayans",
+    "Mongols",
+    "Persians",
+    "Poles",
+    "Portuguese",
+    "Saracens",
+    "Sicilians",
+    "Slavs",
+    "Spanish",
+    "Tatars",
+    "Teutons",
+    "Turks",
+    "Vietnamese",
+    "Vikings"
+  ],
+  "excluded_by_required_dlc": {
+    "return_of_rome": [
+      "Romans"
+    ],
+    "mountain_royals": [
+      "Armenians",
+      "Georgians"
+    ],
+    "three_kingdoms": [
+      "Shu",
+      "Wei",
+      "Wu",
+      "Jurchens",
+      "Khitans"
+    ],
+    "last_chieftains": [
+      "Mapuche",
+      "Muisca",
+      "Tupi"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://www.ageofempires.com/news/celebrate-5-years-of-age-ii-de-with-a-fresh-deal-for-new-players/",
+      "supports": "2024-11-14起前三个DLC免费并入新老玩家的基础版"
+    },
+    {
+      "url": "https://www.ageofempires.com/games/aoeiide/return-of-rome/",
+      "supports": "Romans requires Return of Rome"
+    },
+    {
+      "url": "https://www.ageofempires.com/games/aoeiide/the-mountain-royals/",
+      "supports": "Armenians and Georgians"
+    },
+    {
+      "url": "https://www.ageofempires.com/included-with-the-three-kingdoms-dlc/",
+      "supports": "Jurchens Khitans Shu Wei Wu"
+    },
+    {
+      "url": "https://www.ageofempires.com/news/faq-the-last-chieftains/",
+      "supports": "Mapuche Muisca Tupi; Incas update remains available to base players"
+    }
+  ],
+  "notes": [
+    "Indians是资料内部标识，显示为Hindustanis/印度斯坦。",
+    "资料中的era=base表示常规AoE2模式，不代表基础版拥有权限。",
+    "冻结53项事实保留；仅选择资格按42白名单限制。",
+    "不读取Steam账号、安装内容或license，不将用户声明冒充账户授权审计。"
+  ]
+}

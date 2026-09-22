@@ -1,0 +1,257 @@
+{
+  "module": "units.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "UNITS_KNIGHT_LINE_001",
+      "category": "兵种投入配额",
+      "meaning": "尚未开始第一层骑兵护甲时的骑士数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "城堡时代较早阶段，己方收到盟友食物支援或盟友采用输送资源战术时，根据骑士数量及护甲研究进度决定继续训练骑士。",
+      "effect": "继续训练骑士系。",
+      "group_id": "units:rule:3787",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_KNIGHT_LINE_002",
+      "category": "兵种投入配额",
+      "meaning": "尚未开始第二层骑兵护甲时的骑士数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "城堡时代较早阶段，己方收到盟友食物支援或盟友采用输送资源战术时，根据骑士数量及护甲研究进度决定继续训练骑士。",
+      "effect": "继续训练骑士系。",
+      "group_id": "units:rule:3787",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_KNIGHT_LINE_003",
+      "category": "兵种投入配额",
+      "meaning": "本条盟友供粮爆骑士分支的总体数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "城堡时代较早阶段，己方收到盟友食物支援或盟友采用输送资源战术时，根据骑士数量及护甲研究进度决定继续训练骑士。",
+      "effect": "继续训练骑士系。",
+      "group_id": "units:rule:3787",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_WARRIOR_PRIEST_004",
+      "category": "兵种投入配额",
+      "meaning": "战斗祭司总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "食物充足且能够训练战斗祭司，在当前时代前期或黄金很富余，并符合对局时间/黄金条件时补充基础战斗祭司。",
+      "effect": "继续训练战斗祭司。",
+      "group_id": "units:rule:3948",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_WARRIOR_PRIEST_005",
+      "category": "兵种投入配额",
+      "meaning": "战斗祭司总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "链甲及本时代要求的后续升级齐备，对手远程火力较少，且人口或难度分支允许时继续训练战斗祭司。",
+      "effect": "继续训练战斗祭司。",
+      "group_id": "units:rule:3963",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_TRADE_COG_006",
+      "category": "兵种投入配额",
+      "meaning": "贸易船总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "已发现中立码头而盟友缺码头，对局进入贸易时段且我方有海军、人口或资源支撑时，限制前期贸易船投入。",
+      "effect": "继续训练贸易船。",
+      "group_id": "units:rule:10852",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_FIRE_LANCER_LINE_007",
+      "category": "兵种投入配额",
+      "meaning": "非城堡初期且黄金不富余、戟兵仍可研究时，准许先造的火枪骑兵数量界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "已选择补充长枪兵，黄金经济能支撑且火枪骑兵可用时，按照时代、戟兵研究状态和精锐升级进度改为训练火枪骑兵。",
+      "effect": "继续训练火枪骑兵系。",
+      "group_id": "units:rule:11048",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_FIRE_LANCER_LINE_008",
+      "category": "兵种投入配额",
+      "meaning": "帝王后未完成精锐升级时的火枪骑兵数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "已选择补充长枪兵，黄金经济能支撑且火枪骑兵可用时，按照时代、戟兵研究状态和精锐升级进度改为训练火枪骑兵。",
+      "effect": "继续训练火枪骑兵系。",
+      "group_id": "units:rule:11048",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_ARMORED_ELEPHANT_009",
+      "category": "兵种投入配额",
+      "meaning": "装甲象总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "适用文明分支已经要求补充冲车，装甲象可用或已有精锐升级时，对装甲象数量设限。",
+      "effect": "继续训练装甲象。",
+      "group_id": "units:rule:12224",
+      "constraints_note": "同时受固定的精锐装甲象计数和装甲象整系数量门槛限制；提高本项不保证总产量增加。"
+    },
+    {
+      "key": "UNITS_ARMORED_ELEPHANT_010",
+      "category": "兵种投入配额",
+      "meaning": "未完成精锐装甲象升级时，准许先造的普通装甲象数量界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "适用文明分支的军力优势或装甲象升级条件满足，且难度/军力限制允许时，补充装甲象。",
+      "effect": "继续训练装甲象。",
+      "group_id": "units:rule:12241",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_ARMORED_ELEPHANT_011",
+      "category": "兵种投入配额",
+      "meaning": "本分支普通装甲象总数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "适用文明分支的军力优势或装甲象升级条件满足，且难度/军力限制允许时，补充装甲象。",
+      "effect": "继续训练装甲象。",
+      "group_id": "units:rule:12241",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_CHAMPI_RUNNER_013",
+      "category": "兵种投入配额",
+      "meaning": "封建时代允许的普通钦皮斥候数量界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "已要求生产剑士但文明没有普通民兵系，钦皮单位可用且食物足够时，按时代与精锐升级控制钦皮斥候数量。",
+      "effect": "继续训练钦皮斥候。",
+      "group_id": "units:rule:12620",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_CHAMPI_RUNNER_014",
+      "category": "兵种投入配额",
+      "meaning": "城堡时代及以后允许的普通钦皮斥候数量界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "已要求生产剑士但文明没有普通民兵系，钦皮单位可用且食物足够时，按时代与精锐升级控制钦皮斥候数量。",
+      "effect": "继续训练钦皮斥候。",
+      "group_id": "units:rule:12620",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_SHRIVAMSHA_RIDER_016",
+      "category": "兵种投入配额",
+      "meaning": "本条反投矛分支的施里瓦姆沙骑兵数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "对手投矛手多而长枪兵较少，己方能训练施里瓦姆沙骑兵，时代/精锐升级允许且不在特殊禁训状态时。",
+      "effect": "继续训练施里瓦姆沙骑兵。",
+      "group_id": "units:rule:13646",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_SHRIVAMSHA_RIDER_017",
+      "category": "兵种投入配额",
+      "meaning": "尚未研究骑兵鳞甲时的较低数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "对手投矛手多而长枪兵较少，己方能训练施里瓦姆沙骑兵，时代/精锐升级允许且不在特殊禁训状态时。",
+      "effect": "继续训练施里瓦姆沙骑兵。",
+      "group_id": "units:rule:13646",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_SHRIVAMSHA_RIDER_018",
+      "category": "兵种投入配额",
+      "meaning": "施里瓦姆沙骑兵总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "骑兵钢板甲已经完成、能训练施里瓦姆沙骑兵且特殊禁训状态未生效时，补充首批该骑兵。",
+      "effect": "继续训练施里瓦姆沙骑兵。",
+      "group_id": "units:rule:13661",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_CHAKRAM_THROWER_019",
+      "category": "兵种投入配额",
+      "meaning": "敌方尚未出现指定步兵或冲车压力时，允许预先投入的环刃投掷手数量界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "食物足够且不在特殊禁训状态，已有环刃投掷手数量少，或敌方长枪兵/民兵/冲车形成威胁时，按精锐升级情况生产。",
+      "effect": "继续训练环刃投掷手。",
+      "group_id": "units:rule:13684",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_CHAKRAM_THROWER_020",
+      "category": "兵种投入配额",
+      "meaning": "尚未研究精锐升级时的环刃投掷手数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "食物足够且不在特殊禁训状态，已有环刃投掷手数量少，或敌方长枪兵/民兵/冲车形成威胁时，按精锐升级情况生产。",
+      "effect": "继续训练环刃投掷手。",
+      "group_id": "units:rule:13684",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_THIRISADAI_021",
+      "category": "兵种投入配额",
+      "meaning": "三桅战舰总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "达罗毗荼文明在水图已研究造船术且不在特殊禁训状态时，决定三桅战舰投入规模。",
+      "effect": "继续训练三桅战舰。",
+      "group_id": "units:rule:13735",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_WAR_CHARIOT_022",
+      "category": "兵种投入配额",
+      "meaning": "敌方远程兵尚未形成压力时，允许预先投入的战车数量界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "蜀文明能够训练战车且未达总预算上限，敌方投矛手或弓兵混合部队形成威胁时，按护腕升级进度决定战车规模。",
+      "effect": "继续训练战车。",
+      "group_id": "units:rule:13748",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_WAR_CHARIOT_023",
+      "category": "兵种投入配额",
+      "meaning": "尚未研究护腕时的战车数量界限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "蜀文明能够训练战车且未达总预算上限，敌方投矛手或弓兵混合部队形成威胁时，按护腕升级进度决定战车规模。",
+      "effect": "继续训练战车。",
+      "group_id": "units:rule:13748",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_WAR_CHARIOT_024",
+      "category": "兵种投入配额",
+      "meaning": "本条分支的战车总数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "蜀文明能够训练战车且未达总预算上限，敌方投矛手或弓兵混合部队形成威胁时，按护腕升级进度决定战车规模。",
+      "effect": "继续训练战车。",
+      "group_id": "units:rule:13748",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_SPARTAN_KING_025",
+      "category": "兵种投入配额",
+      "meaning": "斯巴达国王总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "个单位",
+      "context": "进入城堡时代之前，村民经济和军队已成形且能够训练斯巴达国王时，控制该单位投入。",
+      "effect": "继续训练斯巴达国王。",
+      "group_id": "units:rule:13765",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_SPARTAN_KING_026",
+      "category": "兵种投入配额",
+      "meaning": "经济与军队成熟路径中允许的国王数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "城堡时代及以后，村民经济与军队已成形，或已经选择军事生产/正在进攻时，控制斯巴达国王投入。",
+      "effect": "继续训练斯巴达国王。",
+      "group_id": "units:rule:13775",
+      "constraints_note": ""
+    },
+    {
+      "key": "UNITS_SPARTAN_KING_027",
+      "category": "兵种投入配额",
+      "meaning": "已经选择军事生产或出击路径中允许的国王数量上限。此处比较方向为严格少于。",
+      "unit": "个单位",
+      "context": "城堡时代及以后，村民经济与军队已成形，或已经选择军事生产/正在进攻时，控制斯巴达国王投入。",
+      "effect": "继续训练斯巴达国王。",
+      "group_id": "units:rule:13775",
+      "constraints_note": ""
+    }
+  ]
+}

@@ -1,0 +1,568 @@
+{
+  "schema": "api-shapes-v1",
+  "url": "https://userpatch.aiscripters.net/reference.html",
+  "retrieved_utc": "2026-09-06T16:25:25.124414+00:00",
+  "source_sha256": "c51be0f45ff6f008812735be90ca59c698f28cd9e5147f4a9d724e92aed657f8",
+  "authority": "UserPatch developer reference; not DE official runtime evidence",
+  "policy": "parameter shapes only; no example AI retained; candidate location aid, not semantic or DE acceptance proof",
+  "wanted_count": 56,
+  "found_count": 25,
+  "missing": [
+    "attack-now",
+    "build",
+    "build-gate",
+    "build-wall",
+    "building-type-count-total",
+    "buy-commodity",
+    "can-afford-research",
+    "can-build",
+    "can-research",
+    "can-train",
+    "civ-selected",
+    "current-age",
+    "hold-relics",
+    "housing-headroom",
+    "military-population",
+    "player-in-game",
+    "player-number",
+    "player-resigned",
+    "players-current-age",
+    "players-stance",
+    "population",
+    "release-escrow",
+    "research",
+    "research-available",
+    "research-completed",
+    "sell-commodity",
+    "set-escrow-percentage",
+    "set-strategic-number",
+    "train",
+    "unit-type-count-total",
+    "victory-condition"
+  ],
+  "commands": {
+    "up-compare-goal": {
+      "name": "up-compare-goal",
+      "section": "Fact",
+      "parameters": [
+        {
+          "name": "Id",
+          "type": "Goal",
+          "dir": "in",
+          "range": "a GoalId"
+        },
+        {
+          "op": "compare"
+        },
+        {
+          "name": "Value",
+          "type": "Op",
+          "dir": "in",
+          "range": "-32768 to 32767"
+        }
+      ]
+    },
+    "up-pending-objects": {
+      "name": "up-pending-objects",
+      "section": "Fact",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "ObjectId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a UnitId or BuildingId"
+        },
+        {
+          "op": "compare"
+        },
+        {
+          "name": "Value",
+          "type": "Op",
+          "dir": "in",
+          "range": "-32768 to 32767"
+        }
+      ]
+    },
+    "up-research-status": {
+      "name": "up-research-status",
+      "section": "Fact",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "TechId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a TechId"
+        },
+        {
+          "op": "compare"
+        },
+        {
+          "name": "ResearchState",
+          "type": "Op",
+          "dir": "in",
+          "range": "research-unavailable, research-available, research-pending, research-complete"
+        }
+      ]
+    },
+    "up-enemy-units-in-town": {
+      "name": "up-enemy-units-in-town",
+      "section": "Fact",
+      "parameters": [
+        {
+          "op": "compare"
+        },
+        {
+          "name": "Value",
+          "type": "Op",
+          "dir": "in",
+          "range": "-32768 to 32767"
+        }
+      ]
+    },
+    "up-modify-goal": {
+      "name": "up-modify-goal",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "Id",
+          "type": "Goal",
+          "dir": "io",
+          "range": "a GoalId"
+        },
+        {
+          "op": "math"
+        },
+        {
+          "name": "Value",
+          "type": "Op",
+          "dir": "in",
+          "range": "-32768 to 32767"
+        }
+      ]
+    },
+    "up-modify-escrow": {
+      "name": "up-modify-escrow",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "Resource",
+          "type": "Const",
+          "dir": "in",
+          "range": "food, wood, stone, gold"
+        },
+        {
+          "op": "math"
+        },
+        {
+          "name": "Value",
+          "type": "Op",
+          "dir": "in",
+          "range": "-32768 to 32767"
+        }
+      ]
+    },
+    "up-release-escrow": {
+      "name": "up-release-escrow",
+      "section": "Action",
+      "parameters": []
+    },
+    "up-add-object-cost": {
+      "name": "up-add-object-cost",
+      "section": "Action",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "ObjectId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a UnitId or BuildingId"
+        },
+        {
+          "op": "type"
+        },
+        {
+          "name": "Value",
+          "type": "Op",
+          "dir": "in",
+          "range": "-32768 to 32767"
+        }
+      ]
+    },
+    "up-add-research-cost": {
+      "name": "up-add-research-cost",
+      "section": "Action",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "TechId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a TechId"
+        },
+        {
+          "op": "type"
+        },
+        {
+          "name": "Value",
+          "type": "Op",
+          "dir": "in",
+          "range": "-32768 to 32767"
+        }
+      ]
+    },
+    "up-train": {
+      "name": "up-train",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "EscrowState",
+          "type": "Goal",
+          "dir": "in",
+          "range": "a goal set to with-escrow or without-escrow, or 0 for without-escrow"
+        },
+        {
+          "op": "type"
+        },
+        {
+          "name": "UnitId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a UnitId"
+        }
+      ]
+    },
+    "up-build": {
+      "name": "up-build",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "PlacementType",
+          "type": "Const",
+          "dir": "in",
+          "range": "place-normal, place-forward, place-control, place-point"
+        },
+        {
+          "name": "EscrowState",
+          "type": "Goal",
+          "dir": "in",
+          "range": "a goal set to with-escrow or without-escrow, or 0 for without-escrow"
+        },
+        {
+          "op": "type"
+        },
+        {
+          "name": "BuildingId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a BuildingId"
+        }
+      ]
+    },
+    "up-get-victory-data": {
+      "name": "up-get-victory-data",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "PlayerId",
+          "type": "Goal",
+          "dir": "out",
+          "range": "a GoalId"
+        },
+        {
+          "name": "Type",
+          "type": "Goal",
+          "dir": "out",
+          "range": "a GoalId"
+        },
+        {
+          "name": "Time",
+          "type": "Goal",
+          "dir": "out",
+          "range": "a GoalId"
+        }
+      ]
+    },
+    "up-find-player": {
+      "name": "up-find-player",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "PlayerStance",
+          "type": "Const",
+          "dir": "in",
+          "range": "any, ally, neutral, enemy"
+        },
+        {
+          "name": "FindPlayerMethod",
+          "type": "Const",
+          "dir": "in",
+          "range": "find-attacker, find-random, find-closest, find-ordered"
+        },
+        {
+          "name": "PlayerId",
+          "type": "Goal",
+          "dir": "out",
+          "range": "a GoalId"
+        }
+      ]
+    },
+    "up-get-fact": {
+      "name": "up-get-fact",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "FactId",
+          "type": "Const",
+          "dir": "in",
+          "range": "a const from the FactId enumeration"
+        },
+        {
+          "name": "Param",
+          "type": "Const",
+          "dir": "in",
+          "range": "an appropriate parameter for the fact, or 0 if not required"
+        },
+        {
+          "name": "Data",
+          "type": "Goal",
+          "dir": "out",
+          "range": "a GoalId"
+        }
+      ]
+    },
+    "up-get-target-fact": {
+      "name": "up-get-target-fact",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "FactId",
+          "type": "Const",
+          "dir": "in",
+          "range": "a const from the FactId enumeration"
+        },
+        {
+          "name": "Param",
+          "type": "Const",
+          "dir": "in",
+          "range": "an appropriate parameter for the fact, or 0 if not required"
+        },
+        {
+          "name": "Data",
+          "type": "Goal",
+          "dir": "out",
+          "range": "a GoalId"
+        }
+      ]
+    },
+    "up-retreat-to": {
+      "name": "up-retreat-to",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "ObjectId",
+          "type": "Const",
+          "dir": "in",
+          "range": "a UnitId or BuildingId"
+        },
+        {
+          "op": "type"
+        },
+        {
+          "name": "UnitId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a UnitId"
+        }
+      ]
+    },
+    "up-retreat-now": {
+      "name": "up-retreat-now",
+      "section": "Action",
+      "parameters": []
+    },
+    "up-train-site-ready": {
+      "name": "up-train-site-ready",
+      "section": "Fact",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "UnitId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a UnitId"
+        }
+      ]
+    },
+    "up-target-point": {
+      "name": "up-target-point",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "Point",
+          "type": "Goal",
+          "dir": "in",
+          "range": "an extended GoalId from 41 to 510, or 0 to read the point set by up-set-target-point"
+        },
+        {
+          "name": "Action",
+          "type": "Const",
+          "dir": "in",
+          "range": "a value from the TargetAction enumeration"
+        },
+        {
+          "name": "Formation",
+          "type": "Const",
+          "dir": "in",
+          "range": "-1, formation-line, formation-box, formation-stagger, or formation-flank"
+        },
+        {
+          "name": "AttackStance",
+          "type": "Const",
+          "dir": "in",
+          "range": "-1, stance-aggressive, stance-defensive, stance-stand-ground, or stance-no-attack"
+        }
+      ]
+    },
+    "up-target-objects": {
+      "name": "up-target-objects",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "Target",
+          "type": "Const",
+          "dir": "in",
+          "range": "0 or 1"
+        },
+        {
+          "name": "Action",
+          "type": "Const",
+          "dir": "in",
+          "range": "action-default, action-move, action-patrol, action-guard, action-follow, action-stop, action-ground, action-garrison, action-delete, action-gather, action-none"
+        },
+        {
+          "name": "Formation",
+          "type": "Const",
+          "dir": "in",
+          "range": "-1, formation-line, formation-box, formation-stagger, or formation-flank"
+        },
+        {
+          "name": "AttackStance",
+          "type": "Const",
+          "dir": "in",
+          "range": "-1, stance-aggressive, stance-defensive, stance-stand-ground, or stance-no-attack"
+        }
+      ]
+    },
+    "up-find-remote": {
+      "name": "up-find-remote",
+      "section": "Action",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "UnitId",
+          "type": "Op",
+          "dir": "in",
+          "range": "a UnitId"
+        },
+        {
+          "op": "type"
+        },
+        {
+          "name": "Count",
+          "type": "Op",
+          "dir": "in",
+          "range": "0 to 40"
+        }
+      ]
+    },
+    "up-set-target-by-id": {
+      "name": "up-set-target-by-id",
+      "section": "Action",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "Id",
+          "type": "Op",
+          "dir": "in",
+          "range": "a valid Id"
+        }
+      ]
+    },
+    "up-get-object-data": {
+      "name": "up-get-object-data",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "ObjectData",
+          "type": "Const",
+          "dir": "in",
+          "range": "a value from the ObjectData enumeration"
+        },
+        {
+          "name": "Data",
+          "type": "Goal",
+          "dir": "out",
+          "range": "a valid GoalId"
+        }
+      ]
+    },
+    "up-reset-group": {
+      "name": "up-reset-group",
+      "section": "Action",
+      "parameters": [
+        {
+          "op": "type"
+        },
+        {
+          "name": "GroupId",
+          "type": "Op",
+          "dir": "in",
+          "range": "0 to 9"
+        }
+      ]
+    },
+    "up-create-group": {
+      "name": "up-create-group",
+      "section": "Action",
+      "parameters": [
+        {
+          "name": "Index",
+          "type": "Goal",
+          "dir": "in",
+          "range": "a valid GoalId, or 0 for index 0"
+        },
+        {
+          "name": "Count",
+          "type": "Goal",
+          "dir": "in",
+          "range": "a valid GoalId, or 0 for count 40"
+        },
+        {
+          "op": "type"
+        },
+        {
+          "name": "GroupId",
+          "type": "Op",
+          "dir": "in",
+          "range": "0 to 9"
+        }
+      ]
+    }
+  }
+}

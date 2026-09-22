@@ -1,0 +1,497 @@
+{
+  "module": "dawn.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "DAWN_GATHERER_TARGET_010",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "新村民待分配，食村不足、多城镇中心或队列缺粮支持补食物，浆果采集为额外判断。",
+      "effect": "优先补食村并受总食村上限限制。",
+      "group_id": "dawn:rule:97",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_011",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "新村民待分配，采用快速帝王、支援或封建额外城镇中心计划，木村已有基础。",
+      "effect": "食村不足时优先补食物。",
+      "group_id": "dawn:rule:110",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_012",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "新村民待分配，采用快速帝王、支援或封建额外城镇中心计划，木村已有基础。",
+      "effect": "食村不足时优先补食物。",
+      "group_id": "dawn:rule:110",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_013",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "新村民待分配，采用快速帝王、支援或封建额外城镇中心计划，木村已有基础。",
+      "effect": "食村不足时优先补食物。",
+      "group_id": "dawn:rule:110",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_014",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "新村民待分配，木村仍少；侦察骑兵、远程封建和剑士变体使用较低基础木村目标。",
+      "effect": "补开局伐木村民。",
+      "group_id": "dawn:rule:122",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_015",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "新村民待分配，木村仍少；侦察骑兵、远程封建和剑士变体使用较低基础木村目标。",
+      "effect": "补开局伐木村民。",
+      "group_id": "dawn:rule:122",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_028",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "人",
+      "context": "可升封建但食物不足，食村偏少或木村偏多，并有可释放伐木余量。",
+      "effect": "把一个木村名额转成食物。",
+      "group_id": "dawn:rule:184",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_029",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "可升封建但食物不足，食村偏少或木村偏多，并有可释放伐木余量。",
+      "effect": "把一个木村名额转成食物。",
+      "group_id": "dawn:rule:184",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_030",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "人",
+      "context": "可升封建但食物不足，食村偏少或木村偏多，并有可释放伐木余量。",
+      "effect": "把一个木村名额转成食物。",
+      "group_id": "dawn:rule:184",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_031",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "黑暗作战路线有新村民待分配、兵营木材不足，结合木村缺口、食村基础、村民队列及羊群判断。",
+      "effect": "补木筹建黑暗军事建筑。",
+      "group_id": "dawn:rule:194",
+      "constraints_note": "黑暗作战补木上限与补食物分界相对应，应成对设计。 关联键：DAWN_GATHERER_TARGET_031, DAWN_GATHERER_TARGET_037。"
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_032",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "黑暗作战路线有新村民待分配、兵营木材不足，结合木村缺口、食村基础、村民队列及羊群判断。",
+      "effect": "补木筹建黑暗军事建筑。",
+      "group_id": "dawn:rule:194",
+      "constraints_note": "黑暗作战基础木村门槛在食木两分支对应。 关联键：DAWN_GATHERER_TARGET_032, DAWN_GATHERER_TARGET_038。"
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_033",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "黑暗作战路线有新村民待分配、兵营木材不足，结合木村缺口、食村基础、村民队列及羊群判断。",
+      "effect": "补木筹建黑暗军事建筑。",
+      "group_id": "dawn:rule:194",
+      "constraints_note": "黑暗作战食村门槛在食木两分支对应。 关联键：DAWN_GATHERER_TARGET_033, DAWN_GATHERER_TARGET_039。"
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_034",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "黑暗作战路线有新村民待分配、兵营木材不足，结合木村缺口、食村基础、村民队列及羊群判断。",
+      "effect": "补木筹建黑暗军事建筑。",
+      "group_id": "dawn:rule:194",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_SHEEP_COUNT_035",
+      "category": "采集分配",
+      "meaning": "计入分配的羊群数量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "黑暗作战路线有新村民待分配、兵营木材不足，结合木村缺口、食村基础、村民队列及羊群判断。",
+      "effect": "补木筹建黑暗军事建筑。",
+      "group_id": "dawn:rule:194",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_036",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "黑暗作战路线有新村民待分配、兵营木材不足，结合木村缺口、食村基础、村民队列及羊群判断。",
+      "effect": "补木筹建黑暗军事建筑。",
+      "group_id": "dawn:rule:194",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_037",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "黑暗作战有新村民待分配，兵营木材已够、木村较多，或木村已有基础但食村少。",
+      "effect": "补食物，与前条木材判断互补。",
+      "group_id": "dawn:rule:210",
+      "constraints_note": "黑暗作战补木上限与补食物分界相对应，应成对设计。 关联键：DAWN_GATHERER_TARGET_031, DAWN_GATHERER_TARGET_037。"
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_038",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "黑暗作战有新村民待分配，兵营木材已够、木村较多，或木村已有基础但食村少。",
+      "effect": "补食物，与前条木材判断互补。",
+      "group_id": "dawn:rule:210",
+      "constraints_note": "黑暗作战基础木村门槛在食木两分支对应。 关联键：DAWN_GATHERER_TARGET_032, DAWN_GATHERER_TARGET_038。"
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_039",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "黑暗作战有新村民待分配，兵营木材已够、木村较多，或木村已有基础但食村少。",
+      "effect": "补食物，与前条木材判断互补。",
+      "group_id": "dawn:rule:210",
+      "constraints_note": "黑暗作战食村门槛在食木两分支对应。 关联键：DAWN_GATHERER_TARGET_033, DAWN_GATHERER_TARGET_039。"
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_040",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "捕鱼计划与封建或更晚军事路线有新村民待分配，木村不足但食物或村民队列和羊群提供保障。",
+      "effect": "补木支持捕鱼发展。",
+      "group_id": "dawn:rule:223",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_041",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼计划与封建或更晚军事路线有新村民待分配，木村不足但食物或村民队列和羊群提供保障。",
+      "effect": "补木支持捕鱼发展。",
+      "group_id": "dawn:rule:223",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_SHEEP_COUNT_042",
+      "category": "采集分配",
+      "meaning": "计入分配的羊群数量的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "个",
+      "context": "捕鱼计划与封建或更晚军事路线有新村民待分配，木村不足但食物或村民队列和羊群提供保障。",
+      "effect": "补木支持捕鱼发展。",
+      "group_id": "dawn:rule:223",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_043",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼计划与封建或更晚军事路线有新村民待分配，木村不足但食物或村民队列和羊群提供保障。",
+      "effect": "补木支持捕鱼发展。",
+      "group_id": "dawn:rule:223",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_044",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼的较强海军进攻变体，食村已有基础而木村未满；更多食村、现有食物、村民队列或木村严重不足触发。",
+      "effect": "加大海军与渔船经济的木材投入。",
+      "group_id": "dawn:rule:236",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_045",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "捕鱼的较强海军进攻变体，食村已有基础而木村未满；更多食村、现有食物、村民队列或木村严重不足触发。",
+      "effect": "加大海军与渔船经济的木材投入。",
+      "group_id": "dawn:rule:236",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_046",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼的较强海军进攻变体，食村已有基础而木村未满；更多食村、现有食物、村民队列或木村严重不足触发。",
+      "effect": "加大海军与渔船经济的木材投入。",
+      "group_id": "dawn:rule:236",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_047",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "捕鱼的较强海军进攻变体，食村已有基础而木村未满；更多食村、现有食物、村民队列或木村严重不足触发。",
+      "effect": "加大海军与渔船经济的木材投入。",
+      "group_id": "dawn:rule:236",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_048",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "另一海军进攻变体有新村民待分配，食村有基础但木村未满。",
+      "effect": "补海军经济木村。",
+      "group_id": "dawn:rule:251",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_049",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "另一海军进攻变体有新村民待分配，食村有基础但木村未满。",
+      "effect": "补海军经济木村。",
+      "group_id": "dawn:rule:251",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_050",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼的封建或更晚路线有新村民待分配，木村有基础，并由较高木村规模或食村不足触发。",
+      "effect": "补食物平衡海上经济。",
+      "group_id": "dawn:rule:262",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_051",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼的封建或更晚路线有新村民待分配，木村有基础，并由较高木村规模或食村不足触发。",
+      "effect": "补食物平衡海上经济。",
+      "group_id": "dawn:rule:262",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_052",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "捕鱼的封建或更晚路线有新村民待分配，木村有基础，并由较高木村规模或食村不足触发。",
+      "effect": "补食物平衡海上经济。",
+      "group_id": "dawn:rule:262",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_053",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼的封建或更晚路线有新村民待分配，食村已有基础而木村不足，由更少木村或更多食村触发。",
+      "effect": "继续补充捕鱼路线木村。",
+      "group_id": "dawn:rule:274",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_054",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "捕鱼的封建或更晚路线有新村民待分配，食村已有基础而木村不足，由更少木村或更多食村触发。",
+      "effect": "继续补充捕鱼路线木村。",
+      "group_id": "dawn:rule:274",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_055",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "捕鱼的封建或更晚路线有新村民待分配，食村已有基础而木村不足，由更少木村或更多食村触发。",
+      "effect": "继续补充捕鱼路线木村。",
+      "group_id": "dawn:rule:274",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_056",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "捕鱼的封建或更晚路线有新村民待分配，食村已有基础而木村不足，由更少木村或更多食村触发。",
+      "effect": "继续补充捕鱼路线木村。",
+      "group_id": "dawn:rule:274",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_057",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "不属较强水战变体，食村低于目标或少于木村，且木村有余量。",
+      "effect": "将一个木村名额改为食物。",
+      "group_id": "dawn:rule:287",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_058",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标高于所填值。",
+      "unit": "人",
+      "context": "不属较强水战变体，食村低于目标或少于木村，且木村有余量。",
+      "effect": "将一个木村名额改为食物。",
+      "group_id": "dawn:rule:287",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_059",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "封建作战有新村民待分配，食村有基础、木村不足，额外城镇中心计划和文明封建资格补充限制。",
+      "effect": "补封建军事经济木村。",
+      "group_id": "dawn:rule:298",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_060",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "封建作战有新村民待分配，食村有基础、木村不足，额外城镇中心计划和文明封建资格补充限制。",
+      "effect": "补封建军事经济木村。",
+      "group_id": "dawn:rule:298",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_061",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "封建作战有新村民待分配，食村有基础、木村不足，额外城镇中心计划和文明封建资格补充限制。",
+      "effect": "补封建军事经济木村。",
+      "group_id": "dawn:rule:298",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_062",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "新村民待分配，木村已有基础，封建作战或较多木村允许进入，再由高木村或食村不足决定。",
+      "effect": "分配新村民采食物。",
+      "group_id": "dawn:rule:310",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_063",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "新村民待分配，木村已有基础，封建作战或较多木村允许进入，再由高木村或食村不足决定。",
+      "effect": "分配新村民采食物。",
+      "group_id": "dawn:rule:310",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_064",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "新村民待分配，木村已有基础，封建作战或较多木村允许进入，再由高木村或食村不足决定。",
+      "effect": "分配新村民采食物。",
+      "group_id": "dawn:rule:310",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_065",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "新村民待分配，木村已有基础，封建作战或较多木村允许进入，再由高木村或食村不足决定。",
+      "effect": "分配新村民采食物。",
+      "group_id": "dawn:rule:310",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_067",
+      "category": "采集分配",
+      "meaning": "计划采金村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "城堡或更晚路线有新村民待分配，食村与升封建食物已具基础，矿场存在或可负担，黄金尚不足升城和织布。",
+      "effect": "补采金村民准备升城织布。",
+      "group_id": "dawn:rule:343",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_068",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "城堡或更晚路线有新村民待分配，食村与升封建食物已具基础，矿场存在或可负担，黄金尚不足升城和织布。",
+      "effect": "补采金村民准备升城织布。",
+      "group_id": "dawn:rule:343",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_070",
+      "category": "采集分配",
+      "meaning": "计划采金村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "黄金已满足升城与织布成本，仍有采金名额，快速帝王保留较多采金。",
+      "effect": "把一个多余采金名额转成食物。",
+      "group_id": "dawn:rule:358",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_071",
+      "category": "采集分配",
+      "meaning": "计划伐木村民数的判定门槛；本分支要求该指标至少达到所填值。",
+      "unit": "人",
+      "context": "城堡或更晚路线有新村民待分配，木村已有基础而食村不足。",
+      "effect": "补食村完成早期升级经济分配。",
+      "group_id": "dawn:rule:369",
+      "constraints_note": ""
+    },
+    {
+      "key": "DAWN_GATHERER_TARGET_072",
+      "category": "采集分配",
+      "meaning": "计划食物村民数的判定门槛；本分支要求该指标低于所填值。",
+      "unit": "人",
+      "context": "城堡或更晚路线有新村民待分配，木村已有基础而食村不足。",
+      "effect": "补食村完成早期升级经济分配。",
+      "group_id": "dawn:rule:369",
+      "constraints_note": ""
+    }
+  ]
+}

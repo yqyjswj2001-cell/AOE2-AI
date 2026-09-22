@@ -1,0 +1,6 @@
+interface:
+  display_name: "帝国 AI 网页参数创作"
+  short_description: "网页选择模式和文明，填写动态策略参数，保留真实 token 用量统计"
+  default_prompt: "使用 $aoe2-web-author 打开 AOE2-AI 网页，按我的选择完成动态参数创作并记录真实用量。"
+policy:
+  allow_implicit_invocation: true

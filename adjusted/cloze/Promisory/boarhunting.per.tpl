@@ -83,7 +83,7 @@
 	(up-jump-rule 10))
 (defrule
 	(up-compare-goal food-villagers >= {{BOAR_FOOD_VILLAGERS_001}})
-	(up-compare-goal mysheep <= {{BOAR_MYSHEEP_002}})
+	(up-compare-goal mysheep <= 0)
 (not	(up-set-target-by-id g: next-livestock))
 =>
 	(up-modify-goal minBoar c:min {{BOAR_MINBOAR_003}}))
@@ -101,7 +101,7 @@
 	(up-modify-goal minBoar c:min {{BOAR_MINBOAR_010}}))
 (defrule
 (or	(and	(unit-type-count-total villager >= {{BOAR_VILLAGER_011}})
-		(and	(up-compare-goal mysheep <= {{BOAR_MYSHEEP_012}}); 1
+		(and	(up-compare-goal mysheep <= 0); 1
 			(nand	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance)
 				(or	(strategic-number sn-enable-boar-hunting == 1)
 					(unit-type-count villager-hunter >= {{BOAR_VILLAGER_HUNTER_013}})))))
@@ -154,36 +154,36 @@
 	(up-modify-goal minBoar c:min {{BOAR_MINBOAR_031}}))
 (defrule
 (or	(goal nomaden yes)
-	(up-compare-goal total-food-amount < {{BOAR_TOTAL_FOOD_AMOUNT_032}}))
-(or	(unit-type-count villager-food <= {{BOAR_VILLAGER_FOOD_033}})
+	(up-compare-goal total-food-amount < 50))
+(or	(unit-type-count villager-food <= 0)
 (or	(dropsite-min-distance food >= 10)
 	(dropsite-min-distance food <= -1)))
-	(game-time >= {{BOAR_TIME_034}})
+	(game-time >= 100)
 =>
-	(up-modify-goal minBoar c:min {{BOAR_MINBOAR_035}}))
+	(up-modify-goal minBoar c:min 6))
 (defrule
 (or	(dropsite-min-distance deer-hunting >= 13)
 	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance))
 (or	(sheep-and-forage-too-far)
 (or	(dropsite-min-distance food >= 10)
 	(dropsite-min-distance food <= -1)))
-	(up-compare-goal mysheep <= {{BOAR_MYSHEEP_036}}); 1
-	(unit-type-count villager >= {{BOAR_VILLAGER_037}})
-	(unit-type-count villager-food <= {{BOAR_VILLAGER_FOOD_038}})
-	(game-time >= {{BOAR_TIME_039}})
+	(up-compare-goal mysheep <= 0); 1
+	(unit-type-count villager >= 6)
+	(unit-type-count villager-food <= 0)
+	(game-time >= 100)
 =>
-	(up-modify-goal minBoar c:min {{BOAR_MINBOAR_040}}))
+	(up-modify-goal minBoar c:min 6))
 (defrule
 	(goal nomaden yes)
-	(game-time >= {{BOAR_TIME_041}})
-(or	(unit-type-count villager >= {{BOAR_VILLAGER_042}})
+	(game-time >= 175)
+(or	(unit-type-count villager >= 4)
 	(up-compare-goal excessFood < vill-cost))
 (or	(dropsite-min-distance deer-hunting >= 13)
 	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance))
 (or	(dropsite-min-distance food >= 10)
 	(dropsite-min-distance food <= -1))
 =>
-	(up-modify-goal minBoar c:min {{BOAR_MINBOAR_043}})); end jump
+	(up-modify-goal minBoar c:min 3)); end jump
 
 
 
@@ -218,15 +218,15 @@
 (defrule
 	(strategic-number sn-enable-boar-hunting != 1)
 	(dropsite-min-distance live-boar >= 35)
-	(game-time > {{BOAR_TIME_044}});	(dropsite-min-distance boar-hunting s:> sn-maximum-hunt-drop-distance)
+	(game-time > 120);	(dropsite-min-distance boar-hunting s:> sn-maximum-hunt-drop-distance)
 	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance)
 (or	(sheep-and-forage-too-far)
 (or	(dropsite-min-distance food >= 10)
 	(dropsite-min-distance food <= -1)))
-	(up-compare-goal mysheep <= {{BOAR_MYSHEEP_045}}); 1
+	(up-compare-goal mysheep <= 0); 1
 	(dropsite-min-distance deer-hunting <= 12)
-	(unit-type-count villager >= {{BOAR_VILLAGER_046}}); 4
-	(unit-type-count villager-food < {{BOAR_VILLAGER_FOOD_047}})
+	(unit-type-count villager >= 6); 4
+	(unit-type-count villager-food < 1)
 =>
 	(set-strategic-number sn-enable-boar-hunting 1)); boar and deer
 (defrule
@@ -246,11 +246,11 @@
 )
 (defrule
 	(strategic-number sn-enable-boar-hunting != 1)
-(or	(up-compare-goal deer-luring >= {{BOAR_DEER_LURING_051}})
+(or	(up-compare-goal deer-luring >= 1)
 (or	(up-compare-goal total-food-amount >= {{BOAR_TOTAL_FOOD_AMOUNT_052}})
 (or	(unit-type-count villager >= {{BOAR_VILLAGER_053}})
 	(game-time >= {{BOAR_TIME_054}}))))
-(or	(up-compare-goal deer-luring >= {{BOAR_DEER_LURING_055}})
+(or	(up-compare-goal deer-luring >= 1)
 	(cc-players-unit-type-count 0 boar-class <= 0))
 =>
 ;	(set-strategic-number sn-minimum-boar-hunt-group-size 2)
@@ -266,7 +266,7 @@
 (or	(and	(or	(dropsite-min-distance food <= -1)
 			(dropsite-min-distance food s:> sn-maximum-food-drop-distance))
 		(dropsite-min-distance deer-hunting <= 16))
-(or	(up-compare-goal forage-count <= {{BOAR_FORAGE_COUNT_056}})
+(or	(up-compare-goal forage-count <= 0)
 	(cc-players-unit-type-count 0 forage-bush-class <= 0)))
 =>
 ;	(set-strategic-number sn-minimum-boar-hunt-group-size 2)

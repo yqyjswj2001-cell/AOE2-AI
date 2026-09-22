@@ -1,0 +1,347 @@
+{
+  "module": "buildings.per",
+  "kind": "strategy_decisions_only",
+  "runtime": "Unverified",
+  "parameters": [
+    {
+      "key": "BUILDINGS_SETTLEMENT_002",
+      "category": "建筑投入配额",
+      "meaning": "本开局食物聚落分支的总体数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "可建聚落的文明在开局较低难度分支中，已有食物发现、木材和采集时机条件满足时，为食物投放点建聚落。",
+      "effect": "追加建造聚落。",
+      "group_id": "buildings:rule:87",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_SETTLEMENT_004",
+      "category": "建筑投入配额",
+      "meaning": "聚落总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "可建聚落的文明已有城镇中心、食物投放需求及足够木材，且没有排队聚落时，追加食物用途聚落。",
+      "effect": "追加建造聚落。",
+      "group_id": "buildings:rule:128",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_SETTLEMENT_005",
+      "category": "建筑投入配额",
+      "meaning": "聚落总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "可建聚落的文明已有城镇中心、采金村民和既有聚落，且木材足够、没有排队聚落时，追加矿物用途聚落。",
+      "effect": "追加建造聚落。",
+      "group_id": "buildings:rule:153",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_LUMBER_CAMP_013",
+      "category": "建筑投入配额",
+      "meaning": "伐木场总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "黑暗至城堡转型期，有伐木需求且现有投放距离偏远时；封建作战分支可绕过数量门槛，否则按本项限制伐木场数量。",
+      "effect": "追加建造伐木场。",
+      "group_id": "buildings:rule:2512",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_LUMBER_CAMP_014",
+      "category": "建筑投入配额",
+      "meaning": "较早扩建时间段的伐木场数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "中盘未遭袭、无需防守或搬迁且伐木人手较多时，在分阶段时间窗口追加伐木场。",
+      "effect": "追加建造伐木场。",
+      "group_id": "buildings:rule:2530",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_LUMBER_CAMP_015",
+      "category": "建筑投入配额",
+      "meaning": "整个中盘扩建时间段的伐木场数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "中盘未遭袭、无需防守或搬迁且伐木人手较多时，在分阶段时间窗口追加伐木场。",
+      "effect": "追加建造伐木场。",
+      "group_id": "buildings:rule:2530",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MINING_CAMP_017",
+      "category": "建筑投入配额",
+      "meaning": "采矿场总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "快速前置城堡战术已启用，石矿投放距离偏远且既有城镇中心、伐木场和采矿场时，追加石矿采矿场。",
+      "effect": "追加建造采矿场。",
+      "group_id": "buildings:rule:3021",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MINING_CAMP_019",
+      "category": "建筑投入配额",
+      "meaning": "进入较晚时间段后允许的采矿场数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "采矿场建造需求已经由前置算法提出，已有城镇中心且无采矿场排队时；开局只补首个，较晚时间允许扩建。",
+      "effect": "追加建造采矿场。",
+      "group_id": "buildings:rule:3325",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MILL_022",
+      "category": "建筑投入配额",
+      "meaning": "磨坊总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "文明专用开局中，牲畜较多、已有伐木基础和村民经济，木材或地图条件满足时，追加磨坊。",
+      "effect": "追加建造磨坊。",
+      "group_id": "buildings:rule:3602",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MILL_025",
+      "category": "建筑投入配额",
+      "meaning": "磨坊总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "已启用鸡群磨坊策略，黑暗时代有城镇中心、磨坊和伐木基础且地图有果树时，追加磨坊。",
+      "effect": "追加建造磨坊。",
+      "group_id": "buildings:rule:3663",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MILL_028",
+      "category": "建筑投入配额",
+      "meaning": "本条少城镇中心农田分支允许的磨坊数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "已有少量城镇中心，农田达到基础需求或更大规模时，决定补充磨坊数量。",
+      "effect": "追加建造磨坊。",
+      "group_id": "buildings:rule:3969",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MILL_030",
+      "category": "建筑投入配额",
+      "meaning": "磨坊总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "帝王时代有城镇中心、多个兵营和较多农田，升级计划允许且军事压力不阻止时，追加磨坊。",
+      "effect": "追加建造磨坊。",
+      "group_id": "buildings:rule:4003",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_BARRACKS_031",
+      "category": "建筑投入配额",
+      "meaning": "兵营总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "帝王时代的基础经济建筑齐备时，扩充兵营生产能力。",
+      "effect": "追加建造兵营。",
+      "group_id": "buildings:rule:4019",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MILL_032",
+      "category": "建筑投入配额",
+      "meaning": "磨坊总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "帝王时代的第二条磨坊扩建规则：已有城镇中心、多个兵营和较多农田，升级计划允许且军事压力不阻止时。",
+      "effect": "追加建造磨坊。",
+      "group_id": "buildings:rule:4031",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_BARRACKS_033",
+      "category": "建筑投入配额",
+      "meaning": "兵营总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "帝王时代的基础经济建筑和靶场齐备时，按该分支扩充兵营。",
+      "effect": "追加建造兵营。",
+      "group_id": "buildings:rule:4047",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_STABLE_034",
+      "category": "建筑投入配额",
+      "meaning": "马厩总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "帝王时代的基础经济建筑和靶场齐备时，扩充马厩。",
+      "effect": "追加建造马厩。",
+      "group_id": "buildings:rule:4060",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_BARRACKS_035",
+      "category": "建筑投入配额",
+      "meaning": "兵营总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "帝王时代该文明没有靶场，但基础经济建筑齐备时，扩充兵营补充陆军产能。",
+      "effect": "追加建造兵营。",
+      "group_id": "buildings:rule:4071",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_DOCK_052",
+      "category": "建筑投入配额",
+      "meaning": "码头总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "普通码头文明已启用舰队生产、敌方有船，且经济人口和时代/前置建筑条件成熟时，扩充海军产能。",
+      "effect": "追加建造码头。",
+      "group_id": "buildings:rule:6557",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_PORT_053",
+      "category": "建筑投入配额",
+      "meaning": "港口总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "特殊海洋文明已启用舰队生产、敌方有船，且经济人口和时代/前置建筑条件成熟时，扩充港口产能。",
+      "effect": "追加建造港口。",
+      "group_id": "buildings:rule:6575",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_SHIPYARD_054",
+      "category": "建筑投入配额",
+      "meaning": "船厂总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "特殊海洋文明已启用舰队生产、敌方有船，且经济人口和时代/前置建筑条件成熟时，扩充船厂产能。",
+      "effect": "追加建造船厂。",
+      "group_id": "buildings:rule:6592",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_DOCK_055",
+      "category": "建筑投入配额",
+      "meaning": "码头总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "普通码头文明在岛屿地图有舰队需求、木材余量足够，且水图/敌船和防守条件允许时，扩建码头。",
+      "effect": "追加建造码头。",
+      "group_id": "buildings:rule:6608",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_PORT_056",
+      "category": "建筑投入配额",
+      "meaning": "港口总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "特殊海洋文明在岛屿地图有舰队需求、木材余量足够，且水图/敌船和防守条件允许时，扩建港口。",
+      "effect": "追加建造港口。",
+      "group_id": "buildings:rule:6622",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_SHIPYARD_057",
+      "category": "建筑投入配额",
+      "meaning": "船厂总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "特殊海洋文明在岛屿地图有舰队需求、木材余量足够，且水图/敌船和防守条件允许时，扩建船厂。",
+      "effect": "追加建造船厂。",
+      "group_id": "buildings:rule:6637",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_DOCK_058",
+      "category": "建筑投入配额",
+      "meaning": "本条海军快攻分支的码头总数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "普通码头文明执行海军快攻且无需防守，时代或战术变体已满足时，按市场/木材准备情况追加码头。",
+      "effect": "追加建造码头。",
+      "group_id": "buildings:rule:6652",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_DOCK_059",
+      "category": "建筑投入配额",
+      "meaning": "尚无市场且木材余量不足时的较低码头数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "普通码头文明执行海军快攻且无需防守，时代或战术变体已满足时，按市场/木材准备情况追加码头。",
+      "effect": "追加建造码头。",
+      "group_id": "buildings:rule:6652",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_SHIPYARD_060",
+      "category": "建筑投入配额",
+      "meaning": "本条海军快攻分支的船厂总数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "特殊海洋文明执行海军快攻且无需防守，时代或战术变体已满足时，按市场/木材准备情况追加船厂。",
+      "effect": "追加建造船厂。",
+      "group_id": "buildings:rule:6667",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_SHIPYARD_061",
+      "category": "建筑投入配额",
+      "meaning": "尚无市场且木材余量不足时的较低船厂数量上限。此处比较方向为严格少于。",
+      "unit": "座",
+      "context": "特殊海洋文明执行海军快攻且无需防守，时代或战术变体已满足时，按市场/木材准备情况追加船厂。",
+      "effect": "追加建造船厂。",
+      "group_id": "buildings:rule:6667",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_DOCK_062",
+      "category": "建筑投入配额",
+      "meaning": "码头总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "普通码头文明已选择舰队且无需防守，岛屿、敌船或水图大量木材条件允许时，扩建码头。",
+      "effect": "追加建造码头。",
+      "group_id": "buildings:rule:6733",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_SHIPYARD_063",
+      "category": "建筑投入配额",
+      "meaning": "船厂总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "特殊海洋文明已选择舰队且无需防守，岛屿、敌船或水图大量木材条件允许时，扩建船厂。",
+      "effect": "追加建造船厂。",
+      "group_id": "buildings:rule:6747",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_WATCH_TOWER_067",
+      "category": "建筑投入配额",
+      "meaning": "瞭望塔总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "采用输送资源战术、已有防御塔和采矿基础，且候选位置可建塔时，追加矿区防御。",
+      "effect": "追加建造瞭望塔。",
+      "group_id": "buildings:rule:8415",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_WATCH_TOWER_068",
+      "category": "建筑投入配额",
+      "meaning": "瞭望塔总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "采用输送资源战术、已有成形塔防且城镇中心仍在时，继续补防御塔并安排建造者。",
+      "effect": "追加建造瞭望塔。",
+      "group_id": "buildings:rule:8426",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_CARAVANSERAI_077",
+      "category": "建筑投入配额",
+      "meaning": "商队驿站总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "贸易马车已形成规模、木材足够且没有商队驿站在排队时，增加商路辅助建筑。",
+      "effect": "追加建造商队驿站。",
+      "group_id": "buildings:rule:12736",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_CASTLE_078",
+      "category": "建筑投入配额",
+      "meaning": "城堡总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "标准胜利的帝王分支之外，石料充足并可释放托管石料建造时，追加城堡。",
+      "effect": "追加建造城堡。",
+      "group_id": "buildings:rule:12851",
+      "constraints_note": ""
+    },
+    {
+      "key": "BUILDINGS_MULE_CART_079",
+      "category": "建筑投入配额",
+      "meaning": "骡车总计数的判断门槛；本分支要求严格少于所填值。",
+      "unit": "座",
+      "context": "已有城镇中心、村民经济和采金人手，且能够建造骡车时，为采集补充骡车。",
+      "effect": "追加建造骡车。",
+      "group_id": "buildings:rule:12877",
+      "constraints_note": ""
+    }
+  ]
+}
