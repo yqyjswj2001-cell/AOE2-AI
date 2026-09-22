@@ -1,0 +1,16 @@
+{
+  "source_file": "orb.per",
+  "source_blob_sha": "34df3d2b3c7db9df706df226b997777dd81170b3",
+  "answers": {
+    "ORB_ATTACK_GROUP_001": 8,
+    "ORB_ATTACK_GROUP_002": 8,
+    "ORB_ATTACK_GROUP_003": 1000,
+    "ORB_ATTACK_GROUP_004": 100,
+    "ORB_ATTACK_GROUP_005": 8,
+    "ORB_ATTACK_GROUP_006": 8,
+    "ORB_ATTACK_GROUP_007": 8,
+    "ORB_ATTACK_GROUP_008": 8,
+    "ORB_ATTACK_GROUP_009": 8,
+    "ORB_ATTACK_GROUP_010": 8
+  }
+}
