@@ -1,43 +1,29 @@
-name: Adjusted runtime validation
+name: Adjusted official-derived validation
 
 on:
   pull_request:
     paths:
       - 'adjusted/**'
+      - 'official/raw/Promisory/**'
       - '.github/workflows/adjusted-runtime-validation.yml'
   push:
     branches: [main]
     paths:
       - 'adjusted/**'
+      - 'official/raw/Promisory/**'
       - '.github/workflows/adjusted-runtime-validation.yml'
 
 permissions:
   contents: read
 
 jobs:
-  adjusted-contracts:
+  official-derived:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - name: Check fixed runtime contract
-        run: python3 -B adjusted/tools/check_fixed_runtime.py
-      - name: PER cloze tests
+      - name: Verify official baseline and cloze round trip
+        run: python3 -B adjusted/tools/check_official_cloze.py
+      - name: PER cloze renderer tests
         run: python3 -B -m unittest discover -s adjusted/tests -v
-      - name: Render cloze smoke test
-        shell: bash
-        run: |
-          rm -rf /tmp/aoe2-cloze
-          python3 -B adjusted/tools/render_per_cloze.py \
-            --answers-dir adjusted/tests/fixtures/cloze-franks \
-            --out /tmp/aoe2-cloze
-          python3 - <<'PY'
-          from pathlib import Path
-          root=Path("/tmp/aoe2-cloze")
-          expected={p.name.removesuffix(".tpl") for p in Path("adjusted/cloze/Promisory").glob("*.per.tpl")}
-          actual={p.name for p in root.glob("*.per")}
-          assert actual==expected, (sorted(expected-actual), sorted(actual-expected))
-          assert len(actual)==10
-          print("PER cloze smoke PASS", len(actual), "modules")
-          PY
