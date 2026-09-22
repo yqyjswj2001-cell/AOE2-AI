@@ -620,8 +620,7 @@
             "skirmisher",
             "cavalry-archer",
             "siege",
-            "monk",
-            "unique"
+            "monk"
           ]
         },
         "minimum_count": {
@@ -699,13 +698,22 @@
       "additionalProperties": false,
       "required": [
         "type",
-        "minimum_defensive_buildings"
+        "building",
+        "minimum_count"
       ],
       "properties": {
         "type": {
           "const": "enemy_fortification"
         },
-        "minimum_defensive_buildings": {
+        "building": {
+          "enum": [
+            "watch-tower",
+            "castle",
+            "bombard-tower",
+            "krepost"
+          ]
+        },
+        "minimum_count": {
           "type": "integer",
           "minimum": 1,
           "maximum": 30
