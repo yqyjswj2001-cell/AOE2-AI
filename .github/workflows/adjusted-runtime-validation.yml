@@ -23,27 +23,21 @@ jobs:
           persist-credentials: false
       - name: Check fixed runtime contract
         run: python3 -B adjusted/tools/check_fixed_runtime.py
-      - name: Check dynamic strategy contract
-        run: python3 -B adjusted/tools/check_dynamic_strategy.py
-      - name: Dynamic strategy compiler tests
+      - name: PER cloze tests
         run: python3 -B -m unittest discover -s adjusted/tests -v
-      - name: Compile Franks dynamic strategy smoke test
+      - name: Render cloze smoke test
         shell: bash
         run: |
-          rm -rf /tmp/aoe2-dynamic
-          python3 -B adjusted/tools/compile_dynamic_strategy.py \
-            adjusted/examples/franks.dynamic-strategy.v1.json \
-            --out /tmp/aoe2-dynamic
+          rm -rf /tmp/aoe2-cloze
+          python3 -B adjusted/tools/render_per_cloze.py \
+            --answers-dir adjusted/tests/fixtures/cloze-franks \
+            --out /tmp/aoe2-cloze
           python3 - <<'PY'
-          import json
           from pathlib import Path
-          root=Path("/tmp/aoe2-dynamic")
-          manifest=json.loads((root/"MANIFEST.json").read_text())
-          expected={
-              "scoutcontrol.per","gatherers.per","units.per","buildings.per",
-              "escrow.per","trade.per","threats.per","tsa.per","orb.per",
-          }
-          assert {p.name for p in root.glob("*.per")}==expected
-          assert set(manifest["generated_modules"])==expected
-          print("dynamic compiler smoke PASS", len(expected), "modules")
+          root=Path("/tmp/aoe2-cloze")
+          expected={p.name.removesuffix(".tpl") for p in Path("adjusted/cloze/Promisory").glob("*.per.tpl")}
+          actual={p.name for p in root.glob("*.per")}
+          assert actual==expected, (sorted(expected-actual), sorted(actual-expected))
+          assert len(actual)==10
+          print("PER cloze smoke PASS", len(actual), "modules")
           PY

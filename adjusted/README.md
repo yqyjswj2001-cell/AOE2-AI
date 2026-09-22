@@ -17,11 +17,13 @@ This separation is intentional so official source, generated output, diffs, roll
 - `PARAMETER_OWNERSHIP.md` — fixed vs dynamic ownership contract.
 - Strategy-generation models must only choose fields classified as dynamic.
 
-## Dynamic strategy
+## Dynamic strategy — PER cloze
 
-- `schema/dynamic-strategy.v1.schema.json` — the bounded contract the strategy AI may author.
-- `DYNAMIC_STRATEGY.md` — base-plan, reaction, and deterministic priority semantics.
-- `examples/franks.dynamic-strategy.v1.json` — example strategy payload.
-- `tools/check_dynamic_strategy.py` — cross-field and fixed-field leakage checks.
+Dynamic strategy is authored through `cloze/Promisory/*.per.tpl`.
 
-Dynamic strategy contains no raw PER, Goal IDs, Strategic Numbers, timers, jumps, or fixed runtime switches.
+- The PER rule structure is fixed.
+- The AI fills only the matching JSON blanks under `cloze/answers/`, one module at a time.
+- `tools/render_per_cloze.py` performs mechanical substitution and validation.
+- No natural-language interpretation or AI-authored PER rule structure is part of the execution path.
+
+See `cloze/README.md`.
