@@ -1,0 +1,12 @@
+{
+  "source_file": "threats.per",
+  "source_blob_sha": "6883483574a7ac8fc8b132b9b3b13575f2bb12db",
+  "answers": {
+    "THREATS_TARGET_SWITCH_001": 10,
+    "THREATS_TARGET_SWITCH_002": 9,
+    "THREATS_TARGET_SWITCH_003": 2,
+    "THREATS_TARGET_SWITCH_004": 6,
+    "THREATS_TARGET_SWITCH_005": 18,
+    "THREATS_TARGET_SWITCH_006": 27
+  }
+}
