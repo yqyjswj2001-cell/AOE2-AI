@@ -1,0 +1,420 @@
+{
+  "schema_version": "1.0",
+  "civilization": "franks",
+  "base_plan": {
+    "scouting": {
+      "dark": {
+        "land_explorers": 1,
+        "boat_explorers": 0
+      },
+      "feudal": {
+        "land_explorers": 1,
+        "boat_explorers": 0
+      },
+      "castle": {
+        "land_explorers": 1,
+        "boat_explorers": 0
+      },
+      "imperial": {
+        "land_explorers": 0,
+        "boat_explorers": 0
+      }
+    },
+    "economy": {
+      "dark": {
+        "food": 55,
+        "wood": 40,
+        "gold": 5,
+        "stone": 0
+      },
+      "feudal": {
+        "food": 45,
+        "wood": 35,
+        "gold": 20,
+        "stone": 0
+      },
+      "castle": {
+        "food": 45,
+        "wood": 30,
+        "gold": 25,
+        "stone": 0
+      },
+      "imperial": {
+        "food": 40,
+        "wood": 30,
+        "gold": 25,
+        "stone": 5
+      }
+    },
+    "military": {
+      "dark": {
+        "composition": [],
+        "target_military_population": 0
+      },
+      "feudal": {
+        "composition": [
+          {
+            "unit": "scout-cavalry",
+            "role": "primary",
+            "share_percent": 70
+          },
+          {
+            "unit": "skirmisher",
+            "role": "support",
+            "share_percent": 30
+          }
+        ],
+        "target_military_population": 10
+      },
+      "castle": {
+        "composition": [
+          {
+            "unit": "knight",
+            "role": "primary",
+            "share_percent": 80
+          },
+          {
+            "unit": "skirmisher",
+            "role": "support",
+            "share_percent": 20
+          }
+        ],
+        "target_military_population": 25
+      },
+      "imperial": {
+        "composition": [
+          {
+            "unit": "cavalier",
+            "role": "primary",
+            "share_percent": 75
+          },
+          {
+            "unit": "hand-cannoneer",
+            "role": "support",
+            "share_percent": 25
+          }
+        ],
+        "target_military_population": 60
+      }
+    },
+    "buildings": {
+      "dark": {
+        "housing_headroom": 4,
+        "desired": [
+          {
+            "building": "lumber-camp",
+            "target_count": 1
+          },
+          {
+            "building": "mill",
+            "target_count": 1
+          },
+          {
+            "building": "barracks",
+            "target_count": 1
+          },
+          {
+            "building": "mining-camp",
+            "target_count": 1
+          }
+        ]
+      },
+      "feudal": {
+        "housing_headroom": 6,
+        "desired": [
+          {
+            "building": "lumber-camp",
+            "target_count": 1
+          },
+          {
+            "building": "mill",
+            "target_count": 1
+          },
+          {
+            "building": "barracks",
+            "target_count": 1
+          },
+          {
+            "building": "mining-camp",
+            "target_count": 1
+          },
+          {
+            "building": "stable",
+            "target_count": 2
+          },
+          {
+            "building": "blacksmith",
+            "target_count": 1
+          },
+          {
+            "building": "market",
+            "target_count": 1
+          }
+        ]
+      },
+      "castle": {
+        "housing_headroom": 6,
+        "desired": [
+          {
+            "building": "lumber-camp",
+            "target_count": 2
+          },
+          {
+            "building": "mill",
+            "target_count": 1
+          },
+          {
+            "building": "barracks",
+            "target_count": 1
+          },
+          {
+            "building": "mining-camp",
+            "target_count": 1
+          },
+          {
+            "building": "stable",
+            "target_count": 3
+          },
+          {
+            "building": "blacksmith",
+            "target_count": 1
+          },
+          {
+            "building": "market",
+            "target_count": 1
+          },
+          {
+            "building": "siege-workshop",
+            "target_count": 1
+          }
+        ]
+      },
+      "imperial": {
+        "housing_headroom": 8,
+        "desired": [
+          {
+            "building": "lumber-camp",
+            "target_count": 2
+          },
+          {
+            "building": "mill",
+            "target_count": 1
+          },
+          {
+            "building": "barracks",
+            "target_count": 1
+          },
+          {
+            "building": "mining-camp",
+            "target_count": 1
+          },
+          {
+            "building": "stable",
+            "target_count": 4
+          },
+          {
+            "building": "blacksmith",
+            "target_count": 1
+          },
+          {
+            "building": "market",
+            "target_count": 1
+          },
+          {
+            "building": "siege-workshop",
+            "target_count": 2
+          }
+        ]
+      }
+    },
+    "age_up": {
+      "feudal": {
+        "start_civilian_population": 18,
+        "food_percent": 80,
+        "gold_percent": 0
+      },
+      "castle": {
+        "start_civilian_population": 28,
+        "food_percent": 70,
+        "gold_percent": 70
+      },
+      "imperial": {
+        "start_civilian_population": 65,
+        "food_percent": 65,
+        "gold_percent": 65
+      }
+    },
+    "market": {
+      "gold_floor": 300,
+      "sell_rules": [
+        {
+          "resource": "wood",
+          "stock_above": 1800,
+          "minimum_price": 90
+        },
+        {
+          "resource": "stone",
+          "stock_above": 1200,
+          "minimum_price": 100
+        }
+      ],
+      "buy_rules": [
+        {
+          "resource": "wood",
+          "stock_below": 150,
+          "gold_above": 700,
+          "maximum_price": 180
+        }
+      ]
+    },
+    "research": {
+      "economic_priority": [
+        "double-bit-axe",
+        "horse-collar",
+        "wheelbarrow"
+      ],
+      "military": [
+        {
+          "technology": "scale-barding-armor",
+          "beneficiary_units": [
+            "scout-cavalry",
+            "knight",
+            "cavalier"
+          ],
+          "minimum_beneficiary_count": 6
+        },
+        {
+          "technology": "forging",
+          "beneficiary_units": [
+            "scout-cavalry",
+            "knight",
+            "cavalier"
+          ],
+          "minimum_beneficiary_count": 8
+        }
+      ]
+    },
+    "threat_response": {
+      "enemy_units_in_town_trigger": 5,
+      "enemy_units_in_town_clear": 3
+    },
+    "combat": {
+      "dark": {
+        "attack_start_military_population": 0,
+        "attack_stop_military_population": 0,
+        "attack_group_size": 0,
+        "attack_soldier_percent": 0
+      },
+      "feudal": {
+        "attack_start_military_population": 8,
+        "attack_stop_military_population": 4,
+        "attack_group_size": 4,
+        "attack_soldier_percent": 70
+      },
+      "castle": {
+        "attack_start_military_population": 18,
+        "attack_stop_military_population": 8,
+        "attack_group_size": 8,
+        "attack_soldier_percent": 85
+      },
+      "imperial": {
+        "attack_start_military_population": 30,
+        "attack_stop_military_population": 15,
+        "attack_group_size": 15,
+        "attack_soldier_percent": 90
+      }
+    },
+    "target_priority": [
+      "active-attacker",
+      "military-production",
+      "town-center",
+      "economy",
+      "closest"
+    ]
+  },
+  "reactions": [
+    {
+      "id": "castle-anti-spears",
+      "priority": 80,
+      "ages": [
+        "castle"
+      ],
+      "when": {
+        "type": "enemy_unit_pressure",
+        "category": "spearman",
+        "minimum_count": 6
+      },
+      "override": {
+        "military": {
+          "composition": [
+            {
+              "unit": "knight",
+              "role": "primary",
+              "share_percent": 55
+            },
+            {
+              "unit": "skirmisher",
+              "role": "support",
+              "share_percent": 45
+            }
+          ],
+          "target_military_population": 28
+        },
+        "combat": {
+          "attack_start_military_population": 22,
+          "attack_stop_military_population": 10,
+          "attack_group_size": 7,
+          "attack_soldier_percent": 75
+        }
+      }
+    },
+    {
+      "id": "gold-shortage",
+      "priority": 70,
+      "ages": [
+        "castle",
+        "imperial"
+      ],
+      "when": {
+        "type": "resource_shortage",
+        "resource": "gold",
+        "stock_below": 150
+      },
+      "override": {
+        "economy": {
+          "food": 40,
+          "wood": 25,
+          "gold": 35,
+          "stone": 0
+        }
+      }
+    },
+    {
+      "id": "base-under-attack",
+      "priority": 100,
+      "ages": [
+        "dark",
+        "feudal",
+        "castle",
+        "imperial"
+      ],
+      "when": {
+        "type": "under_attack",
+        "minimum_enemy_units_in_town": 5
+      },
+      "override": {
+        "combat": {
+          "attack_start_military_population": 40,
+          "attack_stop_military_population": 20,
+          "attack_group_size": 4,
+          "attack_soldier_percent": 30
+        },
+        "target_priority": [
+          "active-attacker",
+          "military-production",
+          "closest"
+        ]
+      }
+    }
+  ]
+}
