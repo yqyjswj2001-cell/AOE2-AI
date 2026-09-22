@@ -18,7 +18,8 @@
       "boat_explore_group_size": {
         "minimum": 1,
         "maximum": 1
-      }
+      },
+      "scout_reissue_seconds": 15
     },
     "economy_runtime": {
       "civilian_gatherer_percent": 100,
@@ -51,7 +52,8 @@
         "maximum": 1
       },
       "patrol_attack_enabled": true,
-      "local_targeting_mode": 1
+      "local_targeting_mode": 1,
+      "active_attack_groups": 1000
     },
     "targeting": {
       "invalid_target_policy": "closest-enemy"
