@@ -16,3 +16,12 @@ This separation is intentional so official source, generated output, diffs, roll
 - `config/fixed-parameters.v1.json` — authoritative fixed runtime values.
 - `PARAMETER_OWNERSHIP.md` — fixed vs dynamic ownership contract.
 - Strategy-generation models must only choose fields classified as dynamic.
+
+## Dynamic strategy
+
+- `schema/dynamic-strategy.v1.schema.json` — the bounded contract the strategy AI may author.
+- `DYNAMIC_STRATEGY.md` — base-plan, reaction, and deterministic priority semantics.
+- `examples/franks.dynamic-strategy.v1.json` — example strategy payload.
+- `tools/check_dynamic_strategy.py` — cross-field and fixed-field leakage checks.
+
+Dynamic strategy contains no raw PER, Goal IDs, Strategic Numbers, timers, jumps, or fixed runtime switches.
