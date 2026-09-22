@@ -187,4 +187,87 @@ for chunk in chunks(researches):
             if not ok or tech not in MIL_TECHS:
                 raise SystemExit(f"researches.per: invalid military-tech placeholder: {line}")
 
+
+boarhunting = (TEMPLATES / "boarhunting.per.tpl").read_bytes().decode("utf-8")
+BOAR_GOALS = (
+    "totalsheep|mysheep|food-villagers|wood-villagers|villagercount|"
+    "villagercounttotal|total-food-amount|deer-luring|forage-count"
+)
+for chunk in chunks(boarhunting):
+    if "{{BOAR_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    if (
+        "(up-modify-goal minBoar" not in code
+        and "(set-strategic-number sn-enable-boar-hunting 1)" not in code
+    ):
+        raise SystemExit("boarhunting.per: placeholder outside boar timing/enable rule")
+    for line in code.splitlines():
+        if "{{BOAR_" not in line:
+            continue
+        ok = (
+            re.search(r"\(up-modify-goal\s+minBoar\s+c:(?:min|max)\s+\{\{BOAR_", line)
+            or re.search(r"\(game-time\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{BOAR_", line)
+            or re.search(
+                r"\(unit-type-count(?:-total)?\s+villager(?:-[a-z0-9-]+)?\s+"
+                r"(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{BOAR_",
+                line,
+            )
+            or re.search(
+                rf"\(up-compare-goal\s+(?:{BOAR_GOALS})\s+"
+                r"(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{BOAR_",
+                line,
+            )
+        )
+        if not ok:
+            raise SystemExit(f"boarhunting.per: invalid strategy placeholder: {line}")
+
+
+threats = (TEMPLATES / "threats.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(threats):
+    if "{{THREATS_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    if (
+        "(up-modify-sn sn-target-player-number g:= temporary-goal2)" not in code
+        or "(up-modify-sn sn-focus-player-number g:= temporary-goal2)" not in code
+    ):
+        raise SystemExit("threats.per: placeholder outside direct target-switch rule")
+    for line in code.splitlines():
+        if "{{THREATS_" not in line:
+            continue
+        ok = (
+            re.search(
+                r"\(players-military-population\s+target-player\s+"
+                r"(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{THREATS_",
+                line,
+            )
+            or re.search(
+                r"\(up-compare-goal\s+temporary-goal4\s+"
+                r"(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{THREATS_",
+                line,
+            )
+        )
+        if not ok:
+            raise SystemExit(f"threats.per: invalid target-switch placeholder: {line}")
+
+
+watercontrol = (TEMPLATES / "watercontrol.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(watercontrol):
+    if "{{WATER_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    if not re.search(r"\(set-goal\s+water-action\s+[2-8]\)", code):
+        raise SystemExit("watercontrol.per: placeholder outside water action decision")
+    for line in code.splitlines():
+        if "{{WATER_" not in line:
+            continue
+        if not re.search(
+            r"\(up-compare-goal\s+water-advantage\s+"
+            r"(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{WATER_ADVANTAGE_",
+            line,
+        ):
+            raise SystemExit(f"watercontrol.per: invalid water-advantage placeholder: {line}")
+
+
 print("official-derived cloze PASS", len(official_files), "baseline files,", len(templates), "templates")
