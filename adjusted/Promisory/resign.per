@@ -1,0 +1,28 @@
+; ADJUSTED RUNTIME - fixed conservative resignation v1
+
+(defrule
+    (up-compare-const enable-resign == 0)
+=>
+    (set-goal resign no)
+)
+
+(defrule
+    (up-compare-const enable-resign == 1)
+    (game-time >= 480)
+    (unit-type-count-total villager < 1)
+    (unit-type-count-total monk < 1)
+    (building-type-count town-center < 1)
+    (building-type-count monastery < 1)
+    (up-timer-status resign-timer == timer-disabled)
+=>
+    (set-goal resign yes)
+    (enable-timer resign-timer 5)
+)
+
+(defrule
+    (timer-triggered resign-timer)
+    (goal resign yes)
+    (up-compare-const enable-resign == 1)
+=>
+    (resign)
+)
