@@ -1,50 +1,36 @@
-# PER Cloze v1
+# Official-derived PER Cloze
 
-This is the dynamic authoring surface.
+This is the strategy-authoring method.
 
-The rule structure is already written in `Promisory/*.per.tpl`. Dynamic values
-are replaced by placeholders such as `{{CASTLE_ATTACK_GROUP_SIZE}}`.
+Every template starts from the preserved official file under
+`official/raw/Promisory/`.
 
-The strategy AI does **not** write PER rules. It only fills the JSON answer
-sheet that belongs to the current module.
+We do not rewrite the rule structure. We only replace selected tunable values
+with placeholders such as `{{TSA_MY_MILITARY_001}}`.
 
-## Workflow
+## Rule
 
-1. Give the AI one template, for example `Promisory/tsa.per.tpl`.
-2. Give it only the matching answer sheet, for example `answers/tsa.json`,
-   plus `answers/shared.json` if that module uses shared blanks.
-3. The AI replaces only the null values in the answer sheet.
-4. `render_per_cloze.py` mechanically substitutes the answers into the fixed
-   template.
-5. Validation rejects missing blanks, unknown blanks, unsafe symbols, invalid
-   percentages, inverted thresholds, and unbalanced PER.
+- Text that is not a placeholder is fixed and remains official source.
+- A placeholder is a value the strategy AI may fill.
+- The AI receives one module template and its matching blank answer sheet.
+- The renderer only substitutes answers into placeholders.
+- If all placeholders are filled with their recorded official defaults, the
+  result must be byte-for-byte identical to the official source file.
 
-There is no natural-language-to-parameter conversion and no AI-authored rule
-structure.
+That last condition is enforced in CI.
 
-## Fixed reaction slots
+## Current migration batch
 
-The reaction rule shapes are also fixed.
+Official-derived templates currently exist for:
 
-- economy: one resource-shortage slot;
-- military production: enemy-unit-pressure first, enemy-fortification second,
-  then the base plan;
-- combat: under-attack always stops the normal attack state;
-- combat: military-disadvantage values override normal attack thresholds and
-  group settings.
+- `gatherers.per` — gatherer percentage values;
+- `tsa.per` — military-population and military-superiority thresholds;
+- `orb.per` — active attack-group values.
 
-The AI fills the resource/unit/building symbols, counts, and replacement values.
-It does not create new reaction syntax.
+The remaining dynamic modules will be migrated in the same way, in small
+batches. Until a module is migrated, its adjusted baseline remains the exact
+official file.
 
-## Render
-
-For the repository test fixture:
-
-```sh
-python3 -B adjusted/tools/render_per_cloze.py \
-  --answers-dir adjusted/tests/fixtures/cloze-franks \
-  --out /tmp/aoe2-cloze
-```
-
-The normal authoring flow uses the blank files under `answers/`, one module at
-a time.
+Blank answer sheets live in `answers/`.
+Recorded official values used for round-trip proof live in
+`official-defaults/`.

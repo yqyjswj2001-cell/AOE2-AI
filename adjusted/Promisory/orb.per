@@ -216,19 +216,19 @@
 (defrule
 ;	(players-building-count target-player > 0)
 	(up-compare-goal drushtarget == 0)
-(or	(strategic-number sn-minimum-attack-group-size != {{ORB_ATTACK_GROUP_001}})
-	(strategic-number sn-maximum-attack-group-size != {{ORB_ATTACK_GROUP_002}}))
+(or	(strategic-number sn-minimum-attack-group-size != 8)
+	(strategic-number sn-maximum-attack-group-size != 8))
 =>
 ;	(chat-local-to-self "Attacking with groups.")
-	(set-strategic-number sn-number-attack-groups {{ORB_ATTACK_GROUP_003}})
-	(set-strategic-number sn-percent-attack-soldiers {{ORB_ATTACK_GROUP_004}})
-	(set-strategic-number sn-minimum-attack-group-size {{ORB_ATTACK_GROUP_005}})
-	(set-strategic-number sn-maximum-attack-group-size {{ORB_ATTACK_GROUP_006}}))
+	(set-strategic-number sn-number-attack-groups 1000)
+	(set-strategic-number sn-percent-attack-soldiers 100)
+	(set-strategic-number sn-minimum-attack-group-size 8)
+	(set-strategic-number sn-maximum-attack-group-size 8))
 (defrule
 	(players-building-count target-player > 0)
 	(up-compare-goal drushtarget != 0)
-	(strategic-number sn-minimum-attack-group-size == {{ORB_ATTACK_GROUP_007}})
-	(strategic-number sn-maximum-attack-group-size == {{ORB_ATTACK_GROUP_008}})
+	(strategic-number sn-minimum-attack-group-size == 8)
+	(strategic-number sn-maximum-attack-group-size == 8)
 =>
 ;	(chat-local-to-self "Disabling groups.")
 	(up-reset-unit c: -1)
@@ -393,8 +393,8 @@
 (defrule
 	(goal selectdrushwaypoint 1)
 (or	(up-compare-goal temporary-goal2 g:<= temporary-goal); militia closer than waypoint
-	(and	(strategic-number sn-minimum-attack-group-size == {{ORB_ATTACK_GROUP_009}})
-		(strategic-number sn-maximum-attack-group-size == {{ORB_ATTACK_GROUP_010}})))
+	(and	(strategic-number sn-minimum-attack-group-size == 8)
+		(strategic-number sn-maximum-attack-group-size == 8)))
 =>
 	(up-set-target-point position-self-x)
 	(up-copy-point drushretreatpoint-x position-self-x))

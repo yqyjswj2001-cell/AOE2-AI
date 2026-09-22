@@ -55,7 +55,6 @@
 (defconst timer-status 51)
 (defconst players-tribute 52)				;any
 (defconst players-tribute-memory 53)			;any
-(defconst treaty-time 54)			;any
 
 ;--------------------------------------
 ; Define ObjectId Constants
@@ -705,13 +704,6 @@
 (defconst terrain-road-fungus 39)
 (defconst terrain-snow 32)
 (defconst terrain-unknown 41)
-; - - - - - - - - - - - - - - - - - - -
-(defconst terrain-walkable-shallows-mangrove 54)
-(defconst terrain-mangrove-forest 55)
-(defconst terrain-water-deep-ocean 57)
-(defconst terrain-water-azure 58)
-(defconst terrain-walkable-shallows-azure 59)
-; - - - - - - - - - - - - - - - - - - -
 
 ;--------------------------------------
 ; Define SortTargetMethod Constants
@@ -858,9 +850,6 @@
 (defconst scout-cavalry-class 947)
 (defconst dangerous-animal-class 910)
 (defconst transport-ship-class 920)
-(defconst forage-bush-class 907)
-(defconst fishing-ship-class 921)
-
 
 
 
@@ -903,12 +892,8 @@
 (defconst lithuanians 35)
 
 #load-if-not-defined DE-AVAILABLE
-(defconst tarkan-set 985)
-(defconst konnik-set 986)
-(defconst kipchak-set 987)
-
 (defconst stable-tarkan 886)
-(defconst elite-stable-tarkan 887)
+(defconst stable-elite-tarkan 887)
 
 (defconst boyar 876)
 (defconst elite-boyar 878)
@@ -927,8 +912,6 @@
 (defconst elite-genoese-crossbowman 868)
 (defconst heavy-eagle-warrior 753)
 (defconst condottiero 184)
-(defconst condottiero-placeholder 882)
-(defconst packed-town-center 444)
 (defconst ri-chivalry 493)
 (defconst ri-inquisition 492)
 (defconst ri-sipahi 491)
@@ -964,17 +947,7 @@
 (defconst ri-hunting-dogs 526)
 (defconst ri-obsidian-arrows 485)
 (defconst siege-tower 885)
-
-(defconst fruit-bush 1059)
 (defconst upgraded-palisade-wall 119)
-(defconst palisade-gate1 793)
-(defconst palisade-gate2 789)
-(defconst palisade-gate3 797)
-(defconst palisade-gate4 801)
-(defconst palisade-gate-foundation1 796)
-(defconst palisade-gate-foundation2 792)
-(defconst palisade-gate-foundation3 800)
-(defconst palisade-gate-foundation4 804)
 (defconst sea-tower 785)
 (defconst sea-wall 788)
 
@@ -1003,7 +976,6 @@
 (defconst elite-camel-archer 208)
 (defconst genitour 223)
 (defconst elite-genitour 230)
-(defconst genitour-placeholder 732)
 (defconst gbeto 260)
 (defconst elite-gbeto 418)
 (defconst shotel-warrior 453)
@@ -1031,7 +1003,6 @@
 (defconst ri-elite-genitour 599)
 (defconst ri-arson 602)
 (defconst ri-arrowslits 608)
-(defconst ri-supplies 716)
 
 (defconst ballista-elephant 848)
 (defconst elite-ballista-elephant 891)
@@ -1060,9 +1031,9 @@
 (defconst ri-imperial-skirmisher 655)
 
 
+
 (defconst krepost 1251)
 
-#load-if-defined NOT-YET
 (defconst ri-elite-konnik 678)
 (defconst ri-elite-keshik 680)
 (defconst ri-elite-kipchak 682)
@@ -1075,41 +1046,21 @@
 (defconst ri-cuman-mercenaries 690)
 (defconst ri-hill-forts 691)
 (defconst ri-tower-shields 692)
-(defconst ri-elite-steppe-lancer 715)
-#else; FOR-NOW
-(defconst ri-elite-konnik 408)
-(defconst ri-elite-keshik 408)
-(defconst ri-elite-kipchak 408)
-(defconst ri-elite-leitis 408)
-(defconst ri-stirrups 408)
-(defconst ri-bagains 408)
-(defconst ri-golden-horde 408)(defconst ri-silk-armor 408)
-(defconst ri-timurid-siegecraft 408)
-(defconst ri-steppe-husbandry 408)
-(defconst ri-cuman-mercenaries 408)
-(defconst ri-hill-forts 408)
-(defconst ri-tower-shields 408)
-(defconst ri-elite-steppe-lancer 408)
-#end-if
 
 (defconst konnik 1225)
 (defconst elite-konnik 1227)
 (defconst krepost-konnik 1254)
-(defconst elite-krepost-konnik 1255)
+(defconst elite-krepost-konnik 1255); SET
 (defconst foot-konnik 1252)
 (defconst elite-foot-konnik 1253)
 (defconst leitis 1234)
 (defconst elite-leitis 1236)
 (defconst kipchak 1231)
 (defconst elite-kipchak 1233)
-(defconst mercenary-kipchak 1260)
+(defconst mercenary-kipkach 1260); SET
 (defconst keshik 1228)
 (defconst elite-keshik 1230)
 (defconst feudal-battering-ram 1258)
-(defconst steppe-lancer 1370)
-(defconst elite-steppe-lancer 1372)
-(defconst flaming-camel 1263)
-(defconst xolotl-warrior 1570)
 
 (defconst konnik-line -247)
 (defconst krepost-konnik-line -246)
@@ -1117,9 +1068,9 @@
 (defconst leitis-line -244)
 (defconst kipchak-line -243)
 (defconst keshik-line -242)
-(defconst steppe-lancer-line -241)
 
-#else; DE
+
+#else
 
 (defconst ri-chivalry 493)
 (defconst ri-inquisition 492)
@@ -1197,19 +1148,8 @@
 (defconst ri-cuman-mercenaries 690)
 (defconst ri-hill-forts 691)
 (defconst ri-tower-shields 692)
-(defconst ri-elite-steppe-lancer 715)
-(defconst ri-supplies 716)
 
-(defconst fruit-bush 1059)
 (defconst upgraded-palisade-wall 119)
-(defconst palisade-gate1 793)
-(defconst palisade-gate2 789)
-(defconst palisade-gate3 797)
-(defconst palisade-gate4 801)
-(defconst palisade-gate-foundation1 796)
-(defconst palisade-gate-foundation2 792)
-(defconst palisade-gate-foundation3 800)
-(defconst palisade-gate-foundation4 804)
 (defconst feitoria 1021)
 (defconst sea-tower 785)
 (defconst sea-wall 788)
@@ -1217,13 +1157,11 @@
 
 (defconst heavy-eagle-warrior 753)
 (defconst condottiero 184)
-(defconst condottiero-placeholder 882)
-(defconst packed-town-center 444)
 (defconst fire-galley 1103)
 (defconst demolition-raft 1104)
 (defconst siege-tower 1105)
 (defconst stable-tarkan 886)
-(defconst elite-stable-tarkan 887)
+(defconst stable-elite-tarkan 887)
 
 (defconst boyar 876)
 (defconst elite-boyar 878)
@@ -1236,7 +1174,7 @@
 (defconst ri-elite-elephant-archer 481)
 (defconst elephant-archer 873)
 (defconst elite-elephant-archer 875)
-(defconst imperial-camel 207)
+(defconst imperial-camel 897)
 (defconst ri-elite-genoese-crossbow 468)
 (defconst genoese-crossbowman 866)
 (defconst elite-genoese-crossbowman 868)
@@ -1247,9 +1185,8 @@
 (defconst elite-caravel 1006)
 (defconst camel-archer 1007)
 (defconst elite-camel-archer 1009)
-(defconst genitour 1010)
+(defconst genitour 1010); 1079
 (defconst elite-genitour 1012)
-(defconst genitour-placeholder 1079)
 (defconst gbeto 1013)
 (defconst elite-gbeto 1015)
 (defconst shotel-warrior 1016)
@@ -1262,7 +1199,7 @@
 (defconst arambai 1126)
 (defconst elite-arambai 1128)
 (defconst battle-elephant 1134)
-(defconst elite-battle-elephant 1132)
+(defconst elite-battle-elephant 1123)
 (defconst karambit-warrior 1123)
 (defconst elite-karambit-warrior 1125)
 (defconst imperial-skirmisher 1155)
@@ -1270,21 +1207,17 @@
 (defconst konnik 1225)
 (defconst elite-konnik 1227)
 (defconst krepost-konnik 1254)
-(defconst elite-krepost-konnik 1255)
+(defconst elite-krepost-konnik 1255); SET
 (defconst foot-konnik 1252)
 (defconst elite-foot-konnik 1253)
 (defconst leitis 1234)
 (defconst elite-leitis 1236)
 (defconst kipchak 1231)
 (defconst elite-kipchak 1233)
-(defconst mercenary-kipchak 1260)
+(defconst mercenary-kipkach 1260); SET
 (defconst keshik 1228)
 (defconst elite-keshik 1230)
 (defconst feudal-battering-ram 1258)
-(defconst steppe-lancer 1370)
-(defconst elite-steppe-lancer 1372)
-(defconst flaming-camel 1263)
-(defconst xolotl-warrior 1570)
 
 (defconst genoese-crossbowman-line -262)
 (defconst elephant-archer-line -261)
@@ -1308,8 +1241,24 @@
 (defconst leitis-line -244)
 (defconst kipchak-line -243)
 (defconst keshik-line -242)
-(defconst steppe-lancer-line -241)
 #end-if
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1357,13 +1306,13 @@
 (defconst siege-uu 4); unused
 (defconst land 1)
 (defconst water 2)
-;(defconst drush 1); detection
+(defconst drush 1); detection
 (defconst flush 2); detection
 (defconst rush 3); detection
 (defconst TSA 0)
 (defconst groups 1)
 (defconst DUC 2)
-(defconst drush 1); strategies ->
+;(defconst drush 1); strategy ->
 (defconst r-flush 2)
 (defconst krush 3)
 (defconst s-flush 4)
@@ -1372,12 +1321,9 @@
 (defconst a-rush 7)
 (defconst sling 8)
 (defconst ca-rush 9)
-(defconst fast-imp 10)
-(defconst trush 11)
 (defconst klew 12)
 (defconst grush 13)
-
-(defconst usual 100); <- strategies
+(defconst usual 100); <- strategy
 ;(defconst passive 0)
 ;(defconst defensive 1); not sure yet
 ;(defconst aggressive 2)
@@ -1395,12 +1341,12 @@
 (defconst Doomsday 42)
 (defconst Meleon 2197)
 (defconst Daedric 2000)
-(defconst Thermopylai 894)
 
 (defconst tree-class 915)
 (defconst gold-mine 66)
 (defconst stone-mine 102)
 (defconst relic 285)
+(defconst forage-class 907)
 (defconst stone-mine-class 908)
 (defconst deer-class 909)
 (defconst boar-class 910)
@@ -1409,24 +1355,13 @@
 (defconst deer 65)
 (defconst wild-boar 48)
 (defconst javelina 822)
-(defconst rhinoceros 1139)
-(defconst ostrich 1026)
-(defconst zebra 1019)
 (defconst wolf 126)
 (defconst jaguar 812)
-(defconst rice-farm 1187)
 (defconst unpacked-trebuchet 42)
-(defconst packed-trebuchet 331)
-(defconst barracks-huskarl 759)
-(defconst elite-barracks-huskarl 761)
-(defconst monk-with-relic 286)
-(defconst monk-with-relic-class 943)
+(defconst b-husk-line 759)
 (defconst ri-yeomen 3)
 (defconst ri-furor-celtica 5)
 (defconst ri-drill 6)
-(defconst ri-zealotry 9)
-(defconst ri-artillery 10)
-(defconst ri-crenellations 11)
 (defconst ri-anarchy 16)
 (defconst ri-rocketry 52)
 (defconst ri-treadmill-crane 54)
@@ -1436,16 +1371,13 @@
 (defconst ri-perfusion 457)
 (defconst sn-special-attack-influence2 107)
 (defconst sn-special-attack-influence3 111)
-(defconst stone-gate1 490)
-(defconst stone-gate2 487)
-(defconst stone-gate3 665)
-(defconst stone-gate4 673)
 
 ; Goals
 (defconst woodavailable 1)
-
+(defconst kloster 2)
+(defconst tc 3)
 (defconst patroldefense 4)
-
+(defconst enablesmith 5)
 (defconst control-goal 6)
 (defconst enemy-goal 7)
 (defconst rebuildcamp 8)
@@ -1453,9 +1385,9 @@
 (defconst scoutg 10)
 (defconst underattack 11)
 (defconst spreadunits 12)
-
+(defconst Multiplayer 13)
 (defconst researchplan 14)
-(defconst inseln 15)
+(defconst islands 15)
 (defconst farm-goal 16)
 (defconst retreat 17)
 (defconst gatherunits 18)
@@ -1463,8 +1395,7 @@
 (defconst TSA-goal 20)
 (defconst escrow-flag 21)
 (defconst escrow-flag2 22)
-(defconst escrow-flag3 23)
-(defconst delete-flag 24)
+
 
 
 
@@ -1476,7 +1407,7 @@
 (defconst map 32)
 (defconst fleet 33)
 (defconst enemy-boats 34)
-(defconst nomaden 35)
+(defconst nomad 35)
 (defconst retreatnow 36)
 
 (defconst siegereq 38)
@@ -1500,7 +1431,7 @@
 (defconst queue 55)
 (defconst math-goal 56)
 (defconst forage-count 57)
-(defconst cavagoal 58)
+
 (defconst drushtarget 59)
 (defconst temporary-goal 60)
 (defconst temporary-goal2 61)
@@ -1536,7 +1467,7 @@
 (defconst deer-distance 91)
 (defconst current-deer 92)
 (defconst mangonel-set 93)
-(defconst request2 94)
+(defconst stopmonks 94)
 (defconst pocketcheck 95)
 (defconst feudalvills 96)
 (defconst strategy-type2 97)
@@ -1561,15 +1492,15 @@
 (defconst target-mpop 116)
 (defconst my-mpop 117)
 (defconst allowed-num-military 118)
-(defconst gl-threat-time 119)
-(defconst gl-threat-player 120)
-(defconst gl-threat-source 121)
-(defconst gl-threat-target 122)
+(defconst threat-time 119)
+(defconst threat-player 120)
+(defconst threat-source 121)
+(defconst threat-target 122)
 (defconst jump-rule-goal 123)
 (defconst current-rule-id 124)
 (defconst next-rule-id 125)
 (defconst walled 126)
-(defconst teamsuperiority-number 127)
+(defconst Team-milgoal 127)
 (defconst target-cpop 128)
 (defconst my-cpop 129)
 (defconst milunits 130)
@@ -1635,7 +1566,7 @@
 (defconst cost-stone 190)
 (defconst cost-gold 191)
 (defconst resign 192)
-(defconst gl-game-time 193)
+(defconst enemyscouts 193)
 (defconst map-size 194)
 (defconst allowdmstable 195)
 (defconst allowdmarchery 196)
@@ -1668,10 +1599,10 @@
 (defconst ep-cpop 223)
 (defconst ep-mpop 224)
 (defconst sk-var 225)
-(defconst escrowing 226)
-(defconst main-zone 227)
-(defconst current-boar 228)
-(defconst found-boar 229)
+(defconst boar-hunting-goal 226)
+(defconst current-boar 227)
+(defconst found-boar 228)
+(defconst boar-type 229)
 (defconst search-action 230)
 (defconst found-lurer 231)
 (defconst boar-distance 232)
@@ -1700,7 +1631,7 @@
 (defconst temporary-goal8 255)
 (defconst map-treatment-switch-time 256)
 (defconst tower-garrison-time 257)
-(defconst starting-zone 258)
+(defconst escrowing 258)
 (defconst current-livestock 259)
 (defconst next-livestock 260)
 (defconst livestock-place 261)
@@ -1711,7 +1642,7 @@
 (defconst c-scout-time 266)
 (defconst FDTaunt 267)
 (defconst feitoria-cap 268)
-(defconst point-counter 269)
+(defconst traincondo 269)
 (defconst traingenitour 270)
 (defconst traincaravel 271)
 (defconst trainbattle 272)
@@ -1721,70 +1652,22 @@
 (defconst ep-stables 276)
 (defconst maa-var 277)
 (defconst camp-walls 278)
-(defconst block-attacking 279)
-(defconst camel-set 280)
-(defconst migration-state 281)
-(defconst transport-state 282)
-(defconst migration-zone 283)
-(defconst steppe-lancer-set 284)
-(defconst ballista-elephant-set 285)
-(defconst trainsteppe 286)
-(defconst temporary-goal10 287)
-(defconst forward-flag 288)
+
 (defconst start-time 289)
 (defconst elapsed-time 290)
-(defconst group0-state-flag 291)
-(defconst group1-state-flag 292)
-(defconst group2-state-flag 293)
-(defconst group3-state-flag 294)
-(defconst group4-state-flag 295)
-(defconst group5-state-flag 296)
-(defconst group6-state-flag 297)
-(defconst group7-state-flag 298)
-(defconst group8-state-flag 299)
-(defconst group9-state-flag 300)
-(defconst sling-player 301)
-(defconst retreat-flag 302)
-(defconst last-flare-time 303)
-(defconst fg-var 304)
-(defconst temporary-goal11 305)
-(defconst ttower-distance 306)
-(defconst gl-treaty-time 307)
-(defconst resign-mpop 308)
-(defconst civilization-id 309)
-(defconst scouting-unit 310)
-(defconst departure-market 311)
-(defconst destination-market 312)
-(defconst trade-safety-time 313)
-(defconst total-gold-amount 314)
-(defconst total-wood-amount 315)
-
+; 391 taken
 (defconst attacknotifier 392)
-
+; 402+403 taken
 (defconst aggressivestrat 418)
 (defconst comsystem 419)
 (defconst identity 420)
 
-(defconst target-point-x 446)
-(defconst target-point-y 447)
-(defconst center-x 448)
-(defconst center-y 449)
-(defconst null-x 450)
-(defconst null-y 451)
-(defconst trade-safety-point-x 452)
-(defconst trade-safety-point-y 453)
-(defconst transport-point-x 454)
-(defconst transport-point-y 455)
-(defconst migration-point-x 456)
-(defconst migration-point-y 457)
-(defconst drushtargetpoint-x 458)
-(defconst drushtargetpoint-y 459)
 (defconst bhunt-x 460)
 (defconst bhunt-y 461)
 (defconst tchunt-x 462)
 (defconst tchunt-y 463)
-(defconst forward-point-x 464)
-(defconst forward-point-y 465)
+(defconst storedpoint-x 464)
+(defconst storedpoint-y 465)
 (defconst unit-flare-point-x 466)
 (defconst unit-flare-point-y 467)
 (defconst drushwaypoint-x 468)
@@ -1809,15 +1692,7 @@
 (defconst building-point-y 487)
 (defconst point2-x 488)
 (defconst point2-y 489)
-(defconst point3-x 490)
-(defconst point3-y 491)
-(defconst blcoord-point-x 492)
-(defconst blcoord-point-y 493)
-(defconst blcoord-point2-x 494)
-(defconst blcoord-point2-y 495)
 (defconst stored-id 496)
-(defconst group3-x 497)
-(defconst group3-y 498)
 ; 504-505+510-511 taken; end goals
 
 
@@ -1846,14 +1721,11 @@
 (defconst infantry 212)
 (defconst archers 213)
 (defconst cavalry 214)
-(defconst cavarchers 216)
 (defconst sn-military-superiority 220)
 (defconst target-military-superiority 222)
 (defconst sn-current-age 224)
 (defconst sn-wild-animal-exploration 300)
 (defconst sn-ttkfactor-scalar 301)
-(defconst sn-maximum-patrol-distance 302)
-(defconst sn-villager-attack-reset 303)
 
 
 ; Timers
@@ -1866,7 +1738,7 @@
 (defconst defend-timer 7)
 (defconst attack-chat 8)
 (defconst resign-timer 9)
-(defconst stancet 10)
+(defconst stance 10)
 (defconst assistance-timer 11)
 (defconst FDrop 12)
 (defconst TSuperiority 13)
@@ -1894,18 +1766,11 @@
 (defconst sup-focus-timer 35)
 (defconst deer-reset-timer 36)
 (defconst threesec 37)
-(defconst two-mins 38)
+(defconst drushwaypoint-timer 38)
 (defconst stance-timer 39)
 (defconst fifteensec 40)
 (defconst group-timer 41)
 (defconst group9 42)
-(defconst orb-cd 43)
-(defconst group3 44)
-
-; Flags
-
-
-
 
 
 ; Chat
@@ -2042,7 +1907,6 @@
 (defconst text-attempt-castledrop "I'll construct a defensive castle and train unique units.")
 (defconst text-attempt-eew "I will rush the enemy with elite eagle warriors.")
 (defconst text-attempt-boom "I will attempt to boom.")
-(defconst text-attempt-fi "I will attempt to perform a fast-imp.")
 (defconst text-attempt-sling "I will attempt to sling.")
 (defconst text-attempt-grush "I will attempt to grush.")
 (defconst text-no-aggressive-strategy "No specific strategy selected.")
@@ -2105,9 +1969,6 @@
 (defconst text-im-so-bad "I'm so bad at this game... ;_;")
 (defconst text-dot "...")
 (defconst text-what-a-game "Great game!")
-(defconst text-gg "gg")
-(defconst text-ggq "gg?")
-(defconst text-TheViper "TheViper")
 
 (defconst text-promiskuitiv "Thanks for playing with my AI!")
 (defconst text-xhip "I love co-op vs AI games. <3")
@@ -2156,20 +2017,6 @@
 (defconst text-researching-champion "Researching champion.")
 (defconst text-escrowing-elite-eagle-warrior "Starting elite-eagle-warrior escrow.")
 (defconst text-researching-elite-eagle-warrior "Researching elite-eagle-warrior.")
-(defconst text-no-resources-construction "No resources to build: %d")
-
-
-#load-if-defined DE-AVAILABLE
-(defconst strategy-taunt 43)
-(defconst tResourceAmount 44)
-(defconst tFlarePatrol 47)
-(defconst tFlareMarket 52)
-#else
-(defconst strategy-taunt 250)
-(defconst tResourceAmount 249)
-(defconst tFlarePatrol 222)
-(defconst tFlareMarket 40)
-#end-if
 
 
 
@@ -2184,13 +2031,6 @@
 (defconst number-archery-ranges 9)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line); eagles
-(defconst dmw-unit fire-ship-line)
-(defconst default-unit trainmangonel)
-(defconst infinite-rax traineagle)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainbattle)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 43); 42
 (defconst ig-wood 33)
 (defconst ig-gold 20)
@@ -2201,14 +2041,9 @@
 (defconst uu-gold2 700)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 450)
-(defconst ur-gold 750)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 3)
 (defconst drush-affinity 3)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -2221,13 +2056,8 @@
 (defconst ca-rush-affinity 0)
 (defconst klew-affinity 2)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
 (defconst relic-boost 116); 133
-(defconst drush-militias 5)
 #else
-(defconst drush-militias 3)
 #load-if-defined UP-AZTEC-CIV-ALLY
 (defconst relic-boost 116); 133
 #else
@@ -2244,13 +2074,6 @@
 (defconst number-archery-ranges 7)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable traincamel)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 34); 35
 (defconst ig-wood 39)
 (defconst ig-gold 21); 20
@@ -2261,32 +2084,21 @@
 (defconst uu-gold2 700)
 (defconst uu-wood 1100)
 (defconst uu-wood2 1000)
-(defconst ur-wood 0)
-(defconst ur-food 700)
-(defconst ur-gold 300)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
 (defconst maa-var-affinity 1)
 (defconst krush-affinity 3)
-(defconst s-flush-affinity 2)
+(defconst s-flush-affinity 1)
 (defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 1)
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 3)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
-(defconst k-buffer-f 101)
-#else
-(defconst k-buffer-f 110)
 #end-if
 #load-if-defined BRITON-CIV
 (defconst text-civ "I'm playing as the britons.")
@@ -2298,13 +2110,6 @@
 (defconst number-archery-ranges 7)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 30); 34
 (defconst ig-wood 42); 40
 (defconst ig-gold 22); 20
@@ -2315,18 +2120,13 @@
 (defconst uu-gold2 1050)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 750)
-(defconst ur-food 0)
-(defconst ur-gold 450)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
-(defconst maa-var-affinity 2); 1
+(defconst maa-var-affinity 1)
 (defconst krush-affinity 2)
 (defconst s-flush-affinity 1)
 (defconst castledrop-affinity 3)
@@ -2335,26 +2135,14 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 (defconst brit11 10)
 (defconst tc-wood 138)
-(defconst twotc-wood 276)
 (defconst tc-100-wood 238)
 (defconst tc-175-wood 313)
 #else
-#load-if-defined MALIAN-CIV
-(defconst tc-wood 234)
-(defconst twotc-wood 468)
-(defconst tc-100-wood 334)
-(defconst tc-175-wood 409)
-#else
 (defconst tc-wood 275)
-(defconst twotc-wood 550)
 (defconst tc-100-wood 375)
 (defconst tc-175-wood 450)
-#end-if
 (defconst brit11 11)
 #end-if
 #load-if-defined BULGARIANS-CIV
@@ -2367,13 +2155,6 @@
 (defconst number-archery-ranges 4)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 0)
 (defconst ig-food 43); 42
 (defconst ig-wood 32); 33
 (defconst ig-gold 20)
@@ -2384,14 +2165,9 @@
 (defconst uu-gold2 950)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 900)
-(defconst ur-gold 450)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
-(defconst uu-type cavalry-uu)
+(defconst uu-type infantry-uu);
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 1)
 (defconst sk-var-affinity 2)
@@ -2404,27 +2180,17 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 1)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined BURMESE-CIV
 (defconst text-civ "I'm playing as the burmese.")
 (defconst unique-unit-wood 180)
 (defconst unique-unit-food 0)
 (defconst uu-w-dtc 335)
-(defconst number-barracks 7)
+(defconst number-barracks 6)
 (defconst number-stables 9)
-(defconst number-archery-ranges 5)
-(defconst dm-building barracks); stable); for now
-(defconst dm-unit militiaman-line); battle-elephant)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainbattle)
-(defconst pala-available 0)
-(defconst champ-available 1)
+(defconst number-archery-ranges 6)
+(defconst dm-building stable); for now
+(defconst dm-unit battle-elephant)
 (defconst ig-food 34); 35
 (defconst ig-wood 39)
 (defconst ig-gold 21); 20
@@ -2435,47 +2201,32 @@
 (defconst uu-gold2 875)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 650)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 1)
 (defconst sk-var-affinity 1)
-(defconst maa-var-affinity 2); 3
+(defconst maa-var-affinity 2)
 (defconst krush-affinity 2)
-(defconst s-flush-affinity 2); 1
+(defconst s-flush-affinity 1)
 (defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 1)
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined BYZANTINE-CIV
 (defconst text-civ "I'm playing as the byzantines.")
 (defconst unique-unit-wood 0)
 (defconst unique-unit-food 120)
 (defconst uu-w-dtc 0)
-(defconst number-barracks 8)
-(defconst number-stables 4)
-(defconst number-archery-ranges 8)
+(defconst number-barracks 7)
+(defconst number-stables 3)
+(defconst number-archery-ranges 7)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit fire-ship-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 42); 41
 (defconst ig-wood 34); 35
 (defconst ig-gold 18)
@@ -2486,14 +2237,9 @@
 (defconst uu-gold2 1000)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 1000)
-(defconst ur-gold 600)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 3)
@@ -2506,9 +2252,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 3)
-(defconst trush-affinity 1)
-(defconst fi-affinity 3)
 #end-if
 #load-if-defined CELTIC-CIV
 (defconst text-civ "I'm playing as the celts.")
@@ -2516,17 +2259,10 @@
 (defconst unique-unit-food 115)
 (defconst uu-w-dtc 0)
 (defconst number-barracks 9)
-(defconst number-stables 4)
+(defconst number-stables 3)
 (defconst number-archery-ranges 4)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainmangonel)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 37); 38
 (defconst ig-wood 37)
 (defconst ig-gold 21); 20
@@ -2537,15 +2273,10 @@
 (defconst uu-gold2 1000)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 750)
-(defconst ur-gold 450)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
-(defconst drush-affinity 3); 2
+(defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
 (defconst maa-var-affinity 2)
@@ -2557,9 +2288,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined CHINESE-CIV
 (defconst text-civ "I'm playing as the chinese.")
@@ -2571,13 +2299,6 @@
 (defconst number-archery-ranges 7)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 34); 36
 (defconst ig-wood 39); 38
 (defconst ig-gold 21); 20
@@ -2588,40 +2309,26 @@
 (defconst uu-gold2 960)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 600)
-(defconst ur-food 0)
-(defconst ur-gold 600)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 6)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
 (defconst maa-var-affinity 1)
 (defconst krush-affinity 2)
-(defconst s-flush-affinity 2); 1
+(defconst s-flush-affinity 1)
 (defconst castledrop-affinity 3)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 2)
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
 (defconst earlyBoar 128)
 (defconst min-food-villagers 7)
-#load-if-not-defined UP-CHINESE-CIV-ENEMY
-(defconst eflush-vills 4)
-#else
-(defconst eflush-vills 3)
-#end-if
 #else
 (defconst earlyBoar 105)
 (defconst min-food-villagers 6)
-(defconst eflush-vills 3)
 #end-if
 #load-if-defined CUMANS-CIV
 (defconst text-civ "I'm playing as the cumans.")
@@ -2633,13 +2340,6 @@
 (defconst number-archery-ranges 4)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 37); 35
 (defconst ig-wood 36); 38
 (defconst ig-gold 21); 20
@@ -2650,29 +2350,21 @@
 (defconst uu-gold2 500); 100 (0)
 (defconst uu-wood 1100)
 (defconst uu-wood2 1000)
-(defconst ur-wood 0)
-(defconst ur-food 650)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
-(defconst maa-var-affinity 1); 2
+(defconst maa-var-affinity 1)
 (defconst krush-affinity 3)
 (defconst s-flush-affinity 3)
 (defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 1)
-(defconst ca-rush-affinity 2)
+(defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined ETHIOPIAN-CIV
 (defconst text-civ "I'm playing as the ethiopians.")
@@ -2684,13 +2376,6 @@
 (defconst number-archery-ranges 8)
 (defconst dm-building archery-range); for now
 (defconst dm-unit archer-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 0)
 (defconst ig-food 39)
 (defconst ig-wood 35)
 (defconst ig-gold 20)
@@ -2701,14 +2386,9 @@
 (defconst uu-gold2 700)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 1000)
-(defconst ur-gold 600)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 3)
 (defconst sk-var-affinity 1)
@@ -2721,34 +2401,17 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
-(defconst outpost-bonus 3)
-#else
-#load-if-defined UP-ETHIOPIAN-CIV-ALLY
-(defconst outpost-bonus 3)
-#else
-(defconst outpost-bonus 0)
-#end-if
 #end-if
 #load-if-defined FRANKISH-CIV
 (defconst text-civ "I'm playing as the franks.")
 (defconst unique-unit-wood 0)
 (defconst unique-unit-food 105)
 (defconst uu-w-dtc 0)
-(defconst number-barracks 6)
-(defconst number-stables 8)
+(defconst number-barracks 5)
+(defconst number-stables 7)
 (defconst number-archery-ranges 5)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique); knight
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 43); 44
 (defconst ig-wood 31); 32
 (defconst ig-gold 22); 20
@@ -2759,14 +2422,9 @@
 (defconst uu-gold2 1050)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 400)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
@@ -2777,9 +2435,9 @@
 #end-if
 (defconst krush-affinity 3)
 #load-if-not-defined UP-GAME-WK
-(defconst s-flush-affinity 1); 2
+(defconst s-flush-affinity 1)
 #else
-(defconst s-flush-affinity 2); 3
+(defconst s-flush-affinity 2)
 #end-if
 (defconst castledrop-affinity 1)
 (defconst stonewall-affinity 0)
@@ -2787,9 +2445,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
 #end-if
 #load-if-defined GOTHIC-CIV
 (defconst text-civ "I'm playing as the goths.")
@@ -2801,13 +2456,6 @@
 (defconst number-archery-ranges 5)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 43); 42
 (defconst ig-wood 32); 33
 (defconst ig-gold 20)
@@ -2818,22 +2466,13 @@
 (defconst uu-gold2 750)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 450)
-(defconst ur-gold 250)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 1)
 (defconst sk-var-affinity 1)
-#load-if-not-defined UP-GAME-WK
 (defconst maa-var-affinity 2)
-#else
-(defconst maa-var-affinity 3)
-#end-if
 (defconst krush-affinity 2)
 (defconst s-flush-affinity 1)
 (defconst castledrop-affinity 2)
@@ -2842,14 +2481,13 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 1)
-(defconst fi-affinity 2)
-(defconst boar-kill-dist 3); 3
+(defconst boar-kill-dist 5); 3
+(defconst maa-buffer-f 89)
 (defconst maa-buffer-f2 139)
 (defconst maa-buffer-g 53)
 #else
-(defconst boar-kill-dist 4); 4
+(defconst boar-kill-dist 5); 4
+(defconst maa-buffer-f 110)
 (defconst maa-buffer-f2 160)
 (defconst maa-buffer-g 60)
 #end-if
@@ -2863,13 +2501,6 @@
 (defconst number-archery-ranges 7)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit traincavarcher)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 0)
 (defconst ig-food 41); 42
 (defconst ig-wood 33); 33
 (defconst ig-gold 22); 20
@@ -2880,29 +2511,21 @@
 (defconst uu-gold2 700)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 500)
-(defconst ur-gold 500)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 3)
 (defconst uu-type cavalry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
 (defconst maa-var-affinity 2); 1
 (defconst krush-affinity 2)
-(defconst s-flush-affinity 2); 1
+(defconst s-flush-affinity 1)
 (defconst castledrop-affinity 0)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 1)
 (defconst ca-rush-affinity 3)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 (defconst ca-buffer-w 90)
 (defconst ca-buffer-g 103)
 #else
@@ -2910,7 +2533,7 @@
 (defconst ca-buffer-g 120)
 #end-if
 #load-if-defined INCAN-CIV
-(defconst text-civ "I'm playing as the incas.")
+(defconst text-civ "I'm playing as the incans.")
 (defconst unique-unit-wood 0)
 (defconst unique-unit-food 110)
 (defconst uu-w-dtc 0)
@@ -2919,31 +2542,19 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line); eagles
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax traineagle)
-(defconst infinite-range trainslinger)
-(defconst infinite-stable trainbattle)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 42)
 (defconst ig-wood 33)
 (defconst ig-gold 20)
 (defconst ig-stone 5)
-(defconst uu-food 1000)
+(defconst uu-food 900)
 (defconst uu-gold 500)
-(defconst uu-food2 900)
+(defconst uu-food2 800)
 (defconst uu-gold2 700)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 600)
-(defconst ur-gold 600)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -2956,9 +2567,6 @@
 (defconst ca-rush-affinity 0)
 (defconst klew-affinity 2)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined INDIAN-CIV
 (defconst text-civ "I'm playing as the indians.")
@@ -2970,13 +2578,6 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building stable); for now
 (defconst dm-unit camel-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon); traincavarcher)
-(defconst infinite-stable traincamel)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 42)
 (defconst ig-wood 33)
 (defconst ig-gold 20)
@@ -2987,36 +2588,21 @@
 (defconst uu-gold2 1000)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 500)
-(defconst ur-gold 300)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
-(defconst r-flush-affinity 1)
+(defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
 (defconst maa-var-affinity 2)
-#load-if-defined UP-2-PLAYER-GAME
 (defconst krush-affinity 2)
-#else
-(defconst krush-affinity 3);
-#end-if
 (defconst s-flush-affinity 2)
-(defconst castledrop-affinity 1); 2
+(defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 2)
 (defconst ca-rush-affinity 2)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
-(defconst vill-cost 45)
-#else
-(defconst vill-cost 50)
 #end-if
 #load-if-defined ITALIAN-CIV
 (defconst text-civ "I'm playing as the italians.")
@@ -3028,13 +2614,6 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 38); 39
 (defconst ig-wood 37); 36
 (defconst ig-gold 20)
@@ -3045,14 +2624,9 @@
 (defconst uu-gold2 1000)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 500)
-(defconst ur-gold 250)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -3065,9 +2639,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 3)
 #end-if
 #load-if-defined JAPANESE-CIV
 (defconst text-civ "I'm playing as the japanese.")
@@ -3079,13 +2650,6 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 43); 42
 (defconst ig-wood 31); 32
 (defconst ig-gold 20)
@@ -3096,14 +2660,9 @@
 (defconst uu-gold2 1075)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 750)
-(defconst ur-food 0)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -3120,9 +2679,9 @@
 (defconst ca-rush-affinity 2)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
+(defconst two-camps 100)
+#else
+(defconst two-camps 200)
 #end-if
 #load-if-defined KHMER-CIV
 (defconst text-civ "I'm playing as the khmer.")
@@ -3132,15 +2691,8 @@
 (defconst number-barracks 6)
 (defconst number-stables 8)
 (defconst number-archery-ranges 6)
-(defconst dm-building siege-workshop); stable); for now
-(defconst dm-unit scorpion-line); battle-elephant)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainbattle)
-(defconst pala-available 0)
-(defconst champ-available 0)
+(defconst dm-building stable); for now
+(defconst dm-unit battle-elephant)
 (defconst ig-food 40)
 (defconst ig-wood 35)
 (defconst ig-gold 20)
@@ -3151,29 +2703,21 @@
 (defconst uu-gold2 700)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 700)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu); siege-uu
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 1)
 (defconst sk-var-affinity 1)
 (defconst maa-var-affinity 1)
 (defconst krush-affinity 2)
-(defconst s-flush-affinity 1); 2
-(defconst castledrop-affinity 1); 2
+(defconst s-flush-affinity 1)
+(defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 1)
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 1)
-(defconst fi-affinity 3)
 #end-if
 #load-if-defined KOREAN-CIV
 (defconst text-civ "I'm playing as the koreans.")
@@ -3185,13 +2729,6 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit turtle-ship-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 30); 34
 (defconst ig-wood 42)
 (defconst ig-gold 22); 20
@@ -3202,29 +2739,21 @@
 (defconst uu-gold2 1000)
 (defconst uu-wood 1100)
 (defconst uu-wood2 1000)
-(defconst ur-wood 800)
-(defconst ur-food 0)
-(defconst ur-gold 500)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 1)
-(defconst sk-var-affinity 2); 1
+(defconst sk-var-affinity 1)
 (defconst maa-var-affinity 1)
 (defconst krush-affinity 1)
 (defconst s-flush-affinity 1)
-(defconst castledrop-affinity 2); 1
+(defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 2)
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 3)
-(defconst fi-affinity 2)
 #end-if
 #load-if-defined LITHUANIANS-CIV
 (defconst text-civ "I'm playing as the lithuanians.")
@@ -3236,13 +2765,6 @@
 (defconst number-archery-ranges 5)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 44); 44
 (defconst ig-wood 31); 32
 (defconst ig-gold 21); 20
@@ -3253,18 +2775,13 @@
 (defconst uu-gold2 950)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 800)
-(defconst ur-gold 200)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 3)
-(defconst maa-var-affinity 2)
+(defconst maa-var-affinity 1)
 (defconst krush-affinity 3)
 (defconst s-flush-affinity 2)
 (defconst castledrop-affinity 1)
@@ -3273,9 +2790,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
 #end-if
 #load-if-defined MAGYAR-CIV
 (defconst text-civ "I'm playing as the magyars.")
@@ -3287,13 +2801,6 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 43)
 (defconst ig-wood 33)
 (defconst ig-gold 19)
@@ -3304,18 +2811,13 @@
 (defconst uu-gold2 800)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 600)
-(defconst ur-food 0)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 1)
 (defconst sk-var-affinity 1)
-(defconst maa-var-affinity 2)
+(defconst maa-var-affinity 1)
 (defconst krush-affinity 3)
 (defconst s-flush-affinity 3)
 (defconst castledrop-affinity 2)
@@ -3324,9 +2826,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined MALAY-CIV
 (defconst text-civ "I'm playing as the malay.")
@@ -3336,15 +2835,8 @@
 (defconst number-barracks 8)
 (defconst number-stables 6)
 (defconst number-archery-ranges 6)
-(defconst dm-building barracks); stable); for now
-(defconst dm-unit militiaman-line); battle-elephant)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainbattle)
-(defconst pala-available 0)
-(defconst champ-available 0)
+(defconst dm-building stable); for now
+(defconst dm-unit battle-elephant)
 (defconst ig-food 44)
 (defconst ig-wood 32)
 (defconst ig-gold 18)
@@ -3355,14 +2847,9 @@
 (defconst uu-gold2 800)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 850)
-(defconst ur-gold 500)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 1)
 (defconst sk-var-affinity 1)
@@ -3375,14 +2862,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
-(defconst darkvills 32)
-(defconst fi-vills 34)
-#else
-(defconst darkvills 29)
-(defconst fi-vills 31)
 #end-if
 #load-if-defined MALIAN-CIV
 (defconst text-civ "I'm playing as the malians.")
@@ -3394,13 +2873,6 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit fire-ship-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 41)
 (defconst ig-wood 32)
 (defconst ig-gold 21)
@@ -3411,14 +2883,9 @@
 (defconst uu-gold2 800)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 650)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -3431,16 +2898,9 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
 (defconst smith-cost 128)
-(defconst mb-cost 149)
-(defconst sw-cost 170)
 #else
 (defconst smith-cost 150)
-(defconst mb-cost 175)
-(defconst sw-cost 200)
 #end-if
 #load-if-defined MAYAN-CIV
 (defconst text-civ "I'm playing as the mayans.")
@@ -3452,13 +2912,6 @@
 (defconst number-archery-ranges 8)
 (defconst dm-building barracks); for now
 (defconst dm-unit eagle-warrior-line); hmm
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax traineagle)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainbattle)
-(defconst pala-available 0)
-(defconst champ-available 0)
 (defconst ig-food 34); 35
 (defconst ig-wood 39)
 (defconst ig-gold 21); 20
@@ -3469,14 +2922,9 @@
 (defconst uu-gold2 500); 100 (0)
 (defconst uu-wood 1100)
 (defconst uu-wood2 1000)
-(defconst ur-wood 0)
-(defconst ur-food 750)
-(defconst ur-gold 450)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 3)
 (defconst uu-type archer-uu)
 (defconst sling-number 100); 99
-(defconst sling-affinity 3)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 3)
 (defconst sk-var-affinity 1)
@@ -3489,9 +2937,6 @@
 (defconst ca-rush-affinity 0)
 (defconst klew-affinity 2)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 (defconst ar-buffer-w 82)
 (defconst ar-buffer-wc 122)
 (defconst ar-buffer-g 90)
@@ -3522,16 +2967,9 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
-(defconst ig-food 37); 38
-(defconst ig-wood 36); 35
-(defconst ig-gold 21); 21
+(defconst ig-food 38); 41
+(defconst ig-wood 35); 33
+(defconst ig-gold 21); 20
 (defconst ig-stone 6)
 (defconst uu-food 1200)
 (defconst uu-gold 675)
@@ -3539,14 +2977,9 @@
 (defconst uu-gold2 875)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 500)
-(defconst ur-gold 450)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -3563,9 +2996,6 @@
 #end-if
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2); 1
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 (defconst l-hunters1 3)
 (defconst l-hunters2 2)
 #else
@@ -3582,18 +3012,11 @@
 (defconst unique-unit-wood 0)
 (defconst unique-unit-food 250)
 (defconst uu-w-dtc 0)
-(defconst number-barracks 6)
+(defconst number-barracks 5)
 (defconst number-stables 6)
 (defconst number-archery-ranges 6)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainknight)
-(defconst infinite-rax trainchamp); trainpike)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 0)
 (defconst ig-food 43); 42
 (defconst ig-wood 31); 32
 (defconst ig-gold 22); 20
@@ -3604,14 +3027,9 @@
 (defconst uu-gold2 1400)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 300)
-(defconst ur-gold 300)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -3624,20 +3042,9 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
 (defconst ffdrop 18)
-(defconst ffdrop2 72)
-(defconst firstlc-housing 6)
 #else
 (defconst ffdrop 21)
-(defconst ffdrop2 80)
-#load-if-defined JAPANESE-CIV
-(defconst firstlc-housing 4)
-#else
-(defconst firstlc-housing 4); 3
-#end-if
 #end-if
 #load-if-defined PORTUGUESE-CIV
 (defconst text-civ "I'm playing as the portuguese.")
@@ -3649,15 +3056,8 @@
 (defconst number-archery-ranges 8)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit caravel-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
-(defconst ig-food 32); 34
-(defconst ig-wood 41)
+(defconst ig-food 34); 35
+(defconst ig-wood 39)
 (defconst ig-gold 21); 20
 (defconst ig-stone 6)
 (defconst uu-food 1300)
@@ -3666,15 +3066,10 @@
 (defconst uu-gold2 700)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 700)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type powder-uu); siege-uu
 (defconst sling-number 100)
-(defconst sling-affinity 1)
-(defconst drush-affinity 2); 1
+(defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
 (defconst maa-var-affinity 1)
@@ -3685,10 +3080,7 @@
 (defconst a-rush-affinity 2)
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
-(defconst grush-affinity 2)
-(defconst fgrush-affinity 3)
-(defconst trush-affinity 1)
-(defconst fi-affinity 3)
+(defconst grush-affinity 3)
 #end-if
 #load-if-defined SARACEN-CIV
 (defconst text-civ "I'm playing as the saracens.")
@@ -3700,13 +3092,6 @@
 (defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher); trainarcher)
-(defconst infinite-stable traincamel)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 42)
 (defconst ig-wood 31); 34
 (defconst ig-gold 23); 20
@@ -3717,59 +3102,35 @@
 (defconst uu-gold2 700)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 750)
-(defconst ur-gold 800)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu);
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
 (defconst maa-var-affinity 1)
 (defconst krush-affinity 2)
 (defconst s-flush-affinity 1)
-(defconst castledrop-affinity 2); 1
+(defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 2)
 (defconst ca-rush-affinity 2)
 (defconst klew-affinity 0)
 (defconst grush-affinity 3)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 1)
-#load-if-not-defined UP-GAME-WK
-(defconst fi-affinity 2)
-#else
-(defconst fi-affinity 3)
-#end-if
-(defconst t-carry 10)
-(defconst t-carry2 9)
-#else
-(defconst t-carry 5)
-(defconst t-carry2 4)
 #end-if
 #load-if-defined SLAVIC-CIV
 (defconst text-civ "I'm playing as the slavs.")
 (defconst unique-unit-wood 0)
 (defconst unique-unit-food 100)
 (defconst uu-w-dtc 0)
-(defconst number-barracks 7)
-(defconst number-stables 7)
-(defconst number-archery-ranges 5)
+(defconst number-barracks 6)
+(defconst number-stables 6)
+(defconst number-archery-ranges 6)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher); trainskirm)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
-(defconst ig-food 40)
+(defconst ig-food 42)
 (defconst ig-wood 33)
-(defconst ig-gold 22)
+(defconst ig-gold 20)
 (defconst ig-stone 5)
 (defconst uu-food 1100)
 (defconst uu-gold 600)
@@ -3777,14 +3138,9 @@
 (defconst uu-gold2 800)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 1200)
-(defconst ur-gold 500)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 3); 2
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 3); 2
@@ -3797,9 +3153,6 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined SPANISH-CIV
 (defconst text-civ "I'm playing as the spanish.")
@@ -3807,17 +3160,10 @@
 (defconst unique-unit-food 110)
 (defconst uu-w-dtc 0)
 (defconst number-barracks 6)
-(defconst number-stables 7)
-(defconst number-archery-ranges 5)
+(defconst number-stables 6)
+(defconst number-archery-ranges 4)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 42)
 (defconst ig-wood 31); 32
 (defconst ig-gold 21); 20
@@ -3828,29 +3174,21 @@
 (defconst uu-gold2 800)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 450)
-(defconst ur-gold 250)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type powder-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 1)
 (defconst sk-var-affinity 2)
 (defconst maa-var-affinity 1)
 (defconst krush-affinity 3)
-(defconst s-flush-affinity 2); 1
+(defconst s-flush-affinity 2)
 (defconst castledrop-affinity 3)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 0)
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 2)
-(defconst fi-affinity 3)
 #load-if-defined UP-GAME-WK
 (defconst trade-boost 112); 125
 #else
@@ -3877,13 +3215,6 @@
 (defconst number-archery-ranges 7)
 (defconst dm-building archery-range); for now
 (defconst dm-unit cavalry-archer-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit traincavarcher)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range traincavarcher)
-(defconst infinite-stable trainsteppe)
-(defconst pala-available 0)
-(defconst champ-available 0)
 (defconst ig-food 39)
 (defconst ig-wood 37)
 (defconst ig-gold 20)
@@ -3894,15 +3225,10 @@
 (defconst uu-gold2 1100)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 500)
-(defconst ur-food 0)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type cavalry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
-(defconst drush-affinity 2); 3
+(defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
 (defconst maa-var-affinity 1)
@@ -3911,12 +3237,9 @@
 (defconst castledrop-affinity 1)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 1)
-(defconst ca-rush-affinity 3); 2
+(defconst ca-rush-affinity 2)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 2)
-(defconst trush-affinity 1)
-(defconst fi-affinity 2)
 #end-if
 #load-if-defined TEUTONIC-CIV
 (defconst text-civ "I'm playing as the teutons.")
@@ -3928,13 +3251,6 @@
 (defconst number-archery-ranges 5)
 (defconst dm-building stable); for now
 (defconst dm-unit knight-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable trainknight)
-(defconst pala-available 1)
-(defconst champ-available 1)
 (defconst ig-food 42)
 (defconst ig-wood 31); 32
 (defconst ig-gold 21); 20
@@ -3945,14 +3261,9 @@
 (defconst uu-gold2 800)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 600)
-(defconst ur-gold 0)
-(defconst ur-stone 400)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 2)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
@@ -3965,15 +3276,16 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 2)
-(defconst fi-affinity 2)
 (defconst t-garrison-c 10)
 (defconst farm-cost 40)
+(defconst farmmb-cost 215)
 (defconst farmcamp-cost 140)
+(defconst farmsmith-cost 190)
+(defconst feudalprep-cost 365)
 #else
 (defconst t-garrison-c 5)
 (defconst farm-cost 60)
+(defconst farmmb-cost 235)
 #load-if-defined JAPANESE-CIV
 (defconst farmcamp-cost 110)
 #else
@@ -3983,6 +3295,12 @@
 (defconst farmcamp-cost 160)
 #end-if
 #end-if
+#load-if-defined MALIAN-CIV
+(defconst farmsmith-cost 188)
+#else
+(defconst farmsmith-cost 210)
+#end-if
+(defconst feudalprep-cost 385)
 #end-if
 #load-if-defined TURKISH-CIV
 (defconst text-civ "I'm playing as the turks.")
@@ -3994,13 +3312,6 @@
 (defconst number-archery-ranges 5)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainhandcannon)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 42)
 (defconst ig-wood 31); 32
 (defconst ig-gold 21); 20
@@ -4011,14 +3322,9 @@
 (defconst uu-gold2 950)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 0)
-(defconst ur-gold 500)
-(defconst ur-stone 450)
 (defconst LN-TC-builders 2)
 (defconst uu-type powder-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 1)
@@ -4031,9 +3337,6 @@
 (defconst ca-rush-affinity 2)
 (defconst klew-affinity 0)
 (defconst grush-affinity 2)
-(defconst fgrush-affinity 3); 2
-(defconst trush-affinity 1)
-(defconst fi-affinity 3)
 #end-if
 #load-if-defined VIETNAMESE-CIV
 (defconst text-civ "I'm playing as the vietnamese.")
@@ -4043,15 +3346,8 @@
 (defconst number-barracks 6)
 (defconst number-stables 6)
 (defconst number-archery-ranges 7)
-(defconst dm-building barracks); stable); for now
-(defconst dm-unit militiaman-line); battle-elephant)
-(defconst dmw-unit galley-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainbattle)
-(defconst pala-available 0)
-(defconst champ-available 1)
+(defconst dm-building stable); for now
+(defconst dm-unit battle-elephant)
 (defconst ig-food 34); 36
 (defconst ig-wood 39); 38
 (defconst ig-gold 21); 20
@@ -4062,14 +3358,9 @@
 (defconst uu-gold2 950)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 300)
-(defconst ur-food 500)
-(defconst ur-gold 0)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type archer-uu)
 (defconst sling-number 100)
-(defconst sling-affinity 1)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 3)
 (defconst sk-var-affinity 3)
@@ -4079,12 +3370,9 @@
 (defconst castledrop-affinity 2)
 (defconst stonewall-affinity 0)
 (defconst a-rush-affinity 3)
-(defconst ca-rush-affinity 2)
+(defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 1)
-(defconst fgrush-affinity 1)
-(defconst trush-affinity 1)
-(defconst fi-affinity 1)
 #end-if
 #load-if-defined VIKING-CIV
 (defconst text-civ "I'm playing as the vikings.")
@@ -4096,13 +3384,6 @@
 (defconst number-archery-ranges 7)
 (defconst dm-building barracks); for now
 (defconst dm-unit militiaman-line)
-(defconst dmw-unit longboat-line)
-(defconst default-unit trainunique)
-(defconst infinite-rax trainchamp)
-(defconst infinite-range trainarcher)
-(defconst infinite-stable trainknight)
-(defconst pala-available 0)
-(defconst champ-available 1)
 (defconst ig-food 43)
 (defconst ig-wood 32)
 (defconst ig-gold 20)
@@ -4113,14 +3394,9 @@
 (defconst uu-gold2 750)
 (defconst uu-wood 300)
 (defconst uu-wood2 0)
-(defconst ur-wood 0)
-(defconst ur-food 850)
-(defconst ur-gold 400)
-(defconst ur-stone 0)
 (defconst LN-TC-builders 2)
 (defconst uu-type infantry-uu)
 (defconst sling-number 100); 99
-(defconst sling-affinity 3)
 (defconst drush-affinity 1)
 (defconst r-flush-affinity 2)
 (defconst sk-var-affinity 2)
@@ -4133,23 +3409,11 @@
 (defconst ca-rush-affinity 1)
 (defconst klew-affinity 0)
 (defconst grush-affinity 3)
-(defconst fgrush-affinity 0)
-(defconst trush-affinity 2)
-(defconst fi-affinity 1)
 #end-if
 
 
 
 
-#load-if-defined GOTHIC-CIV
-(defconst maa-buffer-f 89)
-#else
-#load-if-defined INDIAN-CIV
-(defconst maa-buffer-f 100)
-#else
-(defconst maa-buffer-f 110)
-#end-if
-#end-if
 #load-if-defined TEUTONIC-CIV
 (defconst pk-buffer-w 65)
 (defconst pk-buffer-wc 125)
@@ -4166,6 +3430,14 @@
 (defconst sk-buffer-w 95)
 (defconst sk-buffer-wc 135)
 #end-if
+#load-if-defined LITHUANIANS-CIV
+(defconst pk-buffer-w 0)
+(defconst pk-buffer-wc 0)
+(defconst pk-buffer-f 85)
+(defconst pk-buffer-fl 135)
+(defconst sk-buffer-w 0)
+(defconst sk-buffer-wc 0)
+#end-if
 #load-if-defined BYZANTINE-CIV
 (defconst pk-buffer-w 79)
 (defconst pk-buffer-wc 119)
@@ -4181,6 +3453,7 @@
 #end-if
 #load-if-not-defined TEUTONIC-CIV
 #load-if-not-defined GOTHIC-CIV
+#load-if-not-defined LITHUANIANS-CIV
 #load-if-not-defined BYZANTINE-CIV
 (defconst pk-buffer-w 85)
 (defconst pk-buffer-wc 125)
@@ -4188,6 +3461,7 @@
 (defconst pk-buffer-fl 135)
 (defconst sk-buffer-w 95)
 (defconst sk-buffer-wc 135)
+#end-if
 #end-if
 #end-if
 #end-if
@@ -4205,125 +3479,6 @@
 #end-if
 #end-if
 
-#load-if-defined MALIAN-CIV
-(defconst housecamp2-cost 191)
-(defconst housecamp-cost 106)
-#else
-#load-if-defined UP-GAME-WK
-#load-if-defined JAPANESE-CIV
-(defconst housecamp2-cost 125)
-(defconst housecamp-cost 75)
-#else
-#load-if-defined HUN-CIV
-(defconst housecamp2-cost 200)
-(defconst housecamp-cost 100)
-#else
-(defconst housecamp2-cost 225)
-(defconst housecamp-cost 125)
-#end-if
-#end-if
-#else
-#load-if-defined JAPANESE-CIV
-(defconst housecamp2-cost 130)
-(defconst housecamp-cost 80)
-#else
-#load-if-defined HUN-CIV
-(defconst housecamp2-cost 200)
-(defconst housecamp-cost 100)
-#else
-(defconst housecamp2-cost 230)
-(defconst housecamp-cost 130)
-#end-if
-#end-if
-#end-if
-#end-if
-
-#load-if-defined MALIAN-CIV
-(defconst camp2-cost 170)
-(defconst camp-cost 85)
-#else
-#load-if-defined JAPANESE-CIV
-(defconst camp2-cost 100)
-(defconst camp-cost 50)
-#else
-(defconst camp2-cost 200)
-(defconst camp-cost 100)
-#end-if
-#end-if
-
-#load-if-defined MALIAN-CIV
-(defconst raxcamp-cost 234)
-#else
-#load-if-defined JAPANESE-CIV
-(defconst raxcamp-cost 225)
-#else
-(defconst raxcamp-cost 275)
-#end-if
-#end-if
-(defconst cartmb-cost 275)
-
-#load-if-defined TEUTONIC-CIV
-(defconst feudalprep-cost 365)
-(defconst boomprep-cost 365)
-(defconst fiprep-cost 415)
-(defconst farmmb-cost 215)
-(defconst farmsmith-cost 190)
-#else
-#load-if-defined MALIAN-CIV
-(defconst feudalprep-cost 337)
-(defconst boomprep-cost 337)
-(defconst fiprep-cost 379)
-(defconst farmmb-cost 209)
-(defconst farmsmith-cost 188)
-#else
-(defconst feudalprep-cost 385)
-#load-if-defined SARACEN-CIV
-#load-if-defined UP-GAME-WK
-(defconst boomprep-cost 385)
-#else
-(defconst boomprep-cost 285)
-#end-if
-#else
-(defconst boomprep-cost 385)
-#end-if
-(defconst fiprep-cost 435)
-(defconst farmmb-cost 235)
-(defconst farmsmith-cost 210)
-#end-if
-#end-if
-
-
-#load-if-defined CELTIC-CIV
-(defconst dw-bonus 1)
-#else
-#load-if-defined TEUTONIC-CIV
-(defconst dw-bonus 1)
-#else
-#load-if-defined MALIAN-CIV
-(defconst dw-bonus 1)
-#else
-#load-if-defined JAPANESE-CIV
-(defconst dw-bonus 1)
-#else
-#load-if-defined HUN-CIV
-(defconst dw-bonus 1)
-#else
-(defconst dw-bonus 0)
-#end-if
-#end-if
-#end-if
-#end-if
-#end-if
-
-#load-if-defined CHINESE-CIV
-(defconst house-builders 1)
-#else
-#load-if-defined SPANISH-CIV
-(defconst house-builders 1)
-#else
-(defconst house-builders 2)
-#end-if
-#end-if
 
 #load-if-not-defined BULGARIANS-CIV
 #load-if-not-defined INCAN-CIV
@@ -4365,19 +3520,32 @@
 
 
 #load-if-defined AZTEC-CIV
+(defconst drush-militias 5)
+(defconst raid-unit eagle-warrior-line)
 (defconst scout-unit eagle-warrior-line)
 #else
+(defconst drush-militias 3)
 #load-if-defined MAYAN-CIV
+(defconst raid-unit eagle-warrior-line)
 (defconst scout-unit eagle-warrior-line)
 #else
 #load-if-defined INCAN-CIV
+(defconst raid-unit eagle-warrior-line)
 (defconst scout-unit eagle-warrior-line)
 #else
 (defconst scout-unit scout-cavalry-line)
+#load-if-defined GOTHIC-CIV
+(defconst raid-unit huskarl-line)
+#else
+#load-if-defined CELTIC-CIV
+(defconst raid-unit woad-raider-line)
+#else
+(defconst raid-unit scout-cavalry-line)
 #end-if
 #end-if
 #end-if
-
+#end-if
+#end-if
 
 #load-if-defined AZTEC-CIV
 (defconst d-carry 15)
@@ -4442,48 +3610,25 @@
 #load-if-not-defined UP-GAME-WK
 #load-if-defined VIKING-CIV
 (defconst dock-cost 113)
-(defconst campdock-cost 213)
 #else
 #load-if-defined UP-VIKING-CIV-ALLY
 (defconst dock-cost 113)
-#load-if-defined JAPANESE-CIV
-(defconst campdock-cost 213)
-#else
-(defconst campdock-cost 163)
-#end-if
 #else
 (defconst dock-cost 150)
-#load-if-defined JAPANESE-CIV
-(defconst campdock-cost 250)
-#else
-(defconst campdock-cost 200)
-#end-if
 #end-if
 #end-if
 #else
 #load-if-defined VIKING-CIV
 (defconst dock-cost 128)
-(defconst campdock-cost 228)
 #else
-#load-if-defined UP-VIKING-CIV-ALLY
 #load-if-defined MALIAN-CIV
+#load-if-defined UP-VIKING-CIV-ALLY
 (defconst dock-cost 109)
-(defconst campdock-cost 194)
 #else
 (defconst dock-cost 128)
-#load-if-defined JAPANESE-CIV
-(defconst campdock-cost 228)
-#else
-(defconst campdock-cost 178)
-#end-if
 #end-if
 #else
 (defconst dock-cost 150)
-#load-if-defined JAPANESE-CIV
-(defconst campdock-cost 250)
-#else
-(defconst campdock-cost 200)
-#end-if
 #end-if
 #end-if
 #end-if
@@ -4515,42 +3660,19 @@
 (defconst house-cost 25)
 (defconst housetc-cost 300)
 #load-if-defined SARACEN-CIV
-(defconst market-cost 75)
-(defconst marketmb-cost 250)
+(defconst market-cost 100)
 #else
 #load-if-defined MALIAN-CIV
 (defconst market-cost 149)
-(defconst marketmb-cost 298)
 #else
 (defconst market-cost 175)
-(defconst marketmb-cost 350)
 #end-if
 #end-if
 #else
+(defconst market-cost 175)
 (defconst house-cost 30)
 (defconst housetc-cost 305)
-(defconst market-cost 175)
-(defconst marketmb-cost 350)
 #end-if
-
-#load-if-not-defined JAPANESE-CIV
-#load-if-defined UP-GAME-WK
-#load-if-defined SARACEN-CIV
-(defconst marketcamp-cost 175)
-#else
-#load-if-defined MALIAN-CIV
-(defconst marketcamp-cost 234)
-#else
-(defconst marketcamp-cost 275)
-#end-if
-#end-if
-#else
-(defconst marketcamp-cost 275)
-#end-if
-#else
-(defconst marketcamp-cost 225)
-#end-if
-
 
 #load-if-defined BYZANTINE-CIV
 (defconst imperial-food 667)
@@ -4558,19 +3680,15 @@
 (defconst imperial-f2 517)
 (defconst imperial-g2 400)
 (defconst imperial-fs 767)
-(defconst imperial-gs 686)
-(defconst imperial-gc 586)
+(defconst imperial-gs 666)
 (defconst castle-food 800)
 (defconst castle-gold 200)
 (defconst castle-f2 600)
 (defconst castle-g2 140)
 (defconst castle-fs 900)
-(defconst castle-gs 350)
-(defconst castle-gc 190)
-(defconst castle-feco 400)
+(defconst castle-gs 330)
 (defconst feudal-food 500)
 (defconst feudal-f2 470); hmm
-(defconst feudal-fs 600)
 #else
 #load-if-defined ITALIAN-CIV
 (defconst imperial-food 850)
@@ -4578,76 +3696,47 @@
 (defconst imperial-f2 675)
 (defconst imperial-g2 550)
 (defconst imperial-fs 950)
-(defconst imperial-gs 830)
-(defconst imperial-gc 730)
+(defconst imperial-gs 810)
 (defconst castle-food 680)
 (defconst castle-gold 170)
 (defconst castle-f2 525)
 (defconst castle-g2 120)
 (defconst castle-fs 780)
-(defconst castle-gs 320)
-(defconst castle-gc 220)
-(defconst castle-feco 400); 350
+(defconst castle-gs 300)
 (defconst feudal-food 425)
 (defconst feudal-f2 425); 400
-(defconst feudal-fs 525)
 #else
 (defconst imperial-food 1000)
 (defconst imperial-gold 800)
 (defconst imperial-f2 775)
 (defconst imperial-g2 650)
 (defconst imperial-fs 1100)
-(defconst imperial-gs 950)
-(defconst imperial-gc 850)
+(defconst imperial-gs 940)
 (defconst castle-food 800)
 (defconst castle-gold 200)
 (defconst castle-f2 600)
 (defconst castle-g2 140)
 (defconst castle-fs 900)
-(defconst castle-gs 350)
-(defconst castle-gc 250)
-(defconst castle-feco 400)
+(defconst castle-gs 330)
 (defconst feudal-food 500)
 (defconst feudal-f2 470); hmm
-(defconst feudal-fs 600)
-#end-if
-#end-if
-#load-if-defined ITALIAN-CIV
-(defconst castleloom-gold 220)
-#else
-#load-if-defined CHINESE-CIV
-(defconst castleloom-gold 245)
-#else
-(defconst castleloom-gold 250)
 #end-if
 #end-if
 
 #load-if-defined AZTEC-CIV
 (defconst neg-scout-dist -12)
 (defconst scout-dist 12)
-#load-if-defined DE-AVAILABLE
-(defconst scout-los 5)
-#else
 (defconst scout-los 6)
-#end-if
 #else
 #load-if-defined MAYAN-CIV
 (defconst neg-scout-dist -12)
 (defconst scout-dist 12)
-#load-if-defined DE-AVAILABLE
-(defconst scout-los 5)
-#else
 (defconst scout-los 6)
-#end-if
 #else
 #load-if-defined INCAN-CIV
 (defconst neg-scout-dist -12)
 (defconst scout-dist 12)
-#load-if-defined DE-AVAILABLE
-(defconst scout-los 5)
-#else
 (defconst scout-los 6)
-#end-if
 #else
 #load-if-defined UP-MONGOL-CIV-ALLY
 (defconst neg-scout-dist -12)
@@ -4681,17 +3770,15 @@
 (defconst wb-food-buffer 755)
 #end-if
 
-
 #load-if-defined TINY-MAP
-(defconst shorefishreq 48)
-(defconst shorefishreq2 24)
-(defconst shorefishreq3 72)
-(defconst deepfishreq 10)
-(defconst deepfishreq2 5)
-(defconst deepfishreq3 14)
-(defconst maxcartssize 44)
+(defconst shorefishreq 50)
+(defconst shorefishreq2 25)
+(defconst shorefishreq3 63)
+(defconst deepfishreq 6)
+(defconst deepfishreq2 3)
+(defconst deepfishreq3 8)
+(defconst maxcartssize 25)
 (defconst preftradedist 120)
-(defconst marketdelradius 30)
 (defconst scout-time 90)
 #load-if-not-defined TEAM-ISLANDS-MAP
 (defconst market-neg-dist -67)
@@ -4699,18 +3786,16 @@
 (defconst market-neg-dist -50)
 #end-if
 (defconst timer-lcs 30)
-(defconst tile-jump 2)
 #end-if
 #load-if-defined SMALL-MAP
-(defconst shorefishreq 69)
-(defconst shorefishreq2 35)
-(defconst shorefishreq3 104)
-(defconst deepfishreq 14)
-(defconst deepfishreq2 7)
-(defconst deepfishreq3 21)
-(defconst maxcartssize 54)
+(defconst shorefishreq 100)
+(defconst shorefishreq2 50)
+(defconst shorefishreq3 125)
+(defconst deepfishreq 8)
+(defconst deepfishreq2 4)
+(defconst deepfishreq3 10)
+(defconst maxcartssize 38)
 (defconst preftradedist 144)
-(defconst marketdelradius 36)
 (defconst scout-time 108)
 #load-if-not-defined TEAM-ISLANDS-MAP
 (defconst market-neg-dist -80)
@@ -4718,18 +3803,16 @@
 (defconst market-neg-dist -67)
 #end-if
 (defconst timer-lcs 36)
-(defconst tile-jump 3)
 #end-if
 #load-if-defined MEDIUM-MAP
-(defconst shorefishreq 94)
-(defconst shorefishreq2 47)
-(defconst shorefishreq3 141)
-(defconst deepfishreq 19)
-(defconst deepfishreq2 9)
-(defconst deepfishreq3 28)
-(defconst maxcartssize 64)
+(defconst shorefishreq 150)
+(defconst shorefishreq2 75)
+(defconst shorefishreq3 188)
+(defconst deepfishreq 10)
+(defconst deepfishreq2 5)
+(defconst deepfishreq3 13)
+(defconst maxcartssize 51)
 (defconst preftradedist 168)
-(defconst marketdelradius 42)
 (defconst scout-time 126)
 #load-if-not-defined TEAM-ISLANDS-MAP
 (defconst market-neg-dist -92)
@@ -4737,18 +3820,16 @@
 (defconst market-neg-dist -80)
 #end-if
 (defconst timer-lcs 42)
-(defconst tile-jump 4)
 #end-if
 #load-if-defined NORMAL-MAP
-(defconst shorefishreq 133)
-(defconst shorefishreq2 67)
-(defconst shorefishreq3 200)
-(defconst deepfishreq 27)
-(defconst deepfishreq2 13)
-(defconst deepfishreq3 40)
-(defconst maxcartssize 76)
+(defconst shorefishreq 200)
+(defconst shorefishreq2 100)
+(defconst shorefishreq3 250)
+(defconst deepfishreq 12)
+(defconst deepfishreq2 6)
+(defconst deepfishreq3 15)
+(defconst maxcartssize 64)
 (defconst preftradedist 200)
-(defconst marketdelradius 50)
 (defconst scout-time 150)
 #load-if-not-defined TEAM-ISLANDS-MAP
 (defconst market-neg-dist -108)
@@ -4756,18 +3837,16 @@
 (defconst market-neg-dist -92)
 #end-if
 (defconst timer-lcs 54); 48
-(defconst tile-jump 6)
 #end-if
 #load-if-defined LARGE-MAP
-(defconst shorefishreq 161)
-(defconst shorefishreq2 81)
-(defconst shorefishreq3 242)
-(defconst deepfishreq 32)
-(defconst deepfishreq2 16)
-(defconst deepfishreq3 48)
-(defconst maxcartssize 88)
+(defconst shorefishreq 250)
+(defconst shorefishreq2 125)
+(defconst shorefishreq3 313)
+(defconst deepfishreq 14)
+(defconst deepfishreq2 7)
+(defconst deepfishreq3 18)
+(defconst maxcartssize 77)
 (defconst preftradedist 220)
-(defconst marketdelradius 55)
 (defconst scout-time 165)
 #load-if-not-defined TEAM-ISLANDS-MAP
 (defconst market-neg-dist -118)
@@ -4775,18 +3854,16 @@
 (defconst market-neg-dist -108)
 #end-if
 (defconst timer-lcs 66); 54
-(defconst tile-jump 8)
 #end-if
 #load-if-defined GIANT-MAP
-(defconst shorefishreq 192)
-(defconst shorefishreq2 96)
-(defconst shorefishreq3 288)
-(defconst deepfishreq 38)
-(defconst deepfishreq2 19)
-(defconst deepfishreq3 58)
-(defconst maxcartssize 96)
+(defconst shorefishreq 300)
+(defconst shorefishreq2 150)
+(defconst shorefishreq3 375)
+(defconst deepfishreq 16)
+(defconst deepfishreq2 8)
+(defconst deepfishreq3 20)
+(defconst maxcartssize 100); 90
 (defconst preftradedist 240)
-(defconst marketdelradius 60)
 (defconst scout-time 180)
 #load-if-not-defined TEAM-ISLANDS-MAP
 (defconst market-neg-dist -128)
@@ -4794,38 +3871,6 @@
 (defconst market-neg-dist -118)
 #end-if
 (defconst timer-lcs 78); 66? - 60
-(defconst tile-jump 10)
-#end-if
-#load-if-not-defined TINY-MAP
-#load-if-not-defined SMALL-MAP
-#load-if-not-defined MEDIUM-MAP
-#load-if-not-defined NORMAL-MAP
-#load-if-not-defined LARGE-MAP
-#load-if-not-defined GIANT-MAP
-;#load-if-defined LUDIKRIS-MAP
-(defconst shorefishreq 768)
-(defconst shorefishreq2 384)
-(defconst shorefishreq3 1152)
-(defconst deepfishreq 154)
-(defconst deepfishreq2 77)
-(defconst deepfishreq3 230)
-(defconst maxcartssize 192)
-(defconst preftradedist 480)
-(defconst marketdelradius 120)
-(defconst scout-time 300); 360
-#load-if-not-defined TEAM-ISLANDS-MAP
-(defconst market-neg-dist -240)
-#else
-(defconst market-neg-dist -220)
-#end-if
-(defconst timer-lcs 156)
-(defconst tile-jump 20)
-;#end-if
-#end-if
-#end-if
-#end-if
-#end-if
-#end-if
 #end-if
 #load-if-defined ARABIA-MAP
 (defconst noloom 21); 21
@@ -4840,89 +3885,16 @@
 #end-if
 #end-if
 #end-if
-
-#load-if-defined MIGRATION-MAP
-(defconst migration-style 1)
-(defconst migration-position position-center)
-(defconst instant-dock 0)
-#else
-#load-if-defined PACIFIC-ISLANDS-MAP
-(defconst migration-style 1)
-(defconst migration-position position-center)
-(defconst instant-dock 0)
-#else
-#load-if-defined HAMBURGER-MAP
-(defconst migration-style 1)
-(defconst migration-position position-border)
-(defconst instant-dock 0)
-#else
-#load-if-defined NILE-DELTA-MAP
-(defconst migration-style 1)
-#load-if-defined UP-PLAYER-1
-(defconst migration-position position-zero)
-#else
-#load-if-defined UP-PLAYER-2
-(defconst migration-position position-zero)
-#else
-#load-if-defined UP-PLAYER-5
-(defconst migration-position position-zero)
-#else
-#load-if-defined UP-PLAYER-6
-(defconst migration-position position-zero)
-#else
-(defconst migration-position position-map-size)
-#end-if
-#end-if
-#end-if
-#end-if
-(defconst instant-dock 0); 1
-#else
-#load-if-defined REAL-WORLD-WORLD-MAP
-(defconst migration-style 1)
-(defconst migration-position position-center)
-(defconst instant-dock 0)
-#else
-(defconst migration-style 0)
-(defconst migration-position position-mirror)
-(defconst instant-dock 0)
-#end-if
-#end-if
-#end-if
-#end-if
-#end-if
-
-#load-if-defined BOG-ISLANDS-MAP
-(defconst extra-water-focus 1)
-#else
-#load-if-defined MANGROVE-JUNGLE-MAP
-(defconst extra-water-focus 1)
-#else
-#load-if-defined WATER-NOMAD-MAP
-(defconst extra-water-focus 1)
-#else
-#load-if-defined REAL-WORLD-INDONESIA-MAP
-(defconst extra-water-focus 1)
-#else
-#load-if-defined REAL-WORLD-PHILIPPINES-MAP
-(defconst extra-water-focus 1)
-#else
-(defconst extra-water-focus 0)
-#end-if
-#end-if
-#end-if
-#end-if
-#end-if
-
 #load-if-defined UP-ALLY-IN-GAME
 #load-if-defined UP-GROUPED-BY-TEAM
-(defconst livestock-distance 40); 12
+(defconst kitty-distance 40); 12
 (defconst grouped-and-allied 1)
 #else
-(defconst livestock-distance 40); 36
+(defconst kitty-distance 40); 36
 (defconst grouped-and-allied 0)
 #end-if
 #else
-(defconst livestock-distance 60); 48
+(defconst kitty-distance 60); 48
 (defconst grouped-and-allied 0)
 #end-if
 #load-if-defined UP-GROUPED-BY-TEAM
@@ -4949,98 +3921,10 @@
 #else
 (defconst scenario-game 0)
 #end-if
-#load-if-defined DE-AVAILABLE
-(defconst de-game 1)
-(defconst wk-game 1)
-#else
-(defconst de-game 0)
 #load-if-defined UP-GAME-WK
 (defconst wk-game 1)
 #else
 (defconst wk-game 0)
-#end-if
-#end-if
-#load-if-defined VICTORY-STANDARD
-(defconst vs-game 1)
-#else
-(defconst vs-game 0)
-#end-if
-#load-if-defined WONDER-RACE
-(defconst wr-game 1)
-#else
-(defconst wr-game 0)
-#end-if
-#load-if-defined REGICIDE
-(defconst reg-game 1)
-#else
-(defconst reg-game 0)
-#end-if
-#load-if-defined DEFEND-WONDER
-(defconst dtw-game 1)
-#else
-(defconst dtw-game 0)
-#end-if
-#load-if-defined CAPTURE-THE-RELIC
-(defconst ctr-game 1)
-#else
-(defconst ctr-game 0)
-#end-if
-#load-if-defined SUDDEN-DEATH
-(defconst sd-game 1)
-#else
-(defconst sd-game 0)
-#end-if
-#load-if-defined KING-OF-THE-HILL
-(defconst koth-game 1)
-(defconst br-game 0)
-#else
-#load-if-defined BATTLE-ROYALE
-(defconst koth-game 1)
-(defconst br-game 1)
-#else
-(defconst koth-game 0)
-(defconst br-game 0)
-#end-if
-#end-if
-#load-if-defined UP-2-PLAYER-GAME
-(defconst mp-game 0)
-#else
-(defconst mp-game 1)
-#end-if
-#load-if-defined TEAMS-LOCKED
-(defconst tl-game 1)
-#else
-(defconst tl-game 0)
-#end-if
-#load-if-defined DEATH-MATCH
-(defconst dm-game 1)
-(defconst home-exploration-time 0)
-#else
-#load-if-defined ULTRA-RESOURCES-START
-(defconst dm-game 1)
-(defconst home-exploration-time 0)
-#else
-#load-if-defined INFINITE-RESOURCES-START
-(defconst dm-game 1)
-(defconst home-exploration-time 0)
-#else
-(defconst dm-game 0)
-#load-if-not-defined UP-POCKET-POSITION
-(defconst home-exploration-time 420)
-#else
-(defconst home-exploration-time 480)
-#end-if
-#end-if
-#end-if
-#end-if
-#load-if-defined UP-HUMAN-ALLY
-(defconst tribute-delay 100)
-(defconst tribute-delay2 300)
-(defconst human-ally-start 1)
-#else
-(defconst tribute-delay 20)
-(defconst tribute-delay2 60)
-(defconst human-ally-start 0)
 #end-if
 #load-if-not-defined UP-2-PLAYER-GAME
 #load-if-not-defined UP-ALLY-IN-GAME
@@ -5057,6 +3941,7 @@
 #end-if
 
 #load-if-defined TURBO-RANDOM-MAP
+(defrule(true)=>(chat-to-all "hi"))
 #end-if
 
 #load-if-defined LOW-RESOURCES-START
@@ -5070,412 +3955,183 @@
 #load-if-defined ULTRA-RESOURCES-START
 #end-if
 #load-if-defined INFINITE-RESOURCES-START
-(defconst inf-game 1)
-#else
-(defconst inf-game 0)
 #end-if
-
-
-#load-if-defined UP-PLAYER-1
-(defconst contact-delay 2421)
-#end-if
-#load-if-defined UP-PLAYER-2
-(defconst contact-delay 2725)
-#end-if
-#load-if-defined UP-PLAYER-3
-(defconst contact-delay 3451)
-#end-if
-#load-if-defined UP-PLAYER-4
-(defconst contact-delay 2048)
-#end-if
-#load-if-defined UP-PLAYER-5
-(defconst contact-delay 3842)
-#end-if
-#load-if-defined UP-PLAYER-6
-(defconst contact-delay 4096)
-#end-if
-#load-if-defined UP-PLAYER-7
-(defconst contact-delay 2148)
-#end-if
-#load-if-defined UP-PLAYER-8
-(defconst contact-delay 3222)
-#end-if
-
 
 #load-if-defined DIFFICULTY-EASIEST
 (defconst camp-distance 7)
-(defconst civilian-percent 5)
-(defconst military-percent 6)
+(defconst civilian-percent 4)
+(defconst military-percent 4)
 (defconst ability-to-dodge 100)
 (defconst ability-to-kite 100)
-(defconst feitoria-diff 0)
-(defconst castle-diff 1)
-#load-if-defined UP-HUMAN-ALLY
-(defconst market-diff 2)
-#else
-(defconst market-diff 1)
-#end-if
-(defconst diff-fp 0)
-(defconst diff-id 4)
-(defconst max-delay 4200)
-(defconst string-traitor1 22034); "40 I have thought better of mine previous merciful plan."
-(defconst string-traitor2 22100); "Your lands and your gold shall soon be mine!"
-(defconst string-betrayed 22102); "Beware the sword of justice!"
-(defconst string-betrayed2 22024); "Now we must be foes!"
-(defconst string-tribute 22000); "41 Send me 100 resources and I shall join thy side."
-(defconst string-stance 2303); "You have made a wise choice -- together we shall rule the world."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 100)
 #end-if
 #load-if-defined DIFFICULTY-EASY
 (defconst camp-distance 6)
-(defconst civilian-percent 13)
-(defconst military-percent 14)
-(defconst ability-to-dodge 100)
-(defconst ability-to-kite 100)
-(defconst feitoria-diff 0)
-(defconst castle-diff 2)
-#load-if-defined UP-HUMAN-ALLY
-(defconst market-diff 2)
-#else
-(defconst market-diff 1)
-#end-if
-(defconst diff-fp 0)
-(defconst diff-id 3)
-(defconst max-delay 3300)
-(defconst string-traitor1 22034); "40 I have thought better of mine previous merciful plan."
-(defconst string-traitor2 22100); "Your lands and your gold shall soon be mine!"
-(defconst string-betrayed 22102); "Beware the sword of justice!"
-(defconst string-betrayed2 22024); "Now we must be foes!"
-(defconst string-tribute 22004); "41 Send me 200 each of wood, food, gold, and stone!"
-(defconst string-stance 2303); "You have made a wise choice -- together we shall rule the world."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 200)
+(defconst civilian-percent 9)
+(defconst military-percent 11)
+(defconst ability-to-dodge 75)
+(defconst ability-to-kite 75)
 #end-if
 #load-if-defined DIFFICULTY-MODERATE
 (defconst camp-distance 5)
-(defconst civilian-percent 28)
-(defconst military-percent 32)
-(defconst ability-to-dodge 75)
-(defconst ability-to-kite 94)
-(defconst feitoria-diff 1)
-(defconst castle-diff 3)
-(defconst market-diff 2)
-(defconst diff-fp 0)
-(defconst diff-id 2)
-(defconst max-delay 2700)
-(defconst string-traitor1 22034); "40 I have thought better of mine previous merciful plan."
-(defconst string-traitor2 22100); "Your lands and your gold shall soon be mine!"
-(defconst string-betrayed 22097); "You cannot possibly defeat my mighty forces." ; double defy: (defconst string-betrayed 2305); "You dare defy me?! Prepare to die!"
-(defconst string-betrayed2 22024); "Now we must be foes!"
-(defconst string-tribute 22006); "41 Send me 500 each of wood, food, gold, and stone!"
-(defconst string-stance 2303); "You have made a wise choice -- together we shall rule the world."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 500)
-#end-if
-#load-if-defined DE-AVAILABLE
-#load-if-defined DIFFICULTY-HARD
-(defconst camp-distance 4)
-(defconst civilian-percent 53)
-(defconst military-percent 60)
+(defconst civilian-percent 21)
+(defconst military-percent 25)
 (defconst ability-to-dodge 50)
-(defconst ability-to-kite 88)
-(defconst feitoria-diff 3)
-(defconst castle-diff 5)
-(defconst market-diff 3)
-(defconst diff-fp 0)
-(defconst diff-id 1)
-(defconst max-delay 1800)
-(defconst string-traitor1 22034); "40 I have thought better of mine previous merciful plan."
-(defconst string-traitor2 22100); "Your lands and your gold shall soon be mine!"
-(defconst string-betrayed 2301); "You traitorous wretch! Vengeance will be mine!"
-(defconst string-betrayed2 22026); "It shall be war to the knife!"
-(defconst string-tribute 22006); "41 Send me 500 each of wood, food, gold, and stone!"
-(defconst string-stance 2303); "You have made a wise choice -- together we shall rule the world."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 500)
+(defconst ability-to-kite 50)
+#end-if
+#load-if-defined DIFFICULTY-HARD; td
+(defconst camp-distance 3)
+(defconst civilian-percent 100); 45
+(defconst military-percent 100); 51
+(defconst ability-to-dodge 0); 25
+(defconst ability-to-kite 0); 25
 #end-if
 #load-if-defined DIFFICULTY-HARDEST
 (defconst camp-distance 3)
 (defconst civilian-percent 100); 80
 (defconst military-percent 100); 80
-(defconst ability-to-dodge 25)
-(defconst ability-to-kite 81)
-(defconst feitoria-diff 16384)
-(defconst castle-diff 16384)
-(defconst market-diff 16384)
-(defconst diff-fp 0)
-(defconst diff-id 0)
-(defconst max-delay 0)
-(defconst string-traitor1 22075); "40 In fact, I'm switching sides! Fare thee well, losers."
-(defconst string-traitor2 22099); I and my troops can easily vanquish seven times your number!
-(defconst string-betrayed 22035); "Thou must be exterminated, and I shall forever be thy foe."
-(defconst string-betrayed2 22026); "It shall be war to the knife!"
-(defconst string-tribute 22007); "41 Send me 1000 each of wood, food, gold, and stone!"
-(defconst string-stance 2302); "It was wise to do as I requested."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 1000)
+(defconst ability-to-dodge 0)
+(defconst ability-to-kite 0)
 #end-if
-#else
-#load-if-defined DIFFICULTY-HARD
+#load-if-defined DIFFICULTY-EXTREME; todo  td
 (defconst camp-distance 3)
 (defconst civilian-percent 100)
 (defconst military-percent 100)
 (defconst ability-to-dodge 0)
-(defconst ability-to-kite 75)
-(defconst feitoria-diff 16384)
-(defconst castle-diff 16384)
-(defconst market-diff 16384)
-(defconst diff-fp 1)
-(defconst diff-id 1)
-(defconst max-delay 0)
-(defconst string-traitor1 22075); "40 In fact, I'm switching sides! Fare thee well, losers."
-(defconst string-traitor2 22099); I and my troops can easily vanquish seven times your number!
-(defconst string-betrayed 2301); "You traitorous wretch! Vengeance will be mine!"
-(defconst string-betrayed2 22026); "It shall be war to the knife!"
-(defconst string-tribute 22007); "41 Send me 1000 each of wood, food, gold, and stone!"
-(defconst string-stance 2303); "You have made a wise choice -- together we shall rule the world."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 1000)
-#end-if
-#load-if-defined DIFFICULTY-HARDEST
-(defconst camp-distance 3)
-(defconst civilian-percent 100)
-(defconst military-percent 100)
-(defconst ability-to-dodge 0)
-(defconst ability-to-kite 75)
-(defconst feitoria-diff 16384)
-(defconst castle-diff 16384)
-(defconst market-diff 16384)
-(defconst diff-fp 1)
-(defconst diff-id 0)
-(defconst max-delay 0)
-(defconst string-traitor1 22075); "40 In fact, I'm switching sides! Fare thee well, losers."
-(defconst string-traitor2 22099); I and my troops can easily vanquish seven times your number!
-(defconst string-betrayed 22035); "Thou must be exterminated, and I shall forever be thy foe."
-(defconst string-betrayed2 22026); "It shall be war to the knife!"
-(defconst string-tribute 22007); "41 Send me 1000 each of wood, food, gold, and stone!"
-(defconst string-stance 2302); "It was wise to do as I requested."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 1000)
-#end-if
-#end-if
-#load-if-not-defined DIFFICULTY-EASIEST
-#load-if-not-defined DIFFICULTY-EASY
-#load-if-not-defined DIFFICULTY-MODERATE
-#load-if-not-defined DIFFICULTY-HARD
-#load-if-not-defined DIFFICULTY-HARDEST
-;#load-if-defined DIFFICULTY-EXTREME
-(defconst camp-distance 3)
-(defconst civilian-percent 100)
-(defconst military-percent 100)
-(defconst ability-to-dodge 0)
-(defconst ability-to-kite 75)
-(defconst feitoria-diff 16384)
-(defconst castle-diff 16384)
-(defconst market-diff 16384)
-(defconst diff-fp 1)
-(defconst diff-id -1)
-(defconst max-delay 0)
-(defconst string-traitor1 22075); "40 In fact, I'm switching sides! Fare thee well, losers."
-(defconst string-traitor2 22099); I and my troops can easily vanquish seven times your number!
-(defconst string-betrayed 22035); "Thou must be exterminated, and I shall forever be thy foe."
-(defconst string-betrayed2 22026); "It shall be war to the knife!"
-(defconst string-tribute 22007); "41 Send me 1000 each of wood, food, gold, and stone!"
-(defconst string-stance 2302); "It was wise to do as I requested."
-(defconst string-gg 22054); "Thou hast proven thyself most worthy. I declare us friends."
-(defconst diplomacy-tribute 1000)
-;#end-if
-#end-if
-#end-if
-#end-if
-#end-if
+(defconst ability-to-kite 0)
 #end-if
 
 #load-if-defined POPULATION-CAP-25
-(defconst ten-pop 3)
-(defconst twenty-pop 5)
-(defconst thirty-pop 8)
-(defconst fifty-pop 13)
-(defconst sixty-pop 15)
-(defconst eighty-pop 20)
-(defconst min-number-vills 8)
-(defconst res-vills-a 14); 15
+(defconst sixtyp-pop 15)
+(defconst eightyp-pop 20)
+(defconst min-number-vills 8); 9
+(defconst res-vills-a 14)
 (defconst res-vills-b 13)
-(defconst res-vills-c 11)
-(defconst res-vills-d 10)
-(defconst up-max-civ 15); 16
+(defconst res-vills-c 12)
+(defconst res-vills-d 11)
+(defconst up-max-civ 15)
 (defconst max-civ-pop 22)
 (defconst del-civ-pop 23)
 (defconst max-pop 25)
 (defconst siege-pop 20)
-(defconst maxcartspop 6)
+(defconst maxcartspop 5)
 (defconst maxtransports 2)
 (defconst minNavy 3)
 #end-if
 #load-if-defined POPULATION-CAP-50
-(defconst ten-pop 5)
-(defconst twenty-pop 10)
-(defconst thirty-pop 15)
-(defconst fifty-pop 25)
-(defconst sixty-pop 30)
-(defconst eighty-pop 40)
-(defconst min-number-vills 16)
-(defconst res-vills-a 29)
-(defconst res-vills-b 26)
-(defconst res-vills-c 23)
-(defconst res-vills-d 20)
-(defconst up-max-civ 33)
+(defconst sixtyp-pop 30)
+(defconst eightyp-pop 40)
+(defconst min-number-vills 15); 16
+(defconst res-vills-a 28)
+(defconst res-vills-b 25)
+(defconst res-vills-c 22)
+(defconst res-vills-d 19)
+(defconst up-max-civ 30)
 (defconst max-civ-pop 44)
 (defconst del-civ-pop 47)
 (defconst max-pop 50)
 (defconst siege-pop 45)
-(defconst maxcartspop 14)
+(defconst maxcartspop 11)
 (defconst maxtransports 2)
 (defconst minNavy 4)
 #end-if
 #load-if-defined POPULATION-CAP-75
-(defconst ten-pop 8)
-(defconst twenty-pop 15)
-(defconst thirty-pop 23)
-(defconst fifty-pop 38)
-(defconst sixty-pop 45)
-(defconst eighty-pop 60)
-(defconst min-number-vills 24)
-(defconst res-vills-a 44)
-(defconst res-vills-b 39)
-(defconst res-vills-c 34)
+(defconst sixtyp-pop 45)
+(defconst eightyp-pop 60)
+(defconst min-number-vills 22); 23
+(defconst res-vills-a 41)
+(defconst res-vills-b 37)
+(defconst res-vills-c 33)
 (defconst res-vills-d 29)
-(defconst up-max-civ 49)
+(defconst up-max-civ 45)
 (defconst max-civ-pop 65)
 (defconst del-civ-pop 71)
 (defconst max-pop 75)
 (defconst siege-pop 70)
-(defconst maxcartspop 21)
+(defconst maxcartspop 18)
 (defconst maxtransports 3)
 (defconst minNavy 5)
 #end-if
 #load-if-defined POPULATION-CAP-100
-(defconst ten-pop 10)
-(defconst twenty-pop 20)
-(defconst thirty-pop 30)
-(defconst fifty-pop 50)
-(defconst sixty-pop 60)
-(defconst eighty-pop 80)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 33)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 58)
-(defconst res-vills-b 52)
-(defconst res-vills-c 46)
-(defconst res-vills-d 39)
-(defconst up-max-civ 65)
+(defconst sixtyp-pop 60)
+(defconst eightyp-pop 80)
+(defconst min-number-vills 29); 30
+(defconst res-vills-a 55)
+(defconst res-vills-b 50)
+(defconst res-vills-c 45)
+(defconst res-vills-d 40)
+(defconst up-max-civ 60)
 (defconst max-civ-pop 90)
 (defconst del-civ-pop 95)
 (defconst max-pop 100)
 (defconst siege-pop 93)
-(defconst maxcartspop 27)
+(defconst maxcartspop 25)
 (defconst maxtransports 3)
 (defconst minNavy 6)
 #end-if
 #load-if-defined POPULATION-CAP-125
-(defconst ten-pop 13)
-(defconst twenty-pop 25)
-(defconst thirty-pop 38)
-(defconst fifty-pop 63)
-(defconst sixty-pop 75)
-(defconst eighty-pop 100)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 41)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 73)
-(defconst res-vills-b 65)
-(defconst res-vills-c 57)
-(defconst res-vills-d 49)
-(defconst up-max-civ 81)
+(defconst sixtyp-pop 75)
+(defconst eightyp-pop 100)
+(defconst min-number-vills 36); 37
+(defconst res-vills-a 68)
+(defconst res-vills-b 61)
+(defconst res-vills-c 54)
+(defconst res-vills-d 47)
+(defconst up-max-civ 75)
 (defconst max-civ-pop 112)
 (defconst del-civ-pop 119)
 (defconst max-pop 125)
 (defconst siege-pop 115)
-(defconst maxcartspop 34)
+(defconst maxcartspop 32)
 (defconst maxtransports 3)
 (defconst minNavy 7)
 #end-if
 #load-if-defined POPULATION-CAP-150
-(defconst ten-pop 15)
-(defconst twenty-pop 30)
-(defconst thirty-pop 45)
-(defconst fifty-pop 75)
-(defconst sixty-pop 90)
-(defconst eighty-pop 120)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 49)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 88)
-(defconst res-vills-b 78)
-(defconst res-vills-c 68)
-(defconst res-vills-d 59)
-(defconst up-max-civ 98)
+(defconst sixtyp-pop 90)
+(defconst eightyp-pop 120)
+(defconst min-number-vills 43); 44
+(defconst res-vills-a 87)
+(defconst res-vills-b 79)
+(defconst res-vills-c 71)
+(defconst res-vills-d 63)
+(defconst up-max-civ 95)
 (defconst max-civ-pop 137)
-(defconst del-civ-pop 143)
+(defconst del-civ-pop 144)
 (defconst max-pop 150)
 (defconst siege-pop 140)
-(defconst maxcartspop 41)
+(defconst maxcartspop 39)
 (defconst maxtransports 4)
 (defconst minNavy 8)
 #end-if
 #load-if-defined POPULATION-CAP-175
-(defconst ten-pop 18)
-(defconst twenty-pop 35)
-(defconst thirty-pop 53)
-(defconst fifty-pop 88)
-(defconst sixty-pop 105)
-(defconst eighty-pop 140)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 57)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 102)
-(defconst res-vills-b 91)
-(defconst res-vills-c 80)
-(defconst res-vills-d 68)
-(defconst up-max-civ 114)
+(defconst sixtyp-pop 105)
+(defconst eightyp-pop 140)
+(defconst min-number-vills 50); 51
+(defconst res-vills-a 101)
+(defconst res-vills-b 92)
+(defconst res-vills-c 83)
+(defconst res-vills-d 74)
+(defconst up-max-civ 110)
 (defconst max-civ-pop 162)
-(defconst del-civ-pop 167)
+(defconst del-civ-pop 168)
 (defconst max-pop 175)
 (defconst siege-pop 165)
-(defconst maxcartspop 48)
+(defconst maxcartspop 46)
 (defconst maxtransports 4)
 (defconst minNavy 9)
 #end-if
 #load-if-not-defined POPULATION-CAP-EXTENDED
 #load-if-defined POPULATION-CAP-200
-(defconst ten-pop 20)
-(defconst twenty-pop 40)
-(defconst thirty-pop 60)
-(defconst fifty-pop 100)
-(defconst sixty-pop 120)
-(defconst eighty-pop 160)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 65)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 117)
-(defconst res-vills-b 104)
-(defconst res-vills-c 91)
-(defconst res-vills-d 78)
+(defconst sixtyp-pop 120)
+(defconst eightyp-pop 160)
+(defconst min-number-vills 57); 58
+(defconst res-vills-a 119)
+(defconst res-vills-b 107)
+(defconst res-vills-c 94)
+(defconst res-vills-d 80)
 (defconst up-max-civ 130)
 #load-if-not-defined GOTHIC-CIV
 (defconst max-civ-pop 186)
-(defconst del-civ-pop 191)
+(defconst del-civ-pop 192)
 (defconst max-pop 200)
 (defconst siege-pop 190)
 #else
@@ -5484,310 +4140,146 @@
 (defconst max-pop 210)
 (defconst siege-pop 198)
 #end-if
-(defconst maxcartspop 55)
+(defconst maxcartspop 53)
 (defconst maxtransports 4)
 (defconst minNavy 10)
 #end-if
 #end-if
 #load-if-defined POPULATION-CAP-225
-(defconst ten-pop 23)
-(defconst twenty-pop 45)
-(defconst thirty-pop 68)
-(defconst fifty-pop 113)
-(defconst sixty-pop 135)
-(defconst eighty-pop 180)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 73)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 132)
-(defconst res-vills-b 117)
-(defconst res-vills-c 102)
-(defconst res-vills-d 88)
-(defconst up-max-civ 146)
+(defconst sixtyp-pop 135)
+(defconst eightyp-pop 180)
+(defconst min-number-vills 64); 65
+(defconst res-vills-a 128)
+(defconst res-vills-b 115)
+(defconst res-vills-c 101)
+(defconst res-vills-d 86)
+(defconst up-max-civ 140)
 (defconst max-civ-pop 210)
-(defconst del-civ-pop 215)
+(defconst del-civ-pop 216)
 (defconst max-pop 225)
 (defconst siege-pop 215)
-(defconst maxcartspop 61)
+(defconst maxcartspop 60)
 (defconst maxtransports 5)
 (defconst minNavy 11)
 #end-if
 #load-if-defined POPULATION-CAP-250
-(defconst ten-pop 25)
-(defconst twenty-pop 50)
-(defconst thirty-pop 75)
-(defconst fifty-pop 125)
-(defconst sixty-pop 150)
-(defconst eighty-pop 200)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 81)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 146)
-(defconst res-vills-b 130)
-(defconst res-vills-c 114)
-(defconst res-vills-d 98)
-(defconst up-max-civ 163)
-(defconst max-civ-pop 225)
-(defconst del-civ-pop 240)
+(defconst sixtyp-pop 150)
+(defconst eightyp-pop 200)
+(defconst min-number-vills 71); 72
+(defconst res-vills-a 137)
+(defconst res-vills-b 123)
+(defconst res-vills-c 108)
+(defconst res-vills-d 92)
+(defconst up-max-civ 150)
+(defconst max-civ-pop 220)
+(defconst del-civ-pop 241)
 (defconst max-pop 250)
 (defconst siege-pop 240)
-(defconst maxcartspop 68)
+(defconst maxcartspop 67)
 (defconst maxtransports 5)
 (defconst minNavy 12)
 #end-if
 #load-if-defined POPULATION-CAP-275
-(defconst ten-pop 28)
-(defconst twenty-pop 55)
-(defconst thirty-pop 83)
-(defconst fifty-pop 138)
-(defconst sixty-pop 165)
-(defconst eighty-pop 220)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 90)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 161)
-(defconst res-vills-b 143)
-(defconst res-vills-c 125)
-(defconst res-vills-d 107)
-(defconst up-max-civ 179)
-(defconst max-civ-pop 245)
+(defconst sixtyp-pop 165)
+(defconst eightyp-pop 220)
+(defconst min-number-vills 78); 79
+(defconst res-vills-a 146)
+(defconst res-vills-b 131)
+(defconst res-vills-c 115)
+(defconst res-vills-d 97)
+(defconst up-max-civ 160)
+(defconst max-civ-pop 240)
 (defconst del-civ-pop 265)
 (defconst max-pop 275)
 (defconst siege-pop 265)
-(defconst maxcartspop 75)
+(defconst maxcartspop 74)
 (defconst maxtransports 5)
 (defconst minNavy 13)
 #end-if
 #load-if-defined POPULATION-CAP-300
-(defconst ten-pop 30)
-(defconst twenty-pop 60)
-(defconst thirty-pop 90)
-(defconst fifty-pop 150)
-(defconst sixty-pop 180)
-(defconst eighty-pop 240)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 98)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 176)
-(defconst res-vills-b 156)
-(defconst res-vills-c 137)
-(defconst res-vills-d 117)
-(defconst up-max-civ 195)
-(defconst max-civ-pop 265)
+(defconst sixtyp-pop 180)
+(defconst eightyp-pop 240)
+(defconst min-number-vills 85); 86
+(defconst res-vills-a 155)
+(defconst res-vills-b 139)
+(defconst res-vills-c 122)
+(defconst res-vills-d 104)
+(defconst up-max-civ 170)
+(defconst max-civ-pop 260)
 (defconst del-civ-pop 289)
 (defconst max-pop 300)
 (defconst siege-pop 288)
-(defconst maxcartspop 82)
+(defconst maxcartspop 81)
 (defconst maxtransports 6)
 (defconst minNavy 14)
 #end-if
 #load-if-defined POPULATION-CAP-325
-(defconst ten-pop 33)
-(defconst twenty-pop 65)
-(defconst thirty-pop 98)
-(defconst fifty-pop 163)
-(defconst sixty-pop 195)
-(defconst eighty-pop 260)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 106
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180); 190
-(defconst res-vills-b 160); 169
-(defconst res-vills-c 140); 148
-(defconst res-vills-d 120); 127
-(defconst up-max-civ 200); 211
-(defconst max-civ-pop 285)
+(defconst sixtyp-pop 195)
+(defconst eightyp-pop 260)
+(defconst min-number-vills 92); 100
+(defconst res-vills-a 169)
+(defconst res-vills-b 152)
+(defconst res-vills-c 134)
+(defconst res-vills-d 115)
+(defconst up-max-civ 185)
+(defconst max-civ-pop 280)
 (defconst del-civ-pop 314)
 (defconst max-pop 325)
 (defconst siege-pop 313)
-(defconst maxcartspop 89)
+(defconst maxcartspop 88)
 (defconst maxtransports 6)
 (defconst minNavy 15)
 #end-if
 #load-if-defined POPULATION-CAP-350
-(defconst ten-pop 35)
-(defconst twenty-pop 70)
-(defconst thirty-pop 105)
-(defconst fifty-pop 175)
-(defconst sixty-pop 210)
-(defconst eighty-pop 280)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 114
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180)
-(defconst res-vills-b 160)
-(defconst res-vills-c 140)
-(defconst res-vills-d 120)
-(defconst up-max-civ 200); 228
-(defconst max-civ-pop 305)
+(defconst sixtyp-pop 210)
+(defconst eightyp-pop 280)
+(defconst min-number-vills 99); 100
+(defconst res-vills-a 183)
+(defconst res-vills-b 165)
+(defconst res-vills-c 146)
+(defconst res-vills-d 126)
+(defconst up-max-civ 200)
+(defconst max-civ-pop 300)
 (defconst del-civ-pop 338)
 (defconst max-pop 350)
 (defconst siege-pop 336)
-(defconst maxcartspop 89); 96
+(defconst maxcartspop 95)
 (defconst maxtransports 6)
 (defconst minNavy 16)
 #end-if
 #load-if-defined POPULATION-CAP-375
-(defconst ten-pop 38)
-(defconst twenty-pop 75)
-(defconst thirty-pop 113)
-(defconst fifty-pop 188)
-(defconst sixty-pop 225)
-(defconst eighty-pop 300)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 122
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180)
-(defconst res-vills-b 160)
-(defconst res-vills-c 140)
-(defconst res-vills-d 120)
-(defconst up-max-civ 200); 244
-(defconst max-civ-pop 325)
+(defconst sixtyp-pop 225)
+(defconst eightyp-pop 300)
+(defconst min-number-vills 100)
+(defconst res-vills-a 183)
+(defconst res-vills-b 165)
+(defconst res-vills-c 146)
+(defconst res-vills-d 126)
+(defconst up-max-civ 200)
+(defconst max-civ-pop 320)
 (defconst del-civ-pop 362)
 (defconst max-pop 375)
 (defconst siege-pop 360)
-(defconst maxcartspop 89); 102
+(defconst maxcartspop 102)
 (defconst maxtransports 7)
 (defconst minNavy 17)
 #end-if
 #load-if-defined POPULATION-CAP-400
-(defconst ten-pop 40)
-(defconst twenty-pop 80)
-(defconst thirty-pop 120)
-(defconst fifty-pop 200)
-(defconst sixty-pop 240)
-(defconst eighty-pop 320)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 130
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180)
-(defconst res-vills-b 160)
-(defconst res-vills-c 140)
-(defconst res-vills-d 120)
-(defconst up-max-civ 200); 260
-(defconst max-civ-pop 345)
+(defconst sixtyp-pop 240)
+(defconst eightyp-pop 320)
+(defconst min-number-vills 100)
+(defconst res-vills-a 183)
+(defconst res-vills-b 165)
+(defconst res-vills-c 146)
+(defconst res-vills-d 126)
+(defconst up-max-civ 200)
+(defconst max-civ-pop 340)
 (defconst del-civ-pop 386)
 (defconst max-pop 400)
 (defconst siege-pop 382)
-(defconst maxcartspop 89); 109
+(defconst maxcartspop 109)
 (defconst maxtransports 8)
 (defconst minNavy 18)
-#end-if
-#load-if-defined POPULATION-CAP-425
-(defconst ten-pop 43)
-(defconst twenty-pop 85)
-(defconst thirty-pop 129)
-(defconst fifty-pop 213)
-(defconst sixty-pop 255)
-(defconst eighty-pop 340)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 138
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180)
-(defconst res-vills-b 160)
-(defconst res-vills-c 140)
-(defconst res-vills-d 120)
-(defconst up-max-civ 200); 276
-(defconst max-civ-pop 365)
-(defconst del-civ-pop 410)
-(defconst max-pop 425)
-(defconst siege-pop 405)
-(defconst maxcartspop 89); 116
-(defconst maxtransports 8)
-(defconst minNavy 19)
-#end-if
-#load-if-defined POPULATION-CAP-450
-(defconst ten-pop 45)
-(defconst twenty-pop 90)
-(defconst thirty-pop 135)
-(defconst fifty-pop 225)
-(defconst sixty-pop 270)
-(defconst eighty-pop 360)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 146
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180); 263
-(defconst res-vills-b 160); 234
-(defconst res-vills-c 140); 205
-(defconst res-vills-d 120); 176
-(defconst up-max-civ 200); 293
-(defconst max-civ-pop 385)
-(defconst del-civ-pop 435)
-(defconst max-pop 450)
-(defconst siege-pop 430)
-(defconst maxcartspop 89); 123
-(defconst maxtransports 8)
-(defconst minNavy 20)
-#end-if
-#load-if-defined POPULATION-CAP-475
-(defconst ten-pop 48)
-(defconst twenty-pop 95)
-(defconst thirty-pop 143)
-(defconst fifty-pop 238)
-(defconst sixty-pop 285)
-(defconst eighty-pop 380)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 154
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180); 278
-(defconst res-vills-b 160); 247
-(defconst res-vills-c 140); 216
-(defconst res-vills-d 120); 185
-(defconst up-max-civ 200); 309
-(defconst max-civ-pop 405)
-(defconst del-civ-pop 460)
-(defconst max-pop 475)
-(defconst siege-pop 455)
-(defconst maxcartspop 89); 130
-(defconst maxtransports 8)
-(defconst minNavy 20)
-#end-if
-#load-if-defined POPULATION-CAP-500
-(defconst ten-pop 50)
-(defconst twenty-pop 100)
-(defconst thirty-pop 150)
-(defconst fifty-pop 250)
-(defconst sixty-pop 300)
-(defconst eighty-pop 400)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 163
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180); 293
-(defconst res-vills-b 160); 260
-(defconst res-vills-c 140); 228
-(defconst res-vills-d 120); 195
-(defconst up-max-civ 200); 325
-(defconst max-civ-pop 425)
-(defconst del-civ-pop 485)
-(defconst max-pop 500)
-(defconst siege-pop 480)
-(defconst maxcartspop 89); 137
-(defconst maxtransports 9)
-(defconst minNavy 20)
 #end-if
 #load-if-defined POPULATION-CAP-EXTENDED
 #load-if-not-defined POPULATION-CAP-225
@@ -5798,38 +4290,22 @@
 #load-if-not-defined POPULATION-CAP-350
 #load-if-not-defined POPULATION-CAP-375
 #load-if-not-defined POPULATION-CAP-400
-#load-if-not-defined POPULATION-CAP-425
-#load-if-not-defined POPULATION-CAP-450
-#load-if-not-defined POPULATION-CAP-475
-#load-if-not-defined POPULATION-CAP-500
 #load-if-not-defined POPULATION-CAP-1000
-(defconst ten-pop 50)
-(defconst twenty-pop 100)
-(defconst thirty-pop 150)
-(defconst fifty-pop 250)
-(defconst sixty-pop 300)
-(defconst eighty-pop 400)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100); 325
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180); 563
-(defconst res-vills-b 160); 500
-(defconst res-vills-c 140); 438
-(defconst res-vills-d 120); 375
-(defconst up-max-civ 200); 650
-(defconst max-civ-pop 425)
-(defconst del-civ-pop 485)
-(defconst max-pop 500)
-(defconst siege-pop 480)
-(defconst maxcartspop 89); 273
+(defconst sixtyp-pop 255)
+(defconst eightyp-pop 340)
+(defconst min-number-vills 100)
+(defconst res-vills-a 183)
+(defconst res-vills-b 165)
+(defconst res-vills-c 146)
+(defconst res-vills-d 126)
+(defconst up-max-civ 200)
+(defconst max-civ-pop 360)
+(defconst del-civ-pop 410)
+(defconst max-pop 425)
+(defconst siege-pop 405)
+(defconst maxcartspop 116)
 (defconst maxtransports 10)
 (defconst minNavy 20)
-#end-if
-#end-if
-#end-if
-#end-if
 #end-if
 #end-if
 #end-if
@@ -5841,94 +4317,32 @@
 #end-if
 #end-if
 #load-if-defined POPULATION-CAP-1000
-(defconst ten-pop 50)
-(defconst twenty-pop 100)
-(defconst thirty-pop 150)
-(defconst fifty-pop 250)
-(defconst sixty-pop 300)
-(defconst eighty-pop 400)
-#load-if-not-defined INFINITE-RESOURCES-START
-(defconst min-number-vills 100)
-#else
-(defconst min-number-vills 24)
-#end-if
-(defconst res-vills-a 180)
-(defconst res-vills-b 160)
-(defconst res-vills-c 140)
-(defconst res-vills-d 120)
-(defconst up-max-civ 200)
+(defconst sixtyp-pop 270)
+(defconst eightyp-pop 360)
+(defconst min-number-vills 110)
+(defconst res-vills-a 221)
+(defconst res-vills-b 201)
+(defconst res-vills-c 180)
+(defconst res-vills-d 168)
+(defconst up-max-civ 220)
 (defconst max-civ-pop 900)
 (defconst del-civ-pop 975)
 (defconst max-pop 1000)
 (defconst siege-pop 960)
-(defconst maxcartspop 89)
+(defconst maxcartspop 150)
 (defconst maxtransports 10)
 (defconst minNavy 25)
 #end-if
 
-
+#load-if-defined DEATH-MATCH
+(defconst home-exploration-time 0)
+#else
 #load-if-not-defined UP-POCKET-POSITION
-(defconst scrush-scouts 7)
+(defconst home-exploration-time 420)
 #else
-(defconst scrush-scouts 5)
-#end-if
-
-#load-if-defined DARK-AGE-START
-#load-if-defined UP-MONGOL-CIV-ALLY
-(defconst home-exploration-mod1 19)
-#else
-#load-if-defined MONGOL-CIV
-(defconst home-exploration-mod1 19)
-#else
-(defconst home-exploration-mod1 20)
+(defconst home-exploration-time 480)
 #end-if
 #end-if
-#end-if
-#load-if-defined FEUDAL-AGE-START
-#load-if-defined UP-MONGOL-CIV-ALLY
-(defconst home-exploration-mod1 10)
-#else
-#load-if-defined MONGOL-CIV
-(defconst home-exploration-mod1 10)
-#else
-(defconst home-exploration-mod1 12)
-#end-if
-#end-if
-#end-if
-#load-if-defined CASTLE-AGE-START
-#load-if-defined UP-MONGOL-CIV-ALLY
-(defconst home-exploration-mod1 9)
-#else
-#load-if-defined MONGOL-CIV
-(defconst home-exploration-mod1 9)
-#else
-(defconst home-exploration-mod1 10)
-#end-if
-#end-if
-#end-if
-#load-if-defined IMPERIAL-AGE-START
-#load-if-defined UP-MONGOL-CIV-ALLY
-(defconst home-exploration-mod1 8)
-#else
-#load-if-defined MONGOL-CIV
-(defconst home-exploration-mod1 8)
-#else
-(defconst home-exploration-mod1 9)
-#end-if
-#end-if
-#end-if
-#load-if-defined POST-IMPERIAL-AGE-START
-#load-if-defined UP-MONGOL-CIV-ALLY
-(defconst home-exploration-mod1 7)
-#else
-#load-if-defined MONGOL-CIV
-(defconst home-exploration-mod1 7)
-#else
-(defconst home-exploration-mod1 8)
-#end-if
-#end-if
-#end-if
-(defconst home-exploration-mod2 20)
 
 #load-if-not-defined REVEAL-NORMAL
 #load-if-not-defined UP-POCKET-POSITION
@@ -5944,12 +4358,19 @@
 #end-if
 #end-if
 
-#load-if-not-defined REVEAL-NORMAL
-(defconst explored-map 1)
+#load-if-not-defined DIFFICULTY-HARDEST
+#load-if-not-defined UP-POCKET-POSITION
+(defconst darkvills 28)
 #else
-(defconst explored-map 0)
+(defconst darkvills 30)
 #end-if
-
+#else ; hardest
+#load-if-not-defined UP-POCKET-POSITION
+(defconst darkvills 24)
+#else
+(defconst darkvills 25)
+#end-if
+#end-if
 #load-if-defined UP-POCKET-POSITION
 (defconst scouting-type scout-mirror)
 #else

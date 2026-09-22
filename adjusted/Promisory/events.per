@@ -1,7 +1,6 @@
-; ADJUSTED RUNTIME - automatic event chat disabled v1
-
 (defrule
-    (true)
+	(true)
 =>
-    (disable-self)
-)
+	(up-store-player-name 1)
+	(up-chat-data-to-all-using-id 2313 c: 7031232); "I am preparing to attack %s, please join me."
+	(disable-self))
