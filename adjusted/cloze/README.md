@@ -38,6 +38,10 @@ Official-derived templates currently exist for:
 - `threats.per` — 6 direct enemy military-population target-switch blanks;
 - `watercontrol.per` — 10 naval attack/retreat water-advantage blanks.
 
+- `dawn.per` — 72 early gatherer-allocation timing/resource/count blanks;
+- `finaling.per` — 16 late production population/resource/counter-trigger blanks;
+- `resign.per` — 40 macro surrender population/time/superiority blanks.
+
 The remaining dynamic modules will be migrated in the same way, three at a time. Until a module is migrated, its adjusted baseline remains the exact
 official file.
 
@@ -67,3 +71,9 @@ This policy is enforced by CI in addition to the byte-for-byte official-default 
 - `boarhunting.per`: blanks are limited to time, villager, sheep/food thresholds in rules that directly compute `minBoar` or enable boar hunting. Hunting distances, IDs and micro-control values stay fixed.
 - `threats.per`: blanks are limited to the enemy military-population thresholds in the direct rule that switches both target and focus player. Player IDs, timers, search radii and arithmetic weights stay fixed.
 - `watercontrol.per`: blanks are limited to `water-advantage` comparisons in rules that choose a water action. Formation, range, distance, object filters and action IDs stay fixed.
+
+### Batch 5 curation
+
+- `dawn.per`: blanks are limited to time, villager/gatherer, sheep and gold thresholds inside rules that directly move villagers between food, wood, gold or stone. Increment/decrement actions, house logic and hard population-cap control remain fixed.
+- `finaling.per`: blanks are limited to population/resource/unit-count thresholds inside direct `train` rules. Dock filter state, object IDs, existence checks and unrelated control flow remain fixed.
+- `resign.per`: blanks are limited to macro population, enemy/ally population, time and military/team-superiority thresholds in rules that directly set `resign yes`. Zero/one survival checks, timer IDs and actual `resign` action remain fixed.
