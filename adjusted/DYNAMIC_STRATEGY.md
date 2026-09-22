@@ -40,7 +40,8 @@ v1 allows only these trigger families:
 - `resource_shortage`
 - `under_attack`
 - `military_disadvantage`
-- `enemy_fortification`
+- `enemy_fortification` — names one supported defensive building type
+  (`watch-tower`, `castle`, `bombard-tower`, or `krepost`) and a count.
 
 A reaction may override only these domains:
 
@@ -91,3 +92,28 @@ Those are owned by Fixed Runtime v1.
 The compiler should consume this schema and generate only the strategy-owned
 parts of the matching Promisory modules. It must never overwrite fixed-runtime
 values.
+
+## Compiler v1
+
+Run:
+
+```sh
+python3 -B adjusted/tools/compile_dynamic_strategy.py \
+  adjusted/examples/franks.dynamic-strategy.v1.json \
+  --out /tmp/aoe2-dynamic
+```
+
+Compiler v1 generates only these strategy-owned modules:
+
+- `scoutcontrol.per`
+- `gatherers.per`
+- `units.per`
+- `buildings.per`
+- `escrow.per`
+- `trade.per`
+- `threats.per`
+- `tsa.per`
+- `orb.per`
+
+It does not emit fixed Runtime modules. Research and strategic target-priority
+compilation are intentionally listed in the manifest as not yet compiled.
