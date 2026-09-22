@@ -270,4 +270,69 @@ for chunk in chunks(watercontrol):
             raise SystemExit(f"watercontrol.per: invalid water-advantage placeholder: {line}")
 
 
+
+dawn = (TEMPLATES / "dawn.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(dawn):
+    if "{{DAWN_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    if not re.search(r"\(up-modify-goal\s+(?:food|wood|gold|stone)-villagers\b", code):
+        raise SystemExit("dawn.per: placeholder outside direct gatherer-allocation rule")
+    for line in code.splitlines():
+        if "{{DAWN_" not in line:
+            continue
+        ok = (
+            re.search(r"\(game-time\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{DAWN_", line)
+            or re.search(r"\(gold-amount\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{DAWN_", line)
+            or re.search(r"\(unit-type-count\s+villager\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{DAWN_", line)
+            or re.search(r"\(unit-type-count-total\s+militiaman-line\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{DAWN_", line)
+            or re.search(r"\(up-compare-goal\s+(?:food|wood|gold|stone)-villagers\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{DAWN_", line)
+            or re.search(r"\(up-compare-goal\s+totalsheep\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{DAWN_", line)
+        )
+        if not ok:
+            raise SystemExit(f"dawn.per: invalid gatherer-strategy placeholder: {line}")
+
+
+finaling = (TEMPLATES / "finaling.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(finaling):
+    if "{{FINAL_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    if not re.search(r"\(train\s+[a-z0-9-]+\)", code):
+        raise SystemExit("finaling.per: placeholder outside direct train rule")
+    for line in code.splitlines():
+        if "{{FINAL_" not in line:
+            continue
+        ok = (
+            re.search(r"\((?:military-population|population|food-amount|wood-amount|gold-amount|stone-amount)\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{FINAL_", line)
+            or re.search(r"\(unit-type-count(?:-total)?\s+(?:trebuchet-set|battering-ram-line)\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{FINAL_", line)
+            or re.search(r"\(players-unit-type-count\s+any-enemy\s+(?:battle-elephant-line|war-elephant-line|elephant-archer-line|ballista-elephant-line)\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{FINAL_", line)
+        )
+        if not ok:
+            raise SystemExit(f"finaling.per: invalid production placeholder: {line}")
+
+
+resign = (TEMPLATES / "resign.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(resign):
+    if "{{RESIGN_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    if "(set-goal resign yes)" not in code:
+        raise SystemExit("resign.per: placeholder outside direct resign-decision rule")
+    for line in code.splitlines():
+        if "{{RESIGN_" not in line:
+            continue
+        ok = (
+            re.search(r"\(population\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{RESIGN_", line)
+            or re.search(r"\(players-population\s+[a-z0-9-]+\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{RESIGN_", line)
+            or re.search(r"\(players-military-population\s+[a-z0-9-]+\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{RESIGN_", line)
+            or re.search(r"\(military-population\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{RESIGN_", line)
+            or re.search(r"\(strategic-number\s+(?:teamsuperiority|sn-military-superiority)\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{RESIGN_", line)
+            or re.search(r"\(up-compare-goal\s+teamsuperiority-number\s+(?:g:|s:)?(?:>=|>|<=|<|==|!=)\s+\{\{RESIGN_", line)
+            or re.search(r"\(game-time\s+(?:s:)?(?:>=|>|<=|<|==|!=)\s+\{\{RESIGN_", line)
+        )
+        if not ok:
+            raise SystemExit(f"resign.per: invalid resign-strategy placeholder: {line}")
+
+
 print("official-derived cloze PASS", len(official_files), "baseline files,", len(templates), "templates")
