@@ -78,4 +78,4 @@ Fields that should be removed from future LLM decision blocks because they are f
 - `tsa.enabled`
 - `orb.enabled`
 
-The remaining dynamic fields should be redesigned around context-sensitive plans rather than one permanently fixed number per match.
+The remaining dynamic fields are now represented by `adjusted/schema/dynamic-strategy.v1.schema.json` as age-scoped base plans plus typed, priority-ordered reactions.
