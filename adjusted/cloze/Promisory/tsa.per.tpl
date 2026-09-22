@@ -95,7 +95,7 @@
 	(set-goal block-attacking no))
 (defrule
 	(strategic-number teamsuperiority <= -3)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_001}})
+	(strategic-number sn-military-superiority <= -3)
 	(population < max-civ-pop)
 =>
 	(up-jump-rule 3))
@@ -169,7 +169,7 @@
 	(town-under-attack)
 	(goal defend yes)
 (or	(up-enemy-units-in-town g:>= my-mpop)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_008}}))
+	(strategic-number sn-military-superiority <= -1))
 	(population < max-civ-pop)
 =>
 	(chat-local-to-self "We are under attack.")
@@ -182,7 +182,7 @@
 (or	(up-enemy-units-in-town < 4)
 (or	(goal attacking yes)
 (or	(and	(up-enemy-units-in-town g:<= my-mpop)
-		(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_009}}))
+		(strategic-number sn-military-superiority >= 1))
 	(goal defend no)))))
 =>
 	(chat-local-to-self "The attack should be over now.")
@@ -211,16 +211,16 @@
 (defrule
 	(up-research-status c: castle-age == research-pending)
 	(up-compare-goal enemyState <= feudal)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_010}})
+	(strategic-number sn-military-superiority <= 1)
 	(goal assistance no)
 =>
 	(up-jump-rule 3))
 (defrule
 	(players-building-type-count target-player watch-tower >= 2)
-	(military-population < {{TSA_MY_MILITARY_007}})
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_011}})
+	(military-population < 25)
+	(strategic-number sn-military-superiority <= 3)
 (or	(goal assistance no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_012}})); 1
+	(strategic-number sn-military-superiority <= 2)); 1
 	(population < max-civ-pop)
 	(unit-type-count feudal-battering-ram <= 0)
 	(unit-type-count battering-ram-line <= 0)
@@ -439,9 +439,9 @@
 	(strategic-number sn-maximum-town-size >= 20); for now
 ;	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(military-population < {{TSA_MY_MILITARY_012}}); 40
+	(military-population < 45); 40
 	(unit-type-count knight-line < 5)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_031}})
+	(strategic-number sn-military-superiority <= 3)
 =>
 	(up-full-reset-search)
 	(up-filter-garrison c: 3 c: -1)
@@ -478,11 +478,11 @@
 ;	(up-compare-goal remote-last <= 0)
 	(strategic-number sn-maximum-town-size >= 20); for now
 	(unit-type-count siege-weapon-class <= 0)
-	(military-population < {{TSA_MY_MILITARY_014}})
+	(military-population < 33)
 ; tl	(unit-type-count elite-skirmisher < 16)
 ; nn	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_033}})
+	(strategic-number sn-military-superiority <= 1)
 	(up-compare-flag retreat-flag != 2)
 =>
 	(up-modify-flag retreat-flag c:+ 2))
@@ -493,7 +493,7 @@
 ; nn	(up-projectile-target projectile-town-center == archery-class)
 	(up-projectile-detected projectile-town-center < 3000)
 ;(or
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_034}})
+;	(strategic-number sn-military-superiority <= 3)
 ;	(players-current-age target-player >= castle-age))
 	(up-compare-flag retreat-flag != 1)
 =>
@@ -558,9 +558,9 @@
 	(unit-type-count siege-weapon-class <= 0)
 ;	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(military-population < {{TSA_MY_MILITARY_015}})
+	(military-population < 20)
 	(unit-type-count knight-line < 5)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_035}})
+	(strategic-number sn-military-superiority <= 2)
 =>
 	(up-full-reset-search)
 	(up-filter-garrison c: 3 c: -1)
@@ -571,9 +571,9 @@
 	(unit-type-count siege-weapon-class <= 0)
 ;	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(military-population < {{TSA_MY_MILITARY_016}})
+	(military-population < 40)
 	(unit-type-count knight-line < 5)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_036}})
+	(strategic-number sn-military-superiority <= 2)
 	(up-compare-flag retreat-flag != 2)
 =>
 	(up-modify-flag retreat-flag c:+ 2))
@@ -582,7 +582,7 @@
 	(unit-type-count siege-weapon-class <= 0)
 	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_037}})
+	(strategic-number sn-military-superiority <= 1)
 	(up-compare-flag retreat-flag != 2)
 =>
 	(up-modify-flag retreat-flag c:+ 2))
@@ -594,7 +594,7 @@
 ;	(up-projectile-target projectile-town-center == archery-class)
 	(up-projectile-detected projectile-town-center < 3000)
 ;(or
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_038}})
+;	(strategic-number sn-military-superiority <= 3)
 ;	(players-current-age target-player >= castle-age))
 	(up-compare-flag retreat-flag != 1)
 =>
@@ -616,7 +616,7 @@
 (defrule
 	(up-compare-goal armytech <= feudal)
 	(goal assistance no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_039}})
+	(strategic-number sn-military-superiority <= 0)
 =>
 	(up-jump-rule 2))
 (defrule
@@ -776,9 +776,9 @@
 	(unit-type-count siege-weapon-class <= 0)
 ;	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(military-population < {{TSA_MY_MILITARY_020}})
+	(military-population < 44)
 	(unit-type-count knight-line < 4)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_055}})
+	(strategic-number sn-military-superiority <= 3)
 =>
 	(up-full-reset-search)
 	(up-filter-garrison c: 3 c: -1)
@@ -818,11 +818,11 @@
 (defrule
 ;	(up-compare-goal remote-last <= 0)
 	(unit-type-count siege-weapon-class <= 0)
-	(military-population < {{TSA_MY_MILITARY_023}}); 30
+	(military-population < 24); 30
 ; tl	(unit-type-count elite-skirmisher < 16)
 ; nn	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_058}})
+	(strategic-number sn-military-superiority <= 1)
 	(up-compare-flag retreat-flag != 2)
 =>
 	(up-modify-flag retreat-flag c:+ 2))
@@ -834,7 +834,7 @@
 	(up-projectile-target projectile-town-center == archery-class)
 	(up-projectile-detected projectile-town-center < 3000)
 ;(or
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_059}})
+;	(strategic-number sn-military-superiority <= 3)
 ;	(players-current-age target-player >= castle-age))
 	(up-compare-flag retreat-flag != 1)
 =>
@@ -974,9 +974,9 @@
 	(unit-type-count siege-weapon-class <= 0)
 ;	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(military-population < {{TSA_MY_MILITARY_027}})
+	(military-population < 44)
 	(unit-type-count knight-line < 4)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_074}})
+	(strategic-number sn-military-superiority <= 3)
 =>
 	(up-full-reset-search)
 	(up-filter-garrison c: 3 c: -1)
@@ -1015,11 +1015,11 @@
 (defrule
 ;	(up-compare-goal remote-last <= 0)
 	(unit-type-count siege-weapon-class <= 0)
-	(military-population < {{TSA_MY_MILITARY_030}}); 30
+	(military-population < 24); 30
 ; tl	(unit-type-count elite-skirmisher < 16)
 ; nn	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_077}})
+	(strategic-number sn-military-superiority <= 1)
 	(up-compare-flag retreat-flag != 2)
 =>
 	(up-modify-flag retreat-flag c:+ 2))
@@ -1030,7 +1030,7 @@
 	(up-projectile-target projectile-town-center == archery-class)
 	(up-projectile-detected projectile-town-center < 3000)
 ;(or
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_078}})
+;	(strategic-number sn-military-superiority <= 3)
 ;	(players-current-age target-player >= castle-age))
 	(up-compare-flag retreat-flag != 1)
 =>
@@ -1156,9 +1156,9 @@
 	(unit-type-count trebuchet-set <= 0)
 	(unit-type-count battering-ram-line <= 0)
 ;	(goal retreat yes)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_094}})
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_095}})
-	(military-population < {{TSA_MY_MILITARY_037}}))
+	(strategic-number sn-military-superiority <= 3)
+(or	(strategic-number sn-military-superiority <= 1)
+	(military-population < 15))
 	(players-building-type-count target-player castle >= 1)
 	(up-projectile-detected projectile-castle < 3000)
 =>
@@ -1221,29 +1221,29 @@
 (or	(goal patrolhelp yes)
 (or	(up-timer-status unit-control-flare-timer2 == timer-running); 222
 (or	(up-timer-status patrol-timer == timer-running)
-(or	(military-population >= {{TSA_MY_MILITARY_038}}); 15
-(or	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_096}}); 2
+(or	(military-population >= 21); 15
+(or	(strategic-number sn-military-superiority >= 1); 2
 (or	(up-timer-status resetnow == timer-running)
 	(goal attacking no))))))))
 =>
 	(up-jump-rule 4))
 (defrule
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_097}})
+;	(strategic-number sn-military-superiority <= 0)
 	(unit-type-count 111 >= 2); dead kt
-(or	(military-population < {{TSA_MY_MILITARY_039}}); 8
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_098}})); -1
+(or	(military-population < 11); 8
+	(strategic-number sn-military-superiority <= -2)); -1
 (or	(goal assistance no)
-	(military-population < {{TSA_MY_MILITARY_040}})); 6
+	(military-population < 5)); 6
 =>
 	(chat-local-to-self "7.")
 	(set-goal temporary-goal7 41043))
 (defrule
 	(up-compare-goal target-mpop g:> my-mpop)
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_099}})
-	(military-population < {{TSA_MY_MILITARY_041}})
+;	(strategic-number sn-military-superiority <= 0)
+	(military-population < 15)
 	(goal assistance no)
 (or	(players-current-age target-player >= castle-age)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_100}})); -2
+	(strategic-number sn-military-superiority <= -3)); -2
 =>
 	(chat-local-to-self "8.")
 	(set-goal temporary-goal7 41043))
@@ -1265,7 +1265,7 @@
 	(players-building-type-count focus-player watch-tower >= 4)
 	(up-research-status c: ri-scale-barding < research-complete)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_101}})
+	(strategic-number sn-military-superiority <= -1)
 	(strategic-number sn-current-age < imperial)
 	(up-compare-flag retreat-flag != 2)
 =>
@@ -1273,11 +1273,11 @@
 (defrule
 	(unit-type-count siege-weapon-class <= 0); 1
 	(unit-type-count trebuchet-set <= 0)
-	(military-population < {{TSA_MY_MILITARY_042}}); 10
+	(military-population < 15); 10
 	(up-projectile-detected projectile-town-center < 3000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_102}}); 2
+	(strategic-number sn-military-superiority <= 3); 2
 (or	(up-research-status c: ri-chain-barding < research-complete)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_103}}))
+	(strategic-number sn-military-superiority <= 2))
 	(up-timer-status resetnow != timer-running);	(up-timer-status resetnow == timer-disabled)
 	(up-compare-flag retreat-flag != 1)
 =>
@@ -1569,16 +1569,16 @@
 (or	(and	(up-compare-goal strategy-type <= castle-war)
 		(up-compare-goal strategy != usual))
 (or	(and	(military-population >= up-max-civ)
-		(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_135}}))
-	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_136}})
+		(strategic-number sn-military-superiority >= 1))
+	(and	(strategic-number sn-military-superiority >= 2)
 		(population >= max-civ-pop))))))
 =>
 	(up-jump-rule 11))
 (defrule
 	(population <= eighty-pop)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_137}}); -3
+	(strategic-number sn-military-superiority <= -2); -3
 	(strategic-number teamsuperiority <= 2)
-	(military-population < {{TSA_MY_MILITARY_048}})
+	(military-population < 50)
 (or	(up-compare-goal excessWood < 100)
 (or	(up-compare-goal excessFood < 100)
 	(up-compare-goal excessGold < 100)))
@@ -1586,22 +1586,22 @@
 	(set-goal retreatnow yes))
 (defrule
 	(population <= eighty-pop)
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_138}}); -3
+(or	(strategic-number sn-military-superiority <= -3); -3
 	(and	(up-compare-goal assistance == no)
 		(strategic-number teamsuperiority <= 2)))
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_139}}); -3
-	(military-population < {{TSA_MY_MILITARY_049}})
+	(strategic-number sn-military-superiority <= -2); -3
+	(military-population < 50)
 (or	(strategic-number sn-current-age < imperial)
 	(up-compare-goal excessGold < 200)); 225
 =>
 	(set-goal retreatnow yes))
 (defrule
 	(population <= eighty-pop)
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_140}}); -3
+(or	(strategic-number sn-military-superiority <= -3); -3
 	(and	(up-compare-goal assistance == no)
 		(strategic-number teamsuperiority <= 2)))
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_141}}); -3
-	(military-population < {{TSA_MY_MILITARY_050}})
+	(strategic-number sn-military-superiority <= -2); -3
+	(military-population < 40)
 ;	(goal siegereq no)
 	(up-compare-goal excessGold < 2000)
 =>
@@ -1609,7 +1609,7 @@
 (defrule
 	(population <= eighty-pop)
 	(up-compare-goal assistance == no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_142}})
+	(strategic-number sn-military-superiority <= 2)
 	(strategic-number teamsuperiority <= 1)
 	(up-research-status c: imperial-age <= research-pending)
 	(up-research-status c: imperial-age >= research-available)
@@ -1621,33 +1621,33 @@
 	(set-goal retreatnow yes))
 (defrule
 ;	(up-compare-const mp-game == 1)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_143}})
+	(strategic-number sn-military-superiority <= 0)
 (or	(up-compare-goal assistance == no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_144}})); test
+	(strategic-number sn-military-superiority <= -1)); test
 	(population < up-max-civ)
 (or	(unit-type-count siege-weapon-class <= 0)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_145}}))
+	(strategic-number sn-military-superiority <= -1))
 =>
 	(set-goal retreatnow yes))
 (defrule
 ;	(up-compare-const mp-game == 1)
 	(population < max-civ-pop)
 	(population-cap >= 75); 50
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_146}})
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_147}})
+	(strategic-number sn-military-superiority <= 0)
+(or	(strategic-number sn-military-superiority <= -1)
 	(strategic-number teamsuperiority <= -1))
-(or	(military-population < {{TSA_MY_MILITARY_051}})
+(or	(military-population < 10)
 	(and	(goal strategy usual)
-		(military-population < {{TSA_MY_MILITARY_052}})))
+		(military-population < 15)))
 ;	(unit-type-count battering-ram-line <= 0)
 =>
 	(set-goal retreatnow yes))
 (defrule
 	(population < del-civ-pop)
 	(population-cap >= 50)
-	(military-population < {{TSA_MY_MILITARY_053}})
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_148}})
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_149}})
+	(military-population < 8)
+	(strategic-number sn-military-superiority <= 0)
+(or	(strategic-number sn-military-superiority <= -1)
 (or	(strategic-number teamsuperiority <= -1)
 	(players-population target-player >= max-pop)))
 =>
@@ -1655,33 +1655,33 @@
 (defrule
 	(population < max-civ-pop)
 	(population-cap >= 125)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_150}})
+	(strategic-number sn-military-superiority <= 0)
 	(strategic-number teamsuperiority <= 2)
 ;	(strategic-number target-civilian-superiority <= 30)
 ;	(unit-type-count battering-ram-line <= 0)
 ;	(unit-type-count trebuchet-set <= 0)
 ;	(unit-type-count bombard-cannon-line <= 0)
-	(military-population < {{TSA_MY_MILITARY_054}})
+	(military-population < 25)
 	(goal assistance no)
 =>
 	(set-goal retreatnow yes))
 (defrule
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_151}})
+	(strategic-number sn-military-superiority <= -2)
 ;	(strategic-number target-civilian-superiority <= 25)
 	(population < max-civ-pop)
 	(up-compare-goal excessWood < 1200)
 	(up-compare-goal excessFood < 1200)
 	(up-compare-goal excessGold < 1200)
-	(military-population < {{TSA_MY_MILITARY_055}})
+	(military-population < 40)
 ; test	(goal assistance no)
 =>
 	(set-goal retreatnow yes))
 (defrule
 ;?	(up-compare-const mp-game == 0)
 	(population < max-civ-pop)
-	(military-population < {{TSA_MY_MILITARY_056}})
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_152}})
-	(and	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_153}})
+	(military-population < 40)
+(or	(strategic-number sn-military-superiority <= -3)
+	(and	(strategic-number sn-military-superiority <= -2)
 		(or	(up-compare-goal excessWood < 500)
 			(or	(up-compare-goal excessFood < 500)
 				(up-compare-goal excessGold < 500)))))
@@ -1693,7 +1693,7 @@
 	(up-research-status c: castle-age <= research-pending)
 	(up-research-status c: castle-age >= research-available)
 	(players-current-age target-player >= imperial-age)
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_154}})
+;	(strategic-number sn-military-superiority <= 3)
 	(population < max-civ-pop)
 	(up-compare-goal excessGold < 2000)
 =>
@@ -1727,9 +1727,9 @@
 	(up-jump-rule 9))
 (defrule
 (or	(population >= max-civ-pop)
-(or	(and	(military-population >= {{TSA_MY_MILITARY_057}}); 80
-		(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_155}}))
-	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_156}})))
+(or	(and	(military-population >= 70); 80
+		(strategic-number sn-military-superiority >= 1))
+	(strategic-number sn-military-superiority >= 3)))
 =>
 	(up-jump-rule 8))
 (defrule
@@ -1744,23 +1744,23 @@
 	(up-projectile-target projectile-town-center != building-class)
 ;	(up-projectile-target projectile-town-center != siege-weapon-class)
 ;	(up-projectile-target projectile-town-center != unpacked-trebuchet-class)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_157}})
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_158}})
-	(military-population < {{TSA_MY_MILITARY_058}}))
+	(strategic-number sn-military-superiority <= 1)
+(or	(strategic-number sn-military-superiority <= 0)
+	(military-population < 15))
 =>
 ;	(set-goal retreatnow yes))
 	(set-goal temporary-goal2 76552))
 (defrule
 	(goal temporary-goal2 76552)
 (or	(goal assistance no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_159}})); -1
+	(strategic-number sn-military-superiority <= 0)); -1
 	(up-compare-flag retreat-flag != 1)
 =>
 	(chat-local-to-self "Retreating from town-center.")
 	(up-modify-flag retreat-flag c:+ 1))
 (defrule
 	(goal attacking yes)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_160}})
+	(strategic-number sn-military-superiority <= -1)
 	(unit-type-count trebuchet-set <= 1)
 	(unit-type-count battering-ram-line <= 3)
 	(unit-type-count bombard-cannon-line <= 5)
@@ -1774,7 +1774,7 @@
 	(up-jump-rule 5))
 (defrule
 	(goal attacking yes)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_161}})
+	(strategic-number sn-military-superiority <= 0)
 	(unit-type-count trebuchet-set <= 1)
 	(unit-type-count battering-ram-line <= 2)
 	(unit-type-count bombard-cannon-line <= 3)
@@ -1788,7 +1788,7 @@
 	(up-jump-rule 4))
 (defrule
 	(goal attacking yes)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_162}})
+	(strategic-number sn-military-superiority <= 1)
 	(unit-type-count trebuchet-set <= 0)
 	(unit-type-count battering-ram-line <= 1)
 	(unit-type-count bombard-cannon-line <= 2)
@@ -1802,7 +1802,7 @@
 	(up-jump-rule 3))
 (defrule
 	(goal attacking yes)
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_163}})
+;	(strategic-number sn-military-superiority <= 3)
 	(unit-type-count siege-ship <= 0)
 	(unit-type-count octeres <= 0)
 	(unit-type-count trebuchet-set <= 0)
@@ -1824,7 +1824,7 @@
 	(up-projectile-target projectile-bombard-tower != building-class)
 	(up-projectile-target projectile-bombard-tower != siege-weapon-class)
 ;	(up-projectile-target projectile-bombard-tower != unpacked-trebuchet-class)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_164}})
+	(strategic-number sn-military-superiority <= 0)
 =>
 	(chat-local-to-self "Retreating from bombard-tower.")
 	(set-goal retreatnow yes)
@@ -1835,10 +1835,10 @@
 	(unit-type-count battering-ram-line <= 0)
 	(unit-type-count bombard-cannon-line <= 0); 1
 	(up-compare-goal mangonel-set <= 1); 3
-	(military-population < {{TSA_MY_MILITARY_059}}); 42
+	(military-population < 25); 42
 	(up-projectile-target projectile-watch-tower == archery-class)
 	(up-projectile-detected projectile-watch-tower < 3000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_165}})
+	(strategic-number sn-military-superiority <= 1)
 	(up-compare-flag retreat-flag != 2)
 =>
 	(chat-local-to-self "Retreating from tower.")
@@ -1846,8 +1846,8 @@
 
 ;(defrule
 ;	(strategic-number sn-current-age <= castlea)
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_166}})
-;	(military-population <= {{TSA_MY_MILITARY_060}})
+;	(strategic-number sn-military-superiority <= 2)
+;	(military-population <= 35)
 ;(or	(up-projectile-detected projectile-watch-tower < 3000)
 ;	(up-projectile-detected projectile-town-center < 3000))
 ;	(up-projectile-target projectile-watch-tower == archery-class)
@@ -1866,9 +1866,9 @@
 ;)
 ;(defrule
 ;	(goal attacking yes)
-;	(players-military-population focus-player <= {{TSA_ENEMY_MILITARY_004}}); target
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_167}}); 3
-;	(military-population < {{TSA_MY_MILITARY_061}})
+;	(players-military-population focus-player <= 1); target
+;	(strategic-number sn-military-superiority <= 2); 3
+;	(military-population < 70)
 ;	(up-projectile-detected projectile-castle < 3000)
 ;	(up-projectile-target projectile-castle == archery-class)
 ;;	(unit-type-count battering-ram-line <= 0)
@@ -1884,7 +1884,7 @@
 
 ;(defrule
 ;	(goal attacking no)
-;;attno	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_168}})
+;;attno	(strategic-number sn-military-superiority <= 2)
 ;	(up-projectile-detected projectile-castle < 3000)
 ;	(up-projectile-target projectile-castle == archery-class)
 ;;	(unit-type-count battering-ram-line <= 0)
@@ -1905,8 +1905,8 @@
 (or	(players-building-type-count target-player town-center <= 0)
 (or	(up-timer-status resetnow != timer-disabled)
 (or	(up-compare-const dm-game == 1)
-(or	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_169}}); 2
-(or	(military-population >= {{TSA_MY_MILITARY_062}})
+(or	(strategic-number sn-military-superiority >= 3); 2
+(or	(military-population >= 25)
 (or	(population >= max-civ-pop)
 	(strategic-number sn-current-age >= imperial))))))))
 =>
@@ -1914,7 +1914,7 @@
 (defrule
 (or	(up-compare-const diff-fp <= 0)
 (or	(up-compare-goal armytech >= imperial)
-(or	(and	(military-population >= {{TSA_MY_MILITARY_063}})
+(or	(and	(military-population >= 13)
 		(or	(up-compare-goal armytech >= castlea)
 			(goal assistance yes)))
 	(up-compare-goal targetdistance <= 18))))
@@ -2045,9 +2045,9 @@
 	(up-jump-rule 18))
 (defrule
 (or	(up-timer-status resetnow != timer-disabled);(up-timer-status resetnow == timer-running)
-(or	(military-population >= {{TSA_MY_MILITARY_064}}); test
-(or	(military-population <= {{TSA_MY_MILITARY_065}})
-(or	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_170}});(strategic-number target-military-superiority >= 80); 75
+(or	(military-population >= 120); test
+(or	(military-population <= 1)
+(or	(and	(strategic-number sn-military-superiority >= 43);(strategic-number target-military-superiority >= 80); 75
 		(strategic-number teamsuperiority >= 3))
 	(and	(strategic-number sn-maximum-town-size < 30); 33
 		(enemy-buildings-in-town))))))
@@ -2244,7 +2244,7 @@
 ;==============================================================
 (defrule
 	(taunt-detected any-human-ally 45)
-	(military-population <= {{TSA_MY_MILITARY_066}})
+	(military-population <= 0)
 =>
 	(chat-to-allies-using-id 22118); "Alas, I cannot help that at this time."
 	(acknowledge-taunt every-ally 45))
@@ -3054,7 +3054,7 @@
 (defrule
 	(goal attacking no)
 	(goal underattack no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_184}})
+	(strategic-number sn-military-superiority <= 1)
 	(strategic-number sn-maximum-town-size >= 70)
 	(enemy-buildings-in-town)
 =>
@@ -3072,7 +3072,7 @@
 	(population < max-civ-pop)
 	(up-enemy-units-in-town < 5) ; no enemy attack, just TS too big
 	(up-compare-goal gl-threat-time > 8000)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_185}})
+	(strategic-number sn-military-superiority <= 1)
 	(strategic-number sn-maximum-town-size >= 37); 34
 	(enemy-buildings-in-town)
 =>
@@ -3087,7 +3087,7 @@
 	(goal attacking no)
 	(goal underattack no)
 	(up-compare-goal ttower-distance >= 33)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_186}})
+	(strategic-number sn-military-superiority <= 1)
 	(strategic-number sn-maximum-town-size >= 25)
 	(enemy-buildings-in-town)
 =>
@@ -3115,7 +3115,7 @@
 (or	(goal gatherinside no)
 	(and	(not	(enemy-buildings-in-town))
 		(or	(up-enemy-units-in-town < 3)
-			(military-population < {{TSA_MY_MILITARY_071}})))); 3
+			(military-population < 2)))); 3
 ;(not	(town-under-attack))
 =>
 	(up-jump-rule 4))
@@ -3129,16 +3129,16 @@
 ;(or
 	(up-enemy-units-in-town >= 3)
 ;	(town-under-attack))
-	(military-population >= {{TSA_MY_MILITARY_072}})
+	(military-population >= 3)
 =>
 	(up-modify-sn sn-focus-player-number g:= attacking-enemy)
 	(up-get-fact military-population 0 math-goal)
 	(up-get-fact enemy-units-in-town 0 math-goal2)
 	(up-modify-goal math-goal g:- math-goal2))
 (defrule
-(or	(military-population <= {{TSA_MY_MILITARY_073}}); test
+(or	(military-population <= 0); test
 (or	(and	(up-enemy-units-in-town >= 3)
-		(and	(military-population >= {{TSA_MY_MILITARY_074}})
+		(and	(military-population >= 3)
 			(up-compare-goal math-goal >= 0)))
 	(enemy-buildings-in-town)))
 =>
@@ -3158,7 +3158,7 @@
 (or	(goal gl-threat-target infantry-class)
 (or	(goal gl-threat-target cavalry-class)
 	(goal gl-threat-target archery-class))))
-	(military-population >= {{TSA_MY_MILITARY_075}})
+	(military-population >= 2)
 =>
 	(set-goal gatherinside no))
 (defrule
@@ -3167,7 +3167,7 @@
 (or	(goal position-goal pocket); test
 (or	(goal patroldefense yes); test
 	(goal patrolhelp yes))))
-	(military-population >= {{TSA_MY_MILITARY_076}});
+	(military-population >= 2);
 =>
 	(set-goal gatherinside no))
 (defrule
@@ -3183,7 +3183,7 @@
 	(set-goal gatherinside no))
 (defrule
 	(up-compare-goal gatherinside != no)
-(or	(military-population >= {{TSA_MY_MILITARY_077}}); test
+(or	(military-population >= 21); test
 	(and	(goal scoutmicro yes)
 		(unit-type-count scout-cavalry-line >= 3)))
 =>
@@ -3511,7 +3511,7 @@
 ; ds	(timer-triggered fivesec); should be fine
 	(building-type-count barracks >= 1)
 ; hm	(players-building-count any-enemy <= 0)
-	(military-population == {{TSA_MY_MILITARY_078}})
+	(military-population == 1)
 ;	(unit-type-count scout-unit <= 0)
 ;	(up-compare-goal scouting-unit <= -1)
 	(unit-type-count spearman-line == 1)
@@ -3552,7 +3552,7 @@
 	(goal paphosciv no)
 	(up-compare-goal gl-threat-time < 3000); hmm
 	(goal gl-threat-target warship-class)
-	(military-population >= {{TSA_MY_MILITARY_079}})
+	(military-population >= 2)
 	(goal fishing-ship-garrisoned no)
 	(up-compare-goal fishing-ship-disable-ungarrison-timer < 1)
 =>
@@ -3584,7 +3584,7 @@
 	(up-compare-goal gl-threat-time < 3000); hmm
 (or	(goal gl-threat-target building-class)
 	(goal gl-threat-target warship-class))
-	(military-population >= {{TSA_MY_MILITARY_080}})
+	(military-population >= 1)
 	(goal fishing-ship-garrisoned no)
 	(up-compare-goal fishing-ship-disable-ungarrison-timer < 1)
 =>
@@ -3613,7 +3613,7 @@
 	(goal paphosciv yes)
 	(up-compare-goal gl-threat-time < 3000)
 	(goal gl-threat-target warship-class)
-	(military-population >= {{TSA_MY_MILITARY_081}})
+	(military-population >= 2)
 =>
 	(up-gather-inside c: shipyard c: 0)
 	(up-ungarrison c: shipyard)
@@ -3637,7 +3637,7 @@
 	(up-compare-goal gl-threat-time < 3000)
 (or	(goal gl-threat-target building-class)
 	(goal gl-threat-target warship-class))
-	(military-population >= {{TSA_MY_MILITARY_082}})
+	(military-population >= 1)
 =>
 	(up-gather-inside c: shipyard c: 0)
 	(up-ungarrison c: shipyard)
@@ -4180,7 +4180,7 @@
 	(building-type-count-total stable < 1)
 	(building-type-count-total barracks < 2)
 (or	(military-population <= drush-militias)
-	(military-population <= {{TSA_MY_MILITARY_083}}))
+	(military-population <= 6))
 =>
 	(up-jump-rule 11))
 (defrule
@@ -4237,24 +4237,24 @@
 	(population >= siege-pop)
 (or	(goal siegereq yes)
 	(players-population target-player < min-number-vills));
-	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_187}})
+	(strategic-number sn-military-superiority >= 1)
 =>
 	(up-jump-rule 2))
 (defrule
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_188}}); test
-	(military-population < {{TSA_MY_MILITARY_084}})
+	(strategic-number sn-military-superiority <= 3); test
+	(military-population < 60)
 	(population < 210); 225
 (or	(population <= up-max-civ)
 (or	(and	(players-population target-player >= maxcartspop); up-max-civ
-		(strategic-number sn-military-superiority < {{TSA_SUPERIORITY_189}})); 4
+		(strategic-number sn-military-superiority < 2)); 4
 (or	(current-age <= feudal-age)
-(or	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_190}}); 1
+(or	(strategic-number sn-military-superiority <= 0); 1
 	(up-compare-goal strategy-type <= feudal-war))))); castle
 =>
 	(up-jump-rule 4))
 (defrule
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_191}}); 5
-	(military-population < {{TSA_MY_MILITARY_085}})
+	(strategic-number sn-military-superiority <= 4); 5
+	(military-population < 60)
 	(population < 220)
 (nor	(unit-type-count battering-ram-line >= 2)
 (or	(unit-type-count bombard-cannon-line >= 2)
@@ -4433,9 +4433,9 @@
 	(up-jump-rule 10))
 (defrule
 (or	(game-time >= 2700)
-(or	(military-population >= {{TSA_MY_MILITARY_086}})
+(or	(military-population >= 32)
 (or	(goal inseln yes)
-	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_192}}))))
+	(strategic-number sn-military-superiority >= 1))))
 	(strategic-number sn-current-age >= cimperial)
 	(not(enemy-buildings-in-town))
 =>
@@ -4443,17 +4443,17 @@
 	(up-jump-rule 9))
 (defrule
 (or	(game-time >= 2400)
-(or	(military-population >= {{TSA_MY_MILITARY_087}})
+(or	(military-population >= 31)
 (or	(goal inseln yes)
-	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_193}}))))
+	(strategic-number sn-military-superiority >= 1))))
 	(strategic-number sn-current-age >= cimperial)
 	(not(enemy-buildings-in-town))
 =>
 	(up-modify-sn sn-maximum-town-size c:max 28)
 	(up-jump-rule 8))
 (defrule
-(or	(and	(military-population >= {{TSA_MY_MILITARY_088}})
-		(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_194}}))
+(or	(and	(military-population >= 20)
+		(strategic-number sn-military-superiority >= 2))
 (or	(game-time >= 2700)
 	(goal inseln yes)))
 	(strategic-number sn-current-age >= fcastlea)
@@ -4462,8 +4462,8 @@
 	(up-modify-sn sn-maximum-town-size c:max 26)
 	(up-jump-rule 7))
 (defrule
-(or	(and	(military-population >= {{TSA_MY_MILITARY_089}})
-		(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_195}}))
+(or	(and	(military-population >= 18)
+		(strategic-number sn-military-superiority >= 2))
 (or	(game-time >= 2400)
 	(goal inseln yes)))
 	(strategic-number sn-current-age >= fcastlea)
@@ -4478,7 +4478,7 @@
 (or	(game-time >= 2100)
 (or	(goal inseln yes)
 	(and	(game-time >= 1800)
-		(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_196}}))))
+		(strategic-number sn-military-superiority >= 2))))
 	(not(enemy-buildings-in-town))
 =>
 	(up-modify-sn sn-maximum-town-size c:max 22)
@@ -4487,7 +4487,7 @@
 (or	(game-time >= 1680)
 (or	(goal inseln yes)
 (or	(building-type-count-total town-center >= 3); (goal dreitc yes)
-	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_197}}))))
+	(strategic-number sn-military-superiority >= 2))))
 	(strategic-number sn-current-age >= fcastlea)
 ;	(not(enemy-buildings-in-town))
 =>
@@ -4498,7 +4498,7 @@
 (or	(game-time >= 1560)
 (or	(goal inseln yes)
 (or	(building-type-count-total town-center >= 3); (goal dreitc yes)
-	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_198}})))))
+	(strategic-number sn-military-superiority >= 1)))))
 	(strategic-number sn-current-age >= fcastlea)
 ;	(not(enemy-buildings-in-town))
 =>
@@ -4510,7 +4510,7 @@
 	(building-type-count-total monastery >= 1)))
 (or	(game-time >= 1320)
 (or	(building-type-count-total town-center >= 2)
-	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_199}})))
+	(strategic-number sn-military-superiority >= 0)))
 ;	(strategic-number sn-current-age >= fcastlea)
 ;	(not(enemy-buildings-in-town))
 =>
@@ -4546,7 +4546,7 @@
 (defrule
 (or	(game-time >= 2400)
 (or	(strategic-number sn-current-age >= imperial)
-(or	(military-population >= {{TSA_MY_MILITARY_090}})
+(or	(military-population >= 42)
 	(and	(up-compare-goal strategy-type >= castle-war)
 		(and	(up-compare-goal strategy != usual)
 			(and	(up-compare-goal strategy != a-rush)
@@ -4961,7 +4961,7 @@
 (defrule
 	(up-projectile-detected projectile-town-center < 3000)
 	(unit-type-count siege-weapon-class < 1)
-	(military-population < {{TSA_MY_MILITARY_091}})
+	(military-population < 20)
 	(up-compare-goal gl-threat-target != scout-unit)
 =>
 	(up-full-reset-search)
@@ -5183,7 +5183,7 @@
 (defrule
 (or	(up-compare-const diff-fp <= 0)
 (or	(up-compare-goal scouting-unit <= -1)
-	(military-population <= {{TSA_MY_MILITARY_092}})))
+	(military-population <= 0)))
 =>
 	(up-jump-rule 16))
 (defrule
@@ -5356,15 +5356,15 @@
 (or	(up-compare-const diff-fp != 1)
 (or	(unit-type-count villager <= 0)
 ;(or	(goal patroldefense yes)
-(or	(military-population >= {{TSA_MY_MILITARY_093}})
+(or	(military-population >= 25)
 (or	(up-enemy-units-in-town >= 25)
-	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_006}})))));)
+	(players-military-population every-enemy <= 1)))));)
 =>
 	(up-jump-rule 14))
 (defrule
 (not	(player-in-game any-ally))
-	(military-population <= {{TSA_MY_MILITARY_094}})
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_200}})
+	(military-population <= 1)
+	(strategic-number sn-military-superiority <= -1)
 	(strategic-number target-civilian-superiority <= -1)
 =>
 	(up-jump-rule 13))
@@ -5528,9 +5528,9 @@
 (or	(up-compare-const diff-fp != 1)
 (or	(unit-type-count villager <= 0)
 ;(or	(goal patroldefense yes)
-(or	(military-population >= {{TSA_MY_MILITARY_095}})
+(or	(military-population >= 31)
 (or	(up-enemy-units-in-town >= 31)
-	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_007}})))));)
+	(players-military-population every-enemy <= 1)))));)
 =>
 	(up-jump-rule 13))
 (defrule
@@ -5668,7 +5668,7 @@
 
 ;(defrule
 ;(not	(map-type oasis))
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_201}})
+;	(strategic-number sn-military-superiority <= 3)
 ;	(up-projectile-detected projectile-watch-tower < 125000)
 ;;	(up-projectile-detected projectile-watch-tower > 5000)
 ;	(up-projectile-detected projectile-town-center > 25000)
@@ -5686,7 +5686,7 @@
 ;(defrule
 ;	(timer-triggered embassy)
 ;(not	(map-type oasis))
-;	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_202}})
+;	(strategic-number sn-military-superiority <= 3)
 ;	(up-projectile-detected projectile-watch-tower < 125000)
 ;	(up-projectile-detected projectile-watch-tower > 5000)
 ;	(up-projectile-detected projectile-town-center > 25000)
@@ -5793,7 +5793,7 @@
 (or	(up-compare-goal patrolhelp != no)
 (or	(up-timer-status patrol-timer != timer-disabled)
 (or	(up-timer-status unit-control-flare-timer2 != timer-disabled)
-	(military-population <= {{TSA_MY_MILITARY_096}})))))))
+	(military-population <= 1)))))))
 =>
 	(up-jump-rule 17))
 (defrule
@@ -5807,7 +5807,7 @@
 =>
 	(up-jump-rule 16))
 (defrule
-(or	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_008}})
+(or	(players-military-population every-enemy <= 1)
 (or	(goal underattack yes)
 (or	(up-compare-goal armytech >= imperial); castlea
 	(and	(strategic-number sn-current-age >= imperial)
@@ -5988,7 +5988,7 @@
 (or	(up-compare-goal patrolhelp != no)
 (or	(up-timer-status patrol-timer != timer-disabled)
 (or	(up-timer-status unit-control-flare-timer2 != timer-disabled)
-	(military-population <= {{TSA_MY_MILITARY_097}})))))))
+	(military-population <= 1)))))))
 =>
 	(up-jump-rule 5))
 (defrule
@@ -6003,8 +6003,8 @@
 (defrule
 	(up-compare-goal gl-threat-time >= 6000); 4500
 (or	(up-compare-goal drushmicro == no)
-	(military-population >= {{TSA_MY_MILITARY_098}}))
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_203}})
+	(military-population >= 7))
+	(strategic-number sn-military-superiority <= -1)
 	(goal retreat yes)
 	(players-current-age focus-player <= castle-age); feudal;
 	(strategic-number sn-current-age < imperial);
@@ -6021,8 +6021,8 @@
 	(players-current-age focus-player <= castle-age); feudal
 	(strategic-number sn-current-age < imperial)
 (or	(up-compare-goal drushmicro == no)
-	(military-population >= {{TSA_MY_MILITARY_099}}))
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_204}})
+	(military-population >= 7))
+	(strategic-number sn-military-superiority <= -1)
 	(unit-type-count infantry-class < 1)
 	(unit-type-count heavy-eagle-warrior < 1)
 	(unit-type-count-total kamayuk < 1)
@@ -6036,7 +6036,7 @@
 (defrule
 	(goal temporary-goal8 76542)
 (or	(goal assistance no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_205}})); -2
+	(strategic-number sn-military-superiority <= -1)); -2
 =>
 	(up-modify-goal temporary-goal s:= sn-maximum-town-size)
 	(up-modify-goal temporary-goal s:+ sn-current-age);
@@ -6092,7 +6092,7 @@
 (or	(up-compare-goal patrolhelp != no)
 (or	(up-timer-status patrol-timer != timer-disabled)
 (or	(up-timer-status unit-control-flare-timer2 != timer-disabled)
-	(military-population <= {{TSA_MY_MILITARY_100}})))))))
+	(military-population <= 1)))))))
 =>
 	(up-jump-rule 6));was 5
 (defrule
@@ -6110,8 +6110,8 @@
 	(players-current-age focus-player <= castle-age); feudal
 	(strategic-number sn-current-age < imperial)
 (or	(up-compare-goal drushmicro == no)
-	(military-population >= {{TSA_MY_MILITARY_101}}))
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_206}})
+	(military-population >= 7))
+	(strategic-number sn-military-superiority <= -1)
 	(unit-type-count infantry-class < 1)
 	(unit-type-count heavy-eagle-warrior < 1)
 	(unit-type-count-total kamayuk < 1)
@@ -6125,7 +6125,7 @@
 (defrule
 	(goal temporary-goal8 76542)
 (or	(goal assistance no)
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_207}})); -2
+	(strategic-number sn-military-superiority <= -1)); -2
 =>
 	(up-modify-goal temporary-goal s:= sn-maximum-town-size)
 	(up-modify-goal temporary-goal s:+ sn-current-age);
@@ -6202,20 +6202,20 @@
 (or	(up-compare-goal patrolhelp != no)
 (or	(up-timer-status patrol-timer != timer-disabled)
 (or	(up-timer-status unit-control-flare-timer2 != timer-disabled)
-	(military-population <= {{TSA_MY_MILITARY_102}})))))))
+	(military-population <= 1)))))))
 =>
 	(up-jump-rule 16))
 (defrule
 (or	(up-compare-const diff-fp <= 0)
 (or	(unit-type-count mangonel-line >= 1)
-(or	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_208}})
-(or	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_209}})
+(or	(strategic-number sn-military-superiority >= 3)
+(or	(and	(strategic-number sn-military-superiority >= 2)
 		(strategic-number teamsuperiority >= 2))
 	(population >= del-civ-pop)))))
 =>
 	(up-jump-rule 15))
 (defrule
-(or	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_009}})
+(or	(players-military-population every-enemy <= 1)
 (or	(goal underattack yes)
 (or	(up-compare-goal armytech >= imperial); castlea
 	(and	(strategic-number sn-current-age >= imperial)
@@ -6406,9 +6406,9 @@
 	(up-jump-rule 19))
 (defrule
 (or	(up-timer-status resetnow != timer-disabled);(up-timer-status resetnow == timer-running)
-(or	(military-population >= {{TSA_MY_MILITARY_103}}); test
-(or	(military-population <= {{TSA_MY_MILITARY_104}})
-(or	(and	(strategic-number sn-military-superiority >= {{TSA_SUPERIORITY_210}});(strategic-number target-military-superiority >= 80); 75
+(or	(military-population >= 120); test
+(or	(military-population <= 1)
+(or	(and	(strategic-number sn-military-superiority >= 43);(strategic-number target-military-superiority >= 80); 75
 		(strategic-number teamsuperiority >= 3))
 	(and	(strategic-number sn-maximum-town-size < 30); 33
 		(enemy-buildings-in-town))))))
@@ -6704,29 +6704,29 @@
 	(up-jump-rule 2))
 (defrule
 	(game-time < 840)
-(or	(players-military-population focus-player <= {{TSA_ENEMY_MILITARY_010}})
-	(military-population >= {{TSA_MY_MILITARY_105}}))
+(or	(players-military-population focus-player <= 4)
+	(military-population >= 2))
 	(up-enemy-units-in-town >= 1)
 	(up-enemy-units-in-town <= 5); 6
-	(players-military-population focus-player <= {{TSA_ENEMY_MILITARY_011}}); 5
-	(military-population <= {{TSA_MY_MILITARY_106}}); 5
+	(players-military-population focus-player <= 6); 5
+	(military-population <= 6); 5
 	(up-compare-goal my-mpop g:<= focus-mpop)
 	(players-current-age focus-player <= dark-age)
-	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_012}}); 9
+	(players-military-population every-enemy <= 8); 9
 	(players-current-age every-enemy <= feudal-age)
 =>
 	(up-modify-sn sn-allow-civilian-defense c:max 3))
 (defrule
 	(game-time < 960); 930
-(or	(players-military-population focus-player <= {{TSA_ENEMY_MILITARY_013}})
-	(military-population >= {{TSA_MY_MILITARY_107}}))
+(or	(players-military-population focus-player <= 4)
+	(military-population >= 2))
 	(up-enemy-units-in-town >= 1)
 	(up-enemy-units-in-town <= 5); 6
-	(players-military-population focus-player <= {{TSA_ENEMY_MILITARY_014}}); 5
-	(military-population <= {{TSA_MY_MILITARY_108}}); 5
+	(players-military-population focus-player <= 6); 5
+	(military-population <= 6); 5
 	(up-compare-goal my-mpop g:<= focus-mpop)
 	(players-current-age focus-player <= feudal-age)
-	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_015}}); 12
+	(players-military-population every-enemy <= 8); 12
 	(players-current-age every-enemy <= castle-age)
 =>
 	(up-modify-sn sn-allow-civilian-defense c:max 2)); end jump
@@ -6737,11 +6737,11 @@
 	(up-research-status c: ri-loom >= research-complete)
 	(unit-type-count villager >= 16)
 	(players-current-age focus-player <= feudal-age)
-	(players-military-population focus-player < {{TSA_ENEMY_MILITARY_016}})
+	(players-military-population focus-player < 16)
 	(up-enemy-units-in-town >= 1)
 	(up-compare-goal my-mpop g:<= focus-mpop)
 (or	(current-age <= feudal-age)
-	(military-population < {{TSA_MY_MILITARY_109}}))
+	(military-population < 4))
 =>
 	(up-modify-sn sn-allow-civilian-defense c:max 3)
 	(set-goal scouting no))
@@ -6758,9 +6758,9 @@
 	(set-goal ttower-distance 65535)
 	(up-jump-rule 8))
 (defrule
-(or	(military-population >= {{TSA_MY_MILITARY_110}})
+(or	(military-population >= 11)
 (or	(and	(goal attacking yes)
-		(and	(military-population >= {{TSA_MY_MILITARY_111}})
+		(and	(military-population >= 7)
 			(strategic-number sn-maximum-town-size > 32)))
 (or	(players-building-type-count target-player bombard-tower >= 1)
 (or	(players-building-type-count target-player krepost >= 1)
@@ -6841,7 +6841,7 @@
 	(players-building-type-count target-player palisade-wall <= 0)
 	(players-building-type-count target-player stone-wall-line <= 0)
 	(players-building-type-count target-player gate <= 0)
-	(players-military-population target-player < {{TSA_ENEMY_MILITARY_017}})
+	(players-military-population target-player < 3)
 =>
 	(up-modify-sn sn-number-civilian-militia c:max 8)
 	(up-modify-sn sn-allow-civilian-offense c:max 2))
@@ -6854,7 +6854,7 @@
 	(players-building-type-count target-player palisade-wall <= 0)
 	(players-building-type-count target-player stone-wall-line <= 0)
 	(players-building-type-count target-player gate <= 0)
-	(players-military-population target-player < {{TSA_ENEMY_MILITARY_018}})
+	(players-military-population target-player < 3)
 =>
 	(up-modify-sn sn-number-civilian-militia c:max 8)
 	(up-modify-sn sn-allow-civilian-offense c:max 2)); end jump
@@ -8724,7 +8724,7 @@
     (goal group-micro yes)
     (or(up-compare-goal closest-enemy-target-distance g:> firing-range)
     (up-compare-goal local-total > 1))
-    ; (nor(players-military-population target-player < {{TSA_ENEMY_MILITARY_019}})
+    ; (nor(players-military-population target-player < 2)
     ; (nor(players-population target-player < 20)
     ; (up-compare-goal circling-distance < 10)))
     (not(goal group-action 8))
@@ -9823,7 +9823,7 @@
     (goal group-micro yes)
     (up-group-size c: ranged-group1 > 0)
     (or(up-compare-goal circling-distance < 5);6
-    (or(and(players-military-population every-enemy < {{TSA_ENEMY_MILITARY_020}})
+    (or(and(players-military-population every-enemy < 2)
     (game-time > 900))
     (players-population every-enemy < 20)))
     (up-compare-goal num-enemy-melee < 1)
@@ -9841,7 +9841,7 @@
 #load-if-not-defined UP-MULTIPLE-ENEMIES
 
 (defrule
-	(players-military-population target-player < {{TSA_ENEMY_MILITARY_021}})
+	(players-military-population target-player < 10)
 	(up-compare-sn sn-military-superiority > 2)
 	(up-point-distance point-x enemy-x < 5)
 	(not(goal group-action 6))
@@ -12270,15 +12270,15 @@
 (or	(up-compare-const diff-fp != 1)
 (or	(unit-type-count villager <= 0)
 ;(or	(goal patroldefense yes)
-(or	(military-population >= {{TSA_MY_MILITARY_112}})
+(or	(military-population >= 25)
 (or	(up-enemy-units-in-town >= 25)
-	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_022}})))));)
+	(players-military-population every-enemy <= 1)))));)
 =>
 	(up-jump-rule 14))
 (defrule
 (not	(player-in-game any-ally))
-	(military-population <= {{TSA_MY_MILITARY_113}})
-	(strategic-number sn-military-superiority <= {{TSA_SUPERIORITY_211}})
+	(military-population <= 1)
+	(strategic-number sn-military-superiority <= -1)
 	(strategic-number target-civilian-superiority <= -1)
 =>
 	(up-jump-rule 13))
@@ -12442,9 +12442,9 @@
 (or	(up-compare-const diff-fp != 1)
 (or	(unit-type-count villager <= 0)
 ;(or	(goal patroldefense yes)
-(or	(military-population >= {{TSA_MY_MILITARY_114}})
+(or	(military-population >= 31)
 (or	(up-enemy-units-in-town >= 31)
-	(players-military-population every-enemy <= {{TSA_ENEMY_MILITARY_023}})))));)
+	(players-military-population every-enemy <= 1)))));)
 =>
 	(up-jump-rule 13))
 (defrule
