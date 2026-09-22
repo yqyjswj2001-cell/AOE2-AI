@@ -21,6 +21,8 @@ That last condition is enforced in CI.
 
 ## Current migration batch
 
+Batch 6 brings the current total to **17 templates and 2329 unique blanks**.
+
 Official-derived templates currently exist for:
 
 - `gatherers.per` — 346 gatherer-percentage blanks;
@@ -42,7 +44,10 @@ Official-derived templates currently exist for:
 - `finaling.per` — 16 late production population/resource/counter-trigger blanks;
 - `resign.per` — 40 macro surrender population/time/superiority blanks.
 
-The remaining dynamic modules will be migrated in the same way, three at a time. Until a module is migrated, its adjusted baseline remains the exact
+- `merge1b.per` - 21 curated civilization building-target and Imperial gatherer-share blanks;
+- `customConstants.per` - 432 blanks from the same seven-name allowlist, with duplicate WEI definitions and disabled zero-building targets kept fixed.
+
+The remaining dynamic modules will be reviewed in small batches; a module may be kept fixed or skipped when its boundary is unclear. Until a module is migrated, its adjusted baseline remains the exact
 official file.
 
 Blank answer sheets live in `answers/`.
@@ -77,3 +82,37 @@ This policy is enforced by CI in addition to the byte-for-byte official-default 
 - `dawn.per`: blanks are limited to time, villager/gatherer, sheep and gold thresholds inside rules that directly move villagers between food, wood, gold or stone. Increment/decrement actions, house logic and hard population-cap control remain fixed.
 - `finaling.per`: blanks are limited to population/resource/unit-count thresholds inside direct `train` rules. Dock filter state, object IDs, existence checks and unrelated control flow remain fixed.
 - `resign.per`: blanks are limited to macro population, enemy/ally population, time and military/team-superiority thresholds in rules that directly set `resign yes`. Zero/one survival checks, timer IDs and actual `resign` action remain fixed.
+
+
+### Batch 6 curation
+
+Only these exact `defconst` names are eligible in `merge1b.per` and
+`customConstants.per`: `number-barracks`, `number-stables`,
+`number-archery-ranges`, `ig-food`, `ig-wood`, `ig-gold`, and `ig-stone`.
+The original integer value alone is replaced; names, civilization conditions,
+comments, order and line endings remain byte-identical. Each occurrence has
+its own answer and official default.
+
+- Building constants are production-building targets; `ig-*` values feed the
+  Imperial-age food/wood/gold/stone gatherer percentages.
+- Both duplicate `WEI-CIV` blocks in `customConstants.per` stay fixed (14
+  candidate values). They repeat the same symbols under the same condition;
+  independently adjustable definitions could conflict.
+- The Aztec and Mayan `number-stables 0` values stay fixed (2 values), preserving
+  the original disabled target. No non-positive building target is exposed.
+- The Saracen official `ig-*` values total 101. They are recorded unchanged;
+  the migration does not normalize or repair the official source.
+- `finalingConstants.per` is **fixed/skip** in this batch: its 24 candidates
+  belong to difficulty-dependent idling, reaction, distance and escrow behavior.
+- `uu-*`, `ur-*`, affinity values, sling settings, IDs, capability facts and
+  unrelated definitions remain fixed. In particular, `ur-*` supplies research
+  cost data rather than an independently verified strategy budget.
+
+The dedicated guards bind every placeholder to an approved value span in the
+original source. A placeholder in an ID, cost, comment, symbol name or an
+additional expression is rejected even when official-default round trip would
+succeed. The two Batch 6 modules cannot silently disappear from the checker.
+
+See [Batch 6 review](BATCH6_REVIEW.md) for the source evidence and exclusions.
+This proves static boundary preservation and exact restoration only; game
+Parser/Load, Smoke, complete matches and strength remain **Unverified**.

@@ -6,6 +6,10 @@ import json
 import re
 from pathlib import Path
 
+from curated_defconst import (
+    MODULE_PROFILES, CuratedDefconstError, validate_curated_defconst,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 OFFICIAL = ROOT / "official/raw/Promisory"
 ADJUSTED = ROOT / "adjusted/Promisory"
@@ -33,6 +37,9 @@ for name in official_files:
 templates = sorted(TEMPLATES.glob("*.per.tpl"))
 if not templates:
     raise SystemExit("no official-derived cloze templates")
+missing_curated = set(MODULE_PROFILES) - {tpl.name.removesuffix(".tpl") for tpl in templates}
+if missing_curated:
+    raise SystemExit(f"missing curated defconst templates: {sorted(missing_curated)}")
 
 for tpl in templates:
     module = tpl.name.removesuffix(".tpl")
@@ -40,6 +47,13 @@ for tpl in templates:
     official_bytes = (OFFICIAL / module).read_bytes()
     official_text = official_bytes.decode("utf-8")
     template_text = tpl.read_bytes().decode("utf-8")
+    if module in MODULE_PROFILES:
+        try:
+            validate_curated_defconst(module, official_text, template_text)
+        except CuratedDefconstError as exc:
+            raise SystemExit(str(exc)) from exc
+    if module == "finalingConstants.per" and template_text != official_text:
+        raise SystemExit("finalingConstants.per: all constants remain fixed")
     defaults_doc = json.loads((DEFAULTS / f"{stem}.json").read_text(encoding="utf-8"))
     defaults = defaults_doc["answers"]
     keys = set(PH.findall(template_text))
