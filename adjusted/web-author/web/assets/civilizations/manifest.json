@@ -1,0 +1,358 @@
+{
+  "schema": "aoe2-web-author-civilization-assets-v1",
+  "asset_count": 42,
+  "source_repository": "https://github.com/yqyjswj2001-cell/aoe2-ai-studio",
+  "source_commit": "502b1a5801cd60c0117989c9caaa9590a1b50927",
+  "source_directory": "tools/author_agent/assets/civ-shields",
+  "upstream_repository": "SiegeEngineers/aoe2techtree",
+  "upstream_commit": "b9d494df6921d4080df69b22f9dbb7a4d1dcd9f0",
+  "purpose": "Civilization UI artwork only; original PNG bytes, no cropping or generated replacements.",
+  "aliases": {
+    "Indians": "hindustanis"
+  },
+  "rights": {
+    "copyright": "Age of Empires II © Microsoft Corporation.",
+    "notice": "Game artwork is not covered by the repository MIT license. This project is not endorsed by or affiliated with Microsoft.",
+    "usage_rules": "https://www.xbox.com/en-US/developers/rules",
+    "source_notice": "aoe2-ai-studio/THIRD_PARTY_NOTICES.md",
+    "distribution_scope": "Private local UI; public redistribution has not been approved by the source project review."
+  },
+  "assets": [
+    {
+      "id": "Aztecs",
+      "path": "Aztecs.png",
+      "upstream_path": "img/Civs/aztecs.png",
+      "sha256": "ef0b04d3848392db388aa5e026e7de761858825d4c33c4d3837697ca5ca012fd",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Bengalis",
+      "path": "Bengalis.png",
+      "upstream_path": "img/Civs/bengalis.png",
+      "sha256": "51450a71256be8cc15b262395db90ddb51b7b4fe03e09b4a8500b05f8d71b071",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Berbers",
+      "path": "Berbers.png",
+      "upstream_path": "img/Civs/berbers.png",
+      "sha256": "8b94c38802b5763fe9f47d1a37a021bb1775751288af3af2a3aec2e49c490dd1",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Bohemians",
+      "path": "Bohemians.png",
+      "upstream_path": "img/Civs/bohemians.png",
+      "sha256": "aa9ae8910ae55902841f4fe05781b321bae62d395a10d587ba83a547c2741020",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Britons",
+      "path": "Britons.png",
+      "upstream_path": "img/Civs/britons.png",
+      "sha256": "559050bd7de06d7c7130ef27cb1c4c2a7e83a2fbde8bc603cb937346a07ef590",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Bulgarians",
+      "path": "Bulgarians.png",
+      "upstream_path": "img/Civs/bulgarians.png",
+      "sha256": "e1570252b4dfacec59a6e31f926dc13f876de377bb84fad33bf6e09daba9c747",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Burgundians",
+      "path": "Burgundians.png",
+      "upstream_path": "img/Civs/burgundians.png",
+      "sha256": "c96a4a99b74da010065f495c80d6c5e6804f7fe058d1c3df1d7cb1dd80209b2b",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Burmese",
+      "path": "Burmese.png",
+      "upstream_path": "img/Civs/burmese.png",
+      "sha256": "86eb67a7de0cec13889a85e57afaa8ec056fb16512ba354a6d6a90dd2ef02eff",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Byzantines",
+      "path": "Byzantines.png",
+      "upstream_path": "img/Civs/byzantines.png",
+      "sha256": "02a14345cce62f8eac2167cb1193bdfa9f2b42d3623d81f4b317b0f88f287468",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Celts",
+      "path": "Celts.png",
+      "upstream_path": "img/Civs/celts.png",
+      "sha256": "203fcb1316d0d04eb715d36fcf026dcdd5225905e1613c1e875875018740bbaa",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Chinese",
+      "path": "Chinese.png",
+      "upstream_path": "img/Civs/chinese.png",
+      "sha256": "21e1dc56208bb2b89de03a309f15d7e75cdb80235b40e5581a9012e25f388a86",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Cumans",
+      "path": "Cumans.png",
+      "upstream_path": "img/Civs/cumans.png",
+      "sha256": "dd0aaf3283a05b41a195add2f957511f2e9f572bf4ee7cfcb4a8a05ee40181e3",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Dravidians",
+      "path": "Dravidians.png",
+      "upstream_path": "img/Civs/dravidians.png",
+      "sha256": "98e6a88f1f761aeedf8f253aa922344d51dbc62422f29d6880b6ec53787b0b4e",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Ethiopians",
+      "path": "Ethiopians.png",
+      "upstream_path": "img/Civs/ethiopians.png",
+      "sha256": "0062a7ad618a920f3a04e5119a47d3c9805a8b1cd2676535df45120d8562f4b1",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Franks",
+      "path": "Franks.png",
+      "upstream_path": "img/Civs/franks.png",
+      "sha256": "53e91b95469999b3e79c68e560915ae35441008b2696f039ea7b09b84661c76e",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Goths",
+      "path": "Goths.png",
+      "upstream_path": "img/Civs/goths.png",
+      "sha256": "7975a5a0e71573e5128d604e0a4de705f2beb2ad73f47ee30cb6ff800cb03ba7",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Gurjaras",
+      "path": "Gurjaras.png",
+      "upstream_path": "img/Civs/gurjaras.png",
+      "sha256": "c8972cf162027b3505f455aa9aa281309cc6aa9001fd4c45f3e6cbc609fea03d",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Huns",
+      "path": "Huns.png",
+      "upstream_path": "img/Civs/huns.png",
+      "sha256": "fdb58397f708230ccc83989208d452ab1414f49d47ac18cde5a8513ec3f758fe",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Incas",
+      "path": "Incas.png",
+      "upstream_path": "img/Civs/incas.png",
+      "sha256": "eb3a88e2a2680121ae2ae74cfd1f18722587a80c9ff6d5dd302d1619514e4c8b",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Indians",
+      "path": "Indians.png",
+      "upstream_path": "img/Civs/hindustanis.png",
+      "sha256": "05a56e09df065cbe67dcd5a48aad84574ba6286872fbf33d7dfdf678478ba20e",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Italians",
+      "path": "Italians.png",
+      "upstream_path": "img/Civs/italians.png",
+      "sha256": "887924135ce3218a9a549aa89a2988918f4edf08d35c68ba5c8af39833930e36",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Japanese",
+      "path": "Japanese.png",
+      "upstream_path": "img/Civs/japanese.png",
+      "sha256": "6fe24f599f27c4b448c0d5a2899f54f7a1d9a0c79f55e4ceb55533cdd2b86f5c",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Khmer",
+      "path": "Khmer.png",
+      "upstream_path": "img/Civs/khmer.png",
+      "sha256": "c53bae41d9091b4b68fab3a657ab57eddbd3c30f98730ab5664f0b6b8f128fcd",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Koreans",
+      "path": "Koreans.png",
+      "upstream_path": "img/Civs/koreans.png",
+      "sha256": "0ab93522f6c0098cdecc0c8e983070b01f138265d78ebc0e79c9f4a2b0799c9c",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Lithuanians",
+      "path": "Lithuanians.png",
+      "upstream_path": "img/Civs/lithuanians.png",
+      "sha256": "11eb92c409230b6f8b70a78fffffbd250d864950737abf6d91804e8760844a27",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Magyars",
+      "path": "Magyars.png",
+      "upstream_path": "img/Civs/magyars.png",
+      "sha256": "01a536df0f985df18e09345278820c1549b61538bae9be83dd787aca9bfff906",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Malay",
+      "path": "Malay.png",
+      "upstream_path": "img/Civs/malay.png",
+      "sha256": "92c0a47cd3d199c781ba51326cca15d026405287f67d2dd2a2a5a98675bda564",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Malians",
+      "path": "Malians.png",
+      "upstream_path": "img/Civs/malians.png",
+      "sha256": "6f1c6096c6d670ac7492d8708c9326868ca4fbb6ca7dbab18f3a9f5ecac26f63",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Mayans",
+      "path": "Mayans.png",
+      "upstream_path": "img/Civs/mayans.png",
+      "sha256": "fe82138d42c8adc3549199b596608b51e1a937db7981d8500d7d210516bc9acf",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Mongols",
+      "path": "Mongols.png",
+      "upstream_path": "img/Civs/mongols.png",
+      "sha256": "86955642d3cfc4789c3918f502525816b012571bb34941b907c1981ec4076f46",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Persians",
+      "path": "Persians.png",
+      "upstream_path": "img/Civs/persians.png",
+      "sha256": "82bc54d481463b1c6c9595a20e920ca5130390e43be197f04b29261a67c0f8ad",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Poles",
+      "path": "Poles.png",
+      "upstream_path": "img/Civs/poles.png",
+      "sha256": "db59ca5d1b90f2818a782d6225c039c6adf12a5b1b6ca4a1f52c6541f263fc6f",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Portuguese",
+      "path": "Portuguese.png",
+      "upstream_path": "img/Civs/portuguese.png",
+      "sha256": "7d42543422204fc3aea9bc993de7fad4e87d46e97d547af513ff4ab4e3d917b9",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Saracens",
+      "path": "Saracens.png",
+      "upstream_path": "img/Civs/saracens.png",
+      "sha256": "aa254c79342770ef724fe72659fc737d8f86414a9c1bcef2f5141afc77914167",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Sicilians",
+      "path": "Sicilians.png",
+      "upstream_path": "img/Civs/sicilians.png",
+      "sha256": "103301a45831f6dfb0bcc3db36bc2d893edf0d1ca59fb613b6ed1bbfd2805f31",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Slavs",
+      "path": "Slavs.png",
+      "upstream_path": "img/Civs/slavs.png",
+      "sha256": "46cb1270c36165b74ba23b817df91ad86cf866c11656e9ef63a6ea6355f34cf6",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Spanish",
+      "path": "Spanish.png",
+      "upstream_path": "img/Civs/spanish.png",
+      "sha256": "daecabc92ac06c126275682bcdf7791b7db5b2715c32b1c5ac9f02c076770884",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Tatars",
+      "path": "Tatars.png",
+      "upstream_path": "img/Civs/tatars.png",
+      "sha256": "5090adb5fee91c68aabd0db39f71d9616ad80aa03a29a876ee4aa2311e4edb29",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Teutons",
+      "path": "Teutons.png",
+      "upstream_path": "img/Civs/teutons.png",
+      "sha256": "7d64a0ed6c915234d3622d4b4169d64dbf81c32562b8da7a1596e2d7b2bc849b",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Turks",
+      "path": "Turks.png",
+      "upstream_path": "img/Civs/turks.png",
+      "sha256": "87ea5762d270e08829f748f5b7feaf8ca67d11985ac468df43121c26553b275d",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Vietnamese",
+      "path": "Vietnamese.png",
+      "upstream_path": "img/Civs/vietnamese.png",
+      "sha256": "ce535460fb9ff01bab9a181c3225e306fef2fa68aff4e8c77e870c9173a2eaee",
+      "width": 104,
+      "height": 104
+    },
+    {
+      "id": "Vikings",
+      "path": "Vikings.png",
+      "upstream_path": "img/Civs/vikings.png",
+      "sha256": "97925e408e176e20a5c38a0394d987541907132f80df1f03fd4180864aaa1c92",
+      "width": 104,
+      "height": 104
+    }
+  ]
+}

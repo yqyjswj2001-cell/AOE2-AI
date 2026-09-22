@@ -1,29 +1,20 @@
-"""Automatic multi-agent usage collection for Author Studio.
+"""Real usage from explicitly bound host sessions; never account-wide scans.
 
-Design:
-- Built-in, standard-library parsers cover common local agents with explicit
-  token fields: Codex, Claude Code, Cursor, Windsurf, Cline, Roo Code, Aider,
-  Continue and Gemini CLI.
-- If a local ccusage executable is available, its unified JSON session report
-  is used for the broader agent ecosystem (OpenCode, Copilot CLI, Amp, Droid,
-  Goose, Kimi, Qwen, Kilo, etc.).
-- Detection is broader than accounting. An agent can be DETECTED_UNMETERED when
-  its local files exist but no reliable token format is available.
-- No transcript/prompt/response content is persisted. Only source/session IDs,
-  model labels, timestamps and token counters enter Meter.
+Host discovery is metadata only. Unsupported/missing fields remain actionable
+connection gaps. ccusage session JSON can be imported explicitly; no external
+package is installed or executed by the web service.
 """
 from __future__ import annotations
-
 from datetime import datetime
 import hashlib
 import json
 import os
 from pathlib import Path
-import platform
 import re
-import shutil
 import sqlite3
-import subprocess
+from agent_catalog import agent_catalog, agent_info, normalize_agent
+from host_usage import project_candidates, cursor_usage, session_files
+from usage_formats import normalize
 
 SAFE_MODEL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:/+ -]{0,159}$")
 STATE_SCHEMA = "author-multi-agent-usage-v1"
@@ -107,105 +98,46 @@ def _delta(current, previous):
     return result
 
 
-def _windows_appdata(home, environ):
-    roaming = environ.get("APPDATA")
-    base = Path(roaming) if roaming else home / "AppData/Roaming"
-    return base
-
-
 def registry(home=None, environ=None):
     home = Path.home() if home is None else Path(home)
     env = os.environ if environ is None else environ
-    xdg_data = Path(env.get("XDG_DATA_HOME") or home / ".local/share")
-    appdata = _windows_appdata(home, env)
-    def paths(*values):
-        return [Path(v).expanduser() for v in values if v]
-    def list_paths(value):
-        if not value:
-            return []
-        return [Path(v.strip()).expanduser() for v in str(value).split(",") if v.strip()]
-    return [
-        {"id":"claude","label":"Claude Code","mode":"builtin+ccusage",
-         "roots":paths(env.get("CLAUDE_CONFIG_DIR"), home/".claude/projects", home/".config/claude/projects")},
-        {"id":"claude-desktop","label":"Claude Desktop Agent","mode":"builtin",
-         "roots":paths(appdata/"Claude/local-agent-mode-sessions",
-                       home/"Library/Application Support/Claude/local-agent-mode-sessions")},
-        {"id":"codex","label":"OpenAI Codex","mode":"builtin+ccusage",
-         "roots":paths(env.get("CODEX_HOME"), home/".codex")},
-        {"id":"gemini","label":"Gemini CLI","mode":"builtin+ccusage",
-         "roots":paths(env.get("GEMINI_DATA_DIR"), home/".gemini/tmp")},
-        {"id":"cursor","label":"Cursor","mode":"builtin",
-         "roots":paths(home/".cursor/projects", appdata/"Cursor/User/workspaceStorage")},
-        {"id":"windsurf","label":"Windsurf","mode":"builtin",
-         "roots":paths(home/".windsurf", home/".codeium/windsurf", appdata/"Windsurf/User/workspaceStorage")},
-        {"id":"cline","label":"Cline","mode":"builtin",
-         "roots":paths(home/".cline", appdata/"Code/User/globalStorage/saoudrizwan.claude-dev",
-                       appdata/"Cursor/User/globalStorage/saoudrizwan.claude-dev")},
-        {"id":"roo","label":"Roo Code","mode":"builtin",
-         "roots":paths(home/".roo-code", appdata/"Code/User/globalStorage/rooveterinaryinc.roo-cline",
-                       appdata/"Cursor/User/globalStorage/rooveterinaryinc.roo-cline")},
-        {"id":"aider","label":"Aider","mode":"builtin",
-         "roots":paths(home/".aider", home/".aider/logs")},
-        {"id":"continue","label":"Continue","mode":"builtin",
-         "roots":paths(home/".continue/sessions")},
-        {"id":"opencode","label":"OpenCode","mode":"builtin+ccusage",
-         "roots":list_paths(env.get("OPENCODE_DATA_DIR")) + paths(xdg_data/"opencode")},
-        {"id":"copilot","label":"GitHub Copilot CLI","mode":"builtin+ccusage",
-         "roots":paths(env.get("COPILOT_HOME"), home/".copilot",
-                       env.get("COPILOT_OTEL_FILE_EXPORTER_PATH"))},
-        {"id":"amp","label":"Amp","mode":"ccusage",
-         "roots":paths(env.get("AMP_DATA_DIR"), xdg_data/"amp")},
-        {"id":"droid","label":"Factory Droid","mode":"ccusage",
-         "roots":paths(env.get("DROID_SESSIONS_DIR"), home/".factory/sessions")},
-        {"id":"codebuff","label":"Codebuff","mode":"ccusage",
-         "roots":paths(env.get("CODEBUFF_DATA_DIR"), home/".config/manicode")},
-        {"id":"hermes","label":"Hermes Agent","mode":"ccusage",
-         "roots":paths(env.get("HERMES_HOME"), home/".hermes")},
-        {"id":"pi","label":"pi-agent","mode":"ccusage",
-         "roots":paths(env.get("PI_AGENT_DIR"), home/".pi/agent/sessions")},
-        {"id":"goose","label":"Goose","mode":"ccusage",
-         "roots":paths(env.get("GOOSE_PATH_ROOT"), home/".config/goose", xdg_data/"goose")},
-        {"id":"openclaw","label":"OpenClaw","mode":"ccusage",
-         "roots":paths(env.get("OPENCLAW_DIR"), home/".openclaw")},
-        {"id":"kilo","label":"Kilo Code","mode":"ccusage",
-         "roots":paths(env.get("KILO_DATA_DIR"), xdg_data/"kilo")},
-        {"id":"kimi","label":"Kimi Code","mode":"ccusage",
-         "roots":paths(env.get("KIMI_DATA_DIR"), home/".kimi", home/".kimi-code")},
-        {"id":"qwen","label":"Qwen Code","mode":"ccusage",
-         "roots":paths(env.get("QWEN_DATA_DIR"), home/".qwen")},
-        {"id":"antigravity","label":"Antigravity","mode":"ccusage",
-         "roots":paths(env.get("ANTIGRAVITY_DATA_DIR"), home/".config/antigravity", home/".gemini")},
-        {"id":"grok","label":"Grok Build CLI","mode":"ccusage",
-         "roots":paths(env.get("GROK_HOME"), home/".grok")},
-        {"id":"zcode","label":"ZCode","mode":"ccusage",
-         "roots":paths(env.get("ZCODE_HOME"), home/".zcode")},
-        # Detection-only: formats currently lack a stable audited token contract here.
-        {"id":"kiro","label":"Kiro","mode":"detected",
-         "roots":paths(home/".kiro", appdata/"Kiro")},
-        {"id":"trae","label":"Trae","mode":"detected",
-         "roots":paths(home/".trae", appdata/"Trae")},
-        {"id":"qoder","label":"Qoder","mode":"detected",
-         "roots":paths(home/".qoder", appdata/"Qoder")},
-        {"id":"junie","label":"JetBrains Junie","mode":"detected",
-         "roots":paths(home/".junie")},
-        {"id":"augment","label":"Augment","mode":"detected",
-         "roots":paths(home/".augment", appdata/"Augment")},
-    ]
+    app = Path(env.get("APPDATA") or home / "AppData/Roaming")
+    xdg = Path(env.get("XDG_DATA_HOME") or home / ".local/share")
+    def many(key, defaults):
+        return [Path(v).expanduser() for v in env[key].split(",") if v] if env.get(key) else defaults
+    claude = Path(env["CLAUDE_CONFIG_DIR"]) / "projects" if env.get("CLAUDE_CONFIG_DIR") else home / ".claude/projects"
+    locations = {
+        "codex": [Path(env.get("CODEX_HOME") or home / ".codex")],
+        "claude": [claude], "gemini": many("GEMINI_DATA_DIR", [home / ".gemini/tmp"]),
+        "cursor": [app / "Cursor/User/workspaceStorage", home / "Library/Application Support/Cursor/User/workspaceStorage", home / ".config/Cursor/User/workspaceStorage"],
+        "opencode": many("OPENCODE_DATA_DIR", [xdg / "opencode"]),
+        "copilot": [Path(env["AOE2_COPILOT_USAGE_FILE"])] if env.get("AOE2_COPILOT_USAGE_FILE") else [],
+        "kimi": many("KIMI_DATA_DIR", [home / ".kimi", home / ".kimi-code"]),
+    }
+    for agent, ext in (("cline", "saoudrizwan.claude-dev"), ("roo", "rooveterinaryinc.roo-cline")):
+        locations[agent] = many("AOE2_" + agent.upper() + "_STORAGE", [
+            app / editor / "User/globalStorage" / ext for editor in ("Code", "Cursor", "Windsurf")
+        ] + [home / ".config/Code/User/globalStorage" / ext,
+             home / "Library/Application Support/Code/User/globalStorage" / ext])
+    return [{"id": row["id"], "label": row["label"], "mode": row["metering_mode"],
+             "roots": locations.get(row["id"], [])} for row in agent_catalog()]
 
 
 def detect_agents(home=None, environ=None):
-    rows = []
+    """A generic .agent folder is not proof that the agent is in use or meterable."""
+    result = []
+    patterns = {"codex": ["sessions/*/*/*/rollout-*.jsonl"], "claude": ["**/*.jsonl"],
+                "gemini": ["*/chats/session-*.json"], "cursor": ["*/workspace.json"],
+                "opencode": ["opencode*.db", "storage/message/*/*.json"],
+                "kimi": ["sessions/*/*/wire.jsonl", "sessions/*/*/agents/*/wire.jsonl"],
+                "cline": ["tasks/*/ui_messages.json"], "roo": ["tasks/*/ui_messages.json"]}
     for row in registry(home, environ):
-        existing = []
-        for root in row["roots"]:
-            try:
-                if root.exists():
-                    existing.append(str(root))
-            except OSError:
-                pass
-        rows.append({"id":row["id"],"label":row["label"],"mode":row["mode"],
-                     "detected":bool(existing),"roots":existing})
-    return rows
+        existing = [p for p in row["roots"] if p.exists()]
+        detected = any(p.is_file() for p in existing) if row["id"] == "copilot" else any(
+            next(p.glob(pattern), None) is not None for p in existing for pattern in patterns.get(row["id"], []))
+        result.append({**row, "roots": [str(p) for p in existing], "detected": detected,
+                       "detection_basis": "usage_storage_present" if detected else "not_observed"})
+    return result
 
 
 def _recent_files(roots, suffixes, started_at):
@@ -285,51 +217,7 @@ def _claude_like_events(agent, roots, started_at):
             mid = msg.get("id") or row.get("uuid") or row.get("id") or f"{path.name}:{index}"
             events.append({"agent":agent,"session":session,"key":mid,"timestamp":when,
                            "model":_model(msg.get("model") or row.get("model")),
-                           "usage":_norm_usage(inp,out,cr,cw,0)})
-    return events
-
-
-def _aider_events(roots, started_at):
-    events=[]
-    for path in _recent_files(roots,{".jsonl",".json"},started_at):
-        session=path.stem
-        for index,row in _iter_jsonl(path):
-            usage=row.get("usage") or (row.get("response") or {}).get("usage")
-            if not isinstance(usage,dict): continue
-            when=_ts(row.get("timestamp") or row.get("created"))
-            if when is not None and when < started_at-SKEW_SECONDS: continue
-            inp=_count(usage.get("prompt_tokens") or usage.get("input_tokens"))
-            out=_count(usage.get("completion_tokens") or usage.get("output_tokens"))
-            cr=_count(usage.get("cache_read_input_tokens")); cw=_count(usage.get("cache_creation_input_tokens"))
-            if not any((inp,out,cr,cw)): continue
-            events.append({"agent":"aider","session":session,"key":row.get("id") or f"{path.name}:{index}",
-                           "timestamp":when,"model":_model(row.get("model")),
-                           "usage":_norm_usage(inp,out,cr,cw,0)})
-    return events
-
-
-def _continue_events(roots, started_at):
-    events=[]
-    for path in _recent_files(roots,{".json"},started_at):
-        try:
-            data=json.loads(path.read_text(encoding="utf-8-sig"))
-        except (OSError,UnicodeError,json.JSONDecodeError):
-            continue
-        if not isinstance(data,dict): continue
-        steps=data.get("steps") or data.get("history") or []
-        if not isinstance(steps,list): continue
-        for index,step in enumerate(steps):
-            if not isinstance(step,dict): continue
-            usage=step.get("usage") if isinstance(step.get("usage"),dict) else {}
-            inp=_count(usage.get("input_tokens") or step.get("promptTokens"))
-            out=_count(usage.get("output_tokens") or step.get("completionTokens"))
-            if not inp and not out: continue
-            when=_ts(step.get("timestamp") or data.get("dateCreated"))
-            if when is not None and when < started_at-SKEW_SECONDS: continue
-            events.append({"agent":"continue","session":path.stem,
-                           "key":step.get("id") or f"{path.name}:{index}","timestamp":when,
-                           "model":_model(step.get("model") or data.get("model")),
-                           "usage":_norm_usage(inp,out)})
+                           "usage":_norm_usage(inp,out,cr,cw)})
     return events
 
 
@@ -432,6 +320,7 @@ def _gemini_events(roots, started_at):
     events=[]
     for path in _recent_files(roots,{".json",".jsonl"},started_at):
         records=[]
+        document_session=None
         if path.suffix.lower()==".jsonl":
             records=[row for _,row in _iter_jsonl(path)]
         else:
@@ -441,9 +330,10 @@ def _gemini_events(roots, started_at):
                 continue
             if isinstance(doc,dict) and isinstance(doc.get("messages"),list):
                 records=doc["messages"]
+                document_session=doc.get("sessionId")
             elif isinstance(doc,dict):
                 records=[doc]
-        session=path.stem
+        session=document_session or path.stem
         for index,row in enumerate(records):
             if not isinstance(row,dict): continue
             if row.get("type") not in (None,"gemini") and "tokens" not in row and "stats" not in row:
@@ -499,7 +389,7 @@ def _opencode_message(agent, row, message_id, session_id, created, started_at):
     session=str(row.get("sessionID") or session_id or "unknown-session")
     key=str(row.get("id") or message_id or _hash(session,when,model_name,inp,out,total))
     return {"agent":agent,"session":session,"key":key,"timestamp":when,
-            "model":_model(model_name),"usage":_norm_usage(inp,out,cr,cw,reasoning,total)}
+            "model":_model(model_name),"snapshot":True,"usage":_norm_usage(inp,out,cr,cw,reasoning,total)}
 
 
 def _sqlite_columns(db, table):
@@ -509,7 +399,7 @@ def _sqlite_columns(db, table):
         return set()
 
 
-def _opencode_db_events(root, started_at):
+def _opencode_db_events(root, started_at, bindings):
     events=[]; seen=set()
     candidates=[]
     try:
@@ -519,6 +409,8 @@ def _opencode_db_events(root, started_at):
     except OSError:
         return events
     start_ms=int((started_at-SKEW_SECONDS)*1000)
+    slots=",".join("?" for _ in bindings)
+    if not bindings: return events
     for path in dict.fromkeys(candidates):
         try:
             db=sqlite3.connect(f"file:{path.resolve().as_posix()}?mode=ro",uri=True,timeout=1)
@@ -528,10 +420,10 @@ def _opencode_db_events(root, started_at):
             cols=_sqlite_columns(db,"message")
             if {"id","session_id","data"} <= cols:
                 if "time_created" in cols:
-                    query="SELECT id,session_id,data,time_created FROM message WHERE time_created>=? ORDER BY time_created"
-                    rows=db.execute(query,(start_ms,))
+                    query="SELECT id,session_id,data,time_created FROM message WHERE session_id IN ("+slots+") AND time_created>=? ORDER BY time_created"
+                    rows=db.execute(query,(*bindings,start_ms))
                 else:
-                    rows=db.execute("SELECT id,session_id,data,NULL FROM message ORDER BY rowid DESC LIMIT 5000")
+                    rows=db.execute("SELECT id,session_id,data,NULL FROM message WHERE session_id IN ("+slots+") ORDER BY rowid DESC LIMIT 5000", bindings)
                 for mid,sid,data,created in rows:
                     try: row=json.loads(data)
                     except (TypeError,json.JSONDecodeError): continue
@@ -541,9 +433,9 @@ def _opencode_db_events(root, started_at):
             cols=_sqlite_columns(db,"session_message")
             if {"id","session_id","type","data"} <= cols:
                 if "time_created" in cols:
-                    rows=db.execute("SELECT id,session_id,type,data,time_created FROM session_message WHERE time_created>=? AND type='assistant' ORDER BY time_created",(start_ms,))
+                    rows=db.execute("SELECT id,session_id,type,data,time_created FROM session_message WHERE session_id IN ("+slots+") AND time_created>=? AND type='assistant' ORDER BY time_created",(*bindings,start_ms))
                 else:
-                    rows=db.execute("SELECT id,session_id,type,data,NULL FROM session_message WHERE type='assistant' ORDER BY rowid DESC LIMIT 5000")
+                    rows=db.execute("SELECT id,session_id,type,data,NULL FROM session_message WHERE session_id IN ("+slots+") AND type='assistant' ORDER BY rowid DESC LIMIT 5000", bindings)
                 for mid,sid,kind,data,created in rows:
                     try: row=json.loads(data)
                     except (TypeError,json.JSONDecodeError): continue
@@ -557,17 +449,17 @@ def _opencode_db_events(root, started_at):
     return events
 
 
-def _opencode_events(roots, started_at):
+def _opencode_events(roots, started_at, bindings):
     events=[]; seen=set()
     for root in roots:
         if not root.is_dir():
             continue
-        for event in _opencode_db_events(root,started_at):
+        for event in _opencode_db_events(root,started_at,bindings):
             marker=(event["session"],event["key"])
             if marker not in seen:
                 seen.add(marker); events.append(event)
-        message_root=root/"storage/message"
-        for path in _recent_files([message_root],{".json"},started_at):
+        message_roots=[root/"storage/message"/sid for sid in bindings]
+        for path in _recent_files(message_roots,{".json"},started_at):
             try: row=json.loads(path.read_text(encoding="utf-8-sig"))
             except (OSError,UnicodeError,json.JSONDecodeError): continue
             event=_opencode_message("opencode",row,path.stem,path.parent.name,None,started_at)
@@ -578,228 +470,121 @@ def _opencode_events(roots, started_at):
     return events
 
 
-def _number(value):
-    if type(value) is int and value>=0:
-        return value
-    if isinstance(value,str):
-        try:
-            parsed=int(value)
-            return parsed if parsed>=0 else _UnknownCount(0)
-        except ValueError:
-            return _UnknownCount(0)
-    return _UnknownCount(0)
-
-
-def _copilot_timestamp(row):
-    for key in ("endTime","startTime","hrTime","_hrTime","time"):
-        value=row.get(key)
-        if isinstance(value,list) and len(value)>=2:
-            sec=_number(value[0]); nanos=_number(value[1])
-            if sec: return sec+nanos/1_000_000_000
-    for key in ("timestamp","observedTimestamp"):
-        value=row.get(key)
-        if isinstance(value,str):
-            parsed=_ts(value)
-            if parsed is not None: return parsed
-        raw=_number(value)
-        if raw:
-            if raw>=100_000_000_000_000_000: return raw/1_000_000_000
-            if raw>=100_000_000_000_000: return raw/1_000_000
-            if raw>=100_000_000_000: return raw/1000
-            return raw
-    raw=_number(row.get("timeUnixNano"))
-    return raw/1_000_000_000 if raw else None
-
-
-def _copilot_session_id(attrs,row):
-    for key in ("gen_ai.conversation.id","copilot_chat.session_id","copilot_chat.chat_session_id",
-                "session.id","github.copilot.interaction_id","gen_ai.response.id"):
-        value=attrs.get(key) if isinstance(attrs,dict) else None
-        if isinstance(value,str) and value.strip(): return value.strip()
-    for key in ("traceId","trace_id"):
-        value=row.get(key)
-        if isinstance(value,str) and value.strip(): return value.strip()
-    return "unknown-session"
-
-
-def _copilot_model(attrs):
-    for key in ("gen_ai.response.model","gen_ai.request.model"):
-        value=attrs.get(key) if isinstance(attrs,dict) else None
-        if isinstance(value,str) and value.strip():
-            value=value.strip()
-            for suffix in ("-1m-internal","-1m"):
-                if value.endswith(suffix): value=value[:-len(suffix)]
-            return _model(value)
-    return "unknown"
-
-
-def _copilot_otel_events(root, started_at):
-    events=[]; seen=set()
-    files=[]
-    explicit=root if root.is_file() else None
-    if explicit:
-        files=[explicit]
-    elif root.is_dir():
-        files=_recent_files([root/"otel"],{".jsonl"},started_at)
-    for path in files:
-        for index,row in _iter_jsonl(path):
-            attrs=row.get("attributes")
-            if not isinstance(attrs,dict): continue
-            inp=_number(attrs.get("gen_ai.usage.input_tokens"))
-            out=_number(attrs.get("gen_ai.usage.output_tokens"))
-            cr=_number(attrs.get("gen_ai.usage.cache_read.input_tokens"))
-            cw=_number(attrs.get("gen_ai.usage.cache_write.input_tokens") or attrs.get("gen_ai.usage.cache_creation.input_tokens"))
-            reasoning=_number(attrs.get("gen_ai.usage.reasoning.output_tokens") or attrs.get("gen_ai.usage.reasoning_tokens"))
-            total=_number(attrs.get("gen_ai.usage.total_tokens") or attrs.get("gen_ai.usage.total.token_count"))
-            if not any((inp,out,cr,cw,reasoning,total)): continue
-            when=_copilot_timestamp(row)
-            if when is not None and when<started_at-SKEW_SECONDS: continue
-            session=_copilot_session_id(attrs,row)
-            response=attrs.get("gen_ai.response.id")
-            trace=row.get("traceId") or row.get("trace_id")
-            span=row.get("spanId") or row.get("span_id")
-            key=str(response or (str(trace)+":"+str(span) if trace and span else f"{path.name}:{index}:{when}"))
-            marker=(session,key)
-            if marker in seen: continue
-            seen.add(marker)
-            uncached=max(0,inp-min(inp,cr)) if type(inp) is int and type(out) is int else None
-            usage=_norm_usage(uncached,out,cr,cw,reasoning,total or None)
-            events.append({"agent":"copilot","session":session,"key":key,"timestamp":when,
-                           "model":_copilot_model(attrs),"usage":usage})
-    return events
-
-
-def _copilot_shutdown_events(root, started_at, covered_sessions):
-    events=[]
-    if not root.is_dir(): return events
-    state_root=root/"session-state"
-    for path in _recent_files([state_root],{".jsonl"},started_at):
-        if path.name!="events.jsonl": continue
-        session=path.parent.name
-        if session in covered_sessions: continue
-        first=None; shutdowns=[]
-        for index,row in _iter_all_jsonl(path):
-            when=_ts(row.get("timestamp"))
-            if when is not None and (first is None or when<first): first=when
-            if row.get("type")=="session.shutdown": shutdowns.append((index,when,row))
-        # A pre-existing session can contain usage from before this creation. Without
-        # request-level OTEL, do not charge the cumulative shutdown total.
-        if first is None or first<started_at-SKEW_SECONDS: continue
-        for index,when,row in shutdowns:
-            if when is not None and when<started_at-SKEW_SECONDS: continue
-            data=row.get("data") if isinstance(row.get("data"),dict) else {}
-            metrics=data.get("modelMetrics") if isinstance(data.get("modelMetrics"),dict) else {}
-            for model,value in metrics.items():
-                usage=value.get("usage") if isinstance(value,dict) and isinstance(value.get("usage"),dict) else {}
-                inp=_number(usage.get("inputTokens")); out=_number(usage.get("outputTokens"))
-                cr=_number(usage.get("cacheReadTokens")); cw=_number(usage.get("cacheWriteTokens"))
-                reasoning=_number(usage.get("reasoningTokens"))
-                if not any((inp,out,cr,cw,reasoning)): continue
-                uncached=max(0,inp-min(inp,cr+cw)) if type(inp) is int and type(out) is int else None
-                key=f"shutdown:{row.get('id') or index}:{model}"
-                events.append({"agent":"copilot","session":session,"key":key,"timestamp":when,
-                               "model":_model(model),"usage":_norm_usage(uncached,out,cr,cw,reasoning)})
-    return events
-
-
-def _copilot_events(roots, started_at):
-    otel=[]; home_roots=[]
-    for root in roots:
-        if root.is_file():
-            otel.extend(_copilot_otel_events(root,started_at))
-        elif root.is_dir():
-            home_roots.append(root)
-            otel.extend(_copilot_otel_events(root,started_at))
-    covered={event["session"] for event in otel}
-    events=list(otel)
-    for root in home_roots:
-        events.extend(_copilot_shutdown_events(root,started_at,covered))
-    return events
-
-
-BUILTIN_PARSERS={
-    "claude":_claude_like_events,"cursor":_claude_like_events,"windsurf":_claude_like_events,
-    "cline":_claude_like_events,"roo":_claude_like_events,
-    "aider":lambda _id,roots,start:_aider_events(roots,start),
-    "continue":lambda _id,roots,start:_continue_events(roots,start),
-    "codex":lambda _id,roots,start:_codex_events(roots,start),
-    "gemini":lambda _id,roots,start:_gemini_events(roots,start),
-    "opencode":lambda _id,roots,start:_opencode_events(roots,start),
-    "copilot":lambda _id,roots,start:_copilot_events(roots,start),
-    "claude-desktop":_claude_like_events,
-}
-
-
-def _ccusage_binary(root, environ):
-    explicit=environ.get("AOE2_CCUSAGE_BIN") or environ.get("CCUSAGE_BIN")
-    candidates=[]
-    if explicit: candidates.append(Path(explicit))
-    name="ccusage.exe" if os.name=="nt" else "ccusage"
-    machine=platform.machine().lower()
-    plat=("win32" if os.name=="nt" else "darwin" if sys_platform()=="darwin" else "linux")
-    arch="arm64" if machine in ("arm64","aarch64") else "x64"
-    candidates.append(Path(root)/"tools/author_agent/vendor/ccusage"/f"{plat}-{arch}"/name)
-    path=shutil.which("ccusage")
-    if path: candidates.append(Path(path))
-    for candidate in candidates:
-        try:
-            if candidate.is_file() and not candidate.is_symlink():
-                return candidate.resolve()
-        except OSError:
-            pass
-    return None
-
-
-def sys_platform():
-    import sys
-    return sys.platform
-
-
-def _ccusage_sessions(binary):
-    cmd=[str(binary),"session","--json","--offline","--no-cost"]
-    run=subprocess.run(cmd,capture_output=True,text=True,encoding="utf-8",errors="replace",timeout=30)
-    if run.returncode!=0:
-        raise RuntimeError("ccusage exit "+str(run.returncode))
-    data=json.loads(run.stdout)
-    if isinstance(data.get("session"),list): rows=data["session"]
-    elif isinstance(data.get("sessions"),list): rows=data["sessions"]
-    elif isinstance(data.get("data"),list): rows=data["data"]
-    else: rows=[]
-    result=[]
-    for row in rows:
-        if not isinstance(row,dict): continue
-        agent=row.get("agent") or "unknown"
-        session=row.get("sessionId") or row.get("session") or row.get("period")
-        if not isinstance(session,str): continue
-        metadata=row.get("metadata") if isinstance(row.get("metadata"),dict) else {}
-        first=_ts(row.get("firstActivity") or metadata.get("firstActivity"))
-        last=_ts(row.get("lastActivity") or metadata.get("lastActivity"))
-        inp=_count(row.get("inputTokens")); out=_count(row.get("outputTokens"))
-        cr=_count(row.get("cacheReadTokens")); cw=_count(row.get("cacheCreationTokens"))
-        total=_count(row.get("totalTokens"))
-        reasoning=_count(row.get("reasoningOutputTokens") or metadata.get("reasoningOutputTokens"))
-        if not any((inp,out,cr,cw,total)): continue
-        models=row.get("modelsUsed") or row.get("models") or []
-        model=_model(models[0] if isinstance(models,list) and len(models)==1 else f"{agent}:mixed")
-        usage=_norm_usage(inp,out,cr,cw,reasoning,total or None)
-        result.append({"agent":str(agent),"session":session,"first":first,"last":last,"model":model,"usage":usage})
+def _kimi_events(files, started_at):
+    result = []
+    for session, path in files:
+        for index, row in _iter_jsonl(path):
+            message = row.get("message") if isinstance(row.get("message"), dict) else row
+            kind = message.get("type")
+            payload = message.get("payload") if isinstance(message.get("payload"), dict) else message
+            if kind == "StatusUpdate":
+                raw = payload.get("token_usage")
+                names = ("input_other", "output", "input_cache_read", "input_cache_creation")
+            elif kind == "usage.record" and payload.get("usageScope") == "turn":
+                raw = payload.get("usage")
+                names = ("inputOther", "output", "inputCacheRead", "inputCacheCreation")
+            else:
+                continue
+            if not isinstance(raw, dict):
+                continue
+            when = _ts(row.get("timestamp") or row.get("time") or payload.get("timestamp"))
+            if when is not None and when < started_at:
+                continue
+            counts = [_count(raw.get(key)) for key in names]
+            if not any(counts):
+                continue
+            result.append({"agent": "kimi", "session": session, "key": payload.get("message_id") or f"wire:{index}",
+                "timestamp": when, "model": _model(payload.get("model") or row.get("model")),
+                "usage": _norm_usage(*counts), "snapshot": True})
     return result
 
 
-class MultiAgentUsage:
-    """Upstream multi-host parsers, restricted to explicitly owned sessions.
+def _task_events(agent, files, started_at):
+    result = []
+    for session, path in files:
+        try:
+            rows = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (ValueError, OSError):
+            continue
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict) or row.get("type") != "say":
+                continue
+            if row.get("say") in {"deleted_api_reqs", "subagent_usage"}:
+                result.append({"agent": agent, "session": session, "key": "unmapped:" + str(row.get("ts")),
+                    "timestamp": _ts(row.get("ts")), "model": "unknown", "usage": None,
+                    "gap": "TASK_AGGREGATE_NOT_ATTRIBUTABLE"})
+                continue
+            if row.get("say") != "api_req_started" or row.get("partial") is True:
+                continue
+            when = _ts(row.get("ts"))
+            if when is not None and when < started_at:
+                continue
+            try:
+                raw = json.loads(row.get("text") or "{}")
+            except ValueError:
+                continue
+            if not isinstance(raw, dict) or "tokensIn" not in raw or "tokensOut" not in raw:
+                continue  # still waiting for the request's final usage
+            result.append({"agent": agent, "session": session, "key": "request:" + str(row.get("ts")),
+                "timestamp": when, "model": _model(raw.get("model")), "snapshot": True,
+                "usage": _norm_usage(_count(raw.get("tokensIn")), _count(raw.get("tokensOut")),
+                                     _count(raw.get("cacheReads")), _count(raw.get("cacheWrites")))})
+    return result
 
-    bindings = {"codex": ["root UUID", "owned child UUID"], "claude": ["session ID"]}.
-    The adapter adds CODEX_THREAD_ID automatically. A child is NOT inferred from time.
-    Hosts must register every owned child and may declare complete coverage only after
-    all those calls have ended. Detection of unrelated installed agents is metadata only.
-    """
-    def __init__(self, meter, project, root, *, environ=None, home=None, bindings=None):
+
+def _copilot_scoped_events(files, bindings, started_at):
+    """Explicit dedicated OTel files only, chat spans only (not parent totals)."""
+    result = []
+    for path in files:
+        if not path.is_file():
+            continue
+        for index, row in _iter_jsonl(path):
+            attrs = row.get("attributes")
+            if not isinstance(attrs, dict) or attrs.get("gen_ai.operation.name") != "chat":
+                continue
+            session = attrs.get("gen_ai.conversation.id")
+            if session not in bindings:
+                continue
+            when = _ts(row.get("timestamp"))
+            end = row.get("endTime")
+            if isinstance(end, list) and len(end) == 2 and all(type(n) is int for n in end):
+                when = end[0] + end[1] / 1_000_000_000
+            if when is not None and when < started_at:
+                continue
+            inp, out = attrs.get("gen_ai.usage.input_tokens"), attrs.get("gen_ai.usage.output_tokens")
+            usage = None
+            if type(inp) is int and type(out) is int and min(inp, out) >= 0:
+                usage = {"input_tokens": inp, "output_tokens": out, "total_tokens": inp + out,
+                    "cached_input_tokens": attrs.get("gen_ai.usage.cache_read.input_tokens"),
+                    "cache_write_tokens": attrs.get("gen_ai.usage.cache_creation.input_tokens"),
+                    "reasoning_output_tokens": attrs.get("gen_ai.usage.reasoning.output_tokens")}
+            key = attrs.get("gen_ai.response.id") or row.get("spanId")
+            if not key:
+                continue
+            result.append({"agent": "copilot", "session": session, "key": key,
+                           "timestamp": when, "model": _model(attrs.get("gen_ai.response.model") or attrs.get("gen_ai.request.model")), "usage": usage})
+    return result
+
+
+def _ccusage_binary(root, environ):
+    """Compatibility seam: no package discovery/execution in the author service."""
+    return None
+
+
+
+class MultiAgentUsage:
+    """Every byte of transcript parsed must first belong to an explicit session."""
+    def __init__(self, meter, project, root, *, environ=None, home=None, bindings=None,
+                 selected_agent="auto", workspace_root=None):
         self.meter = meter
         self.project = Path(project).resolve()
         self.root = Path(root).resolve()
         self.environ = os.environ if environ is None else environ
         self.home = Path.home() if home is None else Path(home)
+        self.selected_agent = normalize_agent(selected_agent)
+        self.workspace_root = Path(workspace_root).resolve() if workspace_root else None
         self.path = self.meter.root / "multi-agent-auto.json"
         self.state = self._load()
         self.bind(bindings or {})
@@ -818,16 +603,17 @@ class MultiAgentUsage:
             value = json.loads(self.path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError):
             return self._base()
-        # Do not migrate broad time-window state into project-owned accounting.
         return value if value.get("schema") == STATE_SCHEMA and value.get("scope") == "EXPLICITLY_BOUND_SESSIONS_ONLY" else self._base()
 
     def bind(self, bindings):
         if not isinstance(bindings, dict):
             raise ValueError("usage_sessions 必须是宿主到会话 ID 列表的映射。")
-        known = {r["id"] for r in registry(self.home, self.environ)}
+        known = {r["id"] for r in agent_catalog()} - {"auto", "other"}
         for agent, sessions in bindings.items():
             if agent not in known or not isinstance(sessions, list):
                 raise ValueError("未知用量宿主或会话列表无效。")
+            if self.selected_agent not in {"auto", agent}:
+                raise ValueError("绑定宿主与本项目已选择的 Agent 不一致。")
             for session in sessions:
                 if not isinstance(session, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,199}", session):
                     raise ValueError("用量会话 ID 无效。")
@@ -842,18 +628,17 @@ class MultiAgentUsage:
 
     @staticmethod
     def _matches(session, bindings):
-        return any(session == item or session.endswith("-" + item) for item in bindings)
+        return session in bindings
 
     def _gap(self, code, agent, session):
-        key = _hash(code, agent, session)
-        self.state.setdefault("gaps", {})[key] = {"code": code, "agent": agent, "session": _hash(session)}
+        self.state.setdefault("gaps", {})[_hash(code, agent, session)] = {
+            "code": code, "agent": agent, "session": _hash(session)}
         self.state["reset_gaps"] = sum(g["code"] == "CUMULATIVE_RESET" for g in self.state["gaps"].values())
 
     def _record(self, item, phase):
         agent, session, key = item["agent"], item["session"], str(item["key"])
         source = f"agent:{_hash(agent)}:{_hash(session)}"
         event_id = _event_id(agent, session, key)
-        # Re-reading a log after changing stages must not rewrite original attribution.
         stored_phase = self.state.setdefault("event_phases", {}).setdefault(event_id, "unattributed")
         self.meter.register(source, "agent-usage")
         value = {"event_id": event_id, "phase": stored_phase, "model": _model(item["model"]),
@@ -865,9 +650,22 @@ class MultiAgentUsage:
         result = self.meter.ingest(source, [value])
         self.state["events_added"] += result["added"]
         self.state["duplicates"] += result["duplicates"]
+        if item["usage"] is not None:
+            self.state.setdefault("known_usage_sessions", {})[_hash(agent, session)] = {
+                "agent": agent, "session": _hash(session)}
+
+    def _snapshot(self, item, phase):
+        key = _hash(item["agent"], item["session"], item["key"])
+        old = self.state.setdefault("snapshots", {}).get(key)
+        delta = _delta(item["usage"], old)
+        if delta is None:
+            self._gap("CUMULATIVE_RESET", item["agent"], item["session"])
+            return
+        if delta:
+            self._record({**item, "usage": delta, "key": item["key"] + ":" + _hash(item["usage"])}, phase)
+        self.state["snapshots"][key] = item["usage"]
 
     def _codex_roots(self, roots, bindings):
-        # Filename enumeration only; unrelated transcripts are never opened.
         files = []
         for root in roots:
             for session in bindings:
@@ -875,88 +673,148 @@ class MultiAgentUsage:
                                 f"archived_sessions/rollout-*-{session}.jsonl"):
                     files.extend(p for p in root.glob(pattern) if p.is_file() and not p.is_symlink())
         safe = []
-        for path in files:
+        for path in dict.fromkeys(files):
             key = _hash(path.name)
             stat = path.stat()
             previous = self.state.setdefault("file_state", {}).get(key)
             now = {"size": stat.st_size, "inode": stat.st_ino}
             if previous and (now["size"] < previous["size"] or now["inode"] != previous["inode"]):
                 self._gap("LOG_REPLACED_OR_TRUNCATED", "codex", path.stem)
-                continue  # retain old evidence; never reinterpret a rewritten file
+                continue
             self.state["file_state"][key] = now
             safe.append(path)
         return safe
+
+    def _events(self, agent, roots, bindings):
+        start = self.meter.meta["started_at"]
+        if agent == "codex":
+            return _codex_events(self._codex_roots(roots, bindings), start)
+        if agent == "opencode":
+            return _opencode_events(roots, start, bindings)
+        if agent == "copilot":
+            return _copilot_scoped_events(roots, bindings, start)
+        if agent == "cursor":
+            return cursor_usage(self.workspace_root, bindings, start, self.home, self.environ) if self.workspace_root else []
+        files = session_files(agent, roots, bindings)
+        if agent == "claude":
+            return _claude_like_events(agent, [p for _, p in files], start)
+        if agent == "gemini":
+            return _gemini_events([p for _, p in files], start)
+        if agent == "kimi":
+            return _kimi_events(files, start)
+        if agent in {"cline", "roo"}:
+            return _task_events(agent, files, start)
+        return []
+
+    def ingest_ccusage(self, agent, session_id, report):
+        """Import one explicitly selected session snapshot, never report totals."""
+        agent = normalize_agent(agent)
+        if session_id not in self.state.get("bindings", {}).get(agent, []):
+            raise ValueError("请先明确绑定这份 ccusage 报告对应的宿主会话。")
+        if agent not in {"codex", "claude", "gemini", "opencode", "copilot", "kimi"}:
+            raise ValueError("该宿主不在已核实的 ccusage 来源支持范围。")
+        if not isinstance(report, dict):
+            raise ValueError("ccusage 报告必须是 JSON 对象。")
+        rows = report.get("sessions", report.get("session"))
+        if rows is None and report.get("sessionId"):
+            rows = [report]
+        if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict):
+            raise ValueError("只接收一个明确 session 的 ccusage JSON，不接收账户或日期总计。")
+        row = rows[0]
+        if row.get("sessionId") != session_id or row.get("agent", agent) != agent:
+            raise ValueError("ccusage 报告与绑定 Agent/session 不一致。")
+        owner = _hash(agent, session_id)
+        if self.state.setdefault("backend_by_session", {}).get(owner) == "builtin":
+            raise ValueError("该会话已自动采集，不能再次导入同一会话的 ccusage 总计。")
+        values = normalize("ccusage-session", row)
+        usage = {"input_tokens": values["input_tokens"], "output_tokens": values["output_tokens"],
+                 "total_tokens": values["total_tokens"], "cached_input_tokens": values["cached_input_tokens"],
+                 "cache_write_tokens": values["cache_write_tokens"], "reasoning_output_tokens": values["reasoning_tokens"]}
+        first, last = _ts(row.get("firstActivity")), _ts(row.get("lastActivity"))
+        if last is None or last < self.meter.meta["started_at"]:
+            raise ValueError("报告缺少本轮可核实的 lastActivity。")
+        old = self.state.setdefault("ccusage_snapshots", {}).get(owner)
+        if old is None and not (first is not None and first >= self.meter.meta["started_at"]):
+            old = usage
+            self._gap("NO_PROJECT_START_BASELINE", agent, session_id)
+        delta = _delta(usage, old)
+        if delta is None:
+            self._gap("CUMULATIVE_RESET", agent, session_id)
+        elif delta:
+            models = row.get("modelsUsed") or []
+            self._record({"agent": agent, "session": session_id, "key": "ccusage:" + _hash(usage),
+                "model": models[0] if len(models) == 1 else "unknown", "usage": delta}, "unattributed")
+        self.state["ccusage_snapshots"][owner] = usage
+        self.state["backend_by_session"][owner] = "ccusage-import"
+        self.state.setdefault("imported_sessions", {})[owner] = {"agent": agent, "session": _hash(session_id)}
+        self._save()
+        return self.sync()
 
     def sync(self, phase=None):
         if self.meter.meta["state"] != "RUNNING":
             return self.status()
         phase = phase or self.meter.meta.get("phase") or "unattributed"
         detected = detect_agents(self.home, self.environ)
-        self.state["agents"] = [{k: row[k] for k in ("id", "label", "mode", "detected")} for row in detected]
-        active = []
+        self.state["agents"] = [{k: row[k] for k in ("id", "label", "mode", "detected", "detection_basis")} for row in detected]
+        self.state["ccusage"] = {"available": False, "mode": "explicit_session_json_import", "reviewed_version": "20.0.24"}
+        active = list(self.state.get("imported_sessions", {}).values())
         missing = []
-        binary = _ccusage_binary(self.root, self.environ)
-        self.state["ccusage"] = {"available": bool(binary), "binary": binary.name if binary else None}
-        ccrows = None
         try:
+            selected = next(row for row in detected if row["id"] == self.selected_agent)
+            candidates = project_candidates(self.selected_agent, self.workspace_root,
+                [Path(p) for p in selected["roots"]], self.home, self.environ)
+            self.state["session_candidates"] = candidates
+            # Only auto-bind a uniquely identified current workspace session started
+            # during this project. Existing/multiple sessions require host confirmation.
+            if not self.state.get("bindings", {}).get(self.selected_agent):
+                eligible = [r for r in candidates if r.get("created_at") is not None and
+                            r["created_at"] >= self.meter.meta["started_at"] and not r.get("is_child")]
+                if len(candidates) == 1 and len(eligible) == 1:
+                    self.bind({self.selected_agent: [eligible[0]["session_id"]]})
+            supported = {"codex", "claude", "gemini", "cursor", "opencode", "copilot", "kimi", "cline", "roo"}
             for info in detected:
-                bindings = self.state.get("bindings", {}).get(info["id"], [])
-                if not bindings:
+                agent = info["id"]
+                bindings = self.state.get("bindings", {}).get(agent, [])
+                if self.selected_agent not in {"auto", agent} or not bindings:
                     continue
-                roots = [Path(p) for p in info["roots"]]
-                parser = BUILTIN_PARSERS.get(info["id"])
-                if info["id"] == "codex":
-                    roots = self._codex_roots(roots, bindings)
-                if parser:
-                    events = parser(info["id"], roots, self.meter.meta["started_at"])
-                    owned = [e for e in events if self._matches(e["session"], bindings)]
-                    for item in owned:
-                        if item.get("timestamp") is None:
-                            self._gap("MISSING_USAGE_TIMESTAMP", item["agent"], item["session"])
-                            continue
+                local = [sid for sid in bindings if self.state.get("backend_by_session", {}).get(_hash(agent, sid)) != "ccusage-import"]
+                if not local:
+                    continue
+                if agent not in supported:
+                    missing += [{"agent": agent, "session": _hash(sid), "code": "UNSUPPORTED_BOUND_HOST"} for sid in local]
+                    continue
+                events = self._events(agent, [Path(p) for p in info["roots"]], local)
+                seen = set()
+                for item in events:
+                    if item["session"] not in local:
+                        continue
+                    if item.get("timestamp") is None:
+                        missing.append({"agent": agent, "session": _hash(item["session"]), "code": "MISSING_USAGE_TIMESTAMP"})
+                        continue
+                    if item["usage"] is None and item.get("gap") == "CURSOR_USAGE_NOT_REPORTED":
+                        missing.append({"agent": agent, "session": _hash(item["session"]), "code": "CURSOR_USAGE_NOT_REPORTED"})
+                        continue
+                    if item.get("snapshot") and item["usage"] is not None:
+                        self._snapshot(item, phase)
+                    else:
                         self._record(item, phase)
-                    seen = {e["session"] for e in owned}
-                    for session in bindings:
-                        if not any(self._matches(s, [session]) for s in seen):
-                            missing.append({"agent": info["id"], "session": _hash(session), "code": "BOUND_SESSION_NOT_OBSERVED"})
-                    active.extend({"agent": info["id"], "session": _hash(session)} for session in seen)
-                elif binary:
-                    if ccrows is None:
-                        ccrows = _ccusage_sessions(binary)
-                    for session in bindings:
-                        matches = [r for r in ccrows if r["agent"] == info["id"] and self._matches(r["session"], [session])]
-                        if not matches:
-                            missing.append({"agent": info["id"], "session": _hash(session), "code": "BOUND_SESSION_NOT_OBSERVED"})
-                        for row in matches:
-                            key = _hash(row["agent"], row["session"])
-                            old = self.state.setdefault("sessions", {}).get(key)
-                            usage = row["usage"]
-                            if usage is None:
-                                self._gap("MISSING_OR_UNSUPPORTED_USAGE", row["agent"], row["session"])
-                                continue
-                            if old is None:
-                                if row["first"] is not None and row["first"] >= self.meter.meta["started_at"]:
-                                    old = {k: 0 for k in usage}
-                                else:
-                                    old = usage
-                                    self._gap("NO_PROJECT_START_BASELINE", row["agent"], row["session"])
-                            delta = _delta(usage, old)
-                            if delta is None:
-                                self._gap("CUMULATIVE_RESET", row["agent"], row["session"])
-                            elif delta:
-                                self._record({"agent": row["agent"], "session": row["session"],
-                                              "key": "ccusage:" + _hash(usage), "model": row["model"],
-                                              "usage": delta}, phase)
-                            self.state["sessions"][key] = usage
-                            active.append({"agent": row["agent"], "session": _hash(row["session"])})
-                else:
-                    missing.extend({"agent": info["id"], "session": _hash(session), "code": "UNSUPPORTED_BOUND_HOST"} for session in bindings)
-            self.state["active_sessions"] = active
-            self.state["pending_bindings"] = missing
-            self.state["status"] = "CONNECTED_PARTIAL" if missing or self.state.get("gaps") else (
-                "CONNECTED_BUILTIN" if active else "NO_BOUND_SESSIONS")
-            self.state["backend"] = "builtin+optional-ccusage"
-        except (OSError, ValueError, TypeError, RuntimeError, subprocess.TimeoutExpired, json.JSONDecodeError) as exc:
+                    self.state.setdefault("backend_by_session", {})[_hash(agent, item["session"])] = "builtin"
+                    seen.add(item["session"])
+                for sid in local:
+                    if sid not in seen:
+                        code = ("CURSOR_USAGE_NOT_REPORTED" if sid in {r["session_id"] for r in candidates} else "BOUND_SESSION_WORKSPACE_MISMATCH") if agent == "cursor" else "BOUND_SESSION_NOT_OBSERVED"
+                        missing.append({"agent": agent, "session": _hash(sid), "code": code})
+                active.extend({"agent": agent, "session": _hash(sid)} for sid in seen)
+            self.state["active_sessions"] = list({(r["agent"], r["session"]): r for r in active}.values())
+            self.state["pending_bindings"] = list({(r["agent"], r["session"], r["code"]): r for r in missing}.values())
+            known = self.state.get("known_usage_sessions", {}).values()
+            known_active = any(row in known for row in self.state["active_sessions"])
+            if known_active:
+                self.state["status"] = "CONNECTED_PARTIAL" if missing or self.state.get("gaps") else "CONNECTED_BUILTIN"
+            else:
+                self.state["status"] = "WAITING_FOR_USAGE" if missing or active else "NO_BOUND_SESSIONS"
+            self.state["backend"] = "scoped-local+explicit-ccusage-json"
+        except (OSError, ValueError, TypeError, RuntimeError, sqlite3.Error) as exc:
             self.state["status"] = "ERROR"
             self.state["error"] = type(exc).__name__
             self._gap("AUTO_CAPTURE_ERROR", "adapter", "unknown")
@@ -964,12 +822,37 @@ class MultiAgentUsage:
         return self.status()
 
     def status(self):
+        info = agent_info(self.selected_agent)
+        active = self.state.get("active_sessions", [])
+        known = [row for row in self.state.get("known_usage_sessions", {}).values()
+                 if self.selected_agent in {"auto", row["agent"]}]
+        gaps = list(self.state.get("gaps", {}).values()) + self.state.get("pending_bindings", [])
+        bound = sum(len(v) for k, v in self.state.get("bindings", {}).items() if self.selected_agent in {"auto", k})
+        code, message, action = "SESSION_BINDING_REQUIRED", "尚未绑定本轮宿主会话，token 不是 0。", "bind_session"
+        if self.selected_agent == "auto" and not bound:
+            code, message, action = "AGENT_SELECTION_REQUIRED", "请选择创作使用的 Agent，并由宿主绑定本轮会话。", "select_agent"
+        elif self.selected_agent in {"windsurf", "trae", "augment", "other"}:
+            code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
+        elif self.selected_agent == "cursor" and bound and not active and any(g["code"] == "CURSOR_USAGE_NOT_REPORTED" for g in gaps):
+            code, message, action = "CURSOR_USAGE_NOT_REPORTED", "Cursor 本机 composer/气泡尚未提供非零真实消耗；上下文占用和全零占位均不计入。可导入本轮 SDK 最终 usage。", "import_usage"
+        elif self.state.get("status") == "ERROR":
+            code, message, action = "CAPTURE_ERROR", "采集遇到格式或来源错误；查看采集缺口并提供原始 usage。", "inspect_source"
+        elif active and known:
+            code, message, action = "RECORDED_PARTIAL", "已记录绑定来源的真实用量；缺失字段和未绑定子代理仍不在覆盖内。", "bind_children_or_import_missing"
+        elif active and not known and any(g["code"] == "NO_PROJECT_START_BASELINE" for g in gaps):
+            code, message, action = "BASELINE_CAPTURED", "已保存旧会话累计基线，尚无可归属本轮的已知差额；请提供后续真实用量快照。", "check_requirements"
+        elif active or bound:
+            code, message, action = "WAITING_FOR_USAGE", "会话已绑定，尚未读到本轮可核实 usage。请核对日志条件或导入本轮真实 usage。", "check_requirements"
         return {"schema": STATE_SCHEMA, "status": self.state.get("status"), "backend": self.state.get("backend"),
+                "selected_agent": self.selected_agent, "agent": info,
+                "connection": {"code": code, "message": message, "action": action,
+                    "action_label": {"bind_session": "绑定本轮宿主会话", "select_agent": "选择创作使用的 Agent",
+                        "import_usage": "导入本轮真实 usage", "inspect_source": "检查来源和计量缺口",
+                        "bind_children_or_import_missing": "绑定子代理或补充缺失用量",
+                        "check_requirements": "核对日志条件或导入真实用量"}[action], "requirements": info["requirements"]},
+                "session_candidates": self.state.get("session_candidates", []),
                 "ccusage": self.state.get("ccusage"), "scope": self.state["scope"], "privacy": self.state["privacy"],
                 "detected_agents": [r for r in self.state.get("agents", []) if r.get("detected")],
-                "active_sessions": self.state.get("active_sessions", []),
-                "events_added": self.state.get("events_added", 0), "duplicates": self.state.get("duplicates", 0),
-                "reset_gaps": self.state.get("reset_gaps", 0),
-                "gaps": list(self.state.get("gaps", {}).values()) + self.state.get("pending_bindings", []),
-                "bound_session_count": sum(len(v) for v in self.state.get("bindings", {}).values()),
-                "unbound_children_covered": False}
+                "active_sessions": active, "events_added": self.state.get("events_added", 0),
+                "duplicates": self.state.get("duplicates", 0), "reset_gaps": self.state.get("reset_gaps", 0),
+                "gaps": gaps, "bound_session_count": bound, "unbound_children_covered": False}

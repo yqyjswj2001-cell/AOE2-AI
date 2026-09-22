@@ -11,7 +11,7 @@ import json
 import math
 import re
 
-FORMATS = {"openai-responses", "openai-chat", "anthropic-messages", "codex-exec", "agent-usage"}
+FORMATS = {"openai-responses", "openai-chat", "anthropic-messages", "codex-exec", "agent-usage", "cursor-sdk", "ccusage-session"}
 PHASES = {"0": "配置与准备", "1": "阅读策略卡", "3": "填写动态参数",
           "4": "检查与返工", "5": "整理交付", "unattributed": "未分阶段"}
 COUNTERS = ("input_tokens", "output_tokens", "total_tokens", "cached_input_tokens",
@@ -56,7 +56,18 @@ def normalize(format_name, raw):
         return dict.fromkeys(COUNTERS)
     require(isinstance(raw, dict), "usage 必须是对象或 null。")
     cached = written = reasoning = None
-    if format_name == "openai-chat":
+    if format_name in {"cursor-sdk", "ccusage-session"}:
+        inp, out = count(raw.get("inputTokens"), "inputTokens"), count(raw.get("outputTokens"), "outputTokens")
+        cached = count(raw.get("cacheReadTokens"), "cacheReadTokens")
+        written_key = "cacheWriteTokens" if format_name == "cursor-sdk" else "cacheCreationTokens"
+        written = count(raw.get(written_key), written_key)
+        inp += cached + written
+        reasoning = raw.get("reasoningTokens", raw.get("reasoningOutputTokens"))
+        total = count(raw.get("totalTokens"), "totalTokens")
+        if format_name == "ccusage-session" and reasoning is not None and total == inp + out + reasoning:
+            out += count(reasoning, "reasoningTokens")
+        require(total == inp + out, "totalTokens 与输入、输出及缓存不一致。")
+    elif format_name == "openai-chat":
         inp, out = raw.get("prompt_tokens"), raw.get("completion_tokens")
         i_detail, o_detail = raw.get("prompt_tokens_details") or {}, raw.get("completion_tokens_details") or {}
         require(isinstance(i_detail, dict) and isinstance(o_detail, dict), "usage details 格式错误。")
@@ -101,7 +112,9 @@ def usage_payload(format_name, raw):
         return None
     base = {"input_tokens", "output_tokens", "total_tokens"}
     nested = {}
-    if format_name == "openai-chat":
+    if format_name in {"cursor-sdk", "ccusage-session"}:
+        base = {"inputTokens", "outputTokens", "cacheReadTokens", "cacheWriteTokens", "cacheCreationTokens", "totalTokens", "reasoningTokens", "reasoningOutputTokens"}
+    elif format_name == "openai-chat":
         base = {"prompt_tokens", "completion_tokens", "total_tokens"}
         nested = {"prompt_tokens_details": {"cached_tokens", "cache_write_tokens"},
                   "completion_tokens_details": {"reasoning_tokens"}}
@@ -145,6 +158,16 @@ def event(format_name, value):
 def response_event(format_name, raw, phase="unattributed"):
     """Extract ONLY final response usage; never sum streaming deltas/cumulative counters."""
     require(isinstance(raw, dict), "响应必须是 JSON 对象。")
+    if format_name == "agent-usage":
+        event(format_name, raw)
+        return raw
+    if format_name == "ccusage-session":
+        raise ValueError("ccusage 是累计会话快照，必须经 usage --action ccusage 接入以扣除基线。")
+    if format_name == "cursor-sdk":
+        require(raw.get("status") in {"finished", "error", "cancelled"}, "只接收 Cursor SDK 最终 RunResult，不累加运行中快照。")
+        return {"event_id": identifier(raw.get("id"), "Cursor run id"), "phase": phase,
+                "model": raw.get("model", {}).get("id", "unknown") if isinstance(raw.get("model"), dict) else raw.get("model", "unknown"),
+                "usage": raw.get("usage"), "outcome": {"finished": "succeeded", "error": "failed", "cancelled": "cancelled"}[raw["status"]]}
     if format_name == "openai-responses" and raw.get("type") in {"response.completed", "response.failed", "response.incomplete"}:
         raw = raw.get("response", {})
     require(format_name != "codex-exec", "Codex 需要逐轮解析，不是 API response。")

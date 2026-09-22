@@ -3,6 +3,7 @@ from __future__ import annotations
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import hmac
 import json
+import re
 import threading
 import time
 from urllib.parse import parse_qs, urlparse
@@ -66,11 +67,24 @@ def make_server(controller, meta, port=0):
                 route = parsed.path
                 if route == "/api/state":
                     return self._json(controller.state())
+                if route == "/api/civilizations" and not parsed.query:
+                    from civilization_catalog import catalog
+                    return self._json(catalog())
+                if route == "/api/agents" and not parsed.query:
+                    from agent_catalog import agent_catalog
+                    return self._json({"agents": agent_catalog()})
+                if route.startswith("/assets/civilizations/") and not parsed.query:
+                    name = route.removeprefix("/assets/civilizations/")
+                    from civilization_catalog import catalog
+                    allowed_icons = {row["icon"] for row in catalog()["civilizations"]}
+                    if route not in allowed_icons or not re.fullmatch(r"[A-Za-z]+\.png", name):
+                        return self._json({"error": "Unknown civilization icon"}, 404)
+                    return self._send((HERE / "web/assets/civilizations" / name).read_bytes(), "image/png")
                 if route == "/api/author/session":
                     elapsed = None if Handler.last_wait is None else time.monotonic() - Handler.last_wait
                     return self._json({"schema": SESSION_SCHEMA, "instance_id": meta["instance_id"],
                                        "project_id": meta["project_id"], "agent_waiting": elapsed is not None and elapsed < 25,
-                                       "host_required": True})
+                                       "host_required": True, "ui_version": "shield-host-v2"})
                 if route == "/api/author/next":
                     if not self._host():
                         return
@@ -114,6 +128,8 @@ def make_server(controller, meta, port=0):
                 route = urlparse(self.path).path
                 if route == "/api/start":
                     return self._json(controller.start(payload))
+                if route == "/api/usage/bind-session":
+                    return self._json(controller.bind_usage_candidate(payload))
                 if not self._host():
                     return
                 if payload.get("project_id") != meta["project_id"]:
@@ -137,7 +153,7 @@ def make_server(controller, meta, port=0):
                 prefix = "/api/author/usage/"
                 if route.startswith(prefix):
                     action = route[len(prefix):]
-                    if action not in {"source", "events", "seal", "phase", "complete", "bind"}:
+                    if action not in {"source", "events", "seal", "phase", "complete", "bind", "ccusage"}:
                         return self._json({"error": "Unknown usage action"}, 404)
                     current = controller.usage()
                     if payload.get("run_id") != current.get("run_id"):

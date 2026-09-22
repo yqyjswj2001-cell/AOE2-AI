@@ -2,7 +2,8 @@
 
 identity["usage_sessions"] explicitly binds main/child host sessions:
     {"codex": ["main UUID", "owned child UUID"], "claude": ["owned session ID"]}
-The current CODEX_THREAD_ID is added automatically, never every concurrent session.
+CODEX_THREAD_ID is added only for a new auto/Codex meter. Reopening a project
+never attaches the maintenance host; saved and explicitly bound sessions remain.
 Register newly spawned owned children through bind_sessions or POST usage/bind.
 Unbound children are outside coverage; all_sources_declared is a host attestation.
 Tests must set identity["auto_capture"]=False or AOE2_USAGE_DISABLE_AUTO=1.
@@ -11,6 +12,7 @@ from pathlib import Path
 import os
 import threading
 
+from agent_catalog import normalize_agent
 from metering import Meter
 from multi_agent_usage import MultiAgentUsage
 from usage_formats import PHASES, canonical, require
@@ -20,6 +22,7 @@ ALIASES = {"researching": "1", "authoring": "3", "checking": "4",
 GAP_MESSAGES = {
     "AMBIGUOUS_CROSS_SESSION_REPLAY": "不同会话出现相同累计记录，无法证明是否为继承重放，该条保持未知。",
     "LOG_REPLACED_OR_TRUNCATED": "绑定日志被替换或截断，保留原记录并停止重算该文件。",
+    "BOUND_SESSION_WORKSPACE_MISMATCH": "绑定会话没有匹配当前工作区元数据，未读取会话正文或计数。",
     "BOUND_SESSION_NOT_OBSERVED": "已绑定会话尚无本次可核实用量。",
     "UNSUPPORTED_BOUND_HOST": "已绑定宿主没有可用的真实用量适配器。",
     "NO_PROJECT_START_BASELINE": "缺少项目起点累计基线，只保留接入后的已知用量。",
@@ -28,6 +31,8 @@ GAP_MESSAGES = {
     "MISSING_OR_UNSUPPORTED_USAGE": "来源缺少计数或字段无法可靠归一化。",
     "UNSUPPORTED_CODEX_USAGE": "Codex 日志没有受支持的累计 usage。",
     "INVALID_CODEX_TOTAL": "Codex 总数与输入输出不一致。",
+    "CURSOR_USAGE_NOT_REPORTED": "Cursor 气泡 tokenCount 缺失或全零；没有按上下文占用估算。",
+    "TASK_AGGREGATE_NOT_ATTRIBUTABLE": "任务有已折叠或子任务汇总，无法归属本轮，未重复计入。",
     "AUTO_CAPTURE_ERROR": "自动采集发生错误，当前只保留已记录小计。",
 }
 
@@ -45,9 +50,11 @@ class MeterAdapter:
         if not disabled:
             bindings = {k: list(v) for k, v in identity.get("usage_sessions", {}).items()}
             thread = os.environ.get("AOE2_AUTHOR_CODEX_THREAD_ID") or os.environ.get("CODEX_THREAD_ID")
-            if thread:
+            selected_agent = normalize_agent(identity.get("agent", "auto"))
+            if thread and not existed and selected_agent in {"auto", "codex"}:
                 bindings.setdefault("codex", []).append(thread)
-            self.auto = MultiAgentUsage(self.meter, self.project, Path(__file__).parent, bindings=bindings)
+            self.auto = MultiAgentUsage(self.meter, self.project, Path(__file__).parent, bindings=bindings,
+                selected_agent=selected_agent, workspace_root=identity.get("workspace_root"))
         self._sync()
 
     def update_context(self, changes: dict) -> dict:
@@ -119,6 +126,10 @@ class MeterAdapter:
                 return self.phase(payload["phase"])
             elif action == "bind":
                 return self.bind_sessions(payload["sessions"])
+            elif action == "ccusage":
+                require(self.auto is not None, "自动采集已禁用，不能接入会话累计快照。")
+                self.auto.ingest_ccusage(payload["agent"], payload["session_id"], payload["report"])
+                return self.report()
             else:
                 raise ValueError("未知计量操作；complete 必须由服务核对实际交付后调用。")
             return {"status": "RECORDED", "run_id": self.meter.meta["run_id"]}

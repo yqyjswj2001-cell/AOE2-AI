@@ -14,12 +14,14 @@ import time
 import uuid
 
 from civilizations import content_profile, eligible_rows, selection_context
+from agent_catalog import agent_catalog, normalize_agent
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 PROJECTS = ROOT / "adjusted/.local/author-projects"
 TEST_ROOT = ROOT / "adjusted/.local/web-author-migration/tmp"
 CIVILIZATION_TEST_ROOT = ROOT / "adjusted/.local/civilization-selection/tmp"
+UI_TEST_ROOT = ROOT / "adjusted/.local/ui-token-revision/tmp"
 TOOLS = ROOT / "adjusted/tools"
 NAME = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,47}\Z")
 MODES = {"1v1", "2v2", "3v3", "4v4", "ffa4", "ffa8"}
@@ -68,7 +70,7 @@ def project_path(value, test_project=False):
     result = safe_path(result)
     if result.parent == safe_path(PROJECTS) and NAME.fullmatch(result.name):
         return result
-    test_roots = (safe_path(TEST_ROOT), safe_path(CIVILIZATION_TEST_ROOT), safe_path(Path(tempfile.gettempdir())))
+    test_roots = (safe_path(TEST_ROOT), safe_path(CIVILIZATION_TEST_ROOT), safe_path(UI_TEST_ROOT), safe_path(Path(tempfile.gettempdir())))
     if test_project and any(result.is_relative_to(base) and result != base for base in test_roots):
         return result
     raise WorkflowError("Project must be adjusted/.local/author-projects/<name>; explicit test projects must stay in temporary storage")
@@ -170,7 +172,9 @@ class Controller:
         self.meter = self.meter_factory(self.project, {
             "project_id": self.data["project_id"], "source_sha256": self.data["input_sha256"],
             "task_sha256": task_hash, "game_mode": request["mode"],
-            "civilization": request["civilization"], "script_name": request["script_name"]})
+            "civilization": request["civilization"], "script_name": request["script_name"],
+            "agent": self.data.get("usage_agent", request.get("agent", "auto")), "workspace_root": str(ROOT),
+            "usage_sessions": self.data.get("usage_sessions", {})})
 
     def _selection_pending(self):
         task = self.data.get("task_request") or self.data.get("request") or {}
@@ -302,7 +306,7 @@ class Controller:
         with self.lock:
             self._sync()
             return {key: self.data[key] for key in ("status", "revision", "request", "progress", "build", "project_id")} | {
-                "usage": self.usage(), "civilizations": self.civilizations,
+                "usage": self.usage(), "civilizations": self.civilizations, "agents": agent_catalog(),
                 "content_profile": content_profile(), "civilization_selection": self._selection_state(),
                 "runtime": {"parser_load": "Unverified", "smoke": "Unverified", "full_game": "Unverified", "strength": "Unverified"},
                 "host_required": True}
@@ -322,7 +326,8 @@ class Controller:
                 raise WorkflowError("Script name must start with a letter and contain 1-48 ASCII letters, digits, underscore or hyphen")
             if not isinstance(preferences, dict) or set(preferences) != AGES or any(type(v) is not int or not 0 <= v <= 100 for v in preferences.values()):
                 raise WorkflowError("All four age preferences must be integers within 0..100")
-            request = {"mode": mode, "civilization": civ, "preferences": preferences, "script_name": name}
+            agent = normalize_agent(payload.get("agent", "auto"))
+            request = {"mode": mode, "civilization": civ, "preferences": preferences, "script_name": name, "agent": agent}
             selection = selection_context(self.civilizations, self.data["project_id"]) if civ == "auto" else {}
             choice = None if civ == "auto" else {
                 "civilization": civ, "reason": "", "selected_by": "user", "selected_at": time.time()}
@@ -394,6 +399,10 @@ class Controller:
                                        if self._selection_pending() else None,
                     "author_input": str(self.project / "author-input") if state["request"] else None,
                     "answers_output": str(self.project / "answers") if state["request"] else None,
+                    "usage_connection": {
+                        "agent": self.data.get("usage_agent", (state["request"] or {}).get("agent", "auto")),
+                        "capture": state["usage"].get("auto_capture", {}),
+                        "instructions": "Use the selected host's real usage source. Bind this project's main and child sessions before importing usage. See adjusted/web-author/METERING.md. Never infer consumption from context window size, character counts, or account totals."},
                     "fresh_context_required": True, "host_required": True,
                     "next_action": "wait_for_start" if state["status"] == "configuring" else
                     ("choose_civilization" if self._selection_pending() else
@@ -525,6 +534,26 @@ class Controller:
                 raise WorkflowError("Only the research phase is allowed before choosing a civilization")
             return self.meter.phase(payload["value"])
 
+    def bind_usage_candidate(self, payload):
+        """Browser may bind only a candidate already scoped to this workspace/host."""
+        with self.lock:
+            self._expected(payload)
+            if not self.meter:
+                raise WorkflowError("Start the project before connecting usage")
+            report = self.usage()
+            if payload.get("run_id") != report.get("run_id"):
+                raise WorkflowError("Usage run identity does not match")
+            capture = report.get("auto_capture", {})
+            agent = normalize_agent(payload.get("agent"))
+            session = payload.get("session_id")
+            if agent != capture.get("selected_agent") or not isinstance(session, str):
+                raise WorkflowError("Select the current host's project session")
+            candidates = capture.get("session_candidates", [])
+            if not any(row.get("session_id") == session and row.get("agent") == agent
+                       and row.get("workspace_match") is True for row in candidates):
+                raise WorkflowError("This session is not a verified candidate for the current workspace")
+            return self.usage_action("bind", {**payload, "sessions": {agent: [session]}})
+
     def usage_action(self, action, payload):
         with self.lock:
             if not self.meter:
@@ -536,7 +565,12 @@ class Controller:
                 sessions = payload.get("sessions")
                 if not isinstance(sessions, dict):
                     raise WorkflowError("sessions must be an explicit host-to-session mapping")
-                return self.meter.bind_sessions(sessions)
+                result = self.meter.bind_sessions(sessions)
+                existing = self.data.setdefault("usage_sessions", {})
+                for host, ids in sessions.items():
+                    existing[host] = sorted(set(existing.get(host, [])) | set(ids))
+                self._save()
+                return result
             if action == "complete":
                 self._sync()
                 if self.data["status"] != "completed" or not self._delivery_valid():

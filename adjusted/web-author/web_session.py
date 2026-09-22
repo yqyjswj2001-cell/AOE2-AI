@@ -243,7 +243,7 @@ def main(argv=None):
         if name == "phase":
             sub.add_argument("--value", required=True, choices=["researching", "authoring", "checking", "repairing", "packaging"])
         if name == "usage":
-            sub.add_argument("--action", choices=["report", "source", "events", "seal", "complete", "bind"], default="report")
+            sub.add_argument("--action", choices=["report", "source", "events", "seal", "complete", "bind", "ccusage"], default="report")
             sub.add_argument("--payload", type=Path)
     args = parser.parse_args(argv)
     try:
