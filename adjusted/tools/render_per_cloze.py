@@ -34,7 +34,7 @@ def validate_value(key: str, value, official_default):
 
 
 def render_one(template: Path, answers_path: Path, defaults_path: Path) -> str:
-    source = template.read_text(encoding="utf-8")
+    source = template.read_bytes().decode("utf-8")
     answers = json.loads(answers_path.read_text(encoding="utf-8-sig"))
     defaults_doc = json.loads(defaults_path.read_text(encoding="utf-8-sig"))
     defaults = defaults_doc["answers"]
@@ -77,7 +77,7 @@ def main(argv=None) -> int:
             answer_file = args.answers_dir / f"{module.removesuffix('.per')}.json"
             defaults_file = args.defaults / f"{module.removesuffix('.per')}.json"
             rendered = render_one(template, answer_file, defaults_file)
-            (args.out / module).write_text(rendered, encoding="utf-8", newline="")
+            (args.out / module).write_bytes(rendered.encode("utf-8"))
     except (OSError, json.JSONDecodeError, ClozeError, KeyError) as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False, indent=2))
         return 2
