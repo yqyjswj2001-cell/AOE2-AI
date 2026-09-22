@@ -34,6 +34,10 @@ Official-derived templates currently exist for:
 - `buildings.per` — 80 same-building target-count blanks;
 - `researches.per` — 297 trigger blanks limited to common economy technologies and common military upgrades.
 
+- `boarhunting.per` — 56 boar timing, villager and food/sheep trigger blanks;
+- `threats.per` — 6 direct enemy military-population target-switch blanks;
+- `watercontrol.per` — 10 naval attack/retreat water-advantage blanks.
+
 The remaining dynamic modules will be migrated in the same way, three at a time. Until a module is migrated, its adjusted baseline remains the exact
 official file.
 
@@ -57,3 +61,9 @@ This policy is enforced by CI in addition to the byte-for-byte official-default 
 - `units.per`: a blank is allowed only when a direct `train X` rule compares the current count of that same `X`.
 - `buildings.per`: a blank is allowed only when a direct `build X` rule compares the current count of that same `X`.
 - `researches.per`: economic-tech blanks are limited to positive economy/population timing thresholds; military-tech blanks are limited to positive own-army beneficiary thresholds. Technology names and civilization-specific research branches remain official and fixed.
+
+### Batch 4 curation
+
+- `boarhunting.per`: blanks are limited to time, villager, sheep/food thresholds in rules that directly compute `minBoar` or enable boar hunting. Hunting distances, IDs and micro-control values stay fixed.
+- `threats.per`: blanks are limited to the enemy military-population thresholds in the direct rule that switches both target and focus player. Player IDs, timers, search radii and arithmetic weights stay fixed.
+- `watercontrol.per`: blanks are limited to `water-advantage` comparisons in rules that choose a water action. Formation, range, distance, object filters and action IDs stay fixed.
