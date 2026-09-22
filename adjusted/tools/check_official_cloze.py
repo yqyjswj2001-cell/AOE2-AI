@@ -94,4 +94,97 @@ for line in orb.splitlines():
     ):
         raise SystemExit(f"orb.per: placeholder outside attack-group control: {line}")
 
+
+def code_without_comments(text: str) -> str:
+    return "\n".join(line.split(";", 1)[0] for line in text.splitlines())
+
+
+units = (TEMPLATES / "units.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(units):
+    if "{{UNITS_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    trains = set(re.findall(r"\(train\s+([a-z0-9-]+)\)", code))
+    if not trains:
+        raise SystemExit("units.per: placeholder outside direct train rule")
+    for line in code.splitlines():
+        if "{{UNITS_" not in line:
+            continue
+        m = re.search(
+            r"\(unit-type-count(?:-total)?\s+([a-z0-9-]+)\s+(?:<|<=)\s+\{\{UNITS_",
+            line,
+        )
+        if not m or m.group(1) not in trains:
+            raise SystemExit(f"units.per: placeholder is not same-unit train cap: {line}")
+
+
+buildings = (TEMPLATES / "buildings.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(buildings):
+    if "{{BUILDINGS_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    builds = set(re.findall(r"\(build\s+([a-z0-9-]+)\)", code))
+    if not builds:
+        raise SystemExit("buildings.per: placeholder outside direct build rule")
+    for line in code.splitlines():
+        if "{{BUILDINGS_" not in line:
+            continue
+        m = re.search(
+            r"\(building-type-count(?:-total)?\s+([a-z0-9-]+)\s+(?:<|<=)\s+\{\{BUILDINGS_",
+            line,
+        )
+        if not m or m.group(1) not in builds:
+            raise SystemExit(f"buildings.per: placeholder is not same-building target: {line}")
+
+
+ECON_TECHS = {
+    "ri-double-bit-axe", "ri-bow-saw", "ri-two-man-saw", "ri-horse-collar",
+    "ri-heavy-plow", "ri-crop-rotation", "ri-wheel-barrow", "ri-hand-cart",
+    "ri-gold-mining", "ri-gold-shaft-mining", "ri-stone-mining",
+    "ri-stone-shaft-mining",
+}
+MIL_TECHS = {
+    "ri-forging", "ri-iron-casting", "ri-blast-furnace",
+    "ri-scale-mail-armor", "ri-chain-mail-armor", "ri-plate-mail-armor",
+    "ri-scale-barding", "ri-chain-barding", "ri-plate-barding",
+    "ri-fletching", "ri-bodkin-arrow", "ri-bracer",
+    "ri-padded-archer-armor", "ri-leather-archer-armor",
+    "ri-ring-archer-armor", "ri-bloodlines", "ri-husbandry", "ri-thumb-ring",
+    "ri-ballistics", "ri-chemistry", "ri-siege-engineers", "ri-conscription",
+    "ri-arson", "ri-squires",
+}
+
+researches = (TEMPLATES / "researches.per.tpl").read_bytes().decode("utf-8")
+for chunk in chunks(researches):
+    if "{{RESEARCH_" not in chunk:
+        continue
+    code = code_without_comments(chunk)
+    mtech = re.search(r"\(research\s+([a-z0-9-]+)\)", code)
+    if not mtech:
+        raise SystemExit("researches.per: placeholder outside direct research rule")
+    tech = mtech.group(1)
+    if tech not in ECON_TECHS and tech not in MIL_TECHS:
+        raise SystemExit(f"researches.per: placeholder exposed for non-curated tech {tech}")
+    for line in code.splitlines():
+        if "{{RESEARCH_ECON_" in line:
+            ok = re.search(
+                r"\((?:civilian-population|population|game-time|current-age-time|food-amount|wood-amount|gold-amount|stone-amount)\s+(?:>=|>)\s+\{\{RESEARCH_ECON_",
+                line,
+            ) or re.search(
+                r"\(unit-type-count(?:-total)?\s+villager[a-z0-9-]*\s+(?:>=|>)\s+\{\{RESEARCH_ECON_",
+                line,
+            )
+            if not ok or tech not in ECON_TECHS:
+                raise SystemExit(f"researches.per: invalid economic-tech placeholder: {line}")
+        if "{{RESEARCH_MIL_" in line:
+            ok = re.search(
+                r"\(unit-type-count(?:-total)?\s+[a-z0-9-]+\s+(?:>=|>)\s+\{\{RESEARCH_MIL_",
+                line,
+            ) or re.search(
+                r"\(military-population\s+(?:>=|>)\s+\{\{RESEARCH_MIL_",
+                line,
+            )
+            if not ok or tech not in MIL_TECHS:
+                raise SystemExit(f"researches.per: invalid military-tech placeholder: {line}")
+
 print("official-derived cloze PASS", len(official_files), "baseline files,", len(templates), "templates")
