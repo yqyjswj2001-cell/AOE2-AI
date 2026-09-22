@@ -1,6 +1,17 @@
-; CLOZE TEMPLATE - attack actuator rules are fixed
+; CLOZE TEMPLATE - group actuator; military disadvantage > base
 (defrule
     (current-age == dark-age)
+    (strategic-number sn-military-superiority <= -{{MILITARY_DISADVANTAGE}})
+    (goal attacking yes)
+=>
+    (set-strategic-number sn-number-attack-groups 1000)
+    (set-strategic-number sn-percent-attack-soldiers {{DISADV_DARK_ATTACK_PERCENT}})
+    (set-strategic-number sn-minimum-attack-group-size {{DISADV_DARK_ATTACK_GROUP_SIZE}})
+    (set-strategic-number sn-maximum-attack-group-size {{DISADV_DARK_ATTACK_GROUP_SIZE}})
+)
+(defrule
+    (current-age == dark-age)
+    (strategic-number sn-military-superiority > -{{MILITARY_DISADVANTAGE}})
     (goal attacking yes)
 =>
     (set-strategic-number sn-number-attack-groups 1000)
@@ -10,6 +21,17 @@
 )
 (defrule
     (current-age == feudal-age)
+    (strategic-number sn-military-superiority <= -{{MILITARY_DISADVANTAGE}})
+    (goal attacking yes)
+=>
+    (set-strategic-number sn-number-attack-groups 1000)
+    (set-strategic-number sn-percent-attack-soldiers {{DISADV_FEUDAL_ATTACK_PERCENT}})
+    (set-strategic-number sn-minimum-attack-group-size {{DISADV_FEUDAL_ATTACK_GROUP_SIZE}})
+    (set-strategic-number sn-maximum-attack-group-size {{DISADV_FEUDAL_ATTACK_GROUP_SIZE}})
+)
+(defrule
+    (current-age == feudal-age)
+    (strategic-number sn-military-superiority > -{{MILITARY_DISADVANTAGE}})
     (goal attacking yes)
 =>
     (set-strategic-number sn-number-attack-groups 1000)
@@ -19,6 +41,17 @@
 )
 (defrule
     (current-age == castle-age)
+    (strategic-number sn-military-superiority <= -{{MILITARY_DISADVANTAGE}})
+    (goal attacking yes)
+=>
+    (set-strategic-number sn-number-attack-groups 1000)
+    (set-strategic-number sn-percent-attack-soldiers {{DISADV_CASTLE_ATTACK_PERCENT}})
+    (set-strategic-number sn-minimum-attack-group-size {{DISADV_CASTLE_ATTACK_GROUP_SIZE}})
+    (set-strategic-number sn-maximum-attack-group-size {{DISADV_CASTLE_ATTACK_GROUP_SIZE}})
+)
+(defrule
+    (current-age == castle-age)
+    (strategic-number sn-military-superiority > -{{MILITARY_DISADVANTAGE}})
     (goal attacking yes)
 =>
     (set-strategic-number sn-number-attack-groups 1000)
@@ -28,6 +61,17 @@
 )
 (defrule
     (current-age == imperial-age)
+    (strategic-number sn-military-superiority <= -{{MILITARY_DISADVANTAGE}})
+    (goal attacking yes)
+=>
+    (set-strategic-number sn-number-attack-groups 1000)
+    (set-strategic-number sn-percent-attack-soldiers {{DISADV_IMPERIAL_ATTACK_PERCENT}})
+    (set-strategic-number sn-minimum-attack-group-size {{DISADV_IMPERIAL_ATTACK_GROUP_SIZE}})
+    (set-strategic-number sn-maximum-attack-group-size {{DISADV_IMPERIAL_ATTACK_GROUP_SIZE}})
+)
+(defrule
+    (current-age == imperial-age)
+    (strategic-number sn-military-superiority > -{{MILITARY_DISADVANTAGE}})
     (goal attacking yes)
 =>
     (set-strategic-number sn-number-attack-groups 1000)
