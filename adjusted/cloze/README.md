@@ -24,7 +24,7 @@ That last condition is enforced in CI.
 Official-derived templates currently exist for:
 
 - `gatherers.per` — 346 gatherer-percentage blanks;
-- `tsa.per` — 348 military population/superiority threshold blanks;
+- `tsa.per` — 157 military population/superiority blanks, restricted to rules that directly switch `attacking yes/no`;
 - `orb.per` — 10 active attack-group blanks;
 - `scoutcontrol.per` — 45 exploration count/time/tactical threshold blanks;
 - `trade.per` — 266 market/resource/count threshold blanks;
@@ -36,3 +36,14 @@ official file.
 Blank answer sheets live in `answers/`.
 Recorded official values used for round-trip proof live in
 `official-defaults/`.
+
+## Curation rule
+
+A numeric literal is not automatically a strategy parameter.
+
+- `gatherers.per`: only direct food/wood/gold/stone gatherer-percentage assignments are exposed.
+- `tsa.per`: only thresholds inside rules that directly switch the `attacking` state are exposed.
+- `orb.per`: only attack-group Strategic Number values are exposed.
+- Goal IDs, timer IDs, jump counts, flags, object IDs, recovery constants, micro-control thresholds, and unrelated implementation values stay official and fixed.
+
+This policy is enforced by CI in addition to the byte-for-byte official-default round-trip check.
