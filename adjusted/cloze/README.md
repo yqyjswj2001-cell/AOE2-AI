@@ -30,6 +30,10 @@ Official-derived templates currently exist for:
 - `trade.per` — 266 market/resource/count threshold blanks;
 - `escrow.per` — 448 age-up/research/economy/military threshold blanks.
 
+- `units.per` — 27 same-unit production-cap blanks;
+- `buildings.per` — 80 same-building target-count blanks;
+- `researches.per` — 297 trigger blanks limited to common economy technologies and common military upgrades.
+
 The remaining dynamic modules will be migrated in the same way, three at a time. Until a module is migrated, its adjusted baseline remains the exact
 official file.
 
@@ -47,3 +51,9 @@ A numeric literal is not automatically a strategy parameter.
 - Goal IDs, timer IDs, jump counts, flags, object IDs, recovery constants, micro-control thresholds, and unrelated implementation values stay official and fixed.
 
 This policy is enforced by CI in addition to the byte-for-byte official-default round-trip check.
+
+### Batch 3 curation
+
+- `units.per`: a blank is allowed only when a direct `train X` rule compares the current count of that same `X`.
+- `buildings.per`: a blank is allowed only when a direct `build X` rule compares the current count of that same `X`.
+- `researches.per`: economic-tech blanks are limited to positive economy/population timing thresholds; military-tech blanks are limited to positive own-army beneficiary thresholds. Technology names and civilization-specific research branches remain official and fixed.
