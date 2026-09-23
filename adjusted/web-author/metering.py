@@ -21,7 +21,7 @@ from usage_formats import COUNTERS, FORMATS, PHASES, canonical, count, digest, d
 
 SCHEMA = "author-metering-v1"
 BUCKETS = ("configuration", "workflow", "human_wait", "unobserved")
-BOUNDARY = ("统计范围：本次项目启动至登记交付；不含之前聊天、真实游戏测试和后续实战复盘。"
+BOUNDARY = ("统计范围：本轮计量接入至登记交付；网页自动来源只在用户授权后采集，授权前不追补。不含真实游戏测试和后续实战复盘。"
             "token 为宿主提供的 usage；未采集不是零，未接入的调用不可推算。"
             "缓存和推理是输入/输出的子项，不重复累加。工作流程时间不是纯模型计算时间。"
             "模型与工具调用时长可能重叠，不能与总历时相加。")

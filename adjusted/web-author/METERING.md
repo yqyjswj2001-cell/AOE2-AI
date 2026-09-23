@@ -1,5 +1,18 @@
 # 真实 token 与时间计量
 
+## 当前入口：用户授权，Agent 接入
+
+本节优先于下方历史接入示例。用户在第一步点击“授权并继续”时即创建账本和采集线程，配置耗时从此开始；点击“开始生成”只冻结任务和切换阶段，不另建 run。默认使用当前 Agent，不要求用户绑定会话。授权前的聊天消耗不追补。
+
+`next.usage_task` / `wait.web_event=USAGE_CONNECTION_REQUIRED` 是主代理的立即接入任务，包含不可复用的 `authorization_id`。认证主代理调用 `usage --action connect --payload ...`，提交 `agent`、`status=ready`、确切 `session_ids`；没有证据则 `status=unavailable`、空 session 列表和简短 reason。接入回执不是 token 记录：只有真实计数入账后才显示“正在记录”。子代理沿用显式 bind 与既有真实 usage 适配器。不得替用户通过 UI 自行授权。
+
+授权仅限本轮的计量元数据。已选定宿主后只发现该宿主的来源；未知宿主且无精确绑定时等待主 Agent，不扫描全部工具。每 3 秒本地采集一次，与网页轮询独立；Cursor 官方接口采用独立低频刷新，首次具备合法归属后尝试读取，重启仍遵守已保存的刷新间隔。
+
+顶部“停止采集”撤回授权，不再读取新来源、不补一次最终官方查询。保留已有数值和 CONSENT_REVOKED 缺口；connect、bind、source、events、ccusage、cursor-admin 写入均拒绝。旧冻结 request 的授权值不是当前权限，应检查 usage_connection.authorized。重启后继续保持停止；本轮不重新授权，新的授权开新项目。
+
+只有明确配置的账号接口或宿主实际返回的 usage 才能入账。按钮不提供第三方账号权限，不把 Cursor Hook 中的 conversation_id 当作 token，也不将普通 IDE 上下文占用估算成消耗。完整数字、缓存/推理子项、阶段、模型、来源缺口和导出都集中在作品页“完整用量”。
+
+
 网页第一步先取得本轮计量授权。只有 usage_authorized=true 时才启动自动 usage 采集；选择“本轮不计量”时仍可创作，但 token 保持未采集。授权范围仅是本项目真实 usage、会话 ID、模型、时间等计量元数据，不扩大到聊天正文或凭据。任何来源都不根据字数、上下文窗口占用、账户额度或 credits 估算 token。流程的 RUNNING 表示计时正在进行，不代表已接通计量。JSON、网页和 CSV 均读取同一 SQLite 台账。
 
 ## Agent 选择与实际支持范围

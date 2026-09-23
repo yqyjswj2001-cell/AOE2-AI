@@ -88,7 +88,7 @@ def make_server(controller, meta, port=0):
                     elapsed = None if Handler.last_wait is None else time.monotonic() - Handler.last_wait
                     return self._json({"schema": SESSION_SCHEMA, "instance_id": meta["instance_id"],
                                        "project_id": meta["project_id"], "agent_waiting": elapsed is not None and elapsed < 25,
-                                       "host_required": True, "ui_version": "shield-host-v2"})
+                                       "host_required": True, "ui_version": "studio-consent-v3"})
                 if route == "/api/author/next":
                     if not self._host():
                         return
@@ -169,7 +169,7 @@ def make_server(controller, meta, port=0):
                 prefix = "/api/author/usage/"
                 if route.startswith(prefix):
                     action = route[len(prefix):]
-                    if action not in {"source", "events", "seal", "phase", "complete", "bind", "ccusage", "cursor-admin"}:
+                    if action not in {"connect", "source", "events", "seal", "phase", "complete", "bind", "ccusage", "cursor-admin"}:
                         return self._json({"error": "Unknown usage action"}, 404)
                     current = controller.usage()
                     if payload.get("run_id") != current.get("run_id"):

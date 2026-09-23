@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 _ROWS = [
-    ("auto", "由宿主确认", "explicit_binding", "兼容旧项目；不能根据已安装目录猜测正在使用的 Agent。", "先选择实际 Agent；会话由后台自动识别，无法唯一确认时保留缺口。"),
+    ("auto", "当前 Agent（自动确认）", "explicit_binding", "由正在执行本轮任务的 Agent 确认来源，不扫描其他已安装工具。", "先选择实际 Agent；会话由后台自动识别，无法唯一确认时保留缺口。"),
     ("codex", "OpenAI Codex", "local_session", "本机 rollout 的累计 token_count；自动识别当前工作区主会话并扣除创作前基线。", "优先使用 CODEX_THREAD_ID；否则唯一的本轮活跃主会话自动绑定，spawn 子会话按 parent→child 证据纳入。"),
     ("claude", "Claude Code", "local_session", "项目会话 JSONL 的真实 assistant usage。", "唯一的本轮活跃项目会话自动绑定；无法唯一确认时保留缺口，不要求用户选择。"),
     ("gemini", "Gemini CLI", "local_session", "chat 文件的消息 tokens；区分缓存与推理。", "主 Agent 能证明当前 session 时自动登记；无法证明时保留缺口。"),

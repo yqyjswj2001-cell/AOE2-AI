@@ -18,8 +18,8 @@
   let project = null, draftLoaded = false, storageAvailable = true, dirty = false, networkError = false;
   let lastRequestSignature = null, civilizationSignature = null, agentSignature = null;
   let wizardStep = 0, previewCivilization = null, catalog = [], agents = [], catalogReady = false, agentsReady = false;
-  let lastUsage = null, reportBusy = false;
-  const STEP_NAMES = ['授权', '游戏模式', '文明', '设置', '生成'];
+  let lastUsage = null, reportBusy = false, resultView = 'progress';
+  const STEP_NAMES = ['先连接，再创作。', '选择这轮对局。', '找到你的文明。', '定义你的打法。', '你的 AI，正在成形。'];
   const MODE_NAMES = {'1v1':'1v1 单挑','2v2':'2v2 团队战','3v3':'3v3 团队战','4v4':'4v4 团队战',ffa4:'4 人混战',ffa8:'8 人混战'};
   const finite = value => typeof value === 'number' && Number.isFinite(value);
   const integer = value => Number.isInteger(value) && value >= 0;
@@ -115,7 +115,7 @@
     return p && Object.keys(p).length === AGES.length && AGES.every(age => integer(p[age]) && p[age] <= 100);
   }
   function validSelection(value) {
-    return authorizationReady() && MODES.includes(value.mode) && (state?.civilizations || []).length > 0 &&
+    return authorizationReady() && authorizationConfirmed() && MODES.includes(value.mode) && (state?.civilizations || []).length > 0 &&
       (value.civilization === 'auto' || state.civilizations.some(c => c.id === value.civilization)) &&
       /^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(value.script_name) && validPreferences(value.preferences);
   }
@@ -156,7 +156,7 @@
       applySelection(value);
       if (value.agent && !agents.some(agent => agent.id === value.agent)) $('agent').value = '';
       applyUsageAuthorization(state.usage_authorization);
-      wizardStep = integer(draft.step) ? Math.min(draft.step, 4) : 0;
+      wizardStep = integer(draft.step) ? Math.min(draft.step, 3) : 0;
       while (wizardStep > 0 && !canVisit(wizardStep)) wizardStep--;
       dirty = true;
       notice('draftNotice', '已恢复设置。');
@@ -176,7 +176,7 @@
     return (state?.civilizations || []).length > 0 && (id === 'auto' || state.civilizations.some(c => c.id === id));
   }
   function canVisit(step) {
-    if (state && state.status !== 'configuring') return true;
+    if (state && state.status !== 'configuring') return step === 4;
     const value = selection();
     if (step === 0) return true;
     if (!authorizationReady() || !authorizationConfirmed()) return false;
@@ -185,11 +185,13 @@
     if (step === 2) return true;
     if (!selectedCivValid()) return false;
     if (step === 3) return true;
-    return step === 4 && validSelection(value);
+    return false;
   }
   function goStep(step, focus = true) {
     if (!canVisit(step) || step < 0 || step > 4 || busy) return;
-    wizardStep = step; saveDraft(); syncActions();
+    wizardStep = step;
+    if (step === 3 && !$('scriptName').value) suggestName();
+    saveDraft(); syncActions();
     if (focus) {
       $('configTitle').focus({preventScroll: true});
       $('configTitle').scrollIntoView({block: 'start', behavior: 'instant'});
@@ -200,12 +202,8 @@
     const civ = civData(value.civilization);
     const agent = agents.find(a => a.id === value.agent);
     const lines = [
-      ['使用的 AI', agent?.label || (value.agent ? value.agent : '未选择')],
-      ['用量授权', value.usage_authorized === true ? '允许自动计量' : value.usage_authorized === false ? '本轮不计量' : '未选择'],
-      ['游戏模式', MODE_NAMES[value.mode] || '尚未选择'],
-      ['文明', value.civilization === 'auto' ? '让 AI 选择' : civ?.name || value.civilization || '尚未选择'],
-      ['脚本名', value.script_name || '尚未填写'],
-      ['攻防倾向', AGES.map((age, i) => ['黑暗', '封建', '城堡', '帝王'][i] + ' ' + (integer(value.preferences?.[age]) ? value.preferences[age] : '未记录')).join(' · ')]
+      ['对局', MODE_NAMES[value.mode] || '尚未选择'],
+      ['文明', value.civilization === 'auto' ? '由 AI 选择' : civ?.name || value.civilization || '尚未选择']
     ];
     $('selectionSummary').replaceChildren();
     lines.forEach(([name, value]) => {
@@ -218,13 +216,15 @@
     document.body.classList.toggle('civilization-step', wizardStep === 2);
     document.body.classList.toggle('is-configuring', state?.status === 'configuring');
     $('configFields').disabled = !editable();
-    $('startButton').disabled = !editable() || wizardStep !== 4 || !validSelection(selection());
-    text('startButton', busy ? '正在提交…' : state?.status === 'completed' ? (state.build?.installable === false ? '文件已生成' : '完成') : locked ? '已开始' : '开始生成');
+    if ($('agent')) $('agent').disabled = !editable() || state?.usage_authorization?.authorized === true || !!state?.usage_authorization?.revoked_at;
+    $('startButton').disabled = !editable() || wizardStep !== 3 || !validSelection(selection());
+    $('startButton').classList.toggle('hidden', wizardStep !== 3 || !!locked);
+    text('startButton', busy ? '正在提交…' : '开始生成 →');
     $('startButton').setAttribute('aria-busy', String(busy));
-    text('settingsState', state?.status === 'configuring' ? '设置已保存' : state ? '设置已确认' : '正在读取');
-    text('startHint', !online ? '连接恢复后才能提交。' : state?.status === 'configuring' ? '确认后开始生成。' : '设置已确认。');
-    text('configTitle', STEP_NAMES[wizardStep]);
-    text('stepEyebrow', ['第一步', '第二步', '第三步', '第四步', '第五步'][wizardStep] + ' / 共五步');
+    text('settingsState', state?.status === 'configuring' ? (dirty ? '设置已保存在本机' : '本地创作') : state ? '本轮设置已固定' : '正在读取');
+    text('startHint', !online ? '连接恢复后才能提交。' : '开始后固定本轮设置；AI 随即开始创作，不再二次确认。');
+    text('configTitle', locked && state.status === 'completed' ? '你的 AI，已准备就绪。' : STEP_NAMES[wizardStep]);
+    text('stepEyebrow', ['CONNECT', 'GAME MODE', 'CIVILIZATION', 'PLAY STYLE', 'YOUR CREATION'][wizardStep] + ' / 0' + (wizardStep + 1));
     for (let step = 0; step < 5; step++) {
       const button = $('wizardNav' + step);
       $('wizardPanel' + step).hidden = wizardStep !== step;
@@ -234,27 +234,57 @@
       button.classList.toggle('complete', step < wizardStep);
     }
     const finalRunning = wizardStep === 4 && locked;
-    $('reviewBeforeStart').hidden = locked;
-    $('authorForm').classList.toggle('hidden', finalRunning);
+    $('reviewBeforeStart').hidden = !!locked;
+    $('authorForm').classList.toggle('hidden', !!finalRunning);
     $('generationDashboard').hidden = !finalRunning;
-    $('wizardActions').classList.toggle('hidden', finalRunning);
+    $('wizardActions').classList.toggle('hidden', !!finalRunning);
     $('previousStep').classList.toggle('hidden', wizardStep === 0);
-    $('previousStep').disabled = busy;
-    $('nextStep').classList.toggle('hidden', wizardStep === 4);
-    $('nextStep').disabled = busy || !state || (wizardStep === 0 ? !authorizationReady() : !canVisit(wizardStep + 1));
-    text('nextStep', ['下一步 · 游戏模式', '下一步 · 文明', '下一步 · 设置', '下一步 · 确认', ''][wizardStep]);
-    text('navigationHint', locked ? '设置已确认。' :
-      wizardStep === 0 ? (authorizationReady() ? '授权设置已确认。' : '请选择 AI，并允许自动计量或选择本轮不计量。') :
-      wizardStep === 1 ? '请选择一种对局模式。' :
-      wizardStep === 2 ? (selectedCivValid() ? '文明已选择。' : '选择文明或使用 AI 选择。') :
-      wizardStep === 3 ? '填写脚本名和攻防倾向。' : '可返回修改。');
-    renderSummary(); updateCivilizationSelection();
-    if ($('generateReportButton')) {
-      $('generateReportButton').disabled = reportBusy || !online || !state || stopped;
-      $('generateReportButton').setAttribute('aria-busy', String(reportBusy));
-      text('generateReportButton', reportBusy ? '正在生成…' : '生成创作报告');
-    }
+    $('previousStep').disabled = busy || !online;
+    $('nextStep').classList.toggle('hidden', wizardStep >= 3);
+    $('nextStep').disabled = !editable() || (wizardStep === 0 ? !authorizationReady() : !canVisit(wizardStep + 1));
+    text('nextStep', [authorizationConfirmed() ? '继续设置 →' : '授权并继续 →', '选择文明 →', '设置打法 →', '', ''][wizardStep]);
+    $('skipMetering').classList.toggle('hidden', wizardStep !== 0 || authorizationConfirmed());
+    $('skipMetering').disabled = !editable() || !agentsReady;
+    text('navigationHint', locked ? '设置已固定，无需重复提交。' :
+      wizardStep === 0 ? '不需要你选择或绑定会话。' :
+      wizardStep === 1 ? '本轮不预设游戏模式。' :
+      wizardStep === 2 ? (selectedCivValid() ? '文明已选定，可以继续。' : '选择一个文明，或交给 AI。') : '准备好了，就交给 AI。');
+    document.querySelectorAll('[data-result]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.result === resultView)));
+    ['progress', 'usage', 'report'].forEach(view => { $(view + 'Panel').hidden = resultView !== view; });
+    renderMeterStatus(); renderSummary(); updateCivilizationSelection();
+    $('generateReportButton').disabled = reportBusy || !online || !state || stopped;
+    $('generateReportButton').setAttribute('aria-busy', String(reportBusy));
+    text('generateReportButton', reportBusy ? '正在生成…' : '生成创作报告');
   }
+  function renderMeterStatus() {
+    const connection = state?.usage_connection || {};
+    const labels = {NOT_AUTHORIZED:'等待授权', DISABLED:'本轮不计量', REVOKED:'计量已停止', RECORDING:'正在记录用量', LIMITED:'计量存在缺口', AWAITING_USAGE:'等待用量记录', CONNECTING:'Agent 正在接入'};
+    text('meterStatus', labels[connection.status] || (state?.usage_authorization?.authorized ? 'Agent 正在接入' : '等待授权'));
+    $('meterStatus').dataset.status = connection.status || 'NOT_AUTHORIZED';
+    $('meterStatus').title = connection.reason || '这里只显示连接状态；完整数字在结果页。';
+    $('revokeUsage').classList.toggle('hidden', connection.can_revoke !== true);
+    $('revokeUsage').hidden = connection.can_revoke !== true;
+    $('revokeUsage').disabled = busy || !online;
+  }
+  function suggestName() {
+    if (!editable()) return;
+    const names = ['Amber_Guard', 'Golden_Legion', 'Iron_Horizon', 'Dawn_Vanguard', 'Quiet_Storm', 'Silver_Banner'];
+    const alternatives = names.filter(name => name !== $('scriptName').value);
+    $('scriptName').value = alternatives[Math.floor(Math.random() * alternatives.length)];
+    $('scriptName').setAttribute('aria-invalid', 'false');
+    saveDraft();
+  }
+  function filterCivilizations() {
+    const term = $('civilizationSearch').value.trim().toLocaleLowerCase();
+    let visible = 0;
+    document.querySelectorAll('.civilization-card').forEach(button => {
+      const civ = civData(button.dataset.civilization);
+      button.hidden = ![civ?.name, civ?.name_en, civ?.id].some(value => String(value || '').toLocaleLowerCase().includes(term));
+      if (!button.hidden) visible++;
+    });
+    $('civilizationEmpty').classList.toggle('hidden', visible > 0 || !catalogReady);
+  }
+
   async function api(path, options = {}) {
     const controller = new AbortController();
     const {timeoutMs = 8000, ...fetchOptions} = options;
@@ -365,7 +395,7 @@
     text('contentScope', '标准版 ' + state.civilizations.length + ' 个可选文明 · 未购 DLC 的文明已排除');
     if (!catalogReady) notice('civilizationAssetNotice', '文明资料暂不可用。');
     else notice('civilizationAssetNotice', '');
-    updateCivilizationSelection(); showCivilization($('civilization').value || state.civilizations[0]?.id);
+    updateCivilizationSelection(); showCivilization($('civilization').value || state.civilizations[0]?.id); filterCivilizations();
   }
   function renderAgents() {
     const signature = JSON.stringify(agents);
@@ -374,27 +404,28 @@
     const previous = $('agent')?.value || '';
     $('agentOptions').replaceChildren();
     const wrapper = document.createElement('div'); wrapper.className = 'field agent-select-field';
-    const label = document.createElement('label'); label.htmlFor = 'agent'; label.textContent = '选择使用的 AI';
+    const label = document.createElement('label'); label.htmlFor = 'agent'; label.textContent = '本次使用的 Agent';
     const select = document.createElement('select'); select.id = 'agent'; select.name = 'agent'; select.required = true; select.setAttribute('aria-describedby', 'agentHelp');
     select.append(new Option(agentsReady ? '请选择 AI' : 'AI 列表暂不可用', ''));
     agents.forEach(agent => { if (typeof agent.id === 'string' && typeof agent.label === 'string') select.append(new Option(agent.label, agent.id)); });
-    select.value = agents.some(agent => agent.id === previous) ? previous : '';
+    const preferred = state?.usage_authorization?.agent || previous || state?.host_agent || 'auto';
+    select.value = agents.some(agent => agent.id === preferred) ? preferred : agentsReady ? 'auto' : '';
     wrapper.append(label, select); $('agentOptions').append(wrapper);
     renderAgentHelp();
   }
   function renderAgentHelp() {
     const agent = agents.find(agent => agent.id === $('agent')?.value);
-    const labels = {local_session:'可自动读取本机真实 usage',local_telemetry:'可读取本轮官方遥测',sdk_import:'需要 SDK 真实 usage',explicit_import:'需要额外真实 usage 来源',explicit_binding:'由后台自动确认会话'};
-    let access = '';
-    if (agent?.id === 'cursor') access = state?.usage_access?.cursor_admin_configured ? 'Cursor 官方 Team Usage API 已连接。' : 'Cursor Team Usage API 当前未连接；授权后仍会保留其他真实 usage 来源和缺口。';
-    if (agent?.id === 'copilot') access = state?.usage_access?.copilot_telemetry_configured ? 'Copilot 本轮遥测文件已配置。' : 'Copilot 本轮遥测当前未配置。';
-    text('agentHelp', agent ? [labels[agent.metering_mode] || '', agent.description || agent.help || '', access, '允许自动计量后，后台自己识别会话；不会要求你选择 session。'].filter(Boolean).join(' ') :
-      agentsReady ? '选择本轮实际使用的 AI。' : 'AI 列表暂不可用，请稍后再试。');
-    const consent = usageConsent();
-    text('authorizationStatus', !agent ? '先选择本轮实际使用的 AI。' :
-      consent === 'allow' ? '已允许本轮自动计量。' :
-      consent === 'decline' ? '本轮不读取 usage，token 将保持未采集。' : '请选择是否允许本轮自动计量。');
+    let help = agent?.id === 'auto' ? '由正在运行的 Agent 确认身份和当前会话，无需手动绑定。' : '选择应与正在运行的工具一致；这里不会替你启动或切换 Agent。';
+    if (agent?.id === 'cursor') help += state?.usage_access?.cursor_admin_configured
+      ? ' 已配置 Team Usage API，实际数字以返回记录为准。'
+      : ' 当前未配置 Team Usage API；没有 SDK 等真实来源时会明确显示缺口。';
+    text('agentHelp', agent ? help : '正在读取可用的 Agent…');
+    const auth = state?.usage_authorization;
+    text('authorizationStatus', auth?.revoked_at ? '本轮授权已撤回；已记录数据保留，不再读取新用量。' :
+      authorizationConfirmed() ? auth.authorized ? '已授权。后台已开始接入，读到数据后才会显示为正在记录。' : '本轮不计量。你仍然可以正常创作。' :
+      '点击“授权并继续”才会开始读取；选择工具本身不代表已授权。');
   }
+
   function renderCivilizationDecision() {
     const actual = state.request?.civilization;
     const choice = state.civilization_selection?.choice;
@@ -451,9 +482,12 @@
     ['stepConfig', 'stepSelect', 'stepAuthor', 'stepValidate', 'stepBuild'].forEach((id, index) => {
       $(id).className = position > index ? 'done' : position === index ? 'active' : '';
     });
+    applyUsageAuthorization(state.usage_authorization);
+    text('progressTitle', state.status === 'completed' ? '作品文件已生成。' : state.status === 'invalid' ? '正在检查并修正参数。' : '正在创作你的 AI。');
     const p = state.progress || {};
     const filled = integer(p.filled) ? p.filled : null, total = integer(p.total) && p.total > 0 ? p.total : null;
-    text('fillCount', number(filled) + ' / ' + number(total));
+    text('fillCount', number(filled) + ' / ' + number(total) + ' 项参数');
+    text('progressPercent', filled !== null && total !== null && filled <= total ? Math.floor(filled / total * 100) + '%' : '—');
     if (filled !== null && total !== null && filled <= total) {
       $('fillProgress').max = total; $('fillProgress').value = filled;
       $('fillProgress').setAttribute('aria-valuetext', '已填写 ' + filled + ' 项，共 ' + total + ' 项');
@@ -496,8 +530,8 @@
     const selectedAgent = agents.find(agent => agent.id === (auto.selected_agent || state?.request?.agent));
     const agentLabel = selectedAgent?.label || (auto.selected_agent || state?.request?.agent ? (auto.selected_agent || state.request.agent) : '未选择宿主');
     const message = typeof connection.message === 'string' ? connection.message : captureLabel || '等待采集连接信息';
-    const action = typeof connection.action_label === 'string' ? connection.action_label : ({import_usage:'需要额外真实 usage 来源。', wait_for_usage:'等待自动识别或用量记录。', enable_telemetry:'请开启用量记录。', select_agent:'请先选择使用的 AI。'}[connection.action] || '');
-    text('usageCapture', 'AI：' + agentLabel + '。' + message + (action ? ' ' + action : ''));
+    const detail = state?.usage_connection?.reason || message;
+    text('usageCapture', 'Agent：' + agentLabel + '。' + detail + ' 会话归属由 Agent 处理，无需你绑定。');
     $('usageCapture').className = 'capture-status ' + (String(auto.status || '').startsWith('CONNECTED') ? 'connected' : 'attention');
     text('usageCoverage', coverage);
     $('usageGaps').replaceChildren();
@@ -506,10 +540,10 @@
       const li = document.createElement('li'); li.textContent = gap.message; $('usageGaps').append(li);
     });
     $('usageGaps').classList.toggle('hidden', !$('usageGaps').children.length);
-    text('usageBreakdown', '输入 ' + number(tokens.input_tokens) + ' · 输出 ' + number(tokens.output_tokens) +
-      ' · 缓存读取 ' + number(tokens.cached_input_tokens) + ' · 缓存写入 ' + number(tokens.cache_write_tokens) +
-      ' · 推理 ' + number(tokens.reasoning_tokens) + '。失败或取消的已知消耗 ' + number(tokens.failed_or_cancelled_tokens) +
-      '；已标记重试 ' + number(tokens.retry_records) + ' 条，已知消耗 ' + number(tokens.retry_tokens) + '。');
+    [['inputTokens','input_tokens'],['outputTokens','output_tokens'],['cacheTokens','cached_input_tokens'],
+      ['cacheWriteTokens','cache_write_tokens'],['reasoningTokens','reasoning_tokens']].forEach(([id,key]) => text(id, finite(tokens[key]) ? number(tokens[key]) : '未提供'));
+    text('usageBreakdown', '失败或取消的已知消耗 ' + number(tokens.failed_or_cancelled_tokens) +
+      '；已标记重试 ' + number(tokens.retry_records) + ' 条，已知消耗 ' + number(tokens.retry_tokens) + '。这些消耗已包含在已记录总量中。');
     $('usageStages').replaceChildren();
     const stages = Array.isArray(report.stages) ? report.stages : [];
     stages.forEach(stage => {
@@ -578,29 +612,44 @@
   }
   document.querySelectorAll('.wizard-nav button').forEach(button => button.addEventListener('click', () => goStep(Number(button.dataset.step))));
   $('previousStep').addEventListener('click', () => goStep(wizardStep - 1));
-  $('nextStep').addEventListener('click', async () => {
-    if (wizardStep !== 0) { goStep(wizardStep + 1); return; }
-    if (!editable() || !authorizationReady()) return;
+  async function authorize(allowed, advance = true) {
+    if (!online || busy || stopped || !state || (!advance && !state.usage_authorization?.authorized)) return;
+    if (advance && !editable()) return;
     busy = true; syncActions(); notice('errorNotice', '');
     try {
-      const value = selection();
+      if (refreshPromise) await refreshPromise;
+      const agent = state.usage_authorization?.authorized ? state.usage_authorization.agent : $('agent')?.value;
       const next = await api('/api/usage/authorize', {method:'POST', body:JSON.stringify({
-        project_id:project, expected_revision:state.revision,
-        agent:value.agent, usage_authorized:value.usage_authorized
-      })});
-      validateState(next); state = next; wizardStep = 1;
+        project_id:project, expected_revision:state.revision, agent, usage_authorized:allowed
+      }), timeoutMs:30000});
+      validateState(next); state = next;
+      applyUsageAuthorization(next.usage_authorization);
+      if (advance) wizardStep = 1;
+      if (next.usage) renderUsage(next.usage);
     } catch (error) {
-      const message = error.name === 'AbortError' ? '授权提交超时，请重试。' : error.message;
+      const message = error.name === 'AbortError' ? '未收到授权回执，正在核对状态；不会重复开始创作。' : error.message;
       notice('errorNotice', message); rememberDeveloperIssue('usage_authorization', message);
     } finally {
       busy = false; saveDraft(); syncActions();
     }
+  }
+  $('nextStep').addEventListener('click', () => {
+    if (wizardStep !== 0) { goStep(wizardStep + 1); return; }
+    if (authorizationConfirmed()) goStep(1);
+    else authorize(true);
   });
+  $('skipMetering').addEventListener('click', () => authorize(false));
+  $('revokeUsage').addEventListener('click', () => authorize(false, false));
+  $('suggestName').addEventListener('click', () => { suggestName(); syncActions(); });
+  $('civilizationSearch').addEventListener('input', filterCivilizations);
+  document.querySelectorAll('[data-result]').forEach(button => button.addEventListener('click', () => {
+    resultView = button.dataset.result; syncActions();
+  }));
   $('autoCivilization').addEventListener('click', () => chooseCivilization('auto'));
   $('civilizationGrid').addEventListener('pointerleave', () => showCivilization(document.activeElement?.dataset.civilization || $('civilization').value || null));
   $('civilizationGrid').addEventListener('keydown', event => {
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
-    const buttons = [...$('civilizationGrid').querySelectorAll('button')], current = buttons.indexOf(document.activeElement);
+    const buttons = [...$('civilizationGrid').querySelectorAll('button:not([hidden])')], current = buttons.indexOf(document.activeElement);
     if (current < 0) return;
     event.preventDefault();
     const columns = getComputedStyle($('civilizationGrid')).gridTemplateColumns.split(' ').length;
@@ -632,9 +681,6 @@
       $('downloadReportLink').download = result.markdown_download_name || 'aoe2-creation-report.md';
       $('downloadDetailsLink').href = result.details_url;
       $('downloadDetailsLink').download = result.technical_download_name || 'aoe2-technical-details.md';
-      const link = document.createElement('a');
-      link.href = result.download_url; link.download = $('downloadReportLink').download;
-      link.hidden = true; document.body.append(link); link.click(); link.remove();
       $('reportFeedback').value = ''; clearDeveloperIssues();
       text('reportState', '已生成 Markdown · ' + number(result.issue_count) + ' 个问题/提醒 · ' + number(result.feedback_count) + ' 条反馈');
     } catch (error) {
@@ -658,12 +704,13 @@
   $('refreshButton').addEventListener('click', () => { if (!stopped) { notice('errorNotice', ''); refresh(); } });
   $('authorForm').addEventListener('submit', async event => {
     event.preventDefault();
-    if (wizardStep !== 4) { if (editable()) goStep(wizardStep + 1); return; }
+    if (wizardStep !== 3) return; // Enter in an earlier step must never grant consent or start creation.
     const value = selection();
     if (!editable() || !validSelection(value)) return;
     busy = true; syncActions(); notice('errorNotice', '');
     try {
-      await api('/api/start', {method: 'POST', body: JSON.stringify({expected_revision: state.revision, ...value})});
+      if (refreshPromise) await refreshPromise;
+      await api('/api/start', {method: 'POST', body: JSON.stringify({project_id:project, expected_revision: state.revision, ...value}), timeoutMs:30000});
       clearDraft();
     } catch (error) {
       const message = error.name === 'AbortError' ? '提交超时，正在刷新状态。' : error.message;
@@ -680,5 +727,5 @@
   });
   updateSliders();
   refresh();
-  setInterval(refresh, 3000);
+  setInterval(() => { if (!busy) refresh(); }, 3000);
 })();

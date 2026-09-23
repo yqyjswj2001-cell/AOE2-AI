@@ -1,6 +1,4 @@
-# Reviewed line edits. Applied only to exact baseline files.
-edit('adjusted/tests/web_author/test_consent_lifecycle.py', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', '9986885d27a713496c9c68d912d540aeda0ee7964387e6d7541a1dc27fd0dfda', [
-(0, 0, r'''"""Consent, host handoff and independent collection regressions; synthetic sources only."""
+"""Consent, host handoff and independent collection regressions; synthetic sources only."""
 import http.client
 import json
 from pathlib import Path
@@ -189,5 +187,3 @@ class CollectorTests(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main()
-'''),
-])

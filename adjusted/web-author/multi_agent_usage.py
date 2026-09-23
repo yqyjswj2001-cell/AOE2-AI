@@ -125,7 +125,7 @@ def registry(home=None, environ=None):
              "roots": locations.get(row["id"], [])} for row in agent_catalog()]
 
 
-def detect_agents(home=None, environ=None):
+def detect_agents(home=None, environ=None, selected_agent=None):
     """A generic .agent folder is not proof that the agent is in use or meterable."""
     result = []
     patterns = {"codex": ["sessions/*/*/*/rollout-*.jsonl"], "claude": ["**/*.jsonl"],
@@ -134,6 +134,8 @@ def detect_agents(home=None, environ=None):
                 "kimi": ["sessions/*/*/wire.jsonl", "sessions/*/*/agents/*/wire.jsonl"],
                 "cline": ["tasks/*/ui_messages.json"], "roo": ["tasks/*/ui_messages.json"]}
     for row in registry(home, environ):
+        if selected_agent is not None and row["id"] not in ({selected_agent} if isinstance(selected_agent, str) else set(selected_agent)):
+            continue
         existing = [p for p in row["roots"] if p.exists()]
         detected = any(p.is_file() for p in existing) if row["id"] == "copilot" else any(
             next(p.glob(pattern), None) is not None for p in existing for pattern in patterns.get(row["id"], []))
@@ -831,14 +833,20 @@ class MultiAgentUsage:
         if self.meter.meta["state"] != "RUNNING":
             return self.status()
         phase = phase or self.meter.meta.get("phase") or "unattributed"
-        detected = detect_agents(self.home, self.environ)
+        if self.selected_agent == "auto" and not any(self.state.get("bindings", {}).values()):
+            # Agent identity comes from the running host, never from unrelated installed apps.
+            self.state["status"] = "NO_BOUND_SESSIONS"
+            self._save()
+            return self.status()
+        detected = detect_agents(self.home, self.environ,
+            list(self.state.get("bindings", {})) if self.selected_agent == "auto" else self.selected_agent)
         self.state["agents"] = [{k: row[k] for k in ("id", "label", "mode", "detected", "detection_basis")} for row in detected]
         self.state["ccusage"] = {"available": False, "mode": "explicit_session_json_import", "reviewed_version": "20.0.24"}
         active = list(self.state.get("imported_sessions", {}).values())
         active += list(self.state.get("cursor_admin_sessions", {}).values())
         missing = []
         try:
-            selected = next(row for row in detected if row["id"] == self.selected_agent)
+            selected = next((row for row in detected if row["id"] == self.selected_agent), {"roots": []})
             candidates = project_candidates(self.selected_agent, self.workspace_root,
                 [Path(p) for p in selected["roots"]], self.home, self.environ)
             self.state["session_candidates"] = candidates
@@ -941,7 +949,7 @@ class MultiAgentUsage:
         code, message, action = "AUTO_SESSION_DISCOVERY", "正在自动确认本轮宿主会话；无需手动选择。", "wait_for_usage"
         cursor_admin_configured = bool(self.environ.get("CURSOR_ADMIN_API_KEY"))
         if self.selected_agent == "auto" and not bound:
-            code, message, action = "AGENT_SELECTION_REQUIRED", "请选择创作使用的 Agent；会话由后台自动识别。", "select_agent"
+            code, message, action = "WAITING_FOR_HOST", "已授权，等待当前 Agent 确认用量来源；无需选择会话。", "wait_for_usage"
         elif self.selected_agent == "cursor" and not cursor_admin_configured:
             code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
         elif self.selected_agent == "cursor" and cursor_admin_configured and not bound:
@@ -973,7 +981,7 @@ class MultiAgentUsage:
         return {"schema": STATE_SCHEMA, "status": self.state.get("status"), "backend": self.state.get("backend"),
                 "selected_agent": self.selected_agent, "agent": info,
                 "connection": {"code": code, "message": message, "action": action,
-                    "action_label": {"select_agent": "选择创作使用的 Agent",
+                    "action_label": {"wait_for_usage": "Agent 正在接入或等待真实 usage", "select_agent": "选择创作使用的 Agent",
                         "import_usage": "导入本轮真实 usage", "refresh_cursor_admin": "刷新 Cursor 官方用量",
                         "inspect_source": "检查来源和计量缺口",
                         "bind_children_or_import_missing": "绑定子代理或补充缺失用量",
