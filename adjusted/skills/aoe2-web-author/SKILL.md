@@ -50,7 +50,9 @@ python -X utf8 -B adjusted/web-author/web_session.py choose-civilization --proje
 - 隔离输入包的 README、manifest、ANSWER_CONSTRAINTS；
 - strategy 卡片、全 null 答卷、基础 facts 和包内两种只读查询工具。
 
-选定文明后，让作者按卡片关联要求成组填完全部参数，只写本轮 answers JSON；自主选择阶段仅额外允许上面的选择元数据文件。不要提供仓库模板、分类审查、官方默认答案、固定 PER、历史作品或其他 AI。不得增删键、用官方答案补空、自由编写 PER、改说明卡或把未知事实编成已验证结论。以 manifest 动态项数为准，不能硬编码旧版空位数。
+选定文明后，让作者按卡片的 group_id / 模块成组处理：查一组、决定一组、立即写入本轮 answers JSON，不要读完整包后才第一次落盘。每完成若干组就保存现有文件；主代理用 next 的 filled/total 看真实进度，长时间不增长时只让同一作者检查当前组，不重开整轮。无需逐批向用户汇报。自主选择阶段仅额外允许上面的选择元数据文件。
+
+作者只写本轮 answers JSON。不要提供仓库模板、分类审查、官方默认答案、固定 PER、历史作品或其他 AI。不得增删键、用官方答案补空、自由编写 PER、改说明卡或把未知事实编成已验证结论。以 manifest 动态项数为准，不能硬编码旧版空位数。
 
 卡片按需查：
 ```powershell
@@ -68,7 +70,7 @@ python -X utf8 -B adjusted/web-author/web_session.py validate --project <名称>
 python -X utf8 -B adjusted/web-author/web_session.py build --project <名称>
 ```
 
-错误只反馈参数键、类型、范围或关联要求，交给同一作者修正；不要反馈官方参考值或固定源码。用现有 renderer 机械代入，不编译另一套策略语言。不能把 null 填零或默默回退默认值。完成时返回真实交付目录、哈希回执和静态结果。
+校验缺项或类型错误时读取项目 tmp/answer-diagnostics.json，把其中具体文件和参数键交给同一作者修正；不要只转述“未填完整”。其他错误只反馈参数键、类型、范围或关联要求，不要反馈官方参考值或固定源码。用现有 renderer 机械代入，不编译另一套策略语言。不能把 null 填零或默默回退默认值。完成时返回真实交付目录、哈希回执和静态结果。
 
 当前 build 是 36 个模块的交付包，不含独立游戏入口；`installable=false`。不要把模块交付声称为游戏已安装、Parser/Load 通过、完整对局或强度通过。游戏验证另需用户授权。
 

@@ -14,7 +14,7 @@ import re
 import sqlite3
 from agent_catalog import agent_catalog, agent_info, normalize_agent
 from host_usage import project_candidates, cursor_usage, session_files
-from usage_formats import normalize
+from usage_formats import PHASES, normalize
 
 SAFE_MODEL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:/+ -]{0,159}$")
 STATE_SCHEMA = "author-multi-agent-usage-v1"
@@ -639,7 +639,8 @@ class MultiAgentUsage:
         agent, session, key = item["agent"], item["session"], str(item["key"])
         source = f"agent:{_hash(agent)}:{_hash(session)}"
         event_id = _event_id(agent, session, key)
-        stored_phase = self.state.setdefault("event_phases", {}).setdefault(event_id, "unattributed")
+        observed_phase = phase if phase in PHASES else "unattributed"
+        stored_phase = self.state.setdefault("event_phases", {}).setdefault(event_id, observed_phase)
         self.meter.register(source, "agent-usage")
         value = {"event_id": event_id, "phase": stored_phase, "model": _model(item["model"]),
                  "outcome": "unknown", "usage": item["usage"], "duration_seconds": None, "retry_of": None}

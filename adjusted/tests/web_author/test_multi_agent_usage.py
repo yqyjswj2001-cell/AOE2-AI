@@ -62,7 +62,7 @@ class MultiHostTests(unittest.TestCase):
         self.assertEqual(report["records"][0]["outcome"], "unknown")
         self.assertEqual(report["records"][0]["unit"], "usage_interval")
         self.assertIsNone(report["tokens"]["failed_or_cancelled_tokens"])
-        self.assertEqual(report["records"][0]["phase"], "unattributed")
+        self.assertEqual(report["records"][0]["phase"], "1")
         self.assertEqual(auto.status()["bound_session_count"], 1)
 
     def test_children_require_explicit_binding(self):

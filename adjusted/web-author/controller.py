@@ -235,6 +235,7 @@ class Controller:
         expected = {Path(name).name for name in manifest["files"] if name.startswith("answers/")}
         actual = {p.name for p in directory.iterdir()}
         errors = []
+        diagnostics = {"missing": {}, "non_integer": {}, "key_mismatch": {}, "unreadable": []}
         if actual != expected:
             errors.append("Answer files differ from the 15 exported answer sheets")
         raw = {}
@@ -251,22 +252,51 @@ class Controller:
                 answers = parse_json(content)
                 if not isinstance(answers, dict) or set(answers) != set(nulls):
                     errors.append(name + ": answer keys differ")
+                    answer_keys = set(answers) if isinstance(answers, dict) else set()
+                    diagnostics["key_mismatch"][name] = {
+                        "missing": sorted(set(nulls) - answer_keys),
+                        "unexpected": sorted(answer_keys - set(nulls)),
+                    }
                     continue
+                missing = [key for key, value in answers.items() if value is None]
+                non_integer = [key for key, value in answers.items() if value is not None and type(value) is not int]
+                if missing:
+                    diagnostics["missing"][name] = missing
+                if non_integer:
+                    diagnostics["non_integer"][name] = non_integer
                 filled += sum(type(value) is int for value in answers.values())
-                if any(value is not None and type(value) is not int for value in answers.values()):
+                if non_integer:
                     errors.append(name + ": answers must be integers")
             except (OSError, ValueError):
                 errors.append(name + ": cannot read valid answer JSON")
+                diagnostics["unreadable"].append(name)
         signature = digest(json_bytes({"files": {name: digest(value) for name, value in raw.items()},
                                        "names": sorted(actual), "errors": errors}))
-        return raw, signature, {"filled": filled, "total": total, "errors": errors}
+        return raw, signature, {"filled": filled, "total": total, "errors": errors}, diagnostics
+
+    def _write_answer_diagnostics(self, progress, diagnostics):
+        missing_count = sum(len(keys) for keys in diagnostics["missing"].values())
+        invalid_count = sum(len(keys) for keys in diagnostics["non_integer"].values())
+        report = {
+            "schema": "aoe2-answer-diagnostics-v1",
+            "filled": progress["filled"],
+            "total": progress["total"],
+            "missing_count": missing_count,
+            "invalid_count": invalid_count,
+            "errors": list(progress["errors"]),
+            **diagnostics,
+        }
+        path = safe_path(self.project / "tmp" / "answer-diagnostics.json")
+        path.parent.mkdir(exist_ok=True)
+        atomic_json(path, report)
+        return path, missing_count, invalid_count
 
     def _sync(self):
         if not self.data.get("request"):
             return
         selecting = self._selection_pending()
         try:
-            _, current, progress = self._answers()
+            _, current, progress, _ = self._answers()
             if self.engine.source_digest() != self.data["fixed_sha256"]:
                 progress["errors"].append("Host fixed source changed; create a fresh project")
             civilization = self.data["request"]["civilization"]
@@ -412,11 +442,19 @@ class Controller:
         self._sync()
         if not self.data.get("request"):
             raise WorkflowError("Start the project first")
-        raw, signature, progress = self._answers()
+        raw, signature, progress, diagnostics = self._answers()
         if self.engine.source_digest() != self.data["fixed_sha256"]:
             raise WorkflowError("Fixed source changed; cannot render this project")
         if progress["errors"] or progress["filled"] != progress["total"]:
-            raise WorkflowError("; ".join(progress["errors"]) or "All 1715 dynamic answers must be filled before validation")
+            report, missing_count, invalid_count = self._write_answer_diagnostics(progress, diagnostics)
+            summary = []
+            if missing_count:
+                summary.append(str(missing_count) + " missing")
+            if invalid_count:
+                summary.append(str(invalid_count) + " non-integer")
+            if progress["errors"]:
+                summary.append(str(len(progress["errors"])) + " file/structure errors")
+            raise WorkflowError("Answers incomplete or invalid (" + ", ".join(summary) + "); exact file/key report: " + str(report))
         temporary = safe_path(self.project / "tmp")
         temporary.mkdir(exist_ok=True)
         work = Path(tempfile.mkdtemp(prefix="validate-", dir=temporary))

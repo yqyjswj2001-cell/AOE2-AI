@@ -99,7 +99,7 @@ input_tokens 包含缓存读写，output_tokens 包含推理；细项是子集�
 
 失败、重试、耗时仅按实际事件报告，不从记录数量猜测。总历时、工作流程时间、人工等待和未观察时间分开；并行调用耗时不能相加冒充墙钟时间。无法可靠归属阶段的采集留在 unattributed。
 
-阶段命令使用 researching / authoring / checking / repairing / packaging。build 只登记实际交付，等作者与检查调用结束并收集 usage 后再 complete；默认不声明全覆盖。只有来源真实封账且无采集缺口才可 all_sources_declared=true。不要为了通过而删除缺口或把未知改为 0。
+阶段命令使用 researching / authoring / checking / repairing / packaging。自动采集到的新 usage 事件在首次观察时固定到当时的工作流阶段；同一事件后续重复扫描不会改阶段。无法可靠归属的旧记录仍保留未分阶段，不做事后猜测。build 只登记实际交付，等作者与检查调用结束并收集 usage 后再 complete；默认不声明全覆盖。只有来源真实封账且无采集缺口才可 all_sources_declared=true。不要为了通过而删除缺口或把未知改为 0。
 
 台账固定在本轮项目 authoring/metrics/usage.sqlite3，自动采集元数据在同目录 multi-agent-auto.json。结束时保留 report-<指纹>/summary.json、stages.csv、calls.csv；CSV 使用 UTF-8 BOM，空单元表示未知。计量不推进参数创作、不更改答案和 PER、不影响游戏验证状态。
 

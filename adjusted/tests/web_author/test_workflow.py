@@ -99,8 +99,14 @@ class WorkflowTests(unittest.TestCase):
 
     def test_validation_build_and_answer_invalidation(self):
         self.start()
-        with self.assertRaises(WorkflowError):
+        with self.assertRaisesRegex(WorkflowError, "1715 missing") as raised:
             self.app.validate(self.payload())
+        report_path = self.project / "tmp" / "answer-diagnostics.json"
+        self.assertIn(str(report_path), str(raised.exception))
+        diagnostics = json.loads(report_path.read_bytes())
+        self.assertEqual(diagnostics["missing_count"], 1715)
+        self.assertIn("K_0_0", diagnostics["missing"]["0.json"])
+        self.assertEqual(diagnostics["invalid_count"], 0)
         self.fill()
         self.app.validate(self.payload())
         result = self.app.build(self.payload())
