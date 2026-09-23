@@ -1,4 +1,4 @@
-"""Developer-facing creation report: persistent events, evidence snapshots and ZIP bundles."""
+"""Developer-facing creation report: persistent events, readable Markdown and ZIP evidence bundles."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -320,6 +320,7 @@ def _markdown(report):
         "",
         "## 证据与边界",
         "",
+        "- report.md 是给开发直接阅读/粘贴的主报告；ZIP 只作为详细证据包。",
         "- ZIP 内同时保存结构化 report.json、usage.json、events.json、阶段/调用 CSV，以及存在时的校验明细、构建回执和 Web 会话日志。",
         "- 未采集不等于 0；未执行的 Parser/Load、Smoke、完整对局和强度测试不能由静态结果推断。",
         "- 这是开发快照，不替代游戏内实测。",
@@ -381,7 +382,8 @@ def generate_bundle(*, project: Path, repository_root: Path, project_snapshot: d
     folder = report_root / report_id
     folder.mkdir(parents=True, exist_ok=False)
     _atomic_json(folder / "report.json", report)
-    (folder / "report.md").write_text(_markdown(report), encoding="utf-8", newline="\n")
+    markdown = _markdown(report)
+    (folder / "report.md").write_text(markdown, encoding="utf-8", newline="\n")
     _atomic_json(folder / "events.json", {"schema": EVENT_SCHEMA, "project_id": snapshot["project_id"], "events": events})
     _atomic_json(folder / "usage.json", usage)
     _atomic_json(folder / "project-snapshot.json", snapshot)
@@ -425,14 +427,29 @@ def generate_bundle(*, project: Path, repository_root: Path, project_snapshot: d
         "feedback_count": len(feedback),
         "path": str(folder),
         "bundle": str(zip_path),
-        "download_name": script_name + "-development-report.zip",
+        "markdown": markdown,
+        "markdown_path": str(folder / "report.md"),
+        "markdown_download_name": script_name + "-creation-report.md",
+        "zip_download_name": script_name + "-development-evidence.zip",
     }
 
 
-def report_bundle(project: Path, report_id: str) -> Path:
+def report_file(project: Path, report_id: str, format_name: str = "md") -> Path:
     if not isinstance(report_id, str) or not REPORT_ID.fullmatch(report_id):
         raise DevelopmentReportError("invalid report id")
-    path = Path(project).resolve() / "development/reports" / (report_id + ".zip")
+    root = Path(project).resolve() / "development/reports"
+    if format_name == "md":
+        path = root / report_id / "report.md"
+    elif format_name == "json":
+        path = root / report_id / "report.json"
+    elif format_name == "zip":
+        path = root / (report_id + ".zip")
+    else:
+        raise DevelopmentReportError("invalid report format")
     if not path.is_file() or path.is_symlink():
-        raise DevelopmentReportError("report bundle not found")
+        raise DevelopmentReportError("report file not found")
     return path
+
+
+def report_bundle(project: Path, report_id: str) -> Path:
+    return report_file(project, report_id, "zip")

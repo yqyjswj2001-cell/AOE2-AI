@@ -16,7 +16,7 @@ import uuid
 from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
 from installable_ai import InstallableAIError, package_installable_ai
-from development_report import DevelopmentJournal, DevelopmentReportError, generate_bundle, report_bundle
+from development_report import DevelopmentJournal, DevelopmentReportError, generate_bundle, report_file
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -225,7 +225,8 @@ class Controller:
             usage_csv={"usage-stages.csv": Meter.csv_bytes(usage, "stages"),
                        "usage-calls.csv": Meter.csv_bytes(usage, "calls")},
         )
-        result["download_url"] = "/api/report/download?id=" + result["report_id"]
+        result["download_url"] = "/api/report/download?id=" + result["report_id"] + "&format=md"
+        result["evidence_url"] = "/api/report/download?id=" + result["report_id"] + "&format=zip"
         return result
 
     def _open_meter(self):
@@ -760,8 +761,8 @@ class Controller:
                              "feedback_count": result["feedback_count"]})
             return result
 
-    def development_report_bundle(self, report_id):
-        return report_bundle(self.project, report_id)
+    def development_report_file(self, report_id, format_name="md"):
+        return report_file(self.project, report_id, format_name)
 
     def close(self):
         with self.lock:
@@ -775,6 +776,7 @@ class Controller:
                             {"status": self.data["status"], "coverage": report.get("coverage")})
             try:
                 final_report = self._generate_development_report()
+                final_report.pop("markdown", None)
                 self._dev_event("system", "final_report_generated", "info", "最终开发报告已自动生成。",
                                 {"report_id": final_report["report_id"]})
             except (OSError, ValueError, DevelopmentReportError) as exc:

@@ -33,7 +33,7 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 
 [用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
 
-网页底部提供“生成创作报告”。点击后会生成开发用 ZIP，包含可读 Markdown、结构化 JSON、阶段/调用 CSV、历史开发事件，以及存在时的参数诊断、构建回执和 Web 会话日志；finish 时自动再保存一份最终报告。作者或主代理可用 `web_session.py feedback` 随时登记 issue / suggestion / note，避免修复后的问题从最终状态里消失。
+网页底部提供“生成创作报告”。点击后直接显示并下载 Markdown 主报告，可一键复制后粘贴给开发；ZIP 作为可选详细证据包，包含结构化 JSON、阶段/调用 CSV、历史开发事件，以及存在时的参数诊断、构建回执和 Web 会话日志。finish 时自动保存最终报告。作者或主代理可用 `web_session.py feedback` 随时登记 issue / suggestion / note，避免修复后的问题从最终状态里消失。
 
 来源版本与许可见 [UPSTREAM.json](UPSTREAM.json) 和 [LICENSE](LICENSE)。
 

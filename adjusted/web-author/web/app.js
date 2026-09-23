@@ -605,16 +605,33 @@
       const result = await api('/api/report/generate', {method:'POST', body:JSON.stringify({
         project_id:project, feedback, browser_observations:developerObservations()
       })});
+      $('reportOutput').value = typeof result.markdown === 'string' ? result.markdown : '';
+      $('reportResult').classList.remove('hidden');
+      $('downloadReportLink').href = result.download_url;
+      $('downloadReportLink').download = result.markdown_download_name || 'aoe2-creation-report.md';
+      $('downloadEvidenceLink').href = result.evidence_url;
+      $('downloadEvidenceLink').download = result.zip_download_name || 'aoe2-development-evidence.zip';
       const link = document.createElement('a');
-      link.href = result.download_url; link.download = result.download_name || 'aoe2-development-report.zip';
+      link.href = result.download_url; link.download = $('downloadReportLink').download;
       link.hidden = true; document.body.append(link); link.click(); link.remove();
       $('reportFeedback').value = ''; clearDeveloperIssues();
-      text('reportState', '已生成 · ' + number(result.issue_count) + ' 个问题/提醒 · ' + number(result.feedback_count) + ' 条反馈');
+      text('reportState', '已生成 Markdown · ' + number(result.issue_count) + ' 个问题/提醒 · ' + number(result.feedback_count) + ' 条反馈');
     } catch (error) {
       const message = error.name === 'AbortError' ? '报告生成超时，请重试。' : error.message;
       text('reportState', message); rememberDeveloperIssue('report_generation', message);
     } finally {
       reportBusy = false; syncActions();
+    }
+  });
+  $('copyReportButton').addEventListener('click', async () => {
+    const value = $('reportOutput').value;
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      text('reportState', '报告已复制，可以直接粘贴给开发。');
+    } catch (_) {
+      $('reportOutput').focus(); $('reportOutput').select();
+      text('reportState', '已选中报告内容，请手动复制。');
     }
   });
   $('refreshButton').addEventListener('click', () => { if (!stopped) { notice('errorNotice', ''); refresh(); } });

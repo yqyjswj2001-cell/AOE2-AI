@@ -94,4 +94,4 @@ build 会从本机 AoE2DE 安装目录读取官方 `PromiDE.per2`，核对其实
 python -X utf8 -B adjusted/web-author/web_session.py usage --project <名称> --action complete
 python -X utf8 -B adjusted/web-author/web_session.py finish --project <名称>
 ```
-单纯关闭浏览器或结束会话不代表交付或用量完整。网页“开发报告”可随时一键生成 ZIP 快照；finish 时还会自动保留最终开发报告。报告包含历史错误、反馈、参数诊断、阶段/调用用量、构建回执和现有日志，但不能把未执行的游戏验证写成通过。最终聊天只需简短报告参数交付、实际用量覆盖和未验证部分。
+单纯关闭浏览器或结束会话不代表交付或用量完整。网页“开发报告”可随时一键生成 Markdown 主报告，页面可直接查看/复制，适合原样发给开发；ZIP 只作为详细证据包。finish 时还会自动保留最终开发报告。报告包含历史错误、反馈、参数诊断、阶段/调用用量、构建回执和现有日志，但不能把未执行的游戏验证写成通过。最终聊天只需简短报告参数交付、实际用量覆盖和未验证部分。

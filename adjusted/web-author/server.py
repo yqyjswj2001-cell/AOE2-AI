@@ -98,9 +98,13 @@ def make_server(controller, meta, port=0):
                 if route == "/api/author/usage":
                     return self._json(controller.usage())
                 if route == "/api/report/download":
-                    report_id = parse_qs(parsed.query).get("id", [""])[0]
-                    bundle = controller.development_report_bundle(report_id)
-                    return self._send(bundle.read_bytes(), "application/zip", filename=bundle.name)
+                    query = parse_qs(parsed.query)
+                    report_id = query.get("id", [""])[0]
+                    fmt = query.get("format", ["md"])[0]
+                    report = controller.development_report_file(report_id, fmt)
+                    mime = {"md": "text/markdown; charset=utf-8", "json": "application/json; charset=utf-8",
+                            "zip": "application/zip"}[fmt]
+                    return self._send(report.read_bytes(), mime, filename=report.name)
                 if route == "/api/author/usage/export":
                     fmt = parse_qs(parsed.query).get("format", ["json"])[0]
                     if fmt not in {"json", "stages", "calls"}:
