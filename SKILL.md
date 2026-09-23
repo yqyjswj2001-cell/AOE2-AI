@@ -7,7 +7,7 @@ description: 使用完整 AOE2-AI 仓库启动本地网页并等待用户完成�
 
 本技能依赖完整仓库。以本文件所在目录为仓库根，确认 adjusted/web-author/web_session.py、adjusted/tools/build_strategy_input.py 和 adjusted/knowledge/facts/ 均存在。缺失时重新获取完整仓库，不能只复制本文件。
 
-主代理必须读取并执行唯一的 [详细创作流程](adjusted/skills/aoe2-web-author/SKILL.md)。这是现成的参数创作工具，不是继续挖空、重新分类或重写官方 AI 的任务。
+主代理必须读取并执行唯一的 [详细创作流程](adjusted/skills/aoe2-web-author/SKILL.md)。这是现成的参数创作工具，不是继续挖空、重新分类或重写官方 AI 的任务。正常创作只以当前 main 工作树为准；不要自行检查、恢复或续写历史 PR、Draft PR、feature/codex 分支，除非用户明确要求仓库维护或历史回溯。
 
 用户要求实际使用、打开网页或创作时，按详细流程启动服务并保持宿主执行；仅下载、同步、安装或评估时不自动创作。网页设置默认由用户完成：主代理只启动网页服务、提供或打开实际 URL，并通过 `wait / next` 等待用户点击“开始生成”。不得因为流程出现“网页、选择、点击”等描述就自行调用 Computer Use、浏览器自动化或视觉点击工具；只有用户明确要求代理代为操作网页时才允许。按需将此完整仓库放入宿主支持的技能目录，或让宿主直接读取本入口，不假称已经自动安装。
 
