@@ -27,3 +27,5 @@ jobs:
         run: python3 -B adjusted/tools/check_official_cloze.py
       - name: PER cloze renderer tests
         run: python3 -B -m unittest discover -s adjusted/tests -v
+      - name: Web JavaScript syntax
+        run: node --check adjusted/web-author/web/app.js
