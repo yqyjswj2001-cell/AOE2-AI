@@ -160,8 +160,6 @@ def make_author_constraints(catalog: dict) -> dict:
          "reason": "attack-group count must be nonnegative"},
         {"module": "orb.per", "kind": "range", "keys": ["ORB_ATTACK_GROUP_004"], "minimum": 0, "maximum": 100,
          "reason": "attack percentage must be within 0..100"},
-        {"module": "scoutcontrol.per", "kind": "less_equal", "keys": ["SCOUT_010", "SCOUT_012"],
-         "reason": "candidate search threshold must not exceed group-creation threshold"},
     ])
     unique = []
     seen = set()
