@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {"command": "python -X utf8 -B .cursor/hooks/aoe2-usage.py"}
+    ],
+    "beforeSubmitPrompt": [
+      {"command": "python -X utf8 -B .cursor/hooks/aoe2-usage.py"}
+    ],
+    "afterAgentResponse": [
+      {"command": "python -X utf8 -B .cursor/hooks/aoe2-usage.py"}
+    ],
+    "sessionEnd": [
+      {"command": "python -X utf8 -B .cursor/hooks/aoe2-usage.py"}
+    ]
+  }
+}

@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import sqlite3
 from urllib.parse import unquote, urlparse
+from cursor_admin_usage import cursor_hook_candidates
 
 SESSION_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,199}\Z")
 
@@ -35,12 +36,12 @@ def readonly_db(path):
         db.close()
 
 def cursor_metadata(workspace, home=None, environ=None):
-    """Only workspace.json and SQL-projected composer metadata; no value blobs."""
+    """Workspace-owned Cursor conversation metadata only; never reads chat text or token bubbles."""
     home = Path.home() if home is None else Path(home)
     env = os.environ if environ is None else environ
+    found = {row["session_id"]: row for row in cursor_hook_candidates(workspace, workspace)}
     bases = [Path(env.get("APPDATA") or home / "AppData/Roaming") / "Cursor/User",
              home / "Library/Application Support/Cursor/User", home / ".config/Cursor/User"]
-    found = {}
     for base in bases:
         workspace_ids = []
         for meta in (base / "workspaceStorage").glob("*/workspace.json"):
@@ -71,18 +72,20 @@ def cursor_metadata(workspace, home=None, environ=None):
                     for cid, created, updated, child in rows:
                         if not isinstance(cid, str) or not SESSION_ID.fullmatch(cid):
                             continue
-                        usage = None
-                        try:
-                            usage = db.execute("SELECT json_type(value,'$.usageData'), "
-                                "(SELECT count(*) FROM json_each(json_extract(value,'$.usageData'))) "
-                                "FROM cursorDiskKV WHERE key=?", ("composerData:" + cid,)).fetchone()
-                        except sqlite3.Error:
-                            pass
-                        found[cid] = {"agent": "cursor", "session_id": cid,
-                            "created_at": timestamp(created), "updated_at": timestamp(updated),
-                            "is_child": bool(child), "workspace_match": True,
-                            "usage_fields": usage[1] if usage else None,
-                            "usage_status": "EMPTY_USAGE_DATA" if usage and usage[1] == 0 else "UNVERIFIED_LOCAL_SCHEMA"}
+                        existing = found.get(cid, {})
+                        created_at = timestamp(created)
+                        updated_at = timestamp(updated)
+                        found[cid] = {
+                            "agent": "cursor", "session_id": cid,
+                            "created_at": existing.get("created_at") if existing.get("created_at") is not None else created_at,
+                            "updated_at": max(x for x in (existing.get("updated_at"), updated_at) if x is not None)
+                                          if any(x is not None for x in (existing.get("updated_at"), updated_at)) else None,
+                            "is_child": bool(existing.get("is_child")) or bool(child),
+                            "workspace_match": True,
+                            "source": existing.get("source", "cursor_composer"),
+                            "hook_verified": bool(existing.get("hook_verified")),
+                            "has_user_email": bool(existing.get("has_user_email")),
+                        }
             except sqlite3.Error:
                 continue
     return sorted(found.values(), key=lambda row: row.get("updated_at") or row.get("created_at") or 0, reverse=True)

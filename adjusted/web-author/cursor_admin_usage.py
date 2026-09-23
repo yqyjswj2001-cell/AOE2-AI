@@ -1,0 +1,333 @@
+"""Cursor IDE hook identity + official Admin Usage Events collector.
+
+No prompt/response text or credentials are persisted. Project hooks record only
+conversation identity and workspace metadata. The Admin API key is read from
+process environment and used only in-memory for an explicit refresh.
+"""
+from __future__ import annotations
+
+import base64
+from collections import defaultdict
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import sqlite3
+import time
+import urllib.error
+import urllib.request
+
+API_URL = "https://api.cursor.com/teams/filtered-usage-events"
+MAX_RANGE_SECONDS = 30 * 24 * 60 * 60
+MAX_RESPONSE_BYTES = 8 * 1024 * 1024
+MAX_PAGES = 100
+PAGE_SIZE = 100
+SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,199}\Z")
+
+
+class CursorAdminUsageError(ValueError):
+    pass
+
+
+def _path_key(value):
+    return os.path.normcase(os.path.abspath(str(value))).replace("\\", "/").rstrip("/").casefold()
+
+
+def _safe_id(value):
+    return value if isinstance(value, str) and SAFE_ID.fullmatch(value) else None
+
+
+def _safe_text(value, limit=320):
+    if not isinstance(value, str):
+        return None
+    value = value.strip()
+    return value if value and len(value) <= limit else None
+
+
+def hook_db_path(repo_root):
+    return Path(repo_root).resolve() / "adjusted/.local/cursor-hook-events.sqlite3"
+
+
+def _connect(path, readonly=False):
+    path = Path(path)
+    if readonly:
+        if not path.is_file() or path.is_symlink():
+            return None
+        return sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=2)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink():
+        raise CursorAdminUsageError("Cursor hook database cannot be a symlink")
+    return sqlite3.connect(path, timeout=2)
+
+
+def record_hook_payload(payload, repo_root, observed_at=None):
+    """Persist a privacy-minimized Cursor hook observation.
+
+    The hook payload may contain prompt/response text. This function deliberately
+    whitelists metadata and never serializes unknown fields.
+    """
+    if not isinstance(payload, dict):
+        return False
+    conversation = _safe_id(payload.get("conversation_id") or payload.get("session_id"))
+    event = _safe_id(payload.get("hook_event_name"))
+    roots = payload.get("workspace_roots")
+    repo_root = Path(repo_root).resolve()
+    if conversation is None or event is None or not isinstance(roots, list):
+        return False
+    clean_roots = [str(Path(root).resolve()) for root in roots if isinstance(root, str)]
+    if _path_key(repo_root) not in {_path_key(root) for root in clean_roots}:
+        return False
+    now = time.time() if observed_at is None else float(observed_at)
+    email = _safe_text(payload.get("user_email"))
+    model = _safe_text(payload.get("model_id") or payload.get("model"), 160)
+    cursor_version = _safe_text(payload.get("cursor_version"), 80)
+    background = 1 if payload.get("is_background_agent") is True else 0
+    session_start = 1 if event == "sessionStart" else 0
+    path = hook_db_path(repo_root)
+    db = _connect(path)
+    try:
+        db.execute("""CREATE TABLE IF NOT EXISTS conversations(
+            conversation_id TEXT PRIMARY KEY,
+            first_seen REAL NOT NULL,
+            last_seen REAL NOT NULL,
+            user_email TEXT,
+            model TEXT,
+            cursor_version TEXT,
+            workspace_roots TEXT NOT NULL,
+            is_background INTEGER NOT NULL DEFAULT 0,
+            session_start_seen INTEGER NOT NULL DEFAULT 0,
+            last_event TEXT NOT NULL
+        )""")
+        db.execute("""INSERT INTO conversations VALUES(?,?,?,?,?,?,?,?,?,?)
+            ON CONFLICT(conversation_id) DO UPDATE SET
+                first_seen=min(conversations.first_seen,excluded.first_seen),
+                last_seen=max(conversations.last_seen,excluded.last_seen),
+                user_email=COALESCE(excluded.user_email,conversations.user_email),
+                model=COALESCE(excluded.model,conversations.model),
+                cursor_version=COALESCE(excluded.cursor_version,conversations.cursor_version),
+                workspace_roots=excluded.workspace_roots,
+                is_background=max(conversations.is_background,excluded.is_background),
+                session_start_seen=max(conversations.session_start_seen,excluded.session_start_seen),
+                last_event=excluded.last_event""",
+            (conversation, now, now, email, model, cursor_version,
+             json.dumps(clean_roots, ensure_ascii=False), background, session_start, event))
+        db.commit()
+    finally:
+        db.close()
+    return True
+
+
+def _hook_rows(workspace, repo_root):
+    db = _connect(hook_db_path(repo_root), readonly=True)
+    if db is None:
+        return []
+    try:
+        try:
+            rows = db.execute("""SELECT conversation_id,first_seen,last_seen,user_email,model,
+                cursor_version,workspace_roots,is_background,session_start_seen,last_event
+                FROM conversations""").fetchall()
+        except sqlite3.Error:
+            return []
+    finally:
+        db.close()
+    wanted = _path_key(workspace)
+    result = []
+    for row in rows:
+        try:
+            roots = json.loads(row[6])
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(roots, list) or wanted not in {_path_key(root) for root in roots if isinstance(root, str)}:
+            continue
+        result.append({
+            "conversation_id": row[0], "first_seen": row[1], "last_seen": row[2],
+            "user_email": row[3], "model": row[4], "cursor_version": row[5],
+            "is_background": bool(row[7]), "session_start_seen": bool(row[8]),
+            "last_event": row[9],
+        })
+    return result
+
+
+def cursor_hook_candidates(workspace, repo_root):
+    return [{
+        "agent": "cursor", "session_id": row["conversation_id"],
+        "created_at": row["first_seen"], "updated_at": row["last_seen"],
+        "is_child": row["is_background"], "workspace_match": True,
+        "source": "cursor_hook", "hook_verified": True,
+        "has_user_email": bool(row["user_email"]),
+    } for row in sorted(_hook_rows(workspace, repo_root), key=lambda x: x["last_seen"], reverse=True)]
+
+
+def cursor_hook_identity(workspace, repo_root, conversation_id):
+    conversation_id = _safe_id(conversation_id)
+    if conversation_id is None:
+        return None
+    return next((row for row in _hook_rows(workspace, repo_root)
+                 if row["conversation_id"] == conversation_id), None)
+
+
+def _default_transport(api_key, body):
+    auth = base64.b64encode((api_key + ":").encode("utf-8")).decode("ascii")
+    raw = json.dumps(body, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    req = urllib.request.Request(API_URL, data=raw, method="POST", headers={
+        "Authorization": "Basic " + auth,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "AOE2-AI-cursor-usage/1",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            data = response.read(MAX_RESPONSE_BYTES + 1)
+            if len(data) > MAX_RESPONSE_BYTES:
+                raise CursorAdminUsageError("Cursor Admin API response is too large")
+            return json.loads(data)
+    except urllib.error.HTTPError as exc:
+        raise CursorAdminUsageError("Cursor Admin API HTTP " + str(exc.code)) from None
+    except urllib.error.URLError as exc:
+        raise CursorAdminUsageError("Cursor Admin API is unreachable") from exc
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise CursorAdminUsageError("Cursor Admin API returned invalid JSON") from exc
+
+
+def _fetch_email_events(api_key, email, start_ms, end_ms, transport):
+    events = []
+    page = 1
+    while True:
+        body = {"startDate": start_ms, "endDate": end_ms, "email": email,
+                "page": page, "pageSize": PAGE_SIZE}
+        value = transport(api_key, body)
+        if not isinstance(value, dict) or not isinstance(value.get("usageEvents"), list):
+            raise CursorAdminUsageError("Cursor Admin API response shape changed")
+        events.extend(row for row in value["usageEvents"] if isinstance(row, dict))
+        pagination = value.get("pagination") or {}
+        if not pagination.get("hasNextPage"):
+            break
+        page += 1
+        if page > MAX_PAGES:
+            raise CursorAdminUsageError("Cursor Admin API pagination exceeded safety limit")
+    return events
+
+
+def _int(value):
+    return value if type(value) is int and 0 <= value <= 10**12 else None
+
+
+def collect_cursor_admin_usage(workspace, repo_root, conversation_ids, started_at, *,
+                               api_key, end_at=None, transport=None):
+    """Fetch team usage then keep only exact hook-verified conversation IDs."""
+    if not isinstance(api_key, str) or not api_key.strip():
+        raise CursorAdminUsageError("CURSOR_ADMIN_API_KEY is not configured")
+    ids = []
+    identities = {}
+    gaps = []
+    for raw in conversation_ids:
+        cid = _safe_id(raw)
+        if cid is None:
+            continue
+        identity = cursor_hook_identity(workspace, repo_root, cid)
+        if identity is None:
+            gaps.append({"code": "CURSOR_ADMIN_HOOK_IDENTITY_MISSING", "session": cid})
+            continue
+        if not identity.get("user_email"):
+            gaps.append({"code": "CURSOR_ADMIN_HOOK_EMAIL_MISSING", "session": cid})
+            continue
+        ids.append(cid)
+        identities[cid] = identity
+    if not ids:
+        return {"items": [], "gaps": gaps, "matched_sessions": [], "range_truncated": False}
+
+    now = time.time() if end_at is None else float(end_at)
+    start = float(started_at)
+    truncated = now - start > MAX_RANGE_SECONDS
+    if truncated:
+        start = now - MAX_RANGE_SECONDS
+        gaps.append({"code": "CURSOR_ADMIN_RANGE_TRUNCATED", "session": "project"})
+    start_ms, end_ms = int(start * 1000), int(now * 1000)
+    transport = transport or _default_transport
+
+    groups = defaultdict(list)
+    for cid in ids:
+        groups[identities[cid]["user_email"]].append(cid)
+
+    raw_matches = []
+    for email, group_ids in groups.items():
+        wanted = set(group_ids)
+        for event in _fetch_email_events(api_key, email, start_ms, end_ms, transport):
+            if event.get("conversationId") not in wanted:
+                continue
+            ts = event.get("timestamp")
+            try:
+                when_ms = int(ts)
+            except (TypeError, ValueError):
+                gaps.append({"code": "CURSOR_ADMIN_EVENT_TIMESTAMP_INVALID",
+                             "session": event.get("conversationId")})
+                continue
+            if not start_ms <= when_ms <= end_ms:
+                continue
+            raw_matches.append(event)
+
+    canonical_rows = []
+    matched_sessions = set()
+    for event in raw_matches:
+        cid = event.get("conversationId")
+        token = event.get("tokenUsage")
+        if event.get("isTokenBasedCall") is not True or not isinstance(token, dict):
+            gaps.append({"code": "CURSOR_ADMIN_NON_TOKEN_EVENT", "session": cid})
+            continue
+        inp = _int(token.get("inputTokens"))
+        out = _int(token.get("outputTokens"))
+        cache_read = _int(token.get("cacheReadTokens"))
+        cache_write = _int(token.get("cacheWriteTokens"))
+        if None in {inp, out, cache_read, cache_write}:
+            gaps.append({"code": "CURSOR_ADMIN_TOKEN_FIELDS_INVALID", "session": cid})
+            continue
+        usage = {
+            "input_tokens": inp + cache_read + cache_write,
+            "output_tokens": out,
+            "total_tokens": inp + cache_read + cache_write + out,
+            "cached_input_tokens": cache_read,
+            "cache_write_tokens": cache_write,
+            "reasoning_output_tokens": None,
+        }
+        identity = {
+            "conversationId": cid,
+            "timestamp": str(event.get("timestamp")),
+            "model": event.get("model") or "unknown",
+            "kind": event.get("kind"),
+            "tokenUsage": {
+                "inputTokens": inp, "outputTokens": out,
+                "cacheReadTokens": cache_read, "cacheWriteTokens": cache_write,
+            },
+            "chargedCents": event.get("chargedCents"),
+        }
+        canonical = json.dumps(identity, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        canonical_rows.append((canonical, event, usage))
+        matched_sessions.add(cid)
+
+    canonical_rows.sort(key=lambda row: (str(row[1].get("timestamp")), row[0]))
+    occurrences = defaultdict(int)
+    items = []
+    for canonical, event, usage in canonical_rows:
+        occurrences[canonical] += 1
+        suffix = occurrences[canonical]
+        key = "cursor-admin:" + hashlib.sha256(
+            (canonical + "#" + str(suffix)).encode("utf-8")).hexdigest()[:24]
+        items.append({
+            "agent": "cursor",
+            "session": event["conversationId"],
+            "key": key,
+            "timestamp": int(event["timestamp"]) / 1000,
+            "model": event.get("model") or "unknown",
+            "usage": usage,
+        })
+
+    for cid in ids:
+        if cid not in matched_sessions:
+            gaps.append({"code": "CURSOR_ADMIN_NO_MATCHING_EVENTS", "session": cid})
+    return {
+        "items": items,
+        "gaps": gaps,
+        "matched_sessions": sorted(matched_sessions),
+        "range_truncated": truncated,
+    }

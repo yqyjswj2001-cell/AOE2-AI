@@ -140,6 +140,8 @@ def make_server(controller, meta, port=0):
                     return self._json(controller.start(payload))
                 if route == "/api/usage/bind-session":
                     return self._json(controller.bind_usage_candidate(payload))
+                if route == "/api/usage/cursor-admin":
+                    return self._json(controller.refresh_cursor_admin_usage(payload))
                 if route == "/api/report/generate":
                     return self._json(controller.development_report(payload))
                 if not self._host():
@@ -167,7 +169,7 @@ def make_server(controller, meta, port=0):
                 prefix = "/api/author/usage/"
                 if route.startswith(prefix):
                     action = route[len(prefix):]
-                    if action not in {"source", "events", "seal", "phase", "complete", "bind", "ccusage"}:
+                    if action not in {"source", "events", "seal", "phase", "complete", "bind", "ccusage", "cursor-admin"}:
                         return self._json({"error": "Unknown usage action"}, 404)
                     current = controller.usage()
                     if payload.get("run_id") != current.get("run_id"):

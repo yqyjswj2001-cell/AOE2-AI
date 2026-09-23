@@ -41,4 +41,6 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 
 选择 Agent 表示本轮实际运行宿主，不会由网页自动切换工具。自动采集、会话快照导入、SDK usage 上报按各宿主真实能力区分，见 [计量说明](METERING.md)。未开放真实用量的宿主明确显示缺口；上下文长度不是消耗。
 
+Cursor 另有可选官方链路：仓库项目 Hook 只记录 conversation_id 等元数据；若启动服务前设置 `CURSOR_ADMIN_API_KEY`，绑定当前 Cursor conversation 后，可在最后生成页手动刷新 Cursor Team Admin Usage Events。API key 不写入项目、网页或报告；无权限时不会回退用本机 tokenCount/上下文占用估算。
+
 盾徽在 web/assets/civilizations/，资料由 civilization_catalog.py 只读提供；本轮备份/截图/验证统一放 adjusted/.local/ui-token-revision/，不上传。

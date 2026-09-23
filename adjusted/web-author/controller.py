@@ -698,6 +698,20 @@ class Controller:
                 raise WorkflowError("This session is not a verified candidate for the current workspace")
             return self.usage_action("bind", {**payload, "sessions": {agent: [session]}})
 
+    def refresh_cursor_admin_usage(self, payload):
+        """Same-origin browser refresh of official Cursor Usage Events; API key never reaches the browser."""
+        with self.lock:
+            self._expected(payload)
+            if not self.meter:
+                raise WorkflowError("Start the project before refreshing Cursor usage")
+            report = self.usage()
+            if payload.get("run_id") != report.get("run_id"):
+                raise WorkflowError("Usage run identity does not match")
+            capture = report.get("auto_capture", {})
+            if capture.get("selected_agent") != "cursor":
+                raise WorkflowError("Cursor official usage refresh is only available for a Cursor project")
+            return self.usage_action("cursor-admin", payload)
+
     def usage_action(self, action, payload):
         with self.lock:
             if not self.meter:

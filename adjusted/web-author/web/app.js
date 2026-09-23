@@ -18,7 +18,7 @@
   let project = null, draftLoaded = false, storageAvailable = true, dirty = false, networkError = false;
   let lastRequestSignature = null, civilizationSignature = null, agentSignature = null;
   let wizardStep = 0, previewCivilization = null, catalog = [], agents = [], catalogReady = false, agentsReady = false;
-  let lastUsage = null, bindingBusy = false, bindingSignature = null, reportBusy = false;
+  let lastUsage = null, bindingBusy = false, bindingSignature = null, reportBusy = false, cursorRefreshBusy = false;
   const STEP_NAMES = ['游戏模式', '文明', '设置', '生成'];
   const MODE_NAMES = {'1v1':'1v1 单挑','2v2':'2v2 团队战','3v3':'3v3 团队战','4v4':'4v4 团队战',ffa4:'4 人混战',ffa8:'8 人混战'};
   const finite = value => typeof value === 'number' && Number.isFinite(value);
@@ -221,11 +221,12 @@
   }
   async function api(path, options = {}) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const {timeoutMs = 8000, ...fetchOptions} = options;
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const response = await fetch(path, {
-        ...options, signal: controller.signal, cache: 'no-store',
-        headers: {'Content-Type': 'application/json', ...(options.headers || {})}
+        ...fetchOptions, signal: controller.signal, cache: 'no-store',
+        headers: {'Content-Type': 'application/json', ...(fetchOptions.headers || {})}
       });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.message === 'string' ? data.message : typeof data.error === 'string' ? data.error : '操作失败（' + response.status + '）');
@@ -472,6 +473,18 @@
       NO_THREAD_ID: '未取得当前任务用量标识', THREAD_LOG_NOT_FOUND: '正在等待任务用量日志', LOG_UNAVAILABLE: '用量日志暂不可读',
       ROLLOUT_REPLACED: '用量日志发生变化', ERROR: '用量采集出现错误'}[auto.status];
     const connection = auto.connection && typeof auto.connection === 'object' ? auto.connection : {};
+    const cursorAdminVisible = (auto.selected_agent || state?.request?.agent) === 'cursor' &&
+      connection.action === 'refresh_cursor_admin';
+    $('cursorAdminControls').classList.toggle('hidden', !cursorAdminVisible);
+    $('cursorAdminRefresh').disabled = cursorRefreshBusy || !online || stopped || !cursorAdminVisible;
+    $('cursorAdminRefresh').setAttribute('aria-busy', String(cursorRefreshBusy));
+    text('cursorAdminRefresh', cursorRefreshBusy ? '正在刷新…' : '刷新 Cursor 官方用量');
+    if (!cursorRefreshBusy && cursorAdminVisible) {
+      const last = auto.cursor_admin?.last_refresh;
+      text('cursorAdminState', last ? '上次刷新：' + new Date(last * 1000).toLocaleString('zh-CN') : '尚未刷新');
+    } else if (!cursorAdminVisible) {
+      text('cursorAdminState', '');
+    }
     const selectedAgent = agents.find(agent => agent.id === (auto.selected_agent || state?.request?.agent));
     const agentLabel = selectedAgent?.label || (auto.selected_agent || state?.request?.agent ? (auto.selected_agent || state.request.agent) : '未选择宿主');
     const message = typeof connection.message === 'string' ? connection.message : captureLabel || '等待采集连接信息';
@@ -635,6 +648,23 @@
     } catch (_) {
       $('reportOutput').focus(); $('reportOutput').select();
       text('reportState', '已选中报告内容，请手动复制。');
+    }
+  });
+  $('cursorAdminRefresh').addEventListener('click', async () => {
+    const auto = lastUsage?.auto_capture || {};
+    if (cursorRefreshBusy || !online || stopped || auto.connection?.action !== 'refresh_cursor_admin' || !lastUsage?.run_id) return;
+    cursorRefreshBusy = true; text('cursorAdminState', '正在读取 Cursor 官方 Usage Events…'); renderUsage(lastUsage);
+    try {
+      await api('/api/usage/cursor-admin', {method:'POST', timeoutMs:30000, body:JSON.stringify({
+        project_id:project, expected_revision:state.revision, run_id:lastUsage.run_id
+      })});
+      text('cursorAdminState', '官方用量已刷新。');
+    } catch (error) {
+      const message = error.name === 'AbortError' ? '刷新超时，请稍后重试。' : error.message;
+      text('cursorAdminState', message); rememberDeveloperIssue('cursor_admin_usage', message);
+    } finally {
+      cursorRefreshBusy = false; await refresh();
+      if (lastUsage) renderUsage(lastUsage);
     }
   });
   $('refreshButton').addEventListener('click', () => { if (!stopped) { notice('errorNotice', ''); refresh(); } });

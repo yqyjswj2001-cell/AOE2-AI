@@ -11,7 +11,7 @@
 | OpenAI Codex | 指定 rollout 的累计 token_count 差值 | 绑定当前真实 thread ID；旧会话扣除创作前基线；子代理单独绑定 |
 | Claude Code | 指定 session JSONL 的 assistant usage | 绑定真实 session ID；输入、输出及缓存读写必须实际存在 |
 | Gemini CLI | 指定 chat 文件的消息 tokens | 绑定 session ID/文件名；按 total 区分输入内缓存，包含 tool/thoughts，不重复累加缓存 |
-| Cursor IDE | 不自动采集 token；只保留项目 composer 元数据用于识别当前工作区 | 本机 bubble.tokenCount 属于 best-effort 且常为 0，不作为账本；上下文占用也不能替代真实 token |
+| Cursor IDE | 项目 Hook 记录 conversation_id，再用官方 Team Admin Usage Events 按 conversationId 精确关联 | 需 Cursor Hook 生效、绑定本轮 conversation，并在启动服务前设置 CURSOR_ADMIN_API_KEY；官方接口可能有聚合延迟 |
 | Cursor SDK | 显式导入最终 RunResult.usage / getUsage() | format=cursor-sdk；只接收本轮 finished/error/cancelled 的真实 usage，不把运行中累计快照相加 |
 | OpenCode | SQLite 按 session_id 先筛选，或 storage/message/<session> | 绑定 session ID；支持 assistant tokens 的缓存及 reasoning 字段；不扫全账户消息 |
 | GitHub Copilot CLI | 本轮专用本地 OTel 文件的 chat span | 配置 AOE2_COPILOT_USAGE_FILE 并绑定 conversation ID；忽略 invoke_agent 父汇总避免重复计数 |
@@ -20,11 +20,11 @@
 | Windsurf / Trae / Augment | 本轮真实 usage 显式导入 | 尚未核实稳定、按项目归属的 IDE 本地消耗接口；不宣称自动接通 |
 | 其他 Agent | agent-usage / 提供商最终响应导入 | 必须有本轮真实来源和稳定事件 ID |
 
-以上是已实现的格式支持及合成测试范围，不是所有 Agent 的本机实测认证。Cursor IDE 的本机 bubble.tokenCount 已不再作为用量来源：Cursor 官方人员说明该字段是 best-effort、当前并不可靠。普通 IDE 会话因此保持未采集；contextTokensUsed、contextUsagePercent 和 promptTokenBreakdown.estimatedTokens 仍全部排除。若实际通过 Cursor SDK 运行，则导入本轮 RunResult.usage / getUsage() 的真实计数。
+以上是已实现的格式支持及合成测试范围，不是所有 Agent 的本机实测认证。Cursor IDE 的本机 bubble.tokenCount 已不再作为用量来源。仓库改用 Cursor 官方 Hook 的稳定 conversation_id 与 Team Admin Usage Events 的 conversationId 做 join；只有官方事件返回的 input/output/cache token 才进入账本。contextTokensUsed、contextUsagePercent 和 promptTokenBreakdown.estimatedTokens 仍全部排除。无 Admin API 权限时保持未采集，或导入本轮 Cursor SDK RunResult.usage / getUsage()。
 
 ## 会话绑定与连接提示
 
-identity 接受 agent、workspace_root、usage_sessions。只有首次创建计量且选择为 auto/codex 时才自动继承 CODEX_THREAD_ID；恢复已有项目仅保留已存绑定，新增主会话或子会话须显式绑定，维护会话不得混入。来源根目录仅作文件名/元数据定位。解析前先精确选择绑定文件；OpenCode 在 SQL WHERE 中先限制 session_id，Cursor 用 composer key 前缀索引范围，只返回 token/time/model 元数据。
+identity 接受 agent、workspace_root、usage_sessions。只有首次创建计量且选择为 auto/codex 时才自动继承 CODEX_THREAD_ID；恢复已有项目仅保留已存绑定，新增主会话或子会话须显式绑定，维护会话不得混入。来源根目录仅作文件名/元数据定位。解析前先精确选择绑定文件；OpenCode 在 SQL WHERE 中先限制 session_id。Cursor 只用 composer/Hook 元数据识别 conversation，不再从 cursorDiskKV 读取 token。
 
 会话候选只由匹配 workspace 的元数据产生，不返回会话标题、正文或凭据。只有唯一、明确匹配 workspace 且在本轮开始后创建的主候选可自动绑定。Codex 若状态库存在官方 thread_spawn_edges，则已绑定父 thread 在本轮明确 spawn 的后代 thread 会递归自动绑定；没有 parent→child 证据的同工作区会话不会因此加入。已有会话、多候选、无可靠项目映射时须由宿主确认，不能按“最近活跃”猜测。
 
@@ -33,7 +33,8 @@ identity 接受 agent、workspace_root、usage_sessions。只有首次创建计�
 - SESSION_BINDING_REQUIRED：未绑定，先绑定候选或已知本轮 ID。
 - WAITING_FOR_USAGE：已绑定，等待真实日志字段或核对来源条件。
 - BASELINE_CAPTURED：旧会话首份累计快照仅建立基线，尚未取得本轮增量。
-- EXPLICIT_USAGE_REQUIRED（Cursor）：普通 Cursor IDE 不再尝试从本机气泡读取 token；如本轮通过 Cursor SDK 运行，导入 SDK 的真实 usage，否则保持未采集。
+- CURSOR_ADMIN_READY：已绑定 Hook 验证的 Cursor conversation，且进程中存在 CURSOR_ADMIN_API_KEY，可以手动刷新官方 Usage Events。
+- EXPLICIT_USAGE_REQUIRED（Cursor）：没有可用的 Cursor Team Admin API key；普通 IDE 不回退读取本机气泡，可改用 Cursor SDK 真实 usage。
 - EXPLICIT_USAGE_REQUIRED：当前 Agent 尚无经核实的本地解析方式，需显式导入。
 - RECORDED_PARTIAL：已记录绑定来源的小计，未绑定子代理仍不在覆盖内。
 
@@ -48,6 +49,26 @@ python -X utf8 -B adjusted/web-author/web_session.py usage --project <项目名�
 ```
 
 Agent 选择不会切换或启动宿主，更不会自行发起模型调用。测试关闭自动采集可用 AOE2_USAGE_DISABLE_AUTO=1，此时明确显示 DISABLED。
+
+## Cursor Hook + 官方 Usage Events
+
+仓库自带项目级 `.cursor/hooks.json`。Hook 只白名单记录 conversation_id、时间、模型、Cursor 版本、workspace 和“是否取得用户邮箱”，不会保存用户 prompt、Agent 回复、thinking、transcript 内容或 API key。Hook 数据写入被 gitignore 排除的 `adjusted/.local/cursor-hook-events.sqlite3`。
+
+如果 Cursor 账户/团队能创建可调用 Team Admin API 的 key，在**启动网页服务前**仅放入当前进程环境：
+
+```powershell
+$env:CURSOR_ADMIN_API_KEY="<你的 Cursor Team Admin API key>"
+```
+
+不要把 key 写入仓库、网页字段、报告或项目 JSON。开始创作后，页面会列出当前 workspace 的 Hook/Composer conversation 候选；绑定当前 conversation 后，最后生成页会出现“刷新 Cursor 官方用量”。也可由宿主显式执行：
+
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py usage --project <项目名称> --action cursor-admin
+```
+
+刷新只请求 `POST /teams/filtered-usage-events`，用 Hook 的当前用户邮箱缩小时间范围，再在本机内存中按已绑定 `conversationId` 精确过滤；其他 conversation/team event 不写入项目。官方事件的 `inputTokens + cacheReadTokens + cacheWriteTokens` 作为规范化输入，`outputTokens` 作为输出，reasoning 未单独暴露时保持 null。接口文档说明数据按小时聚合，因此刚结束的调用可能暂时查不到；这种情况显示 WAITING_FOR_USAGE，不补零也不估算。
+
+Cursor 当前仍有一个已确认的 Hook 限制：本地子代理 conversation 不能可靠回链 parent conversation。主会话可以按 conversationId 精确统计，但无法证明归属的 Cursor 子代理不会自动并入，报告继续保持 PARTIAL。这个缺口不能用“同工作区、时间接近”猜测。
 
 ## ccusage 的受控复用
 
@@ -105,8 +126,10 @@ input_tokens 包含缓存读写，output_tokens 包含推理；细项是子集�
 
 ## 核查来源
 
+- [Cursor Hooks](https://cursor.com/docs/hooks)：conversation_id 是跨多轮稳定 ID；项目 Hook 可用于 analytics。
+- [Cursor Team Admin API](https://cursor.com/docs/account/teams/admin-api)：/teams/filtered-usage-events 返回 conversationId、模型、input/output/cache token 和费用；使用 API key Basic Auth。
 - [Cursor SDK Token usage](https://cursor.com/docs/sdk/typescript)：最终 RunResult、getUsage()、缓存与推理语义。
-- Cursor 官方社区说明（2026-03-27）：桌面端 cursorDiskKV 的 tokenCount 是 best-effort，当前不可靠；因此本实现不再把它作为真实 token 来源。
+- Cursor 官方社区已确认桌面端 cursorDiskKV 的 tokenCount 是 best-effort、当前不可靠；同时 Cursor 也已确认本地子代理 Hook 目前缺少可靠 parent conversation 回链。
 - [Gemini 官方 ChatRecordingService](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/services/chatRecordingService.ts)：消息 tokens 的实际字段。
 - [Kimi 官方 Wire 类型](https://github.com/MoonshotAI/kimi-cli/blob/main/src/kimi_cli/wire/types.py) 和 [ccusage Kimi](https://github.com/ccusage/ccusage/blob/main/docs/guide/kimi/index.md)：step usage 与 context/session 字段区别。
 - [Copilot CLI 官方 OTel 参考](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference)：chat 与 invoke_agent 层级、真实 token、默认关闭消息内容捕获。

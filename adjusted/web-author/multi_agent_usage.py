@@ -12,7 +12,9 @@ import os
 from pathlib import Path
 import re
 import sqlite3
+import time
 from agent_catalog import agent_catalog, agent_info, normalize_agent
+from cursor_admin_usage import collect_cursor_admin_usage, CursorAdminUsageError
 from host_usage import project_candidates, session_files
 from usage_formats import PHASES, normalize
 
@@ -737,6 +739,50 @@ class MultiAgentUsage:
             return _task_events(agent, files, start)
         return []
 
+    def ingest_cursor_admin(self):
+        """Explicitly refresh official Cursor team usage for bound hook conversations."""
+        if self.selected_agent != "cursor":
+            raise ValueError("Cursor Admin API refresh is only valid for a Cursor project.")
+        if self.workspace_root is None:
+            raise ValueError("Cursor Admin API refresh requires the current workspace.")
+        api_key = self.environ.get("CURSOR_ADMIN_API_KEY")
+        if not isinstance(api_key, str) or not api_key.strip():
+            raise ValueError("CURSOR_ADMIN_API_KEY is not configured.")
+        bindings = list(self.state.get("bindings", {}).get("cursor", []))
+        if not bindings:
+            raise ValueError("Bind the current Cursor conversation before refreshing official usage.")
+        try:
+            result = collect_cursor_admin_usage(
+                self.workspace_root, self.workspace_root, bindings,
+                self.meter.meta["started_at"], api_key=api_key)
+        except CursorAdminUsageError as exc:
+            self.state["cursor_admin_gaps"] = [{
+                "code": "CURSOR_ADMIN_API_ERROR", "agent": "cursor",
+                "session": _hash("admin-api")}]
+            self.state["cursor_admin_last_error"] = str(exc)
+            self._save()
+            raise ValueError(str(exc)) from None
+
+        public_gaps = []
+        for gap in result.get("gaps", []):
+            public_gaps.append({
+                "code": gap["code"], "agent": "cursor",
+                "session": _hash(gap.get("session") or "unknown")})
+        self.state["cursor_admin_gaps"] = public_gaps
+        self.state.pop("cursor_admin_last_error", None)
+
+        for item in result.get("items", []):
+            self._record(item, "unattributed")
+        sessions = self.state.setdefault("cursor_admin_sessions", {})
+        for sid in result.get("matched_sessions", []):
+            owner = _hash("cursor", sid)
+            sessions[owner] = {"agent": "cursor", "session": _hash(sid)}
+            self.state.setdefault("backend_by_session", {})[owner] = "cursor-admin-api"
+        self.state["cursor_admin_last_refresh"] = time.time()
+        self.state["cursor_admin_events_seen"] = len(result.get("items", []))
+        self._save()
+        return self.sync()
+
     def ingest_ccusage(self, agent, session_id, report):
         """Import one explicitly selected session snapshot, never report totals."""
         agent = normalize_agent(agent)
@@ -789,6 +835,7 @@ class MultiAgentUsage:
         self.state["agents"] = [{k: row[k] for k in ("id", "label", "mode", "detected", "detection_basis")} for row in detected]
         self.state["ccusage"] = {"available": False, "mode": "explicit_session_json_import", "reviewed_version": "20.0.24"}
         active = list(self.state.get("imported_sessions", {}).values())
+        active += list(self.state.get("cursor_admin_sessions", {}).values())
         missing = []
         try:
             selected = next(row for row in detected if row["id"] == self.selected_agent)
@@ -804,7 +851,11 @@ class MultiAgentUsage:
                 if len(candidates) == 1 and len(eligible) == 1:
                     self.bind({self.selected_agent: [eligible[0]["session_id"]]})
             if self.selected_agent == "cursor":
-                missing.append({"agent": "cursor", "session": "ide", "code": "CURSOR_IDE_USAGE_UNAVAILABLE"})
+                if self.environ.get("CURSOR_ADMIN_API_KEY"):
+                    missing.extend(self.state.get("cursor_admin_gaps", []))
+                else:
+                    missing.append({"agent": "cursor", "session": _hash("ide"),
+                                    "code": "CURSOR_IDE_USAGE_UNAVAILABLE"})
             supported = {"codex", "claude", "gemini", "opencode", "copilot", "kimi", "cline", "roo"}
             for info in detected:
                 agent = info["id"]
@@ -865,9 +916,19 @@ class MultiAgentUsage:
         gaps = list(self.state.get("gaps", {}).values()) + self.state.get("pending_bindings", [])
         bound = sum(len(v) for k, v in self.state.get("bindings", {}).items() if self.selected_agent in {"auto", k})
         code, message, action = "SESSION_BINDING_REQUIRED", "尚未绑定本轮宿主会话，token 不是 0。", "bind_session"
+        cursor_admin_configured = bool(self.environ.get("CURSOR_ADMIN_API_KEY"))
         if self.selected_agent == "auto" and not bound:
             code, message, action = "AGENT_SELECTION_REQUIRED", "请选择创作使用的 Agent，并由宿主绑定本轮会话。", "select_agent"
-        elif self.selected_agent in {"cursor", "windsurf", "trae", "augment", "other"}:
+        elif self.selected_agent == "cursor" and not cursor_admin_configured:
+            code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
+        elif self.selected_agent == "cursor" and bound:
+            if active and known:
+                code, message, action = "RECORDED_PARTIAL", "已记录 Cursor 官方 Usage Events；可稍后再次刷新，未能可靠回链的子代理仍保留缺口。", "refresh_cursor_admin"
+            elif any(g["code"] == "CURSOR_ADMIN_NO_MATCHING_EVENTS" for g in gaps):
+                code, message, action = "WAITING_FOR_USAGE", "Cursor 官方 Usage Events 暂未返回本轮 conversation 的 token；该接口可能存在聚合延迟。", "refresh_cursor_admin"
+            else:
+                code, message, action = "CURSOR_ADMIN_READY", "已绑定 Cursor conversation，可从官方 Usage Events 刷新真实 token。", "refresh_cursor_admin"
+        elif self.selected_agent in {"windsurf", "trae", "augment", "other"}:
             code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
         elif self.state.get("status") == "ERROR":
             code, message, action = "CAPTURE_ERROR", "采集遇到格式或来源错误；查看采集缺口并提供原始 usage。", "inspect_source"
@@ -881,11 +942,16 @@ class MultiAgentUsage:
                 "selected_agent": self.selected_agent, "agent": info,
                 "connection": {"code": code, "message": message, "action": action,
                     "action_label": {"bind_session": "绑定本轮宿主会话", "select_agent": "选择创作使用的 Agent",
-                        "import_usage": "导入本轮真实 usage", "inspect_source": "检查来源和计量缺口",
+                        "import_usage": "导入本轮真实 usage", "refresh_cursor_admin": "刷新 Cursor 官方用量",
+                        "inspect_source": "检查来源和计量缺口",
                         "bind_children_or_import_missing": "绑定子代理或补充缺失用量",
                         "check_requirements": "核对日志条件或导入真实用量"}[action], "requirements": info["requirements"]},
                 "session_candidates": self.state.get("session_candidates", []),
-                "ccusage": self.state.get("ccusage"), "scope": self.state["scope"], "privacy": self.state["privacy"],
+                "ccusage": self.state.get("ccusage"),
+                "cursor_admin": {"configured": bool(self.environ.get("CURSOR_ADMIN_API_KEY")),
+                    "last_refresh": self.state.get("cursor_admin_last_refresh"),
+                    "events_seen": self.state.get("cursor_admin_events_seen", 0)},
+                "scope": self.state["scope"], "privacy": self.state["privacy"],
                 "detected_agents": [r for r in self.state.get("agents", []) if r.get("detected")],
                 "active_sessions": active, "events_added": self.state.get("events_added", 0),
                 "duplicates": self.state.get("duplicates", 0), "reset_gaps": self.state.get("reset_gaps", 0),

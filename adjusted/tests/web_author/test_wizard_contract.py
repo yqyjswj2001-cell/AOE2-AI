@@ -65,6 +65,20 @@ class WizardContractTests(unittest.TestCase):
   self.assertNotIn('progressColumn',html+js)
   self.assertIn("$('authorForm').classList.toggle('hidden', finalRunning)",js)
   self.assertIn("$('generationDashboard').hidden = !finalRunning",js)
+ def test_cursor_admin_ui_is_explicit_and_hook_config_is_privacy_scoped(self):
+  html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
+  js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
+  hooks=json.loads((ROOT/'.cursor/hooks.json').read_text(encoding='utf-8'))
+  hook_py=(ROOT/'.cursor/hooks/aoe2-usage.py').read_text(encoding='utf-8')
+  self.assertIn('id="cursorAdminRefresh"',html)
+  self.assertIn("connection.action === 'refresh_cursor_admin'",js)
+  self.assertIn('/api/usage/cursor-admin',js)
+  self.assertEqual(hooks['version'],1)
+  self.assertIn('beforeSubmitPrompt',hooks['hooks'])
+  self.assertIn('afterAgentResponse',hooks['hooks'])
+  self.assertIn('record_hook_payload',hook_py)
+  self.assertNotIn('prompt',hook_py.lower())
+  self.assertNotIn('response text',hook_py.lower())
  def test_public_catalogs_and_only_allowlisted_icons(self):
   meta={'host_token':'fixture-token','instance_id':'fixture','project_id':self.app.data['project_id']}
   server=make_server(self.app,meta,0);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()

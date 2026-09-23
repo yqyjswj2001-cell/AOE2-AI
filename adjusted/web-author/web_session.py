@@ -247,7 +247,7 @@ def main(argv=None):
             sub.add_argument("--source", default="host", choices=["host", "author"])
             sub.add_argument("--message", required=True)
         if name == "usage":
-            sub.add_argument("--action", choices=["report", "source", "events", "seal", "complete", "bind", "ccusage"], default="report")
+            sub.add_argument("--action", choices=["report", "source", "events", "seal", "complete", "bind", "ccusage", "cursor-admin"], default="report")
             sub.add_argument("--payload", type=Path)
     args = parser.parse_args(argv)
     try:

@@ -33,6 +33,14 @@ GAP_MESSAGES = {
     "INVALID_CODEX_TOTAL": "Codex 总数与输入输出不一致。",
     "CURSOR_USAGE_NOT_REPORTED": "旧版 Cursor 本机气泡 tokenCount 缺失或全零；该来源已停用，不按上下文占用估算。",
     "CURSOR_IDE_USAGE_UNAVAILABLE": "Cursor IDE 没有可靠的项目级本机 token 来源；仅接受本轮 Cursor SDK 或其他明确逐次真实 usage。",
+    "CURSOR_ADMIN_HOOK_IDENTITY_MISSING": "绑定会话没有 Cursor Hook 的 conversation_id 证据，未向官方 Usage Events 查询。",
+    "CURSOR_ADMIN_HOOK_EMAIL_MISSING": "Cursor Hook 没有提供当前用户邮箱，无法安全缩小 Team Usage Events 查询范围。",
+    "CURSOR_ADMIN_NO_MATCHING_EVENTS": "Cursor 官方 Usage Events 暂未返回该 conversation 的 token；接口可能存在聚合延迟。",
+    "CURSOR_ADMIN_NON_TOKEN_EVENT": "Cursor 官方事件不是 token-based call，无法转换为真实 token。",
+    "CURSOR_ADMIN_TOKEN_FIELDS_INVALID": "Cursor 官方 tokenUsage 字段缺失或格式变化，未计入。",
+    "CURSOR_ADMIN_EVENT_TIMESTAMP_INVALID": "Cursor 官方 usage event 时间字段无效，未计入。",
+    "CURSOR_ADMIN_RANGE_TRUNCATED": "项目跨度超过 Cursor Admin API 单次 30 天范围，只查询最近 30 天。",
+    "CURSOR_ADMIN_API_ERROR": "Cursor Admin API 刷新失败；未使用本地估算替代。",
     "TASK_AGGREGATE_NOT_ATTRIBUTABLE": "任务有已折叠或子任务汇总，无法归属本轮，未重复计入。",
     "AUTO_CAPTURE_ERROR": "自动采集发生错误，当前只保留已记录小计。",
 }
@@ -130,6 +138,10 @@ class MeterAdapter:
             elif action == "ccusage":
                 require(self.auto is not None, "自动采集已禁用，不能接入会话累计快照。")
                 self.auto.ingest_ccusage(payload["agent"], payload["session_id"], payload["report"])
+                return self.report()
+            elif action == "cursor-admin":
+                require(self.auto is not None, "自动采集已禁用，不能刷新 Cursor 官方用量。")
+                self.auto.ingest_cursor_admin()
                 return self.report()
             else:
                 raise ValueError("未知计量操作；complete 必须由服务核对实际交付后调用。")

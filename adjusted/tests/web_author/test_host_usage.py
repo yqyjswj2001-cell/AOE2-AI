@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'web-author'))
 from host_usage import cursor_metadata, project_candidates
+from cursor_admin_usage import collect_cursor_admin_usage, hook_db_path, record_hook_payload
 from meter_adapter import MeterAdapter
 from metering import Meter
 from multi_agent_usage import MultiAgentUsage, detect_agents
@@ -113,6 +114,58 @@ class HostUsageTests(unittest.TestCase):
         self.assertFalse(auto.state.get('bindings', {}).get('cursor'))
         self.assertIn('CURSOR_IDE_USAGE_UNAVAILABLE', {g['code'] for g in status['gaps']})
         self.assertNotIn('PRIVATE_CONTENT', auto.path.read_text())
+
+    def test_cursor_hook_identity_and_admin_events_are_exactly_scoped(self):
+        payload={'conversation_id':'cursor-conv-1','generation_id':'gen-1',
+            'hook_event_name':'afterAgentResponse','workspace_roots':[str(self.workspace)],
+            'user_email':'dev@example.com','model':'fixture-model','text':'PRIVATE_RESPONSE'}
+        self.assertTrue(record_hook_payload(payload,self.workspace,observed_at=self.start+1))
+        candidates=project_candidates('cursor',self.workspace,[],self.root,self.env)
+        row=next(r for r in candidates if r['session_id']=='cursor-conv-1')
+        self.assertTrue(row['hook_verified'])
+        self.assertTrue(row['has_user_email'])
+        self.assertNotIn(b'PRIVATE_RESPONSE',hook_db_path(self.workspace).read_bytes())
+
+        def transport(api_key,body):
+            self.assertEqual(api_key,'secret-key')
+            self.assertEqual(body['email'],'dev@example.com')
+            return {'usageEvents':[
+                {'timestamp':str(int((self.start+2)*1000)),'userEmail':'dev@example.com',
+                 'conversationId':'cursor-conv-1','model':'fixture-model','kind':'Usage-based',
+                 'isTokenBasedCall':True,'tokenUsage':{'inputTokens':10,'outputTokens':5,
+                    'cacheReadTokens':2,'cacheWriteTokens':1},'chargedCents':1.25},
+                {'timestamp':str(int((self.start+2)*1000)),'userEmail':'dev@example.com',
+                 'conversationId':'another-conversation','model':'fixture-model','kind':'Usage-based',
+                 'isTokenBasedCall':True,'tokenUsage':{'inputTokens':999,'outputTokens':999,
+                    'cacheReadTokens':0,'cacheWriteTokens':0},'chargedCents':99},
+            ],'pagination':{'hasNextPage':False}}
+        result=collect_cursor_admin_usage(self.workspace,self.workspace,['cursor-conv-1'],self.start,
+            api_key='secret-key',end_at=self.start+10,transport=transport)
+        self.assertEqual(result['matched_sessions'],['cursor-conv-1'])
+        self.assertEqual(len(result['items']),1)
+        self.assertEqual(result['items'][0]['usage']['input_tokens'],13)
+        self.assertEqual(result['items'][0]['usage']['output_tokens'],5)
+        self.assertEqual(result['items'][0]['usage']['total_tokens'],18)
+
+    def test_cursor_admin_refresh_records_official_usage_without_persisting_key(self):
+        self.cursor([])
+        record_hook_payload({'conversation_id':'cursor-conv-1','hook_event_name':'sessionStart',
+            'workspace_roots':[str(self.workspace)],'user_email':'dev@example.com'},self.workspace,
+            observed_at=self.start+1)
+        env={**self.env,'CURSOR_ADMIN_API_KEY':'secret-key'}
+        auto=MultiAgentUsage(self.meter,self.project,self.root,environ=env,home=self.root,
+            selected_agent='cursor',workspace_root=self.workspace,bindings={'cursor':['cursor-conv-1']})
+        self.assertEqual(auto.sync()['connection']['code'],'CURSOR_ADMIN_READY')
+        item={'agent':'cursor','session':'cursor-conv-1','key':'cursor-admin:event-1',
+            'timestamp':self.start+2,'model':'fixture-model','usage':{
+                'input_tokens':13,'output_tokens':5,'total_tokens':18,
+                'cached_input_tokens':2,'cache_write_tokens':1,'reasoning_output_tokens':None}}
+        with patch('multi_agent_usage.collect_cursor_admin_usage',return_value={
+            'items':[item],'gaps':[],'matched_sessions':['cursor-conv-1'],'range_truncated':False}):
+            status=auto.ingest_cursor_admin()
+        self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
+        self.assertEqual(status['connection']['code'],'RECORDED_PARTIAL')
+        self.assertNotIn('secret-key',auto.path.read_text(encoding='utf-8'))
 
     def test_selected_cursor_does_not_inherit_codex_environment(self):
         with patch.dict(os.environ, {'CODEX_THREAD_ID': 'unrelated-codex-thread', 'AOE2_USAGE_DISABLE_AUTO': '0'}):
