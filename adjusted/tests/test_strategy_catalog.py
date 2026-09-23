@@ -27,6 +27,16 @@ class StrategyClassificationTests(unittest.TestCase):
             for card in cards['parameters']:
                 self.assertEqual(set(card),set(catalog_tool.AUTHOR_FIELDS))
 
+    def test_author_contracts_expose_only_proven_mechanical_rules(self):
+        contracts=catalog_tool.make_author_constraints(self.catalog)
+        dynamic={r['key'] for p in self.catalog['modules'].values() for r in p['parameters'] if r['decision']=='dynamic'}
+        fixed={r['key'] for p in self.catalog['modules'].values() for r in p['parameters'] if r['decision']=='fixed'}
+        self.assertEqual(set(contracts['by_key']),dynamic)
+        self.assertFalse(set(contracts['by_key']) & fixed)
+        self.assertEqual(contracts['by_key']['ORB_ATTACK_GROUP_001']['zero_rule'],'forbidden')
+        self.assertEqual(contracts['by_key']['ORB_ATTACK_GROUP_003']['zero_rule'],'allowed_by_static_rule')
+        self.assertTrue(all(not (set(c['keys']) & fixed) for c in contracts['constraints']))
+
     def test_fixed_value_cannot_be_reopened_even_with_a_renamed_key(self):
         for module,profile in self.catalog['modules'].items():
             fixed=next((r for r in profile['parameters'] if r['decision']=='fixed'),None)
@@ -61,6 +71,9 @@ class StrategyClassificationTests(unittest.TestCase):
             manifest=json.loads((out/'manifest.json').read_text(encoding='utf-8'))
             self.assertFalse(manifest['fixed_source_included'])
             self.assertFalse(manifest['official_answers_included'])
+            contracts=json.loads((out/'PARAMETER_CONSTRAINTS.json').read_text(encoding='utf-8'))
+            self.assertEqual(set(contracts['by_key']),{
+                r['key'] for p in self.catalog['modules'].values() for r in p['parameters'] if r['decision']=='dynamic'})
             for p in out.rglob('*'):
                 if p.is_file():
                     self.assertNotIn(p.suffix,{'.per','.ai','.tpl','.xs'})

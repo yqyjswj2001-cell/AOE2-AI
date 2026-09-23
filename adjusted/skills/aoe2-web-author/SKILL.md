@@ -48,7 +48,7 @@ python -X utf8 -B adjusted/web-author/web_session.py choose-civilization --proje
 手动模式取得 next 返回的输入与答案目录后，以 `fork_turns="none"` 创建新作者；自主模式复用刚选定文明的同一作者。只给：
 - 本次模式、文明和偏好，以及专属答案目录；
 - 隔离输入包的 README、manifest、ANSWER_CONSTRAINTS；
-- strategy 卡片、全 null 答卷、基础 facts 和包内两种只读查询工具。
+- strategy 卡片、全 null 答卷、PARAMETER_CONSTRAINTS.json、基础 facts 和包内两种只读查询工具。
 
 选定文明后，让作者按卡片的 group_id / 模块成组处理：查一组、决定一组、立即写入本轮 answers JSON，不要读完整包后才第一次落盘。每完成若干组就保存现有文件；主代理用 next 的 filled/total 看真实进度，长时间不增长时只让同一作者检查当前组，不重开整轮。无需逐批向用户汇报。自主选择阶段仅额外允许上面的选择元数据文件。
 
@@ -59,7 +59,7 @@ python -X utf8 -B adjusted/web-author/web_session.py choose-civilization --proje
 python -X utf8 -B tools/query_strategy_cards.py --module gatherers --groups
 python -X utf8 -I -B adjusted/tools/query_creator_facts.py civilization Portuguese
 ```
-命令在隔离输入包中运行。资料 UNKNOWN 时指出缺口；不要因缺资料读取固定实现。
+命令在隔离输入包中运行。遇到“能不能填 0、范围是什么、和哪些键联动”时先查 PARAMETER_CONSTRAINTS.json：它只记录当前静态校验能证明的规则；zero_rule=allowed_by_static_rule 只表示机械校验允许 0，不表示策略上应该填 0，unspecified 则不能自行推断。资料 UNKNOWN 时指出缺口；不要因缺资料读取固定实现。
 
 ## 检查与交付
 

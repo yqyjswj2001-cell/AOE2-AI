@@ -105,6 +105,96 @@ def validate_classified_answers(module: str, answers: dict, catalog: dict | None
             raise BoundaryError(f"{module}: inconsistent answers: {constraint['reason']}; keys={constraint['keys']}")
 
 
+def _project_constraint(constraint: dict) -> dict:
+    allowed = ("module", "kind", "keys", "reason", "value", "minimum", "maximum")
+    return {field: constraint[field] for field in allowed if field in constraint}
+
+
+def _zero_rule(constraints: list[dict]) -> str:
+    verdicts = []
+    for constraint in constraints:
+        kind = constraint.get("kind")
+        if kind == "minimum" and type(constraint.get("value")) is int:
+            verdicts.append("forbidden" if constraint["value"] > 0 else "allowed_by_static_rule")
+        elif kind == "range" and type(constraint.get("minimum")) is int and type(constraint.get("maximum")) is int:
+            verdicts.append("allowed_by_static_rule" if constraint["minimum"] <= 0 <= constraint["maximum"] else "forbidden")
+        elif kind == "less_than" and type(constraint.get("value")) is int:
+            verdicts.append("allowed_by_static_rule" if 0 < constraint["value"] else "forbidden")
+    if "forbidden" in verdicts:
+        return "forbidden"
+    if "allowed_by_static_rule" in verdicts:
+        return "allowed_by_static_rule"
+    return "unspecified"
+
+
+def make_author_constraints(catalog: dict) -> dict:
+    dynamic = {
+        module: {row["key"] for row in profile["parameters"] if row["decision"] == "dynamic"}
+        for module, profile in catalog["modules"].items()
+    }
+    constraints = []
+    for constraint in catalog.get("constraints", []):
+        module = constraint.get("module")
+        keys = constraint.get("keys")
+        if module in dynamic and isinstance(keys, list) and keys and set(keys) <= dynamic[module]:
+            constraints.append(_project_constraint(constraint))
+
+    constraints.extend([
+        {"module": "orb.per", "kind": "equal",
+         "keys": ["ORB_ATTACK_GROUP_001", "ORB_ATTACK_GROUP_005", "ORB_ATTACK_GROUP_007", "ORB_ATTACK_GROUP_009"],
+         "reason": "minimum attack-group size references must agree"},
+        {"module": "orb.per", "kind": "equal",
+         "keys": ["ORB_ATTACK_GROUP_002", "ORB_ATTACK_GROUP_006", "ORB_ATTACK_GROUP_008", "ORB_ATTACK_GROUP_010"],
+         "reason": "maximum attack-group size references must agree"},
+        {"module": "orb.per", "kind": "minimum",
+         "keys": ["ORB_ATTACK_GROUP_001", "ORB_ATTACK_GROUP_002", "ORB_ATTACK_GROUP_005", "ORB_ATTACK_GROUP_006",
+                  "ORB_ATTACK_GROUP_007", "ORB_ATTACK_GROUP_008", "ORB_ATTACK_GROUP_009", "ORB_ATTACK_GROUP_010"],
+         "value": 1, "reason": "attack-group minimum and maximum sizes must be positive"},
+        {"module": "orb.per", "kind": "less_equal",
+         "keys": ["ORB_ATTACK_GROUP_001", "ORB_ATTACK_GROUP_002"],
+         "reason": "minimum attack-group size must not exceed maximum"},
+        {"module": "orb.per", "kind": "forbidden_pair",
+         "keys": ["ORB_ATTACK_GROUP_001", "ORB_ATTACK_GROUP_002"],
+         "values": [1, 1], "reason": "1/1 is the fixed disabled-group sentinel"},
+        {"module": "orb.per", "kind": "minimum", "keys": ["ORB_ATTACK_GROUP_003"], "value": 0,
+         "reason": "attack-group count must be nonnegative"},
+        {"module": "orb.per", "kind": "range", "keys": ["ORB_ATTACK_GROUP_004"], "minimum": 0, "maximum": 100,
+         "reason": "attack percentage must be within 0..100"},
+        {"module": "scoutcontrol.per", "kind": "less_equal", "keys": ["SCOUT_010", "SCOUT_012"],
+         "reason": "candidate search threshold must not exceed group-creation threshold"},
+    ])
+    unique = []
+    seen = set()
+    for constraint in constraints:
+        marker = json.dumps(constraint, ensure_ascii=False, sort_keys=True)
+        if marker not in seen:
+            seen.add(marker)
+            unique.append(constraint)
+    constraints = unique
+
+    by_key = {}
+    for module, keys in dynamic.items():
+        for key in sorted(keys):
+            indexes = [index for index, constraint in enumerate(constraints)
+                       if constraint["module"] == module and key in constraint["keys"]]
+            relevant = [constraints[index] for index in indexes]
+            by_key[key] = {"module": module, "required": True, "type": "integer",
+                           "zero_rule": _zero_rule(relevant), "constraint_ids": indexes}
+    result = {
+        "schema": "aoe2-author-parameter-contracts-v1",
+        "note": ("required/type are delivery requirements. zero_rule describes only current static validation: "
+                 "allowed_by_static_rule does not mean zero is strategically correct; unspecified means no proof either way."),
+        "constraints": constraints,
+        "by_key": by_key,
+    }
+    validate_author_prose(json.dumps(result, ensure_ascii=False), "PARAMETER_CONSTRAINTS.json")
+    fixed = {row["key"] for profile in catalog["modules"].values()
+             for row in profile["parameters"] if row["decision"] == "fixed"}
+    if set(by_key) & fixed or any(set(c["keys"]) & fixed for c in constraints):
+        raise BoundaryError("author constraints expose fixed parameter keys")
+    return result
+
+
 def make_author_cards(module: str, catalog: dict) -> dict:
     rows = catalog["modules"][module]["parameters"]
     cards = [{field: row[field] for field in AUTHOR_FIELDS} for row in rows if row["decision"] == "dynamic"]

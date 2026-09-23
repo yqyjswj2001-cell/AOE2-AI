@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'web-author'))
-from host_usage import cursor_metadata
+from host_usage import cursor_metadata, project_candidates
 from meter_adapter import MeterAdapter
 from metering import Meter
 from multi_agent_usage import MultiAgentUsage, detect_agents
@@ -62,6 +62,45 @@ class HostUsageTests(unittest.TestCase):
             db.execute('INSERT INTO cursorDiskKV VALUES (?,?)', (key, json.dumps(data)))
         db.commit(); db.close()
         return path
+
+    def test_codex_spawn_edges_identify_and_auto_bind_owned_children(self):
+        codex=self.root/'.codex'
+        self.env['CODEX_HOME']=str(codex)
+        dbpath=codex/'state_5.sqlite'
+        codex.mkdir()
+        db=sqlite3.connect(dbpath)
+        db.execute('CREATE TABLE threads(id TEXT,cwd TEXT,created_at REAL,updated_at REAL)')
+        db.execute('CREATE TABLE thread_spawn_edges(parent_thread_id TEXT,child_thread_id TEXT,status TEXT)')
+        db.executemany('INSERT INTO threads VALUES (?,?,?,?)',[
+            ('main',str(self.workspace),self.start-5,self.start+4),
+            ('child',str(self.workspace),self.start+1,self.start+3),
+            ('grandchild',str(self.workspace),self.start+2,self.start+3),
+            ('unrelated',str(self.workspace),self.start+1,self.start+3)])
+        db.executemany('INSERT INTO thread_spawn_edges VALUES (?,?,?)',[
+            ('main','child','running'),('child','grandchild','completed')])
+        db.commit();db.close()
+        sessions=codex/'sessions/2026/09/23';sessions.mkdir(parents=True)
+        def rollout(sid,when,total):
+            rows=[
+                {'timestamp':iso(self.start-10),'type':'session_meta','payload':{'id':sid}},
+                {'type':'turn_context','payload':{'model':'fixture'}},
+                {'timestamp':iso(self.start-1),'type':'event_msg','payload':{'type':'token_count','info':{'total_token_usage':{'input_tokens':0,'output_tokens':0,'total_tokens':0}}}},
+                {'timestamp':iso(when),'type':'event_msg','payload':{'type':'token_count','info':{'total_token_usage':{'input_tokens':total,'output_tokens':0,'total_tokens':total}}}},
+            ]
+            (sessions/f'rollout-fixture-{sid}.jsonl').write_text('\n'.join(json.dumps(r) for r in rows)+'\n',encoding='utf-8')
+        rollout('main',self.start+1,10)
+        rollout('child',self.start+2,5)
+        rollout('grandchild',self.start+3,3)
+        rollout('unrelated',self.start+2,999)
+        candidates=project_candidates('codex',self.workspace,[codex],self.root,self.env)
+        by_id={r['session_id']:r for r in candidates}
+        self.assertEqual(by_id['child']['parent_session_id'],'main')
+        self.assertTrue(by_id['child']['is_child'])
+        auto=self.auto('codex',['main'])
+        status=auto.sync('3')
+        self.assertEqual(auto.state['bindings']['codex'],['child','grandchild','main'])
+        self.assertEqual(status['auto_bound_child_count'],2)
+        self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
 
     def test_cursor_zero_placeholder_then_actual_snapshot_delta(self):
         path = self.cursor([('bubbleId:own-session:b1', {'type': 2, 'createdAt': iso(self.start+1),

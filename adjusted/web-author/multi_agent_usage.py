@@ -593,7 +593,7 @@ class MultiAgentUsage:
         return {"schema": STATE_SCHEMA, "status": "DISCOVERING", "sessions": {},
                 "bindings": {}, "agents": [], "events_added": 0, "duplicates": 0,
                 "reset_gaps": 0, "gaps": {}, "event_phases": {},
-                "scope": "EXPLICITLY_BOUND_SESSIONS_ONLY",
+                "scope": "PROJECT_OWNED_BOUND_SESSIONS_ONLY",
                 "privacy": "persists session/model/timestamps/token counts only; no prompt/response text"}
 
     def _load(self):
@@ -603,7 +603,11 @@ class MultiAgentUsage:
             value = json.loads(self.path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError):
             return self._base()
-        return value if value.get("schema") == STATE_SCHEMA and value.get("scope") == "EXPLICITLY_BOUND_SESSIONS_ONLY" else self._base()
+        if value.get("schema") != STATE_SCHEMA or value.get("scope") not in {
+                "EXPLICITLY_BOUND_SESSIONS_ONLY", "PROJECT_OWNED_BOUND_SESSIONS_ONLY"}:
+            return self._base()
+        value["scope"] = "PROJECT_OWNED_BOUND_SESSIONS_ONLY"
+        return value
 
     def bind(self, bindings):
         if not isinstance(bindings, dict):
@@ -619,6 +623,32 @@ class MultiAgentUsage:
                     raise ValueError("用量会话 ID 无效。")
             values = self.state.setdefault("bindings", {}).setdefault(agent, [])
             values[:] = sorted(set(values) | set(sessions))
+
+    def _bind_verified_children(self, agent, candidates):
+        if agent != "codex":
+            return []
+        started = self.meter.meta["started_at"]
+        bound = set(self.state.get("bindings", {}).get(agent, []))
+        added = []
+        changed = True
+        while changed:
+            changed = False
+            for row in candidates:
+                sid = row.get("session_id")
+                parent = row.get("parent_session_id")
+                created = row.get("created_at")
+                if (row.get("workspace_match") is True and row.get("is_child") is True
+                        and isinstance(sid, str) and isinstance(parent, str)
+                        and parent in bound and sid not in bound
+                        and created is not None and created >= started):
+                    bound.add(sid)
+                    added.append(sid)
+                    changed = True
+        if added:
+            self.bind({agent: added})
+            known = self.state.setdefault("auto_bound_children", {}).setdefault(agent, [])
+            known[:] = sorted(set(known) | set(added))
+        return added
 
     def _save(self):
         self.meter.root.mkdir(parents=True, exist_ok=True)
@@ -765,6 +795,7 @@ class MultiAgentUsage:
             candidates = project_candidates(self.selected_agent, self.workspace_root,
                 [Path(p) for p in selected["roots"]], self.home, self.environ)
             self.state["session_candidates"] = candidates
+            self._bind_verified_children(self.selected_agent, candidates)
             # Only auto-bind a uniquely identified current workspace session started
             # during this project. Existing/multiple sessions require host confirmation.
             if not self.state.get("bindings", {}).get(self.selected_agent):
@@ -856,4 +887,6 @@ class MultiAgentUsage:
                 "detected_agents": [r for r in self.state.get("agents", []) if r.get("detected")],
                 "active_sessions": active, "events_added": self.state.get("events_added", 0),
                 "duplicates": self.state.get("duplicates", 0), "reset_gaps": self.state.get("reset_gaps", 0),
-                "gaps": gaps, "bound_session_count": bound, "unbound_children_covered": False}
+                "gaps": gaps, "bound_session_count": bound,
+                "auto_bound_child_count": sum(len(v) for v in self.state.get("auto_bound_children", {}).values()),
+                "unbound_children_covered": False}

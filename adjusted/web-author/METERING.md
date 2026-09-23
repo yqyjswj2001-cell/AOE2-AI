@@ -26,7 +26,7 @@
 
 identity 接受 agent、workspace_root、usage_sessions。只有首次创建计量且选择为 auto/codex 时才自动继承 CODEX_THREAD_ID；恢复已有项目仅保留已存绑定，新增主会话或子会话须显式绑定，维护会话不得混入。来源根目录仅作文件名/元数据定位。解析前先精确选择绑定文件；OpenCode 在 SQL WHERE 中先限制 session_id，Cursor 用 composer key 前缀索引范围，只返回 token/time/model 元数据。
 
-会话候选只由匹配 workspace 的元数据产生，不返回会话标题、正文或凭据。只有唯一、明确匹配 workspace 且在本轮开始后创建的候选可自动绑定。已有会话、多候选、无可靠项目映射时须由宿主确认，不能按“最近活跃”猜测。
+会话候选只由匹配 workspace 的元数据产生，不返回会话标题、正文或凭据。只有唯一、明确匹配 workspace 且在本轮开始后创建的主候选可自动绑定。Codex 若状态库存在官方 thread_spawn_edges，则已绑定父 thread 在本轮明确 spawn 的后代 thread 会递归自动绑定；没有 parent→child 证据的同工作区会话不会因此加入。已有会话、多候选、无可靠项目映射时须由宿主确认，不能按“最近活跃”猜测。
 
 报告中的 `auto_capture.connection` 提供 code、message、中文 action_label 和 requirements；`session_candidates` 只提供 session_id、时间和归属说明。常见状态：
 

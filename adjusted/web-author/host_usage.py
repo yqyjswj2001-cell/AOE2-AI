@@ -130,10 +130,22 @@ def project_candidates(agent, workspace, roots, home=None, environ=None):
                         cols = {row[1] for row in db.execute("PRAGMA table_info(threads)")}
                         if not {"id", "cwd", "created_at", "updated_at"} <= cols:
                             continue
+                        tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+                        parents = {}
+                        if "thread_spawn_edges" in tables:
+                            edge_cols = {row[1] for row in db.execute("PRAGMA table_info(thread_spawn_edges)")}
+                            if {"parent_thread_id", "child_thread_id"} <= edge_cols:
+                                for parent, child in db.execute("SELECT parent_thread_id,child_thread_id FROM thread_spawn_edges"):
+                                    if (isinstance(parent, str) and SESSION_ID.fullmatch(parent)
+                                            and isinstance(child, str) and SESSION_ID.fullmatch(child)):
+                                        parents[child] = parent
                         for sid, cwd, created, updated in db.execute("SELECT id,cwd,created_at,updated_at FROM threads WHERE cwd=?", (str(workspace),)):
                             if SESSION_ID.fullmatch(sid) and path_key(cwd) == path_key(workspace):
-                                found[sid] = {"agent": agent, "session_id": sid, "created_at": timestamp(created),
-                                              "updated_at": timestamp(updated), "workspace_match": True}
+                                row = {"agent": agent, "session_id": sid, "created_at": timestamp(created),
+                                       "updated_at": timestamp(updated), "workspace_match": True}
+                                if sid in parents:
+                                    row.update(is_child=True, parent_session_id=parents[sid])
+                                found[sid] = row
                 except sqlite3.Error:
                     continue
     elif agent == "claude":

@@ -5,7 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from strategy_catalog import ROOT, load_catalog, validate_author_cards, validate_classified_template, validate_author_prose, BoundaryError
+from strategy_catalog import ROOT, load_catalog, make_author_constraints, validate_author_cards, validate_classified_template, validate_author_prose, BoundaryError
 import query_creator_facts as facts
 
 
@@ -24,6 +24,9 @@ def build(out: Path) -> dict:
         name = module.removesuffix(".per") + ".json"
         payload["strategy/" + name] = (card_root / name).read_bytes()
         payload["answers/" + name] = (json.dumps({key: None for key in keys}, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    payload["PARAMETER_CONSTRAINTS.json"] = (
+        json.dumps(make_author_constraints(catalog), ensure_ascii=False, indent=2) + "\n"
+    ).encode("utf-8")
     assets = {
         "README.md": "adjusted/cloze/CREATOR_START.md",
         "ANSWER_CONSTRAINTS.md": "adjusted/cloze/ANSWER_CONSTRAINTS.md",
