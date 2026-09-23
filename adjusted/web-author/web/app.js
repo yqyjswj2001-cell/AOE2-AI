@@ -6,7 +6,7 @@
   const MODES = ['1v1', '2v2', '3v3', '4v4', 'ffa4', 'ffa8'];
   const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v3';
   const STATUS = {
-    configuring: ['待开始', '完成设置后开始生成。'],
+    configuring: ['待配置', ''],
     selecting: ['选择文明', '正在选择文明。'],
     authoring: ['生成中', '正在生成参数。'],
     invalid: ['检查中', '发现需要修正的参数。'],
@@ -19,7 +19,7 @@
   let lastRequestSignature = null, civilizationSignature = null, agentSignature = null;
   let wizardStep = 0, previewCivilization = null, catalog = [], agents = [], catalogReady = false, agentsReady = false;
   let lastUsage = null, reportBusy = false, resultView = 'progress';
-  const STEP_NAMES = ['先连接，再创作。', '选择这轮对局。', '找到你的文明。', '定义你的打法。', '你的 AI，正在成形。'];
+  const STEP_NAMES = ['Token 采集', '游戏模式', '文明选择', '参数设置', '生成结果'];
   const MODE_NAMES = {'1v1':'1v1 单挑','2v2':'2v2 团队战','3v3':'3v3 团队战','4v4':'4v4 团队战',ffa4:'4 人混战',ffa8:'8 人混战'};
   const finite = value => typeof value === 'number' && Number.isFinite(value);
   const integer = value => Number.isInteger(value) && value >= 0;
@@ -219,12 +219,12 @@
     if ($('agent')) $('agent').disabled = !editable() || state?.usage_authorization?.authorized === true || !!state?.usage_authorization?.revoked_at;
     $('startButton').disabled = !editable() || wizardStep !== 3 || !validSelection(selection());
     $('startButton').classList.toggle('hidden', wizardStep !== 3 || !!locked);
-    text('startButton', busy ? '正在提交…' : '开始生成 →');
+    text('startButton', busy ? '正在提交…' : '开始生成');
     $('startButton').setAttribute('aria-busy', String(busy));
-    text('settingsState', state?.status === 'configuring' ? (dirty ? '设置已保存在本机' : '本地创作') : state ? '本轮设置已固定' : '正在读取');
-    text('startHint', !online ? '连接恢复后才能提交。' : '开始后固定本轮设置；AI 随即开始创作，不再二次确认。');
-    text('configTitle', locked && state.status === 'completed' ? '你的 AI，已准备就绪。' : STEP_NAMES[wizardStep]);
-    text('stepEyebrow', ['CONNECT', 'GAME MODE', 'CIVILIZATION', 'PLAY STYLE', 'YOUR CREATION'][wizardStep] + ' / 0' + (wizardStep + 1));
+    text('settingsState', state?.status === 'configuring' ? (dirty ? '草稿已保存' : '未保存草稿') : state ? '设置已锁定' : '正在读取');
+    text('startHint', !online ? '连接中断，暂不能提交。' : '生成后不可修改本轮设置。');
+    text('configTitle', STEP_NAMES[wizardStep]);
+    text('stepEyebrow', '步骤 ' + (wizardStep + 1) + ' / 5');
     for (let step = 0; step < 5; step++) {
       const button = $('wizardNav' + step);
       $('wizardPanel' + step).hidden = wizardStep !== step;
@@ -242,26 +242,24 @@
     $('previousStep').disabled = busy || !online;
     $('nextStep').classList.toggle('hidden', wizardStep >= 3);
     $('nextStep').disabled = !editable() || (wizardStep === 0 ? !authorizationReady() : !canVisit(wizardStep + 1));
-    text('nextStep', [authorizationConfirmed() ? '继续设置 →' : '授权并继续 →', '选择文明 →', '设置打法 →', '', ''][wizardStep]);
+    text('nextStep', [authorizationConfirmed() ? '下一步' : '授权并继续', '下一步', '下一步', '', ''][wizardStep]);
     $('skipMetering').classList.toggle('hidden', wizardStep !== 0 || authorizationConfirmed());
     $('skipMetering').disabled = !editable() || !agentsReady;
-    text('navigationHint', locked ? '设置已固定，无需重复提交。' :
-      wizardStep === 0 ? '不需要你选择或绑定会话。' :
-      wizardStep === 1 ? '本轮不预设游戏模式。' :
-      wizardStep === 2 ? (selectedCivValid() ? '文明已选定，可以继续。' : '选择一个文明，或交给 AI。') : '准备好了，就交给 AI。');
+    text('navigationHint', wizardStep === 1 && !MODES.includes(selection().mode) ? '请选择游戏模式' :
+      wizardStep === 2 && !selectedCivValid() ? '请选择文明或使用 AI 选择' : '');
     document.querySelectorAll('[data-result]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.result === resultView)));
     ['progress', 'usage', 'report'].forEach(view => { $(view + 'Panel').hidden = resultView !== view; });
     renderMeterStatus(); renderSummary(); updateCivilizationSelection();
     $('generateReportButton').disabled = reportBusy || !online || !state || stopped;
     $('generateReportButton').setAttribute('aria-busy', String(reportBusy));
-    text('generateReportButton', reportBusy ? '正在生成…' : '生成创作报告');
+    text('generateReportButton', reportBusy ? '正在生成…' : '生成报告');
   }
   function renderMeterStatus() {
     const connection = state?.usage_connection || {};
     const labels = {NOT_AUTHORIZED:'等待授权', DISABLED:'本轮不计量', REVOKED:'计量已停止', RECORDING:'正在记录用量', LIMITED:'计量存在缺口', AWAITING_USAGE:'等待用量记录', CONNECTING:'Agent 正在接入'};
     text('meterStatus', labels[connection.status] || (state?.usage_authorization?.authorized ? 'Agent 正在接入' : '等待授权'));
     $('meterStatus').dataset.status = connection.status || 'NOT_AUTHORIZED';
-    $('meterStatus').title = connection.reason || '这里只显示连接状态；完整数字在结果页。';
+    $('meterStatus').title = connection.reason || 'Token 采集状态';
     $('revokeUsage').classList.toggle('hidden', connection.can_revoke !== true);
     $('revokeUsage').hidden = connection.can_revoke !== true;
     $('revokeUsage').disabled = busy || !online;
@@ -332,7 +330,7 @@
       const civ = civData(id); if (!civ) return;
       text('detailName', civ.name); text('detailEnglish', civ.name_en || '');
       text('detailState', selected === id ? '已选中' : '预览 · 点击盾徽选中');
-      text('detailDescription', civ.description || '文明资料暂不可用；可在资料恢复后重新查看。');
+      text('detailDescription', civ.description || '文明资料暂不可用。');
       const icon = safeIcon(civ.icon);
       if (icon) {
         $('detailIcon').src = icon; $('detailIcon').classList.remove('hidden');
@@ -392,7 +390,7 @@
       $('civilizationGrid').append(button);
     });
     if (!state.civilizations.length) text('civilizationGrid', '文明列表暂不可用，等待服务恢复。');
-    text('contentScope', '标准版 ' + state.civilizations.length + ' 个可选文明 · 未购 DLC 的文明已排除');
+    text('contentScope', '标准版 · ' + state.civilizations.length + ' 个文明');
     if (!catalogReady) notice('civilizationAssetNotice', '文明资料暂不可用。');
     else notice('civilizationAssetNotice', '');
     updateCivilizationSelection(); showCivilization($('civilization').value || state.civilizations[0]?.id); filterCivilizations();
@@ -404,7 +402,7 @@
     const previous = $('agent')?.value || '';
     $('agentOptions').replaceChildren();
     const wrapper = document.createElement('div'); wrapper.className = 'field agent-select-field';
-    const label = document.createElement('label'); label.htmlFor = 'agent'; label.textContent = '本次使用的 Agent';
+    const label = document.createElement('label'); label.htmlFor = 'agent'; label.textContent = 'Agent';
     const select = document.createElement('select'); select.id = 'agent'; select.name = 'agent'; select.required = true; select.setAttribute('aria-describedby', 'agentHelp');
     select.append(new Option(agentsReady ? '请选择 AI' : 'AI 列表暂不可用', ''));
     agents.forEach(agent => { if (typeof agent.id === 'string' && typeof agent.label === 'string') select.append(new Option(agent.label, agent.id)); });
@@ -415,15 +413,15 @@
   }
   function renderAgentHelp() {
     const agent = agents.find(agent => agent.id === $('agent')?.value);
-    let help = agent?.id === 'auto' ? '由正在运行的 Agent 确认身份和当前会话，无需手动绑定。' : '选择应与正在运行的工具一致；这里不会替你启动或切换 Agent。';
+    let help = agent?.id === 'auto' ? '自动识别当前 Agent 和会话。' : '选择实际宿主，不启动或切换工具。';
     if (agent?.id === 'cursor') help += state?.usage_access?.cursor_admin_configured
-      ? ' 已配置 Team Usage API，实际数字以返回记录为准。'
-      : ' 当前未配置 Team Usage API；没有 SDK 等真实来源时会明确显示缺口。';
+      ? ' Team Usage API 已配置。'
+      : ' Team Usage API 未配置；需其他真实 usage 来源。';
     text('agentHelp', agent ? help : '正在读取可用的 Agent…');
     const auth = state?.usage_authorization;
-    text('authorizationStatus', auth?.revoked_at ? '本轮授权已撤回；已记录数据保留，不再读取新用量。' :
-      authorizationConfirmed() ? auth.authorized ? '已授权。后台已开始接入，读到数据后才会显示为正在记录。' : '本轮不计量。你仍然可以正常创作。' :
-      '点击“授权并继续”才会开始读取；选择工具本身不代表已授权。');
+    text('authorizationStatus', auth?.revoked_at ? '已撤回授权，保留已有记录。' :
+      authorizationConfirmed() ? auth.authorized ? '已授权，采集状态见顶部。' : '本轮不计量。' :
+      '未授权');
   }
 
   function renderCivilizationDecision() {
@@ -435,7 +433,7 @@
     const civilization = civData(actual);
     text('civilizationDecisionLabel', choice?.selected_by === 'user' ? '用户指定文明' : choice?.selected_by === 'ai' ? 'AI 已选文明' : '已选文明');
     text('civilizationDecisionName', civilization?.name || actual);
-    text('civilizationDecisionReason', choice?.selected_by === 'user' ? '使用你选择的文明。' :
+    text('civilizationDecisionReason', choice?.selected_by === 'user' ? '用户指定。' :
       typeof choice?.reason === 'string' && choice.reason.trim() ? choice.reason : '暂无选择说明。');
   }
   function renderBuild() {
@@ -447,9 +445,9 @@
     const fields = [
       ['文件类型', build.installable === false ? '模块文件，暂不能直接安装' : build.installable === true ? '具备游戏入口，尚未实测' : '安装状态未知'],
       ['脚本名', build.script_name || state.request?.script_name],
-      ['文件编号', build.build_id || build.id],
-      ['答卷指纹', build.answers_sha256 || build.parameter_sha256 || build.parameters_sha256],
-      ['文件指纹', build.package_sha256 || build.manifest_sha256]
+      ['构建 ID', build.build_id || build.id],
+      ['答卷 SHA-256', build.answers_sha256 || build.parameter_sha256 || build.parameters_sha256],
+      ['文件 SHA-256', build.package_sha256 || build.manifest_sha256]
     ];
     fields.forEach(([label, value]) => {
       if (typeof value !== 'string' || !value) return;
@@ -468,6 +466,7 @@
       ? ['文件已生成', '模块文件暂不能直接安装，尚未进行游戏实测。']
       : known ? STATUS[state.status] : ['阶段未识别', '服务返回未知阶段，已暂停提交。'];
     text('statusBadge', label[0]); text('statusBanner', label[1]);
+    $('statusBanner').hidden = !label[1];
     $('statusBadge').className = 'badge' + (state.status === 'completed' ? ' success' : state.status === 'invalid' ? ' warning' : '');
     text('projectLabel', '当前项目 · ' + project);
     if (state.status === 'configuring') {
@@ -483,7 +482,7 @@
       $(id).className = position > index ? 'done' : position === index ? 'active' : '';
     });
     applyUsageAuthorization(state.usage_authorization);
-    text('progressTitle', state.status === 'completed' ? '作品文件已生成。' : state.status === 'invalid' ? '正在检查并修正参数。' : '正在创作你的 AI。');
+    text('progressTitle', state.status === 'completed' ? '生成完成' : state.status === 'invalid' ? '参数修正' : '参数进度');
     const p = state.progress || {};
     const filled = integer(p.filled) ? p.filled : null, total = integer(p.total) && p.total > 0 ? p.total : null;
     text('fillCount', number(filled) + ' / ' + number(total) + ' 项参数');
@@ -531,7 +530,7 @@
     const agentLabel = selectedAgent?.label || (auto.selected_agent || state?.request?.agent ? (auto.selected_agent || state.request.agent) : '未选择宿主');
     const message = typeof connection.message === 'string' ? connection.message : captureLabel || '等待采集连接信息';
     const detail = state?.usage_connection?.reason || message;
-    text('usageCapture', 'Agent：' + agentLabel + '。' + detail + ' 会话归属由 Agent 处理，无需你绑定。');
+    text('usageCapture', 'Agent：' + agentLabel + ' · ' + detail);
     $('usageCapture').className = 'capture-status ' + (String(auto.status || '').startsWith('CONNECTED') ? 'connected' : 'attention');
     text('usageCoverage', coverage);
     $('usageGaps').replaceChildren();
@@ -543,7 +542,7 @@
     [['inputTokens','input_tokens'],['outputTokens','output_tokens'],['cacheTokens','cached_input_tokens'],
       ['cacheWriteTokens','cache_write_tokens'],['reasoningTokens','reasoning_tokens']].forEach(([id,key]) => text(id, finite(tokens[key]) ? number(tokens[key]) : '未提供'));
     text('usageBreakdown', '失败或取消的已知消耗 ' + number(tokens.failed_or_cancelled_tokens) +
-      '；已标记重试 ' + number(tokens.retry_records) + ' 条，已知消耗 ' + number(tokens.retry_tokens) + '。这些消耗已包含在已记录总量中。');
+      '；重试 ' + number(tokens.retry_records) + ' 条，消耗 ' + number(tokens.retry_tokens) + '（已计入总量）。');
     $('usageStages').replaceChildren();
     const stages = Array.isArray(report.stages) ? report.stages : [];
     stages.forEach(stage => {
@@ -659,7 +658,7 @@
   $('scriptName').addEventListener('blur', () => {
     const invalid = $('scriptName').value !== '' && !/^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test($('scriptName').value);
     $('scriptName').setAttribute('aria-invalid', String(invalid));
-    text('nameHelp', invalid ? '名称格式不符。请以英文字母开头，只使用字母、数字、下划线或短横线。' : '以英文字母开头，可用数字、下划线和短横线，最多 48 位。');
+    text('nameHelp', invalid ? '名称无效：字母开头；仅限字母、数字、_、-，最多 48 字符。' : '字母开头；仅限字母、数字、_、-，最多 48 字符。');
   });
   $('authorForm').addEventListener('input', () => { updateSliders(); saveDraft(); syncActions(); });
   $('authorForm').addEventListener('change', () => { renderAgentHelp(); saveDraft(); syncActions(); });
@@ -695,7 +694,7 @@
     if (!value) return;
     try {
       await navigator.clipboard.writeText(value);
-      text('reportState', '报告已复制，可以直接粘贴给开发。');
+      text('reportState', '已复制。');
     } catch (_) {
       $('reportOutput').focus(); $('reportOutput').select();
       text('reportState', '已选中报告内容，请手动复制。');
