@@ -81,10 +81,10 @@
 <section class="panel developer-report-panel" aria-labelledby="developerReportTitle">
 <div class="panel-head"><h2 id="developerReportTitle">开发报告</h2><button id="generateReportButton" class="button secondary" type="button">生成创作报告</button></div>
 <details><summary>补充反馈</summary><div class="field"><label for="reportFeedback">问题或建议</label><textarea id="reportFeedback" maxlength="4000" rows="4" placeholder="可选。写下这轮遇到的问题、建议或异常现象。"></textarea></div></details>
-<p id="reportState" class="field-help" role="status">生成后可直接复制 Markdown 发给开发；ZIP 只保留详细证据。</p>
+<p id="reportState" class="field-help" role="status">生成两个 Markdown：主报告直接发给开发，技术明细用于追问题。</p>
 <div id="reportResult" class="report-result hidden">
-<div class="report-actions"><button id="copyReportButton" class="button secondary" type="button">复制报告</button><a id="downloadReportLink" class="button secondary" href="#" download>下载 Markdown</a><a id="downloadEvidenceLink" class="button secondary" href="#" download>下载证据 ZIP</a></div>
-<label class="report-output-label" for="reportOutput">报告内容</label><textarea id="reportOutput" class="report-output" readonly rows="18"></textarea>
+<div class="report-actions"><button id="copyReportButton" class="button secondary" type="button">复制主报告</button><a id="downloadReportLink" class="button secondary" href="#" download>下载主报告</a><a id="downloadDetailsLink" class="button secondary" href="#" download>下载技术明细</a></div>
+<label class="report-output-label" for="reportOutput">主报告内容</label><textarea id="reportOutput" class="report-output" readonly rows="18"></textarea>
 </div>
 </section>
 <footer><span id="projectLabel">项目 · 等待连接</span><span>本地运行</span></footer>

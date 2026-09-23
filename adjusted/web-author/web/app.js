@@ -609,8 +609,8 @@
       $('reportResult').classList.remove('hidden');
       $('downloadReportLink').href = result.download_url;
       $('downloadReportLink').download = result.markdown_download_name || 'aoe2-creation-report.md';
-      $('downloadEvidenceLink').href = result.evidence_url;
-      $('downloadEvidenceLink').download = result.zip_download_name || 'aoe2-development-evidence.zip';
+      $('downloadDetailsLink').href = result.details_url;
+      $('downloadDetailsLink').download = result.technical_download_name || 'aoe2-technical-details.md';
       const link = document.createElement('a');
       link.href = result.download_url; link.download = $('downloadReportLink').download;
       link.hidden = true; document.body.append(link); link.click(); link.remove();

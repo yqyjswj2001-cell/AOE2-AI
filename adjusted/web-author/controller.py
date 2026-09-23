@@ -16,7 +16,7 @@ import uuid
 from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
 from installable_ai import InstallableAIError, package_installable_ai
-from development_report import DevelopmentJournal, DevelopmentReportError, generate_bundle, report_file
+from development_report import DevelopmentJournal, DevelopmentReportError, generate_reports, report_file
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -212,8 +212,7 @@ class Controller:
 
     def _generate_development_report(self, browser_observations=None):
         usage = self.usage(include_records=True)
-        from metering import Meter
-        result = generate_bundle(
+        result = generate_reports(
             project=self.project,
             repository_root=ROOT,
             project_snapshot=self.data,
@@ -222,11 +221,9 @@ class Controller:
             civilization_selection=self._selection_state(),
             events=self.development.read(),
             browser_observations=browser_observations or [],
-            usage_csv={"usage-stages.csv": Meter.csv_bytes(usage, "stages"),
-                       "usage-calls.csv": Meter.csv_bytes(usage, "calls")},
         )
-        result["download_url"] = "/api/report/download?id=" + result["report_id"] + "&format=md"
-        result["evidence_url"] = "/api/report/download?id=" + result["report_id"] + "&format=zip"
+        result["download_url"] = "/api/report/download?id=" + result["report_id"] + "&format=main"
+        result["details_url"] = "/api/report/download?id=" + result["report_id"] + "&format=details"
         return result
 
     def _open_meter(self):
@@ -761,7 +758,7 @@ class Controller:
                              "feedback_count": result["feedback_count"]})
             return result
 
-    def development_report_file(self, report_id, format_name="md"):
+    def development_report_file(self, report_id, format_name="main"):
         return report_file(self.project, report_id, format_name)
 
     def close(self):

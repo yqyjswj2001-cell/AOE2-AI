@@ -7,7 +7,6 @@ import sys
 import tempfile
 import threading
 import unittest
-import zipfile
 
 HERE = Path(__file__).resolve().parents[2] / "web-author"
 sys.path.insert(0, str(HERE))
@@ -156,23 +155,22 @@ class WorkflowTests(unittest.TestCase):
             "feedback": "网页复盘补充：检查报告下载链路。",
             "browser_observations": [{"kind":"synthetic_browser","message":"合成浏览器观察。","count":2}],
         })
-        bundle = Path(result["bundle"])
-        self.assertTrue(bundle.is_file())
-        self.assertTrue(Path(result["markdown_path"]).is_file())
+        main = Path(result["markdown_path"])
+        details = Path(result["technical_path"])
+        self.assertTrue(main.is_file())
+        self.assertTrue(details.is_file())
         self.assertIn("# AOE2 AI 创作报告", result["markdown"])
-        self.assertTrue(result["download_url"].endswith("&format=md"))
-        self.assertTrue(result["evidence_url"].endswith("&format=zip"))
+        self.assertTrue(result["download_url"].endswith("&format=main"))
+        self.assertTrue(result["details_url"].endswith("&format=details"))
         self.assertGreaterEqual(result["issue_count"], 2)
         self.assertGreaterEqual(result["feedback_count"], 2)
-        with zipfile.ZipFile(bundle) as archive:
-            names = set(archive.namelist())
-            self.assertTrue({"report.md","report.json","usage.json","events.json","usage-stages.csv","usage-calls.csv"} <= names)
-            report = json.loads(archive.read("report.json"))
-            self.assertEqual(report["schema"], "aoe2-development-report-v1")
-            self.assertTrue(any(event["kind"] == "validation_failed" for event in report["events"]))
-            self.assertTrue(any(event["kind"] == "feedback_issue" for event in report["feedback"]))
-            self.assertTrue(any(issue["source"] == "browser" for issue in report["issues"]))
-            self.assertIn("AOE2 AI 创作报告", archive.read("report.md").decode("utf-8"))
+        main_text = main.read_text(encoding="utf-8")
+        details_text = details.read_text(encoding="utf-8")
+        self.assertIn("参数卡有一处语义需要开发复核", main_text)
+        self.assertIn("validation_failed", details_text)
+        self.assertIn("feedback_issue", details_text)
+        self.assertIn("合成浏览器观察", details_text)
+        self.assertIn("调用记录", details_text)
 
     def test_source_delivery_input_and_boolean_guards(self):
         self.start()
@@ -258,9 +256,9 @@ class WorkflowTests(unittest.TestCase):
             download_status, download_raw = request("GET", report_info["download_url"])
             self.assertEqual(download_status, 200)
             self.assertTrue(download_raw.startswith("# AOE2 AI".encode("utf-8")))
-            evidence_status, evidence_raw = request("GET", report_info["evidence_url"])
-            self.assertEqual(evidence_status, 200)
-            self.assertTrue(evidence_raw.startswith(b"PK"))
+            details_status, details_raw = request("GET", report_info["details_url"])
+            self.assertEqual(details_status, 200)
+            self.assertTrue(details_raw.startswith("# AOE2 AI 创作技术明细".encode("utf-8")))
             self.assertEqual(request("POST", "/api/host/build", self.payload(), {"Origin": f"http://127.0.0.1:{server.server_port}"})[0], 403)
             public = json.loads(request("GET", "/api/state")[1])
             self.assertNotIn("host_token", public)

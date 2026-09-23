@@ -1,4 +1,4 @@
-"""Developer-facing creation report: persistent events, readable Markdown and ZIP evidence bundles."""
+"""Developer-facing creation reports: one readable summary plus one Markdown technical appendix."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -8,7 +8,6 @@ import re
 import shutil
 import time
 import uuid
-import zipfile
 
 EVENT_SCHEMA = "aoe2-development-events-v1"
 REPORT_SCHEMA = "aoe2-development-report-v1"
@@ -320,8 +319,8 @@ def _markdown(report):
         "",
         "## 证据与边界",
         "",
-        "- report.md 是给开发直接阅读/粘贴的主报告；ZIP 只作为详细证据包。",
-        "- ZIP 内同时保存结构化 report.json、usage.json、events.json、阶段/调用 CSV，以及存在时的校验明细、构建回执和 Web 会话日志。",
+        "- creation-report.md 是给开发直接阅读/粘贴的主报告。",
+        "- technical-details.md 合并参数诊断、完整问题/反馈、usage 调用、构建详情、事件时间线和日志摘要。",
         "- 未采集不等于 0；未执行的 Parser/Load、Smoke、完整对局和强度测试不能由静态结果推断。",
         "- 这是开发快照，不替代游戏内实测。",
         "",
@@ -329,9 +328,196 @@ def _markdown(report):
     return "\n".join(lines)
 
 
-def generate_bundle(*, project: Path, repository_root: Path, project_snapshot: dict, usage: dict,
-                    runtime: dict, civilization_selection, events: list, browser_observations: list,
-                    usage_csv: dict[str, bytes]):
+def _json_block(value):
+    return ["~~~json", json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False), "~~~"]
+
+
+def _technical_markdown(report, project: Path):
+    snap = report["project"]
+    usage = report["usage"]
+    build = snap.get("build") or {}
+    lines = [
+        "# AOE2 AI 创作技术明细",
+        "",
+        f"- 报告 ID：{report['report_id']}",
+        f"- 生成时间：{report['generated_at']}",
+        f"- 项目：{snap.get('project_name', '')}",
+        f"- 仓库提交：{report.get('repository_head') or '未取得'}",
+        "",
+        "## 问题与反馈完整记录",
+        "",
+    ]
+    if report["issues"]:
+        for issue in report["issues"]:
+            lines += [
+                f"### {issue['issue_id']} · {issue['severity']} · {issue['source']}",
+                "",
+                f"- code：{issue['code']}",
+                f"- 内容：{issue['message']}",
+            ]
+            if issue.get("data"):
+                lines += ["", "附加数据：", "", *_json_block(issue["data"])]
+            lines.append("")
+    else:
+        lines += ["- 无已记录问题。", ""]
+
+    lines += ["## 主动反馈", ""]
+    if report["feedback"]:
+        for event in report["feedback"]:
+            lines.append(f"- {event['timestamp']} · {event['source']} · {event['kind']}：{event['message']}")
+            if event.get("data"):
+                lines += ["", *_json_block(event["data"]), ""]
+    else:
+        lines += ["- 无主动反馈。", ""]
+
+    lines += ["## 参数校验完整明细", ""]
+    diagnostics = report.get("answer_diagnostics")
+    if diagnostics is None:
+        lines += ["- 当前没有 answer-diagnostics 快照。", ""]
+    else:
+        lines += _json_block(diagnostics) + [""]
+
+    lines += [
+        "## Usage 汇总",
+        "",
+        f"- coverage：{usage.get('coverage')}",
+        f"- state：{usage.get('state')}",
+        f"- run_id：{usage.get('run_id')}",
+        "",
+        "### Token 与时间",
+        "",
+        *_json_block({"tokens": usage.get("tokens"), "time": usage.get("time")}),
+        "",
+        "### 自动采集与缺口",
+        "",
+        *_json_block({"auto_capture": usage.get("auto_capture"), "capture_gaps": usage.get("capture_gaps")}),
+        "",
+        "### 阶段",
+        "",
+        "| phase | label | elapsed | total token | missing usage | action failures |",
+        "| --- | --- | ---: | ---: | ---: | ---: |",
+    ]
+    for stage in usage.get("stages") or []:
+        lines.append(
+            f"| {_table(stage.get('phase'))} | {_table(stage.get('label'))} | "
+            f"{_seconds(stage.get('elapsed_seconds'))} | {_num(stage.get('total_tokens'))} | "
+            f"{_num(stage.get('missing_usage_records'))} | {_num(stage.get('action_failures'))} |"
+        )
+    if not usage.get("stages"):
+        lines.append("| — | — | — | — | — | — |")
+
+    lines += [
+        "",
+        "### 调用记录",
+        "",
+        "| time | source | model | event | unit | phase | outcome | total | input | output | cached | reasoning | duration | retry_of |",
+        "| --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+    ]
+    for row in usage.get("records") or []:
+        u = row.get("usage") or {}
+        lines.append(
+            "| " + " | ".join([
+                _table(row.get("received_at")),
+                _table(row.get("source_id")),
+                _table(row.get("model")),
+                _table(row.get("event_id")),
+                _table(row.get("unit")),
+                _table(row.get("phase")),
+                _table(row.get("outcome")),
+                _table(_num(u.get("total_tokens"))),
+                _table(_num(u.get("input_tokens"))),
+                _table(_num(u.get("output_tokens"))),
+                _table(_num(u.get("cached_input_tokens"))),
+                _table(_num(u.get("reasoning_output_tokens"))),
+                _table(row.get("duration_seconds")),
+                _table(row.get("retry_of")),
+            ]) + " |"
+        )
+    if not usage.get("records"):
+        lines.append("| — | — | — | — | — | — | — | — | — | — | — | — | — | — |")
+
+    lines += ["", "### 操作记录", ""]
+    if usage.get("operations"):
+        lines += _json_block(usage["operations"]) + [""]
+    else:
+        lines += ["- 无操作记录。", ""]
+
+    lines += ["## 构建与运行验证完整数据", "", *_json_block({
+        "build": build,
+        "runtime": report.get("runtime"),
+        "civilization_selection": report.get("civilization_selection"),
+    }), ""]
+
+    lines += ["## 浏览器观察", ""]
+    if report.get("browser_observations"):
+        lines += _json_block(report["browser_observations"]) + [""]
+    else:
+        lines += ["- 无浏览器观察记录。", ""]
+
+    lines += ["## 完整过程事件", ""]
+    if report.get("events"):
+        for event in report["events"]:
+            lines += [
+                f"### {event.get('timestamp')} · {event.get('source')} · {event.get('kind')} · {event.get('severity')}",
+                "",
+                event.get("message", ""),
+            ]
+            if event.get("data"):
+                lines += ["", *_json_block(event["data"])]
+            lines.append("")
+    else:
+        lines += ["- 无事件记录。", ""]
+
+    log = project / "logs/web-session.log"
+    lines += ["## Web Session 日志", ""]
+    try:
+        if log.is_file() and not log.is_symlink():
+            raw = log.read_bytes()
+            limit = 512 * 1024
+            truncated = len(raw) > limit
+            if truncated:
+                raw = raw[-limit:]
+            log_text = raw.decode("utf-8", errors="replace")
+            if truncated:
+                lines += ["- 日志过大，下方仅保留最后 512 KiB；原始日志仍保存在项目目录。", ""]
+            lines += ["~~~text", log_text.rstrip(), "~~~", ""]
+        else:
+            lines += ["- 无 Web Session 日志。", ""]
+    except OSError:
+        lines += ["- Web Session 日志读取失败；原始文件仍留在项目目录。", ""]
+
+    evidence = project / "development/evidence"
+    lines += ["## 错误现场快照", ""]
+    if evidence.is_dir() and not evidence.is_symlink():
+        files = [p for p in sorted(evidence.iterdir()) if p.is_file() and not p.is_symlink()]
+        if not files:
+            lines.append("- 无额外快照。")
+        for source in files:
+            lines += [f"### {source.name}", ""]
+            try:
+                if source.stat().st_size > MAX_EVIDENCE_BYTES:
+                    lines += [f"- 文件过大（{source.stat().st_size} bytes），保留在项目目录，未嵌入。", ""]
+                    continue
+                snapshot_text = source.read_text(encoding="utf-8", errors="replace")
+                lines += ["~~~text", snapshot_text.rstrip(), "~~~", ""]
+            except OSError:
+                lines += ["- 快照读取失败，原始文件仍保留。", ""]
+    else:
+        lines += ["- 无额外快照。", ""]
+
+    lines += [
+        "## 边界",
+        "",
+        "- 这是开发技术明细，不代表未执行的游戏测试已经通过。",
+        "- 未采集数据保持未知，不补零、不估算。",
+        "- 原始项目状态、计量数据库和事件文件继续保存在项目目录，供程序复查。",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def generate_reports(*, project: Path, repository_root: Path, project_snapshot: dict, usage: dict,
+                    runtime: dict, civilization_selection, events: list, browser_observations: list):
     project = Path(project).resolve()
     report_id = "report-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:8]
     if not REPORT_ID.fullmatch(report_id):
@@ -381,43 +567,12 @@ def generate_bundle(*, project: Path, repository_root: Path, project_snapshot: d
     report_root = project / "development/reports"
     folder = report_root / report_id
     folder.mkdir(parents=True, exist_ok=False)
-    _atomic_json(folder / "report.json", report)
     markdown = _markdown(report)
-    (folder / "report.md").write_text(markdown, encoding="utf-8", newline="\n")
-    _atomic_json(folder / "events.json", {"schema": EVENT_SCHEMA, "project_id": snapshot["project_id"], "events": events})
-    _atomic_json(folder / "usage.json", usage)
-    _atomic_json(folder / "project-snapshot.json", snapshot)
-    if diagnostics is not None:
-        _atomic_json(folder / "answer-diagnostics.json", diagnostics)
-    for name, raw in usage_csv.items():
-        (folder / name).write_bytes(raw)
-
-    build = snapshot.get("build") or {}
-    receipt = build.get("receipt")
-    if isinstance(receipt, str):
-        source = Path(receipt)
-        if source.is_file() and not source.is_symlink() and source.stat().st_size <= MAX_EVIDENCE_BYTES:
-            shutil.copyfile(source, folder / "build-receipt.json")
-
-    log = project / "logs/web-session.log"
-    if log.is_file() and not log.is_symlink() and log.stat().st_size <= MAX_EVIDENCE_BYTES:
-        logs = folder / "logs"
-        logs.mkdir()
-        shutil.copyfile(log, logs / "web-session.log")
-
-    evidence = project / "development/evidence"
-    if evidence.is_dir() and not evidence.is_symlink():
-        target = folder / "evidence"
-        target.mkdir()
-        for source in sorted(evidence.iterdir()):
-            if source.is_file() and not source.is_symlink() and source.stat().st_size <= MAX_EVIDENCE_BYTES:
-                shutil.copyfile(source, target / source.name)
-
-    zip_path = report_root / (report_id + ".zip")
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted(folder.rglob("*")):
-            if path.is_file():
-                archive.write(path, path.relative_to(folder).as_posix())
+    technical = _technical_markdown(report, project)
+    main_path = folder / "creation-report.md"
+    technical_path = folder / "technical-details.md"
+    main_path.write_text(markdown, encoding="utf-8", newline="\n")
+    technical_path.write_text(technical, encoding="utf-8", newline="\n")
 
     script_name = (snapshot.get("request") or {}).get("script_name") or project.name
     return {
@@ -426,30 +581,23 @@ def generate_bundle(*, project: Path, repository_root: Path, project_snapshot: d
         "issue_count": len(issues),
         "feedback_count": len(feedback),
         "path": str(folder),
-        "bundle": str(zip_path),
         "markdown": markdown,
-        "markdown_path": str(folder / "report.md"),
+        "markdown_path": str(main_path),
+        "technical_path": str(technical_path),
         "markdown_download_name": script_name + "-creation-report.md",
-        "zip_download_name": script_name + "-development-evidence.zip",
+        "technical_download_name": script_name + "-technical-details.md",
     }
 
-
-def report_file(project: Path, report_id: str, format_name: str = "md") -> Path:
+def report_file(project: Path, report_id: str, format_name: str = "main") -> Path:
     if not isinstance(report_id, str) or not REPORT_ID.fullmatch(report_id):
         raise DevelopmentReportError("invalid report id")
-    root = Path(project).resolve() / "development/reports"
-    if format_name == "md":
-        path = root / report_id / "report.md"
-    elif format_name == "json":
-        path = root / report_id / "report.json"
-    elif format_name == "zip":
-        path = root / (report_id + ".zip")
+    root = Path(project).resolve() / "development/reports" / report_id
+    if format_name == "main":
+        path = root / "creation-report.md"
+    elif format_name == "details":
+        path = root / "technical-details.md"
     else:
         raise DevelopmentReportError("invalid report format")
     if not path.is_file() or path.is_symlink():
         raise DevelopmentReportError("report file not found")
     return path
-
-
-def report_bundle(project: Path, report_id: str) -> Path:
-    return report_file(project, report_id, "zip")
