@@ -6,20 +6,20 @@
   const MODES = ['1v1', '2v2', '3v3', '4v4', 'ffa4', 'ffa8'];
   const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v2';
   const STATUS = {
-    configuring: ['待开始', '完成设置后，点击“开始创作”。'],
-    selecting: ['选择文明中', '创作已开始，等待代理研究标准版可用文明并自主选择；选定后自动继续填写参数。'],
-    authoring: ['填写参数中', '创作已开始，等待作者读取参数卡并填写；进度会在这里更新。'],
-    invalid: ['检查与修正', '参数检查发现待修正项，作者需要处理后重新检查。'],
-    ready: ['等待生成', '参数检查已通过，等待主代理生成交付文件。'],
-    rendering: ['正在生成', '主代理正在根据已检查参数生成交付文件。'],
-    completed: ['已完成', '本次交付已登记。游戏加载与实战效果仍需独立验证。']
+    configuring: ['待开始', '完成设置后开始生成。'],
+    selecting: ['选择文明', '正在选择文明。'],
+    authoring: ['生成中', '生成文件参数。'],
+    invalid: ['检查中', '发现需要修正的参数。'],
+    ready: ['准备文件', '检查通过，准备生成文件。'],
+    rendering: ['生成文件', '正在生成文件。'],
+    completed: ['已完成', '文件已生成，尚未进行游戏实测。']
   };
   let state = null, online = false, busy = false, refreshPromise = null, stopped = false;
   let project = null, draftLoaded = false, storageAvailable = true, dirty = false, networkError = false;
   let lastRequestSignature = null, civilizationSignature = null, agentSignature = null;
   let wizardStep = 0, previewCivilization = null, catalog = [], agents = [], catalogReady = false, agentsReady = false;
   let lastUsage = null, bindingBusy = false, bindingSignature = null;
-  const STEP_NAMES = ['选择对局模式', '选择文明', '创作设置', '开始创作'];
+  const STEP_NAMES = ['游戏模式', '文明', '设置', '生成'];
   const MODE_NAMES = {'1v1':'1v1 单挑','2v2':'2v2 团队战','3v3':'3v3 团队战','4v4':'4v4 团队战',ffa4:'4 人混战',ffa8:'8 人混战'};
   const finite = value => typeof value === 'number' && Number.isFinite(value);
   const integer = value => Number.isInteger(value) && value >= 0;
@@ -82,7 +82,7 @@
     if (!storageAvailable) return;
     try {
       localStorage.setItem(draftKey(), JSON.stringify({schema: DRAFT_SCHEMA, project_id: project, step: wizardStep, value: selection()}));
-      notice('draftNotice', '设置已保存在此浏览器，刷新可恢复；尚未开始创作。');
+      notice('draftNotice', '设置已保存。');
     } catch (_) { storageFailure(); }
   }
   function restoreDraft() {
@@ -105,7 +105,7 @@
       wizardStep = integer(draft.step) ? Math.min(draft.step, 3) : 0;
       while (wizardStep > 0 && !canVisit(wizardStep)) wizardStep--;
       dirty = true;
-      notice('draftNotice', '已恢复此项目的浏览器草稿。只有点击“开始创作”才会提交。');
+      notice('draftNotice', '已恢复设置。');
     } catch (error) {
       if (error instanceof SyntaxError) notice('draftNotice', '浏览器草稿无法读取，未恢复。请重新设置。');
       else storageFailure();
@@ -139,10 +139,10 @@
     const civ = civData(value.civilization);
     const agent = agents.find(a => a.id === value.agent);
     const lines = [
-      ['对局模式', MODE_NAMES[value.mode] || '尚未选择'],
+      ['游戏模式', MODE_NAMES[value.mode] || '尚未选择'],
       ['文明', value.civilization === 'auto' ? '让 AI 选择' : civ?.name || value.civilization || '尚未选择'],
-      ['AI 名称', value.script_name || '尚未填写'],
-      ['AI Agent', agent?.label || (value.agent ? value.agent : '未选择宿主（旧项目）')],
+      ['脚本名', value.script_name || '尚未填写'],
+      ['使用的 AI', agent?.label || (value.agent ? value.agent : '未选择')],
       ['攻防倾向', AGES.map((age, i) => ['黑暗', '封建', '城堡', '帝王'][i] + ' ' + (integer(value.preferences?.[age]) ? value.preferences[age] : '未记录')).join(' · ')]
     ];
     $('selectionSummary').replaceChildren();
@@ -157,10 +157,10 @@
     document.body.classList.toggle('is-configuring', state?.status === 'configuring');
     $('configFields').disabled = !editable();
     $('startButton').disabled = !editable() || wizardStep !== 3 || !validSelection(selection());
-    text('startButton', busy ? '正在提交…' : state?.status === 'completed' ? (state.build?.installable === false ? '模块已交付' : '已完成创作') : locked ? '创作已开始' : '开始创作');
+    text('startButton', busy ? '正在提交…' : state?.status === 'completed' ? (state.build?.installable === false ? '文件已生成' : '完成') : locked ? '已开始' : '开始生成');
     $('startButton').setAttribute('aria-busy', String(busy));
-    text('settingsState', state?.status === 'configuring' ? '设置保存为浏览器草稿' : state ? '本次设置已固定' : '正在读取');
-    text('startHint', !online ? '连接恢复后才能提交。' : state?.status === 'configuring' ? '点击后开始创作，本次设置将固定。' : '当前设置来自服务器，刷新不会重新启动创作。');
+    text('settingsState', state?.status === 'configuring' ? '设置已保存' : state ? '设置已确认' : '正在读取');
+    text('startHint', !online ? '连接恢复后才能提交。' : state?.status === 'configuring' ? '确认后开始生成。' : '设置已确认。');
     text('configTitle', STEP_NAMES[wizardStep]);
     text('stepEyebrow', ['第一步', '第二步', '第三步', '第四步'][wizardStep] + ' / 共四步');
     for (let step = 0; step < 4; step++) {
@@ -177,11 +177,11 @@
     $('previousStep').disabled = busy;
     $('nextStep').classList.toggle('hidden', wizardStep === 3);
     $('nextStep').disabled = busy || !state || !canVisit(wizardStep + 1);
-    text('nextStep', ['下一步 · 选择文明', '下一步 · 创作设置', '下一步 · 开始创作', ''][wizardStep]);
-    text('navigationHint', locked ? '本次创作设置已固定，可返回查看。' :
+    text('nextStep', ['下一步 · 文明', '下一步 · 设置', '下一步 · 确认', ''][wizardStep]);
+    text('navigationHint', locked ? '设置已确认。' :
       wizardStep === 0 ? '请选择一种对局模式。' :
-      wizardStep === 1 ? (selectedCivValid() ? '文明已选中，可继续设置；不会立即开始创作。' : '点击一个盾徽，或选择“让 AI 选择”。') :
-      wizardStep === 2 ? '选择当前创作使用的 Agent，并填写 AI 名称。' : '可返回前面的步骤调整。');
+      wizardStep === 1 ? (selectedCivValid() ? '文明已选择。' : '选择文明或使用 AI 选择。') :
+      wizardStep === 2 ? '选择 AI 并填写脚本名。' : '可返回修改。');
     renderSummary(); updateCivilizationSelection();
   }
   async function api(path, options = {}) {
@@ -222,10 +222,10 @@
     $('detailIcon').classList.add('hidden');
     $('detailSections').replaceChildren(); text('detailSource', '');
     if (!id || id === 'auto') {
-      text('detailName', id === 'auto' ? '让 AI 选择文明' : '从左侧挑选文明');
+      text('detailName', id === 'auto' ? 'AI 选择文明' : '选择文明');
       text('detailEnglish', '');
-      text('detailState', id === 'auto' && selected === 'auto' ? '已选择 · AI 自主决定' : '文明资料');
-      text('detailDescription', id === 'auto' ? 'Agent 会结合对局模式和攻防倾向，研究标准版可用文明并给出选择理由。' : '浏览盾徽，了解文明特色。点击盾徽后会固定选中，但不会开始创作。');
+      text('detailState', id === 'auto' && selected === 'auto' ? 'AI 选择' : '文明资料');
+      text('detailDescription', id === 'auto' ? 'AI 将根据当前设置选择文明。' : '点击盾徽选择文明。');
     } else {
       const civ = civData(id); if (!civ) return;
       text('detailName', civ.name); text('detailEnglish', civ.name_en || '');
@@ -246,7 +246,7 @@
         });
         if (list.children.length) { section.append(title, list); $('detailSections').append(section); }
       });
-      text('detailSource', typeof civ.source_note === 'string' ? civ.source_note : '资料用于创作方向参考；实际数值以当前游戏版本为准。');
+      text('detailSource', typeof civ.source_note === 'string' ? civ.source_note : '资料仅供参考。');
     }
     document.querySelectorAll('.civilization-card').forEach(button => button.classList.toggle('previewing', button.dataset.civilization === id));
   }
@@ -254,8 +254,8 @@
     const id = $('civilization').value;
     document.querySelectorAll('.civilization-card').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.civilization === id)));
     $('autoCivilization').setAttribute('aria-pressed', String(id === 'auto'));
-    text('selectedCivilization', id === 'auto' ? '已选择：让 AI 自主选择文明' : id && civData(id) ? '已选中：' + civData(id).name + ' · 可继续创作设置' : '尚未选择文明');
-    if (previewCivilization === id && id) text('detailState', id === 'auto' ? '已选择 · AI 自主决定' : '已选中');
+    text('selectedCivilization', id === 'auto' ? '已选择：AI 选择' : id && civData(id) ? '已选中：' + civData(id).name + '' : '尚未选择文明');
+    if (previewCivilization === id && id) text('detailState', id === 'auto' ? 'AI 选择' : '已选中');
   }
   function chooseCivilization(id) {
     if (!editable()) return;
@@ -290,7 +290,7 @@
     });
     if (!state.civilizations.length) text('civilizationGrid', '文明列表暂不可用，等待服务恢复。');
     text('contentScope', '标准版 ' + state.civilizations.length + ' 个可选文明 · 未购 DLC 的文明已排除');
-    if (!catalogReady) notice('civilizationAssetNotice', '文明资料接口暂不可用；已开始的创作仍可查看进度。');
+    if (!catalogReady) notice('civilizationAssetNotice', '文明资料暂不可用。');
     else notice('civilizationAssetNotice', '');
     updateCivilizationSelection(); showCivilization($('civilization').value || state.civilizations[0]?.id);
   }
@@ -301,9 +301,9 @@
     const previous = $('agent')?.value || '';
     $('agentOptions').replaceChildren();
     const wrapper = document.createElement('div'); wrapper.className = 'field agent-select-field';
-    const label = document.createElement('label'); label.htmlFor = 'agent'; label.textContent = '选择当前运行这轮创作的工具';
+    const label = document.createElement('label'); label.htmlFor = 'agent'; label.textContent = '选择使用的 AI';
     const select = document.createElement('select'); select.id = 'agent'; select.name = 'agent'; select.required = true; select.setAttribute('aria-describedby', 'agentHelp');
-    select.append(new Option(agentsReady ? '请选择 AI Agent' : 'Agent 列表暂不可用', ''));
+    select.append(new Option(agentsReady ? '请选择 AI' : 'AI 列表暂不可用', ''));
     agents.forEach(agent => { if (typeof agent.id === 'string' && typeof agent.label === 'string') select.append(new Option(agent.label, agent.id)); });
     select.value = agents.some(agent => agent.id === previous) ? previous : '';
     wrapper.append(label, select); $('agentOptions').append(wrapper);
@@ -312,8 +312,8 @@
   function renderAgentHelp() {
     const agent = agents.find(agent => agent.id === $('agent')?.value);
     const labels = {local_session:'绑定本机会话后采集',local_telemetry:'绑定本轮遥测后采集',sdk_import:'需要 SDK 用量导入',explicit_import:'需要真实用量导入',explicit_binding:'需要明确绑定会话'};
-    text('agentHelp', agent ? [labels[agent.metering_mode] || '', agent.description || agent.help || '', typeof agent.requirements === 'string' ? agent.requirements : '', '选择工具不会自动启动它，也不代表用量已接入。'].filter(Boolean).join(' ') :
-      agentsReady ? '必选。标记当前使用的工具，以连接正确的用量来源；网页不会替你启动或切换 Agent。' : '服务暂未提供 Agent 列表。已开始的创作仍会继续显示进度；新创作需等待列表恢复。');
+    text('agentHelp', agent ? [labels[agent.metering_mode] || '', agent.description || agent.help || '', typeof agent.requirements === 'string' ? agent.requirements : '', '用于记录本次用量。'].filter(Boolean).join(' ') :
+      agentsReady ? '用于统计本次用量。' : 'AI 列表暂不可用，请稍后再试。');
   }
   function renderCivilizationDecision() {
     const actual = state.request?.civilization;
@@ -324,8 +324,8 @@
     const civilization = civData(actual);
     text('civilizationDecisionLabel', choice?.selected_by === 'user' ? '用户指定文明' : choice?.selected_by === 'ai' ? 'AI 已选文明' : '已选文明');
     text('civilizationDecisionName', civilization?.name || actual);
-    text('civilizationDecisionReason', choice?.selected_by === 'user' ? '按你指定的文明继续创作。' :
-      typeof choice?.reason === 'string' && choice.reason.trim() ? choice.reason : '选择理由尚未记录。');
+    text('civilizationDecisionReason', choice?.selected_by === 'user' ? '使用你选择的文明。' :
+      typeof choice?.reason === 'string' && choice.reason.trim() ? choice.reason : '暂无选择说明。');
   }
   function renderBuild() {
     const build = state.build;
@@ -334,11 +334,11 @@
     $('buildDetails').replaceChildren();
     if (!show) return;
     const fields = [
-      ['交付类型', build.installable === false ? '模块交付，尚无游戏入口，不能直接安装' : build.installable === true ? '具备游戏入口；安装与实机验证尚未执行' : '安装资格尚未记录'],
+      ['文件类型', build.installable === false ? '模块文件，暂不能直接安装' : build.installable === true ? '具备游戏入口，尚未实测' : '安装状态未知'],
       ['AI 名称', build.script_name || state.request?.script_name],
-      ['交付编号', build.build_id || build.id],
+      ['文件编号', build.build_id || build.id],
       ['答卷指纹', build.answers_sha256 || build.parameter_sha256 || build.parameters_sha256],
-      ['交付指纹', build.package_sha256 || build.manifest_sha256]
+      ['文件指纹', build.package_sha256 || build.manifest_sha256]
     ];
     fields.forEach(([label, value]) => {
       if (typeof value !== 'string' || !value) return;
@@ -347,14 +347,14 @@
       $('buildDetails').append(dt, dd);
     });
     const dt = document.createElement('dt'), dd = document.createElement('dd');
-    dt.textContent = '游戏验证'; dd.textContent = 'Unverified · 尚无本页可核实的实机证据';
+    dt.textContent = '游戏测试'; dd.textContent = '未测试';
     $('buildDetails').append(dt, dd);
   }
   function renderState() {
     renderCivilizations(); renderAgents();
     const known = Object.hasOwn(STATUS, state.status);
     const label = state.status === 'completed' && state.build?.installable === false
-      ? ['模块已交付', '模块交付，尚无游戏入口，不能直接安装。游戏加载与实战效果仍需独立验证。']
+      ? ['模块已交付', '模块文件，暂不能直接安装。游戏加载与实战效果仍需独立验证。']
       : known ? STATUS[state.status] : ['阶段未识别', '服务返回未知阶段，已暂停提交。'];
     text('statusBadge', label[0]); text('statusBanner', label[1]);
     $('statusBadge').className = 'badge' + (state.status === 'completed' ? ' success' : state.status === 'invalid' ? ' warning' : '');
@@ -382,11 +382,11 @@
       $('fillProgress').setAttribute('aria-valuetext', '填写进度未知');
     }
     const errors = Array.isArray(p.errors) ? p.errors.length : integer(p.errors) ? p.errors : null;
-    const validation = state.status === 'configuring' ? '尚未开始填写。' :
-      state.status === 'selecting' ? '先确定文明，随后开始填写参数，无需额外确认。' :
-      state.status === 'authoring' ? '正在填写；是否通过检查以服务结果为准。' :
-      state.status === 'invalid' ? '检查发现 ' + number(errors) + ' 项待修正，等待作者处理。' :
-      ['ready', 'rendering', 'completed'].includes(state.status) ? '参数检查已通过；这不代表游戏运行通过。' : '检查状态尚未记录。';
+    const validation = state.status === 'configuring' ? '尚未开始。' :
+      state.status === 'selecting' ? '正在确定文明。' :
+      state.status === 'authoring' ? '正在生成参数。' :
+      state.status === 'invalid' ? '发现 ' + number(errors) + ' 项需要修正。' :
+      ['ready', 'rendering', 'completed'].includes(state.status) ? '检查通过。' : '等待检查。';
     text('validationState', validation);
     renderCivilizationDecision(); renderBuild(); syncActions();
   }
@@ -422,14 +422,14 @@
     if (!report || typeof report !== 'object') return;
     lastUsage = report; renderSessionBinding(report);
     const tokens = report.tokens || {}, time = report.time || {}, auto = report.auto_capture || {};
-    text('usageState', {RUNNING: '正在记录项目', COMPLETED: '已登记交付', SESSION_CLOSED: '会话已关闭', ABORTED: '已中止'}[report.state] || '等待计量记录');
+    text('usageState', {RUNNING: '正在记录项目', COMPLETED: '已登记交付', SESSION_CLOSED: '会话已关闭', ABORTED: '已中止'}[report.state] || '等待用量记录');
     text('usageTokens', number(tokens.total_tokens)); text('usageElapsed', duration(time.elapsed_seconds));
     text('usageWork', duration(time.workflow_seconds)); text('usageUnobserved', duration(time.unobserved_seconds));
     const coverage = {
-      NOT_CONNECTED: 'token 尚未接入，未采集不等于零。时间以服务器记录为准。',
-      PARTIAL: '用量记录尚不完整，当前数字只是已记录小计。',
-      HOST_REPORTED_COMPLETE: '宿主声明已完整上报，已登记记录具备用量；这不是平台账单认证。'
-    }[report.coverage] || '用量覆盖范围尚未确定，当前数字仅表示已登记记录。';
+      NOT_CONNECTED: 'token 尚未记录。',
+      PARTIAL: '当前仅显示已记录用量。',
+      HOST_REPORTED_COMPLETE: '用量记录已完成。'
+    }[report.coverage] || '当前仅显示已记录用量。';
     const captureLabel = {CONNECTED: '已连接用量采集', CONNECTED_BUILTIN: '已连接本地用量采集',
       CONNECTED_PARTIAL: '已连接部分采集', NOT_CONNECTED: '采集未连接', DISABLED: '自动用量采集已关闭',
       NO_BINDINGS: '尚未绑定用量会话', NO_BOUND_SESSIONS: '尚未观察到已绑定会话', DISCOVERING: '正在查找已绑定会话',
@@ -439,8 +439,8 @@
     const selectedAgent = agents.find(agent => agent.id === (auto.selected_agent || state?.request?.agent));
     const agentLabel = selectedAgent?.label || (auto.selected_agent || state?.request?.agent ? (auto.selected_agent || state.request.agent) : '未选择宿主');
     const message = typeof connection.message === 'string' ? connection.message : captureLabel || '等待采集连接信息';
-    const action = typeof connection.action_label === 'string' ? connection.action_label : ({bind_session:'请宿主绑定本轮真实会话。', import_usage:'请导入本轮真实用量记录。', wait_for_usage:'等待本轮用量记录。', enable_telemetry:'请为本轮创作开启本地用量记录。', select_agent:'请在创作设置中选择当前使用的 Agent。'}[connection.action] || '');
-    text('usageCapture', '创作工具：' + agentLabel + '。' + message + (action ? ' ' + action : ''));
+    const action = typeof connection.action_label === 'string' ? connection.action_label : ({bind_session:'请选择本次会话。', import_usage:'请导入本次用量。', wait_for_usage:'等待用量记录。', enable_telemetry:'请开启用量记录。', select_agent:'请先选择使用的 AI。'}[connection.action] || '');
+    text('usageCapture', 'AI：' + agentLabel + '。' + message + (action ? ' ' + action : ''));
     $('usageCapture').className = 'capture-status ' + (String(auto.status || '').startsWith('CONNECTED') ? 'connected' : 'attention');
     text('usageCoverage', coverage);
     $('usageGaps').replaceChildren();
@@ -471,11 +471,11 @@
       number(tokens.request_records) + ' 个请求、' + number(tokens.turn_records) + ' 个聚合轮次；结果未知 ' +
       number(tokens.unknown_outcome_records) + ' 条；缺 usage ' + number(tokens.missing_usage_records) + ' 条。' +
       ((integer(tokens.unknown_outcome_records) && tokens.unknown_outcome_records > 0) || tokens.outcome_complete === false
-        ? '未观察到的失败/重试情况不能推算。' : '') +
+        ? '' : '') +
       '配置耗时 ' + duration(time.configuration_seconds) +
       '；工具执行合计 ' + duration(time.tool_seconds) + '，可能与流程时间重叠，不额外相加。' +
-      (report.timing_origin === 'ATTACHED_LATE' ? '这是补接计量，此前时间未知。' : '') +
-      (tokens.detail_complete && Object.values(tokens.detail_complete).some(value => value === false) ? ' 部分 token 分项记录不完整，仍为已知小计。' : ''));
+      (report.timing_origin === 'ATTACHED_LATE' ? '' : '') +
+      (tokens.detail_complete && Object.values(tokens.detail_complete).some(value => value === false) ? ' 部分 token 数据未记录。' : ''));
   }
   async function doRefresh() {
     const results = await Promise.allSettled([api('/api/state'), api('/api/author/usage'),
@@ -487,24 +487,24 @@
       if (results[0].status === 'fulfilled') {
         validateState(results[0].value);
         state = results[0].value; project = state.project_id; online = true;
-        text('connection', '本机服务已连接'); $('connection').className = 'connection online';
+        text('connection', '已连接'); $('connection').className = 'connection online';
         if (networkError) { notice('errorNotice', ''); networkError = false; }
         renderState();
       } else {
         online = false; networkError = true;
-        text('connection', '连接中断 · 等待恢复'); $('connection').className = 'connection offline';
-        notice('errorNotice', '无法刷新项目状态。已有信息可能过期，提交已暂停；连接恢复后会自动继续读取。');
+        text('connection', '连接中断'); $('connection').className = 'connection offline';
+        notice('errorNotice', '连接中断，正在重试。');
         syncActions();
       }
       if (results[1].status === 'fulfilled') renderUsage(results[1].value);
       else if (results[0].status === 'fulfilled' && results[0].value.usage) renderUsage(results[0].value.usage);
       else {
-        text('usageState', '报告暂不可用');
-        text('usageCoverage', '用量报告暂时无法读取；已有数字可能过期，缺失部分保持未采集。');
+        text('usageState', '用量暂不可用');
+        text('usageCoverage', '暂时无法读取用量。');
       }
     } catch (error) {
       online = false; networkError = !stopped;
-      text('connection', stopped ? '项目已变更 · 请刷新' : '状态读取失败'); $('connection').className = 'connection offline';
+      text('connection', stopped ? '项目已变更' : '状态读取失败'); $('connection').className = 'connection offline';
       notice('errorNotice', error.message); syncActions();
     }
   }
@@ -549,9 +549,9 @@
       await api('/api/usage/bind-session', {method:'POST', body:JSON.stringify({
         project_id:project, expected_revision:state.revision, run_id:lastUsage.run_id, agent:auto.selected_agent, session_id:sessionId
       })});
-      text('sessionBindingNotice', '会话已绑定，正在刷新真实用量。');
+      text('sessionBindingNotice', '会话已连接。');
     } catch (error) {
-      text('sessionBindingNotice', error.name === 'AbortError' ? '连接请求超时，请刷新查看结果；不会自动重复连接。' : error.message);
+      text('sessionBindingNotice', error.name === 'AbortError' ? '连接超时，请重试。' : error.message);
     } finally {
       await refresh(); bindingBusy = false;
       if (lastUsage) renderSessionBinding(lastUsage);
@@ -568,7 +568,7 @@
       await api('/api/start', {method: 'POST', body: JSON.stringify({expected_revision: state.revision, ...value})});
       clearDraft();
     } catch (error) {
-      notice('errorNotice', error.name === 'AbortError' ? '提交请求超时。正在重新读取服务器状态；不会自动再次提交。' : error.message);
+      notice('errorNotice', error.name === 'AbortError' ? '提交超时，正在刷新状态。' : error.message);
     } finally {
       if (refreshPromise) await refreshPromise;
       await refresh();

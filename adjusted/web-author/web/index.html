@@ -2,26 +2,26 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
-<title>AOE2 AI Studio · 网页创作</title><link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
+<title>AOE2 AI</title><link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">跳到创作设置</a>
-<header class="topbar"><a class="brand" href="/" aria-label="AOE2 AI Studio 首页"><span class="brand-mark" aria-hidden="true">A</span><span>AOE2 <strong>AI STUDIO</strong></span></a><span class="local-label">本机创作工作台</span><span id="connection" class="connection" role="status">正在连接</span></header>
+<header class="topbar"><a class="brand" href="/" aria-label="AOE2 AI 首页"><span class="brand-mark" aria-hidden="true">A</span><span>AOE2 <strong>AI</strong></span></a><span class="local-label">本地</span><span id="connection" class="connection" role="status">正在连接</span></header>
 <main id="main" class="shell">
-<div class="intro"><div><p class="eyebrow">帝国时代 II · AI 创作</p><h1>从一个文明，开始你的打法。</h1><p class="lead">选择对局，确定文明，再交给你的 AI Agent。</p></div><span id="statusBadge" class="badge">正在读取</span></div>
+<div class="intro"><div><h1>AOE2 AI</h1></div><span id="statusBadge" class="badge">正在读取</span></div>
 <p id="statusBanner" class="status-banner" role="status" aria-live="polite">正在读取当前项目…</p><p id="draftNotice" class="notice hidden" role="status"></p><p id="errorNotice" class="notice error hidden" role="alert"></p>
-<nav class="wizard-nav" aria-label="创作步骤"><ol>
-<li><button id="wizardNav0" type="button" data-step="0" aria-current="step"><span>01</span>选择模式</button></li>
-<li><button id="wizardNav1" type="button" data-step="1" disabled><span>02</span>选择文明</button></li>
-<li><button id="wizardNav2" type="button" data-step="2" disabled><span>03</span>创作设置</button></li>
-<li><button id="wizardNav3" type="button" data-step="3" disabled><span>04</span>开始创作</button></li>
+<nav class="wizard-nav" aria-label="设置步骤"><ol>
+<li><button id="wizardNav0" type="button" data-step="0" aria-current="step"><span>01</span>游戏模式</button></li>
+<li><button id="wizardNav1" type="button" data-step="1" disabled><span>02</span>文明</button></li>
+<li><button id="wizardNav2" type="button" data-step="2" disabled><span>03</span>设置</button></li>
+<li><button id="wizardNav3" type="button" data-step="3" disabled><span>04</span>生成</button></li>
 </ol></nav>
 <div id="workspace" class="workspace">
 <section class="panel config-panel" aria-labelledby="configTitle">
-<div class="panel-head"><div><p id="stepEyebrow" class="eyebrow">第一步 / 共四步</p><h2 id="configTitle" tabindex="-1">选择对局模式</h2></div><span id="settingsState" class="muted">提交前可调整</span></div>
+<div class="panel-head"><div><p id="stepEyebrow" class="eyebrow">第一步 / 共四步</p><h2 id="configTitle" tabindex="-1">游戏模式</h2></div><span id="settingsState" class="muted">提交前可调整</span></div>
 <form id="authorForm" novalidate><fieldset id="configFields" disabled>
 <section id="wizardPanel0" class="wizard-panel" aria-labelledby="modeTitle">
-<h3 id="modeTitle" class="section-title">你想参加怎样的对局？</h3><p class="field-help">先选模式，下一步查看完整文明列表。</p>
+<h3 id="modeTitle" class="section-title">游戏模式</h3>
 <div class="mode-grid">
 <label class="mode-card"><input type="radio" name="mode" value="1v1" required><span><strong>1v1</strong><small>单挑 · 一对一较量</small></span><span class="mode-mark" aria-hidden="true">I : I</span></label>
 <label class="mode-card"><input type="radio" name="mode" value="2v2"><span><strong>2v2</strong><small>团队战 · 两队各 2 人</small></span><span class="mode-mark" aria-hidden="true">II : II</span></label>
@@ -29,26 +29,26 @@
 <label class="mode-card"><input type="radio" name="mode" value="4v4"><span><strong>4v4</strong><small>团队战 · 两队各 4 人</small></span><span class="mode-mark" aria-hidden="true">IV : IV</span></label>
 <label class="mode-card"><input type="radio" name="mode" value="ffa4"><span><strong>4 人混战</strong><small>四方独立 · 各自为战</small></span><span class="mode-mark" aria-hidden="true">IV</span></label>
 <label class="mode-card"><input type="radio" name="mode" value="ffa8"><span><strong>8 人混战</strong><small>八方独立 · 各自为战</small></span><span class="mode-mark" aria-hidden="true">VIII</span></label>
-</div><p class="mode-footnote">模式决定创作方向；此页面不启动游戏或创建比赛。</p>
+</div>
 </section>
 <section id="wizardPanel1" class="wizard-panel" aria-labelledby="civTitle" hidden>
-<div class="civilization-toolbar"><div><h3 id="civTitle" class="section-title">选择你的文明</h3><p id="contentScope" class="field-help">正在读取标准版文明资料…</p></div><button id="autoCivilization" class="button secondary" type="button" aria-pressed="false">让 AI 选择</button></div>
+<div class="civilization-toolbar"><div><h3 id="civTitle" class="section-title">文明</h3><p id="contentScope" class="field-help">正在读取标准版文明资料…</p></div><button id="autoCivilization" class="button secondary" type="button" aria-pressed="false">AI 选择</button></div>
 <input id="civilization" name="civilization" type="hidden" value="">
-<p id="civilizationHelp" class="civilization-help">悬停或用键盘聚焦盾徽查看资料；点击即选中，再进入创作设置。</p>
+<p id="civilizationHelp" class="civilization-help">点击盾徽选择文明。</p>
 <div class="civilization-layout">
 <div><div id="civilizationGrid" class="civilization-grid" role="group" aria-label="可选文明" aria-describedby="civilizationHelp"><p class="field-help">正在读取文明盾徽…</p></div><p id="civilizationAssetNotice" class="field-help hidden" role="status"></p></div>
 <aside id="civilizationDetail" class="civilization-detail" aria-labelledby="detailName">
-<div class="detail-heading"><img id="detailIcon" class="detail-icon hidden" alt="" width="112" height="112"><div><p id="detailState" class="eyebrow">文明资料</p><h3 id="detailName">从左侧挑选文明</h3><p id="detailEnglish" class="detail-english"></p></div></div>
-<p id="detailDescription" class="detail-description">浏览盾徽，了解文明特色。点击盾徽后会固定选中，但不会开始创作。</p>
+<div class="detail-heading"><img id="detailIcon" class="detail-icon hidden" alt="" width="112" height="112"><div><p id="detailState" class="eyebrow">文明资料</p><h3 id="detailName">选择文明</h3><p id="detailEnglish" class="detail-english"></p></div></div>
+<p id="detailDescription" class="detail-description">点击左侧盾徽查看文明资料。</p>
 <div id="detailSections" class="detail-sections"></div><p id="detailSource" class="detail-source"></p>
 </aside>
 </div><p id="selectedCivilization" class="selection-status" role="status" aria-live="polite">尚未选择文明</p>
 </section>
 <section id="wizardPanel2" class="wizard-panel" aria-labelledby="settingsTitle" hidden>
-<h3 id="settingsTitle" class="section-title">安排本次创作</h3><p class="field-help">选择当前运行这轮创作的工具，再给这只 AI 命名。</p>
-<fieldset class="form-section agent-section"><legend>创作使用的 AI Agent <span class="required">必选</span></legend><div id="agentOptions" class="agent-options"><p class="field-help">正在读取可用 Agent…</p></div><p id="agentHelp" class="field-help">标记当前创作工具，以连接正确的用量来源。</p></fieldset>
-<div class="field name-field"><label for="scriptName">AI 名称 <span class="required">必填</span></label><input id="scriptName" name="script_name" type="text" maxlength="48" pattern="[A-Za-z][A-Za-z0-9_\-]{0,47}" autocomplete="off" spellcheck="false" required aria-describedby="nameHelp" placeholder="例如：Golden_Legion"><p id="nameHelp" class="field-help">以英文字母开头，可用数字、下划线和短横线，最多 48 位。</p></div>
-<fieldset class="form-section preferences-section"><legend>四个时代的攻防倾向</legend><p class="field-help">0 偏防守，50 均衡，100 偏进攻。作者会结合文明填写具体参数。</p><div id="ageSliders" class="age-sliders">
+<h3 id="settingsTitle" class="section-title">设置</h3>
+<fieldset class="form-section agent-section"><legend>使用的 AI <span class="required">必选</span></legend><div id="agentOptions" class="agent-options"><p class="field-help">正在读取…</p></div><p id="agentHelp" class="field-help">用于统计本次用量。</p></fieldset>
+<div class="field name-field"><label for="scriptName">脚本名 <span class="required">必填</span></label><input id="scriptName" name="script_name" type="text" maxlength="48" pattern="[A-Za-z][A-Za-z0-9_\-]{0,47}" autocomplete="off" spellcheck="false" required aria-describedby="nameHelp" placeholder="例如：Golden_Legion"><p id="nameHelp" class="field-help">以英文字母开头，可用数字、下划线和短横线，最多 48 位。</p></div>
+<fieldset class="form-section preferences-section"><legend>攻防倾向</legend><p class="field-help">0 防守 · 50 均衡 · 100 进攻</p><div id="ageSliders" class="age-sliders">
 <div class="age-row"><div class="age-heading"><label for="dark">黑暗时代</label><output id="darkValue" for="dark">50 · 均衡</output></div><input id="dark" name="dark" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>0 防守</span><span>50 均衡</span><span>100 进攻</span></div></div>
 <div class="age-row"><div class="age-heading"><label for="feudal">封建时代</label><output id="feudalValue" for="feudal">50 · 均衡</output></div><input id="feudal" name="feudal" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>0 防守</span><span>50 均衡</span><span>100 进攻</span></div></div>
 <div class="age-row"><div class="age-heading"><label for="castle">城堡时代</label><output id="castleValue" for="castle">50 · 均衡</output></div><input id="castle" name="castle" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>0 防守</span><span>50 均衡</span><span>100 进攻</span></div></div>
@@ -56,29 +56,29 @@
 </div><button id="resetPreferences" class="text-button" type="button">恢复为均衡</button></fieldset>
 </section>
 <section id="wizardPanel3" class="wizard-panel" aria-labelledby="reviewTitle" hidden>
-<h3 id="reviewTitle" class="section-title">本次创作安排</h3><p id="reviewIntro" class="field-help">检查以下设置，点击“开始创作”后交给 Agent。</p>
+<h3 id="reviewTitle" class="section-title">确认设置</h3>
 <dl id="selectionSummary" class="selection-summary"></dl>
-<div class="start-actions"><p id="startHint" class="field-help">只有点击此按钮才会提交，本次设置随后固定。</p><button id="startButton" class="button primary" type="submit" disabled>开始创作</button></div>
+<div class="start-actions"><p id="startHint" class="field-help">开始后本次设置不能修改。</p><button id="startButton" class="button primary" type="submit" disabled>开始生成</button></div>
 </section>
 </fieldset>
 <div id="wizardActions" class="wizard-actions"><button id="previousStep" class="button secondary hidden" type="button">上一步</button><span id="navigationHint" class="field-help">请选择一种对局模式。</span><button id="nextStep" class="button primary" type="button" disabled>下一步 · 选择文明</button></div>
 </form>
 </section>
-<aside id="progressColumn" class="side-column" aria-label="创作状态" hidden>
-<section class="panel progress-panel" aria-labelledby="progressTitle"><div class="panel-head"><h2 id="progressTitle">创作进度</h2><button id="refreshButton" class="text-button" type="button">刷新</button></div>
-<ol class="workflow"><li id="stepConfig"><span class="workflow-dot"></span><span>确定设置</span></li><li id="stepSelect"><span class="workflow-dot"></span><span>确定文明</span></li><li id="stepAuthor"><span class="workflow-dot"></span><span>填写参数</span></li><li id="stepValidate"><span class="workflow-dot"></span><span>检查与修正</span></li><li id="stepBuild"><span class="workflow-dot"></span><span>生成交付</span></li></ol>
-<div id="civilizationDecision" class="civilization-decision hidden" aria-live="polite"><p class="eyebrow" id="civilizationDecisionLabel">已选文明</p><h3 id="civilizationDecisionName"></h3><p id="civilizationDecisionReason" class="field-help"></p></div><div class="progress-heading"><span>已填写参数</span><strong id="fillCount">等待记录</strong></div><progress id="fillProgress" aria-label="参数填写进度"></progress><p id="validationState" class="field-help">等待项目状态。</p>
-<div id="buildResult" class="build-result hidden"><h3>交付已登记</h3><dl id="buildDetails"></dl></div><p class="boundary">参数检查和文件生成不代表游戏验证通过。游戏加载与实战状态仍需独立记录。</p></section>
-<section class="panel quiet-panel"><h2>由 Agent 继续执行</h2><p>作者填写参数、检查与修正，主代理再生成交付文件。选择“让 AI 选择”时，Agent 会先研究文明。</p><p class="muted">本页依靠正在运行的创作代理，不会自行调用模型，也不能唤醒已结束的代理。</p></section>
+<aside id="progressColumn" class="side-column" aria-label="生成状态" hidden>
+<section class="panel progress-panel" aria-labelledby="progressTitle"><div class="panel-head"><h2 id="progressTitle">进度</h2><button id="refreshButton" class="text-button" type="button">刷新</button></div>
+<ol class="workflow"><li id="stepConfig"><span class="workflow-dot"></span><span>设置</span></li><li id="stepSelect"><span class="workflow-dot"></span><span>文明</span></li><li id="stepAuthor"><span class="workflow-dot"></span><span>参数</span></li><li id="stepValidate"><span class="workflow-dot"></span><span>检查</span></li><li id="stepBuild"><span class="workflow-dot"></span><span>文件</span></li></ol>
+<div id="civilizationDecision" class="civilization-decision hidden" aria-live="polite"><p class="eyebrow" id="civilizationDecisionLabel">已选文明</p><h3 id="civilizationDecisionName"></h3><p id="civilizationDecisionReason" class="field-help"></p></div><div class="progress-heading"><span>参数</span><strong id="fillCount">等待记录</strong></div><progress id="fillProgress" aria-label="参数填写进度"></progress><p id="validationState" class="field-help">等待项目状态。</p>
+<div id="buildResult" class="build-result hidden"><h3>文件已生成</h3><dl id="buildDetails"></dl></div><p class="boundary">尚未进行游戏实测。</p></section>
+
 </aside></div>
-<section class="panel usage-panel" aria-labelledby="usageTitle"><div class="panel-head"><div><p class="eyebrow">本次项目</p><h2 id="usageTitle">创作用量</h2></div><span id="usageState" class="muted">等待采集状态</span></div>
-<div class="usage-cards"><div><span>已记录 token</span><strong id="usageTokens">尚未采集</strong></div><div><span>项目总历时</span><strong id="usageElapsed">等待记录</strong></div><div><span>工作流程耗时</span><strong id="usageWork">尚未开始</strong></div><div><span>未观察时间</span><strong id="usageUnobserved">尚未确定</strong></div></div>
-<p id="usageCapture" class="capture-status" role="status">正在读取采集连接…</p>
-<details id="sessionBinding" class="session-binding hidden"><summary>连接本轮会话</summary><p id="sessionBindingHelp" class="field-help">服务发现了当前仓库的候选会话。请选择正在执行本轮创作的会话，用于记录其真实用量。</p><div class="session-binding-controls"><div class="field"><label for="usageSession">本轮创作会话</label><select id="usageSession" aria-describedby="sessionBindingHelp"><option value="">请选择会话</option></select></div><button id="bindSessionButton" class="button secondary" type="button" disabled>连接会话</button></div><p id="sessionBindingNotice" class="field-help" role="status"></p></details><p id="usageCoverage" class="notice">尚未取得用量报告；未采集不等于零。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
-<details><summary>阶段、模型与导出</summary><p id="usageBreakdown" class="usage-detail">详细用量尚未采集。</p><div class="table-scroll"><table><caption>各阶段用量与时间</caption><thead><tr><th scope="col">阶段</th><th scope="col">已记录 token</th><th scope="col">历时</th><th scope="col">失败 / 操作</th></tr></thead><tbody id="usageStages"><tr><td colspan="4">尚无阶段报告。</td></tr></tbody></table></div><p id="usageModels" class="usage-detail">模型用量尚未采集。</p><p id="usageQuality" class="usage-detail"></p>
+<section class="panel usage-panel" aria-labelledby="usageTitle"><div class="panel-head"><h2 id="usageTitle">用量</h2><span id="usageState" class="muted">等待记录</span></div>
+<div class="usage-cards"><div><span>token</span><strong id="usageTokens">尚未采集</strong></div><div><span>总用时</span><strong id="usageElapsed">等待记录</strong></div></div><details><summary>详细信息</summary><div class="usage-cards"><div><span>处理时间</span><strong id="usageWork">尚未开始</strong></div><div><span>未统计时间</span><strong id="usageUnobserved">尚未确定</strong></div></div>
+<p id="usageCapture" class="capture-status" role="status">正在读取…</p>
+<details id="sessionBinding" class="session-binding hidden"><summary>用量会话</summary><p id="sessionBindingHelp" class="field-help">选择本次使用的会话。</p><div class="session-binding-controls"><div class="field"><label for="usageSession">本轮创作会话</label><select id="usageSession" aria-describedby="sessionBindingHelp"><option value="">请选择会话</option></select></div><button id="bindSessionButton" class="button secondary" type="button" disabled>连接会话</button></div><p id="sessionBindingNotice" class="field-help" role="status"></p></details><p id="usageCoverage" class="notice">尚未取得用量记录。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
+<details><summary>阶段与导出</summary><p id="usageBreakdown" class="usage-detail">详细用量尚未采集。</p><div class="table-scroll"><table><caption>各阶段用量与时间</caption><thead><tr><th scope="col">阶段</th><th scope="col">已记录 token</th><th scope="col">历时</th><th scope="col">失败 / 操作</th></tr></thead><tbody id="usageStages"><tr><td colspan="4">尚无阶段报告。</td></tr></tbody></table></div><p id="usageModels" class="usage-detail">模型用量尚未采集。</p><p id="usageQuality" class="usage-detail"></p>
 <div class="export-links"><a class="button secondary" href="/api/author/usage/export?format=json" download>导出完整 JSON</a><a class="button secondary" href="/api/author/usage/export?format=stages" download>导出阶段 CSV</a><a class="button secondary" href="/api/author/usage/export?format=calls" download>导出调用 CSV</a></div></details>
-<p class="boundary">缺失记录保持未采集。缓存、推理是输入或输出的子项，不重复累加；计量不等于平台账单。</p></section>
-<footer><span id="projectLabel">当前项目 · 等待连接</span><span>本地运行 · 无内置模型服务</span></footer>
+<p class="boundary">未记录的数据不会计入。</p></details></section>
+<footer><span id="projectLabel">项目 · 等待连接</span><span>本地运行</span></footer>
 </main><noscript><p class="notice">此网页需要启用 JavaScript 才能读取项目状态和提交设置。</p></noscript>
 </body></html>
 
