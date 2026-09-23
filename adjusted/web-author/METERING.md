@@ -1,6 +1,6 @@
 # 真实 token 与时间计量
 
-网页只记录本项目明确绑定来源的真实 usage，不根据字数、上下文窗口占用、账户额度或 credits 估算 token。流程的 RUNNING 表示计时正在进行，不代表已接通计量。JSON、网页和 CSV 均读取同一 SQLite 台账。
+网页第一步先取得本轮计量授权。只有 usage_authorized=true 时才启动自动 usage 采集；选择“本轮不计量”时仍可创作，但 token 保持未采集。授权范围仅是本项目真实 usage、会话 ID、模型、时间等计量元数据，不扩大到聊天正文或凭据。任何来源都不根据字数、上下文窗口占用、账户额度或 credits 估算 token。流程的 RUNNING 表示计时正在进行，不代表已接通计量。JSON、网页和 CSV 均读取同一 SQLite 台账。
 
 ## Agent 选择与实际支持范围
 
@@ -8,15 +8,15 @@
 
 | Agent | 已实现的采集方式 | 必要条件 / 当前边界 |
 | --- | --- | --- |
-| OpenAI Codex | 指定 rollout 的累计 token_count 差值 | 绑定当前真实 thread ID；旧会话扣除创作前基线；子代理单独绑定 |
-| Claude Code | 指定 session JSONL 的 assistant usage | 绑定真实 session ID；输入、输出及缓存读写必须实际存在 |
-| Gemini CLI | 指定 chat 文件的消息 tokens | 绑定 session ID/文件名；按 total 区分输入内缓存，包含 tool/thoughts，不重复累加缓存 |
+| OpenAI Codex | rollout 的累计 token_count 差值 | 优先继承当前 thread ID；否则唯一的本轮活跃主会话自动绑定；旧会话扣除创作前基线，spawn 子会话按 parent→child 证据自动纳入 |
+| Claude Code | 项目 session JSONL 的 assistant usage | 唯一的本轮活跃项目会话自动绑定；无法唯一确认时保留缺口，不要求用户选择 |
+| Gemini CLI | chat 文件的消息 tokens | 主 Agent 能证明当前 session 时自动登记；按 total 区分缓存/tool/thoughts；无法证明时保留缺口 |
 | Cursor IDE | 项目 Hook 自动归属当前项目 conversation，再用官方 Team Admin Usage Events 按 conversationId 精确关联 | 需 Cursor Hook 生效，并在启动服务前设置 CURSOR_ADMIN_API_KEY；服务自动绑定并低频刷新，用户无需页面操作；官方接口可能有聚合延迟 |
 | Cursor SDK | 显式导入最终 RunResult.usage / getUsage() | format=cursor-sdk；只接收本轮 finished/error/cancelled 的真实 usage，不把运行中累计快照相加 |
-| OpenCode | SQLite 按 session_id 先筛选，或 storage/message/<session> | 绑定 session ID；支持 assistant tokens 的缓存及 reasoning 字段；不扫全账户消息 |
-| GitHub Copilot CLI | 本轮专用本地 OTel 文件的 chat span | 配置 AOE2_COPILOT_USAGE_FILE 并绑定 conversation ID；忽略 invoke_agent 父汇总避免重复计数 |
-| Kimi CLI / Kimi Code | 指定 wire.jsonl 的 StatusUpdate.token_usage / turn usage.record | 主会话用 session ID，Code 子代理用 session:agent；不统计 context_tokens 或 session 累计行 |
-| Cline / Roo Code | 指定 task 的 ui_messages.json 请求用量 | task ID 分别绑定；缺少缓存等字段保持未知；已删除/折叠汇总不能当本轮完整用量 |
+| OpenCode | SQLite 按 session_id 先筛选，或 storage/message/<session> | 主 Agent 自动登记可证明的 session；支持缓存及 reasoning；不扫全账户消息 |
+| GitHub Copilot CLI | 本轮专用本地 OTel 文件的 chat span | 配置 AOE2_COPILOT_USAGE_FILE；主 Agent 自动登记可证明的 conversation ID；忽略 invoke_agent 父汇总 |
+| Kimi CLI / Kimi Code | wire.jsonl 的 StatusUpdate.token_usage / turn usage.record | 主 Agent 自动登记可证明的 session；Code 子代理用 session:agent；不统计 context_tokens |
+| Cline / Roo Code | task 的 ui_messages.json 请求用量 | 主 Agent 自动登记可证明的 task ID；缺字段保持未知；已删除/折叠汇总不能当完整用量 |
 | Windsurf / Trae / Augment | 本轮真实 usage 显式导入 | 尚未核实稳定、按项目归属的 IDE 本地消耗接口；不宣称自动接通 |
 | 其他 Agent | agent-usage / 提供商最终响应导入 | 必须有本轮真实来源和稳定事件 ID |
 
@@ -24,29 +24,22 @@
 
 ## 会话绑定与连接提示
 
-identity 接受 agent、workspace_root、usage_sessions。只有首次创建计量且选择为 auto/codex 时才自动继承 CODEX_THREAD_ID；恢复已有项目仅保留已存绑定，新增主会话或子会话须显式绑定，维护会话不得混入。来源根目录仅作文件名/元数据定位。解析前先精确选择绑定文件；OpenCode 在 SQL WHERE 中先限制 session_id。Cursor 只用 composer/Hook 元数据识别 conversation，不再从 cursorDiskKV 读取 token。
+identity 接受 agent、workspace_root、usage_sessions 和 auto_capture。正常用户流程没有“选择会话”步骤：首次 Codex 优先继承 CODEX_THREAD_ID；否则对能提供项目会话元数据的宿主，后台只在恰好一个非子会话在本轮开始后发生实际活动时自动绑定，即使该会话早于项目创建。主代理若从宿主运行时拿到精确 session ID，也可自行登记。多个候选同时活跃或归属证据不足时保持缺口，不让用户选择，也不按“最近会话”猜测。来源根目录仅作文件名/元数据定位。OpenCode 在 SQL WHERE 中先限制 session_id。Cursor 只用 composer/Hook 元数据识别 conversation，不再从 cursorDiskKV 读取 token。
 
-会话候选只由匹配 workspace 的元数据产生，不返回会话标题、正文或凭据。只有唯一、明确匹配 workspace 且在本轮开始后创建的主候选可自动绑定。Codex 若状态库存在官方 thread_spawn_edges，则已绑定父 thread 在本轮明确 spawn 的后代 thread 会递归自动绑定；没有 parent→child 证据的同工作区会话不会因此加入。已有会话、多候选、无可靠项目映射时须由宿主确认，不能按“最近活跃”猜测。
+会话候选只由项目/工作区元数据产生，不返回会话标题、正文或凭据。后台把 created_at 与 updated_at 分开看：会话可以早于项目创建，只要它是唯一一个在本轮开始后继续活动的主候选，就可以自动绑定。多个候选同时活跃、没有活动时间或缺少项目归属证据时不猜选，直接保留计量缺口。Codex 若存在 thread_spawn_edges，则已绑定父 thread 在本轮明确 spawn 的后代 thread 会递归自动纳入；没有 parent→child 证据的同工作区会话不会因此加入。
 
 报告中的 `auto_capture.connection` 提供 code、message、中文 action_label 和 requirements；`session_candidates` 只提供 session_id、时间和归属说明。常见状态：
 
-- SESSION_BINDING_REQUIRED：未绑定，先绑定候选或已知本轮 ID。
-- WAITING_FOR_USAGE：已绑定，等待真实日志字段或核对来源条件。
+- AUTO_SESSION_DISCOVERY：后台正在确认唯一的本轮活跃会话；用户无需选择。
+- AUTO_SESSION_AMBIGUOUS：同时存在多个活跃候选，后台不猜选；计量保持缺口，但创作继续。
+- WAITING_FOR_USAGE：会话已自动确认或由主代理登记，等待真实日志字段。
 - BASELINE_CAPTURED：旧会话首份累计快照仅建立基线，尚未取得本轮增量。
 - CURSOR_ADMIN_READY：已由项目 Hook 自动绑定 Cursor conversation，且进程中存在 CURSOR_ADMIN_API_KEY；后台会低频刷新官方 Usage Events。
 - EXPLICIT_USAGE_REQUIRED（Cursor）：没有可用的 Cursor Team Admin API key；普通 IDE 不回退读取本机气泡，可改用 Cursor SDK 真实 usage。
 - EXPLICIT_USAGE_REQUIRED：当前 Agent 尚无经核实的本地解析方式，需显式导入。
 - RECORDED_PARTIAL：已记录绑定来源的小计，未绑定子代理仍不在覆盖内。
 
-主代理将本轮绑定 JSON 保存到项目 tmp/ 后执行：
-
-```json
-{"sessions":{"claude":["actual-session-id"]}}
-```
-
-```powershell
-python -X utf8 -B adjusted/web-author/web_session.py usage --project <项目名称> --action bind --payload <本轮绑定JSON>
-```
+`usage --action bind` 仅保留给主代理/宿主内部：主代理已经拿到可验证的精确 session ID（例如自己创建的子代理）时可直接登记。它不是用户步骤，网页不提供会话选择器；无法证明归属时宁可缺失，不要求用户判断。
 
 Agent 选择不会切换或启动宿主，更不会自行发起模型调用。测试关闭自动采集可用 AOE2_USAGE_DISABLE_AUTO=1，此时明确显示 DISABLED。
 

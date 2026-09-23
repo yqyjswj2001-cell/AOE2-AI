@@ -17,6 +17,7 @@ from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
 from installable_ai import InstallableAIError, package_installable_ai
 from development_report import DevelopmentJournal, DevelopmentReportError, generate_reports, report_file
+from cursor_admin_usage import active_project_path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -237,7 +238,8 @@ class Controller:
             "task_sha256": task_hash, "game_mode": request["mode"],
             "civilization": request["civilization"], "script_name": request["script_name"],
             "agent": self.data.get("usage_agent", request.get("agent", "auto")), "workspace_root": str(ROOT),
-            "usage_sessions": self.data.get("usage_sessions", {})})
+            "usage_sessions": self.data.get("usage_sessions", {}),
+            "auto_capture": bool(request.get("usage_authorized", False))})
 
     def _selection_pending(self):
         task = self.data.get("task_request") or self.data.get("request") or {}
@@ -409,7 +411,45 @@ class Controller:
             return {key: self.data[key] for key in ("status", "revision", "request", "progress", "build", "project_id")} | {
                 "usage": self.usage(), "civilizations": self.civilizations, "agents": agent_catalog(),
                 "content_profile": content_profile(), "civilization_selection": self._selection_state(),
-                "runtime": self._runtime_state(), "host_required": True}
+                "runtime": self._runtime_state(), "host_required": True,
+                "usage_authorization": self.data.get("usage_authorization"),
+                "usage_access": {
+                    "consent_required": True,
+                    "cursor_admin_configured": bool(os.environ.get("CURSOR_ADMIN_API_KEY")),
+                    "copilot_telemetry_configured": bool(os.environ.get("AOE2_COPILOT_USAGE_FILE")),
+                }}
+
+    def authorize_usage(self, payload):
+        """Freeze the user's per-project metering consent before game settings."""
+        with self.lock:
+            self._expected(payload)
+            if self.data["status"] != "configuring":
+                raise WorkflowError("Usage authorization can only change before generation starts")
+            agent = normalize_agent(payload.get("agent"))
+            authorized = payload.get("usage_authorized")
+            if type(authorized) is not bool:
+                raise WorkflowError("usage_authorized must be a JSON boolean")
+            previous = self.data.get("usage_authorization")
+            decision = {"agent": agent, "authorized": authorized, "decided_at": time.time()}
+            if previous and previous.get("agent") == agent and previous.get("authorized") == authorized:
+                return self.state()
+            self.data["usage_authorization"] = decision
+            self.data["revision"] += 1
+            self._save()
+
+            marker_path = active_project_path(ROOT)
+            try:
+                current = parse_json(marker_path.read_bytes()) if marker_path.is_file() else {}
+            except (OSError, ValueError):
+                current = {}
+            if current.get("project_id") == self.data["project_id"]:
+                atomic_json(marker_path, {**current, "agent": agent,
+                    "usage_authorized": authorized, "authorized_at": decision["decided_at"]})
+
+            self._dev_event("browser", "usage_authorization", "info",
+                            "本轮自动计量已授权。" if authorized else "本轮自动计量已关闭。",
+                            {"agent": agent, "authorized": authorized})
+            return self.state()
 
     def start(self, payload):
         with self.lock:
@@ -427,7 +467,17 @@ class Controller:
             if not isinstance(preferences, dict) or set(preferences) != AGES or any(type(v) is not int or not 0 <= v <= 100 for v in preferences.values()):
                 raise WorkflowError("All four age preferences must be integers within 0..100")
             agent = normalize_agent(payload.get("agent", "auto"))
-            request = {"mode": mode, "civilization": civ, "preferences": preferences, "script_name": name, "agent": agent}
+            explicit_usage_choice = "usage_authorized" in payload
+            usage_authorized = payload.get("usage_authorized", False)
+            if type(usage_authorized) is not bool:
+                raise WorkflowError("usage_authorized must be a JSON boolean")
+            authorization = self.data.get("usage_authorization")
+            if explicit_usage_choice and (not isinstance(authorization, dict)
+                    or authorization.get("agent") != agent
+                    or authorization.get("authorized") is not usage_authorized):
+                raise WorkflowError("Confirm usage authorization before starting generation")
+            request = {"mode": mode, "civilization": civ, "preferences": preferences, "script_name": name,
+                       "agent": agent, "usage_authorized": usage_authorized}
             selection = selection_context(self.civilizations, self.data["project_id"]) if civ == "auto" else {}
             choice = None if civ == "auto" else {
                 "civilization": civ, "reason": "", "selected_by": "user", "selected_at": time.time()}
@@ -457,7 +507,7 @@ class Controller:
             self.meter.phase("researching" if civ == "auto" else "authoring")
             self._dev_event("workflow", "project_started", "info", "创作已开始。",
                             {"mode": mode, "civilization": civ, "script_name": name, "agent": agent,
-                             "preferences": preferences})
+                             "usage_authorized": usage_authorized, "preferences": preferences})
             self._sync()
             return self.state()
 
@@ -507,8 +557,9 @@ class Controller:
                     "answers_output": str(self.project / "answers") if state["request"] else None,
                     "usage_connection": {
                         "agent": self.data.get("usage_agent", (state["request"] or {}).get("agent", "auto")),
+                        "authorized": (state["request"] or {}).get("usage_authorized", False),
                         "capture": state["usage"].get("auto_capture", {}),
-                        "instructions": "Use the selected host's real usage source. Bind this project's main and child sessions before importing usage. See adjusted/web-author/METERING.md. Never infer consumption from context window size, character counts, or account totals."},
+                        "instructions": "If authorized, automatically identify or register only provably project-owned main/child sessions and collect real usage. Never ask the user to choose a session. If ownership is ambiguous, keep a coverage gap. Never infer consumption from context size, character counts, or account totals."},
                     "fresh_context_required": True, "host_required": True,
                     "next_action": "wait_for_start" if state["status"] == "configuring" else
                     ("choose_civilization" if self._selection_pending() else
@@ -677,26 +728,6 @@ class Controller:
             self._dev_event("workflow", "phase_changed", "info", "创作阶段切换：" + payload["value"],
                             {"phase": payload["value"]})
             return result
-
-    def bind_usage_candidate(self, payload):
-        """Browser may bind only a candidate already scoped to this workspace/host."""
-        with self.lock:
-            self._expected(payload)
-            if not self.meter:
-                raise WorkflowError("Start the project before connecting usage")
-            report = self.usage()
-            if payload.get("run_id") != report.get("run_id"):
-                raise WorkflowError("Usage run identity does not match")
-            capture = report.get("auto_capture", {})
-            agent = normalize_agent(payload.get("agent"))
-            session = payload.get("session_id")
-            if agent != capture.get("selected_agent") or not isinstance(session, str):
-                raise WorkflowError("Select the current host's project session")
-            candidates = capture.get("session_candidates", [])
-            if not any(row.get("session_id") == session and row.get("agent") == agent
-                       and row.get("workspace_match") is True for row in candidates):
-                raise WorkflowError("This session is not a verified candidate for the current workspace")
-            return self.usage_action("bind", {**payload, "sessions": {agent: [session]}})
 
     def refresh_cursor_admin_usage(self, payload):
         """Same-origin browser refresh of official Cursor Usage Events; API key never reaches the browser."""

@@ -18,7 +18,7 @@
 python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-ai
 ```
 
-网页依次选择模式、文明盾徽、设置（实际 AI Agent、脚本名和时代偏好），最后开始创作。宿主继续等待网页提交，并按 [详细 skill](adjusted/skills/aoe2-web-author/SKILL.md) 调度作者、检查、渲染和记录 token。仅启动网页、随后结束宿主会话不会自动创作。
+网页第一步先选择实际 AI Agent，并明确允许自动计量或本轮不计量；之后再选择模式、文明盾徽、脚本名和时代偏好，最后开始创作。允许自动计量后，会话由后台/主 Agent 自动识别，不再要求用户选择 session。宿主继续等待网页提交，并按 [详细 skill](adjusted/skills/aoe2-web-author/SKILL.md) 调度作者、检查、渲染和记录 token。仅启动网页、随后结束宿主会话不会自动创作。
 
 ## 当前范围
 

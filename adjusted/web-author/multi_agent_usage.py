@@ -862,10 +862,23 @@ class MultiAgentUsage:
                     missing.append({"agent": "cursor", "session": _hash("ide"),
                                     "code": "CURSOR_IDE_USAGE_UNAVAILABLE"})
             elif not self.state.get("bindings", {}).get(self.selected_agent):
-                eligible = [r for r in candidates if r.get("created_at") is not None and
-                            r["created_at"] >= self.meter.meta["started_at"] and not r.get("is_child")]
-                if len(candidates) == 1 and len(eligible) == 1:
+                started = self.meter.meta["started_at"]
+                def activity(row):
+                    values = [v for v in (row.get("updated_at"), row.get("created_at")) if v is not None]
+                    return max(values) if values else None
+                eligible = [r for r in candidates if r.get("workspace_match") is True
+                            and not r.get("is_child") and activity(r) is not None
+                            and activity(r) >= started]
+                if len(eligible) == 1:
                     self.bind({self.selected_agent: [eligible[0]["session_id"]]})
+                    self.state.setdefault("auto_bound_main", {})[self.selected_agent] = eligible[0]["session_id"]
+                    self._bind_verified_children(self.selected_agent, candidates)
+                elif len(eligible) > 1:
+                    missing.append({"agent": self.selected_agent, "session": _hash("active-candidates"),
+                                    "code": "MULTIPLE_ACTIVE_SESSION_CANDIDATES"})
+                elif candidates:
+                    missing.append({"agent": self.selected_agent, "session": _hash("inactive-candidates"),
+                                    "code": "SESSION_ACTIVITY_NOT_PROVEN"})
             supported = {"codex", "claude", "gemini", "opencode", "copilot", "kimi", "cline", "roo"}
             for info in detected:
                 agent = info["id"]
@@ -925,10 +938,10 @@ class MultiAgentUsage:
                  if self.selected_agent in {"auto", row["agent"]}]
         gaps = list(self.state.get("gaps", {}).values()) + self.state.get("pending_bindings", [])
         bound = sum(len(v) for k, v in self.state.get("bindings", {}).items() if self.selected_agent in {"auto", k})
-        code, message, action = "SESSION_BINDING_REQUIRED", "尚未绑定本轮宿主会话，token 不是 0。", "bind_session"
+        code, message, action = "AUTO_SESSION_DISCOVERY", "正在自动确认本轮宿主会话；无需手动选择。", "wait_for_usage"
         cursor_admin_configured = bool(self.environ.get("CURSOR_ADMIN_API_KEY"))
         if self.selected_agent == "auto" and not bound:
-            code, message, action = "AGENT_SELECTION_REQUIRED", "请选择创作使用的 Agent，并由宿主绑定本轮会话。", "select_agent"
+            code, message, action = "AGENT_SELECTION_REQUIRED", "请选择创作使用的 Agent；会话由后台自动识别。", "select_agent"
         elif self.selected_agent == "cursor" and not cursor_admin_configured:
             code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
         elif self.selected_agent == "cursor" and cursor_admin_configured and not bound:
@@ -943,6 +956,10 @@ class MultiAgentUsage:
                 code, message, action = "WAITING_FOR_USAGE", "已自动绑定当前 Cursor conversation；官方 Usage Events 暂未返回 token，后台会稍后重试。", "check_requirements"
             else:
                 code, message, action = "CURSOR_ADMIN_READY", "已自动绑定当前 Cursor conversation；官方用量由后台低频刷新。", "check_requirements"
+        elif not bound and any(g["code"] == "MULTIPLE_ACTIVE_SESSION_CANDIDATES" for g in gaps):
+            code, message, action = "AUTO_SESSION_AMBIGUOUS", "检测到多个本轮活跃会话，后台未猜选；计量保持缺口，不需要用户选择。", "inspect_source"
+        elif not bound and any(g["code"] == "SESSION_ACTIVITY_NOT_PROVEN" for g in gaps):
+            code, message, action = "AUTO_SESSION_DISCOVERY", "发现工作区会话，但尚不能证明哪一个属于本轮；后台继续观察，不需要用户选择。", "wait_for_usage"
         elif self.selected_agent in {"windsurf", "trae", "augment", "other"}:
             code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
         elif self.state.get("status") == "ERROR":
@@ -956,7 +973,7 @@ class MultiAgentUsage:
         return {"schema": STATE_SCHEMA, "status": self.state.get("status"), "backend": self.state.get("backend"),
                 "selected_agent": self.selected_agent, "agent": info,
                 "connection": {"code": code, "message": message, "action": action,
-                    "action_label": {"bind_session": "绑定本轮宿主会话", "select_agent": "选择创作使用的 Agent",
+                    "action_label": {"select_agent": "选择创作使用的 Agent",
                         "import_usage": "导入本轮真实 usage", "refresh_cursor_admin": "刷新 Cursor 官方用量",
                         "inspect_source": "检查来源和计量缺口",
                         "bind_children_or_import_missing": "绑定子代理或补充缺失用量",

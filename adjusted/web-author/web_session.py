@@ -159,11 +159,14 @@ def serve(project, port=0):
         meta["url"] = "http://127.0.0.1:" + str(server.server_port)
         try:
             atomic_json(project / SESSION_FILE, meta)
+            authorization = app.data.get("usage_authorization") or {}
             atomic_json(CURSOR_ACTIVE_FILE, {
                 "schema": "aoe2-cursor-active-project-v1",
                 "project_id": app.data["project_id"],
                 "project": str(project),
                 "started_at": time.time(),
+                "agent": authorization.get("agent"),
+                "usage_authorized": authorization.get("authorized") is True,
             })
             print(json.dumps(public_meta(meta), ensure_ascii=False), flush=True)
             server.serve_forever(poll_interval=0.2)

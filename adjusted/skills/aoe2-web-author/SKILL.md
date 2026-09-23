@@ -1,6 +1,6 @@
 ---
 name: aoe2-web-author
-description: 在 AOE2-AI 中启动本地网页并等待用户选择模式、文明和打法偏好，再让新上下文作者填写动态参数并由主代理校验、机械渲染。用于“打开网页创作 AI”“使用网页创作 skill”等请求；保留真实 token 与时间计量，无生成简报或简报审批步骤。
+description: 在 AOE2-AI 中启动本地网页，先等待用户选择实际 Agent 并授权本轮自动计量，再完成模式、文明和打法偏好；随后由新上下文作者填写动态参数并由主代理校验、机械渲染。用于“打开网页创作 AI”“使用网页创作 skill”等请求。
 ---
 
 # 网页参数创作
@@ -23,7 +23,7 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project <名称>
 
 **网页设置默认由用户操作。** 主代理负责网页服务，不负责网页交互：执行 `launch` 后等待用户自己选择模式、文明、Agent、脚本名和时代偏好，并点击“开始生成”；主代理通过 `wait / next` 得知提交结果后再继续。不得因为任务包含“网页、选择、点击开始”等描述就自行调用 Computer Use、浏览器自动化、屏幕控制或视觉点击工具，也不得替用户填写或提交设置。**只有用户明确要求代理代为操作网页时，才可以使用这类工具。**
 
-网页由用户依次完成模式 → 文明盾徽 → 设置 → 开始创作。文明页完整展示42个标准版盾徽，悬停或键盘焦点只预览右侧资料，点击即固定选择，无额外文明确认；也可选择让 AI 决定。设置包括本次实际使用的 AI Agent、脚本名和四时代攻防偏好。Agent 选择用于连接真实用量来源，不会自动启动或切换另一工具。开始后自主模式先选文明，手动模式直接填参数。滑块是用户偏好，不是某个官方参数的数值。没有简报、方案发布、permit 或二次审批。未点击前继续短周期 wait；超时不是授权，也不是任务结束。网页不能唤醒已退出的宿主代理，执行期间保持本会话工作。用户明确暂停或取消时尊重指令并结束会话。
+网页由用户依次完成授权 → 模式 → 文明盾徽 → 设置 → 开始创作。第一步先选择本次实际使用的 AI Agent，并明确选择“允许自动计量”或“本轮不计量”。允许只授权本项目读取真实 usage、会话 ID、模型、时间等计量元数据，不授权读取聊天正文或凭据；外部厂商账户权限仍以本机已有连接为准。文明页完整展示42个标准版盾徽，悬停或键盘焦点只预览右侧资料，点击即固定选择，无额外文明确认；也可选择让 AI 决定。设置只保留脚本名和四时代攻防偏好。Agent 选择不会自动启动或切换另一工具。开始后自主模式先选文明，手动模式直接填参数。滑块是用户偏好，不是某个官方参数的数值。没有简报、方案发布、permit 或二次审批。未点击前继续短周期 wait；超时不是授权，也不是任务结束。网页不能唤醒已退出的宿主代理，执行期间保持本会话工作。用户明确暂停或取消时尊重指令并结束会话。
 
 ## 自主选文明
 
@@ -86,7 +86,7 @@ build 会从本机 AoE2DE 安装目录读取官方 `PromiDE.per2`，核对其实
 
 ## 用量与结束
 
-先查看 next.usage_connection 与网页选定的 Agent，按 METERING.md 接入该宿主来源。创建子代理后绑定本次主会话和子会话；不把检测到安装目录当作已采集。不自动把所有宿主会话或其他项目计入。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 优先走仓库项目 Hook + Cursor Team Admin Usage Events：Hook 只记录 conversation_id 等元数据；如有 Team Admin API key，在启动网页服务前通过环境变量 CURSOR_ADMIN_API_KEY 提供，绝不能写进仓库或网页。服务会用唯一活动 project_id 自动归属并绑定当前 Cursor conversation，后台低频刷新官方 token，complete / finish 前再补一次最终刷新；用户不需要在网页选会话或点刷新。官方接口可能有聚合延迟；普通 IDE 不回退读取 bubble.tokenCount，也不按上下文占用/estimatedTokens 估算。没有 Admin API 权限时可导入 Cursor SDK 的真实 RunResult.usage / getUsage()，否则保持明确缺口。Cursor 子代理目前无法由官方 Hook 可靠回链 parent conversation，不能凭时间或同工作区猜归属。用户选择 Agent 不构成自动计量成功。
+先查看 next.usage_connection、网页选定的 Agent 和本轮 usage_authorized。**不要让用户选择或绑定用量会话。** 用户在第一步授权后，后台自动识别唯一的本轮活跃主会话；主代理如果掌握当前宿主或子代理的精确 session ID，可自行通过 usage bind 登记，不在聊天里询问用户。存在多个无法证明归属的候选时保持计量缺口并继续创作，不按“最近会话”猜测，也不把检测到安装目录当作已采集。用户选择“本轮不计量”时不得读取自动 usage 来源。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 优先走仓库项目 Hook + Cursor Team Admin Usage Events：Hook 只记录 conversation_id 等元数据；如有 Team Admin API key，在启动网页服务前通过环境变量 CURSOR_ADMIN_API_KEY 提供，绝不能写进仓库或网页。服务会用唯一活动 project_id 自动归属并绑定当前 Cursor conversation，后台低频刷新官方 token，complete / finish 前再补一次最终刷新；用户不需要在网页选会话或点刷新。官方接口可能有聚合延迟；普通 IDE 不回退读取 bubble.tokenCount，也不按上下文占用/estimatedTokens 估算。没有 Admin API 权限时可导入 Cursor SDK 的真实 RunResult.usage / getUsage()，否则保持明确缺口。Cursor 子代理目前无法由官方 Hook 可靠回链 parent conversation，不能凭时间或同工作区猜归属。用户选择 Agent 不构成自动计量成功。
 
 用量来自已绑定本项目的宿主实际 usage 或显式上报。上下文/工作流版本号不是模型 token。没有数据显示未采集；不按字数估算、不补零、不把并行无关任务算进来。子代理必须有可验证的会话或 usage 来源绑定；未能覆盖全部作者/审查调用时保持 PARTIAL。见计量说明登记来源、补报和封账。
 

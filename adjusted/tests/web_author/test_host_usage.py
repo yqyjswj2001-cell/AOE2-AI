@@ -103,6 +103,31 @@ class HostUsageTests(unittest.TestCase):
         self.assertEqual(status['auto_bound_child_count'],2)
         self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
 
+    def test_reused_codex_session_auto_binds_from_unique_current_activity(self):
+        codex=self.root/'.codex';self.env['CODEX_HOME']=str(codex)
+        codex.mkdir()
+        db=sqlite3.connect(codex/'state_5.sqlite')
+        db.execute('CREATE TABLE threads(id TEXT,cwd TEXT,created_at REAL,updated_at REAL)')
+        db.executemany('INSERT INTO threads VALUES (?,?,?,?)',[
+            ('current',str(self.workspace),self.start-100,self.start+2),
+            ('inactive',str(self.workspace),self.start-100,self.start-20)])
+        db.commit();db.close()
+        sessions=codex/'sessions/2026/09/23';sessions.mkdir(parents=True)
+        rows=[
+            {'timestamp':iso(self.start-100),'type':'session_meta','payload':{'id':'current'}},
+            {'type':'turn_context','payload':{'model':'fixture'}},
+            {'timestamp':iso(self.start-1),'type':'event_msg','payload':{'type':'token_count','info':{'total_token_usage':{'input_tokens':10,'output_tokens':0,'total_tokens':10}}}},
+            {'timestamp':iso(self.start+1),'type':'event_msg','payload':{'type':'token_count','info':{'total_token_usage':{'input_tokens':25,'output_tokens':0,'total_tokens':25}}}},
+        ]
+        (sessions/'rollout-fixture-current.jsonl').write_text(
+            '\n'.join(json.dumps(row) for row in rows)+'\n',encoding='utf-8')
+        auto=self.auto('codex',[])
+        status=auto.sync('3')
+        self.assertEqual(auto.state['bindings']['codex'],['current'])
+        self.assertEqual(auto.state['auto_bound_main']['codex'],'current')
+        self.assertEqual(self.meter.report()['tokens']['total_tokens'],15)
+        self.assertNotEqual(status['connection']['code'],'AUTO_SESSION_AMBIGUOUS')
+
     def test_cursor_ide_local_token_count_is_not_used_as_usage(self):
         self.cursor([('bubbleId:own-session:b1', {'type': 2, 'createdAt': iso(self.start+1),
             'tokenCount': {'inputTokens': 9000, 'outputTokens': 9000}, 'text': 'PRIVATE_CONTENT'})])
@@ -115,10 +140,20 @@ class HostUsageTests(unittest.TestCase):
         self.assertIn('CURSOR_IDE_USAGE_UNAVAILABLE', {g['code'] for g in status['gaps']})
         self.assertNotIn('PRIVATE_CONTENT', auto.path.read_text())
 
+    def test_cursor_hook_does_not_record_before_usage_authorization(self):
+        active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
+        active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
+            'project':str(self.project),'agent':'cursor','usage_authorized':False}),encoding='utf-8')
+        recorded=record_hook_payload({'conversation_id':'cursor-denied','hook_event_name':'afterAgentResponse',
+            'workspace_roots':[str(self.workspace)],'user_email':'dev@example.com','text':'PRIVATE'},
+            self.workspace,observed_at=self.start+1)
+        self.assertFalse(recorded)
+        self.assertFalse(hook_db_path(self.workspace).exists())
+
     def test_cursor_hook_identity_and_admin_events_are_exactly_scoped(self):
         active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
         active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
-            'project':str(self.project)}),encoding='utf-8')
+            'project':str(self.project),'agent':'cursor','usage_authorized':True}),encoding='utf-8')
         payload={'conversation_id':'cursor-conv-1','generation_id':'gen-1',
             'hook_event_name':'afterAgentResponse','workspace_roots':[str(self.workspace)],
             'user_email':'dev@example.com','model':'fixture-model','text':'PRIVATE_RESPONSE'}
@@ -155,7 +190,7 @@ class HostUsageTests(unittest.TestCase):
         self.cursor([])
         active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
         active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
-            'project':str(self.project)}),encoding='utf-8')
+            'project':str(self.project),'agent':'cursor','usage_authorized':True}),encoding='utf-8')
         record_hook_payload({'conversation_id':'cursor-conv-1','hook_event_name':'sessionStart',
             'workspace_roots':[str(self.workspace)],'user_email':'dev@example.com'},self.workspace,
             observed_at=self.start+1)

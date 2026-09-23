@@ -138,8 +138,8 @@ def make_server(controller, meta, port=0):
                 route = urlparse(self.path).path
                 if route == "/api/start":
                     return self._json(controller.start(payload))
-                if route == "/api/usage/bind-session":
-                    return self._json(controller.bind_usage_candidate(payload))
+                if route == "/api/usage/authorize":
+                    return self._json(controller.authorize_usage(payload))
                 if route == "/api/usage/cursor-admin":
                     return self._json(controller.refresh_cursor_admin_usage(payload))
                 if route == "/api/report/generate":

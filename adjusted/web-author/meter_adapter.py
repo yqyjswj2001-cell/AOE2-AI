@@ -44,6 +44,8 @@ GAP_MESSAGES = {
     "CURSOR_ADMIN_API_ERROR": "Cursor Admin API 刷新失败；未使用本地估算替代。",
     "CURSOR_HOOK_PROJECT_WAITING": "正在等待 Cursor 项目 Hook 自动确认当前 conversation；无需用户手动绑定。",
     "CURSOR_HOOK_PROJECT_AMBIGUOUS": "多个 Cursor 主 conversation 同时标记为当前项目，未自动猜选。",
+    "MULTIPLE_ACTIVE_SESSION_CANDIDATES": "检测到多个本轮活跃宿主会话，后台未猜选；不要求用户手动选择。",
+    "SESSION_ACTIVITY_NOT_PROVEN": "发现工作区会话，但尚不能证明哪一个属于本轮；后台继续观察。",
     "TASK_AGGREGATE_NOT_ATTRIBUTABLE": "任务有已折叠或子任务汇总，无法归属本轮，未重复计入。",
     "AUTO_CAPTURE_ERROR": "自动采集发生错误，当前只保留已记录小计。",
 }

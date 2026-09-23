@@ -182,20 +182,24 @@ def _issue_list(snapshot, usage, runtime, diagnostics, events, browser_observati
         code = str(gap.get("code") or "USAGE_GAP")
         add(code, "warning", "usage", str(gap.get("message") or code), {k: v for k, v in gap.items() if k != "message"})
 
-    if snapshot.get("request"):
-        coverage = usage.get("coverage")
-        if coverage != "HOST_REPORTED_COMPLETE":
-            add("USAGE_COVERAGE_" + str(coverage or "UNKNOWN"), "warning", "usage",
-                "Token 用量覆盖并非完整封账: " + str(coverage or "UNKNOWN"))
-        tokens = usage.get("tokens") or {}
-        if tokens.get("total_tokens") is None:
-            add("TOKEN_TOTAL_UNKNOWN", "warning", "usage", "本轮总 token 未取得可靠记录")
-        missing_duration = tokens.get("missing_duration_records")
-        if type(missing_duration) is int and missing_duration > 0:
-            add("USAGE_DURATION_MISSING", "warning", "usage", f"{missing_duration} 条用量记录缺少调用时长")
-        unknown_outcome = tokens.get("unknown_outcome_records")
-        if type(unknown_outcome) is int and unknown_outcome > 0:
-            add("USAGE_OUTCOME_UNKNOWN", "warning", "usage", f"{unknown_outcome} 条用量记录结果状态未知")
+    request = snapshot.get("request") or {}
+    if request:
+        if request.get("usage_authorized") is False:
+            add("USAGE_DISABLED_BY_USER", "info", "usage", "本轮用户选择不启用自动 token 计量")
+        else:
+            coverage = usage.get("coverage")
+            if coverage != "HOST_REPORTED_COMPLETE":
+                add("USAGE_COVERAGE_" + str(coverage or "UNKNOWN"), "warning", "usage",
+                    "Token 用量覆盖并非完整封账: " + str(coverage or "UNKNOWN"))
+            tokens = usage.get("tokens") or {}
+            if tokens.get("total_tokens") is None:
+                add("TOKEN_TOTAL_UNKNOWN", "warning", "usage", "本轮总 token 未取得可靠记录")
+            missing_duration = tokens.get("missing_duration_records")
+            if type(missing_duration) is int and missing_duration > 0:
+                add("USAGE_DURATION_MISSING", "warning", "usage", f"{missing_duration} 条用量记录缺少调用时长")
+            unknown_outcome = tokens.get("unknown_outcome_records")
+            if type(unknown_outcome) is int and unknown_outcome > 0:
+                add("USAGE_OUTCOME_UNKNOWN", "warning", "usage", f"{unknown_outcome} 条用量记录结果状态未知")
 
     unverified = [name for name, value in (runtime or {}).items() if str(value).lower() in {"unverified", "not_run", "unknown"}]
     if unverified:
@@ -236,6 +240,7 @@ def _markdown(report):
         f"- 脚本名：{request.get('script_name') or '尚未设置'}",
         f"- 模式：{request.get('mode') or '尚未设置'}",
         f"- 文明：{request.get('civilization') or '尚未设置'}",
+        f"- 用量授权：{'允许自动计量' if request.get('usage_authorized') is True else '本轮不计量' if request.get('usage_authorized') is False else '旧项目未记录'}",
         "",
         "## 问题汇总",
         "",

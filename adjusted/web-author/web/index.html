@@ -11,16 +11,29 @@
 <div class="intro"><div><h1>AOE2 AI</h1></div><span id="statusBadge" class="badge">正在读取</span></div>
 <p id="statusBanner" class="status-banner" role="status" aria-live="polite">正在读取当前项目…</p><p id="draftNotice" class="notice hidden" role="status"></p><p id="errorNotice" class="notice error hidden" role="alert"></p>
 <nav class="wizard-nav" aria-label="设置步骤"><ol>
-<li><button id="wizardNav0" type="button" data-step="0" aria-current="step"><span>01</span>游戏模式</button></li>
-<li><button id="wizardNav1" type="button" data-step="1" disabled><span>02</span>文明</button></li>
-<li><button id="wizardNav2" type="button" data-step="2" disabled><span>03</span>设置</button></li>
-<li><button id="wizardNav3" type="button" data-step="3" disabled><span>04</span>生成</button></li>
+<li><button id="wizardNav0" type="button" data-step="0" aria-current="step"><span>01</span>授权</button></li>
+<li><button id="wizardNav1" type="button" data-step="1" disabled><span>02</span>游戏模式</button></li>
+<li><button id="wizardNav2" type="button" data-step="2" disabled><span>03</span>文明</button></li>
+<li><button id="wizardNav3" type="button" data-step="3" disabled><span>04</span>设置</button></li>
+<li><button id="wizardNav4" type="button" data-step="4" disabled><span>05</span>生成</button></li>
 </ol></nav>
 <div id="workspace" class="workspace">
 <section class="panel config-panel" aria-labelledby="configTitle">
-<div class="panel-head"><div><p id="stepEyebrow" class="eyebrow">第一步 / 共四步</p><h2 id="configTitle" tabindex="-1">游戏模式</h2></div><span id="settingsState" class="muted">提交前可调整</span></div>
+<div class="panel-head"><div><p id="stepEyebrow" class="eyebrow">第一步 / 共五步</p><h2 id="configTitle" tabindex="-1">授权</h2></div><span id="settingsState" class="muted">提交前可调整</span></div>
 <form id="authorForm" novalidate><fieldset id="configFields" disabled>
-<section id="wizardPanel0" class="wizard-panel" aria-labelledby="modeTitle">
+<section id="wizardPanel0" class="wizard-panel" aria-labelledby="authorizationTitle">
+<h3 id="authorizationTitle" class="section-title">用量授权</h3>
+<p class="field-help authorization-lead">先选择本轮实际使用的 AI，并决定是否允许后台自动读取本轮真实 usage 与会话元数据。</p>
+<fieldset class="form-section agent-section"><legend>使用的 AI <span class="required">必选</span></legend><div id="agentOptions" class="agent-options"><p class="field-help">正在读取…</p></div><p id="agentHelp" class="field-help">用于统计本次用量。</p></fieldset>
+<fieldset class="form-section authorization-section"><legend>自动计量 <span class="required">必选</span></legend>
+<div class="authorization-options">
+<label class="authorization-option"><input type="radio" name="usage_auth" value="allow"><span><strong>允许自动计量</strong><small>后台自动识别本轮会话，只读取 usage、会话 ID、模型和时间等计量元数据；不读取聊天正文或凭据。</small></span></label>
+<label class="authorization-option"><input type="radio" name="usage_auth" value="decline"><span><strong>本轮不计量</strong><small>继续创作，但 token 保持未采集。</small></span></label>
+</div>
+<p id="authorizationStatus" class="field-help">授权只对本轮项目生效。</p>
+</fieldset>
+</section>
+<section id="wizardPanel1" class="wizard-panel" aria-labelledby="modeTitle" hidden>
 <h3 id="modeTitle" class="section-title">游戏模式</h3>
 <div class="mode-grid">
 <label class="mode-card"><input type="radio" name="mode" value="1v1" required><span><strong>1v1</strong><small>单挑 · 一对一较量</small></span><span class="mode-mark" aria-hidden="true">I : I</span></label>
@@ -31,7 +44,7 @@
 <label class="mode-card"><input type="radio" name="mode" value="ffa8"><span><strong>8 人混战</strong><small>八方独立 · 各自为战</small></span><span class="mode-mark" aria-hidden="true">VIII</span></label>
 </div>
 </section>
-<section id="wizardPanel1" class="wizard-panel" aria-labelledby="civTitle" hidden>
+<section id="wizardPanel2" class="wizard-panel" aria-labelledby="civTitle" hidden>
 <div class="civilization-toolbar"><div><h3 id="civTitle" class="section-title">文明</h3><p id="contentScope" class="field-help">正在读取标准版文明资料…</p></div><button id="autoCivilization" class="button secondary" type="button" aria-pressed="false">AI 选择</button></div>
 <input id="civilization" name="civilization" type="hidden" value="">
 <p id="civilizationHelp" class="civilization-help">点击盾徽选择文明。</p>
@@ -44,9 +57,8 @@
 </aside>
 </div><p id="selectedCivilization" class="selection-status" role="status" aria-live="polite">尚未选择文明</p>
 </section>
-<section id="wizardPanel2" class="wizard-panel" aria-labelledby="settingsTitle" hidden>
+<section id="wizardPanel3" class="wizard-panel" aria-labelledby="settingsTitle" hidden>
 <h3 id="settingsTitle" class="section-title">设置</h3>
-<fieldset class="form-section agent-section"><legend>使用的 AI <span class="required">必选</span></legend><div id="agentOptions" class="agent-options"><p class="field-help">正在读取…</p></div><p id="agentHelp" class="field-help">用于统计本次用量。</p></fieldset>
 <div class="field name-field"><label for="scriptName">脚本名 <span class="required">必填</span></label><input id="scriptName" name="script_name" type="text" maxlength="48" pattern="[A-Za-z][A-Za-z0-9_\-]{0,47}" autocomplete="off" spellcheck="false" required aria-describedby="nameHelp" placeholder="例如：Golden_Legion"><p id="nameHelp" class="field-help">以英文字母开头，可用数字、下划线和短横线，最多 48 位。</p></div>
 <fieldset class="form-section preferences-section"><legend>攻防倾向</legend><p class="field-help">0 防守 · 50 均衡 · 100 进攻</p><div id="ageSliders" class="age-sliders">
 <div class="age-row"><div class="age-heading"><label for="dark">黑暗时代</label><output id="darkValue" for="dark">50 · 均衡</output></div><input id="dark" name="dark" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>0 防守</span><span>50 均衡</span><span>100 进攻</span></div></div>
@@ -55,7 +67,7 @@
 <div class="age-row"><div class="age-heading"><label for="imperial">帝王时代</label><output id="imperialValue" for="imperial">50 · 均衡</output></div><input id="imperial" name="imperial" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>0 防守</span><span>50 均衡</span><span>100 进攻</span></div></div>
 </div><button id="resetPreferences" class="text-button" type="button">恢复为均衡</button></fieldset>
 </section>
-<section id="wizardPanel3" class="wizard-panel" aria-labelledby="reviewTitle" hidden>
+<section id="wizardPanel4" class="wizard-panel" aria-labelledby="reviewTitle" hidden>
 <div id="reviewBeforeStart">
 <h3 id="reviewTitle" class="section-title">确认设置</h3>
 <dl id="selectionSummary" class="selection-summary"></dl>
@@ -63,7 +75,7 @@
 </div>
 </section>
 </fieldset>
-<div id="wizardActions" class="wizard-actions"><button id="previousStep" class="button secondary hidden" type="button">上一步</button><span id="navigationHint" class="field-help">请选择一种对局模式。</span><button id="nextStep" class="button primary" type="button" disabled>下一步 · 选择文明</button></div>
+<div id="wizardActions" class="wizard-actions"><button id="previousStep" class="button secondary hidden" type="button">上一步</button><span id="navigationHint" class="field-help">请选择 AI 并确认本轮计量授权。</span><button id="nextStep" class="button primary" type="button" disabled>下一步 · 游戏模式</button></div>
 </form>
 
 <div id="generationDashboard" class="generation-dashboard" hidden>
@@ -85,10 +97,6 @@
 <div><span>未统计时间</span><strong id="usageUnobserved">尚未确定</strong></div>
 </div>
 <p id="usageCapture" class="capture-status" role="status">正在读取…</p>
-<section id="sessionBinding" class="session-binding hidden" aria-labelledby="sessionBindingTitle">
-<h4 id="sessionBindingTitle">用量会话</h4><p id="sessionBindingHelp" class="field-help">选择本次使用的会话。</p>
-<div class="session-binding-controls"><div class="field"><label for="usageSession">本次会话</label><select id="usageSession" aria-describedby="sessionBindingHelp"><option value="">请选择会话</option></select></div><button id="bindSessionButton" class="button secondary" type="button" disabled>连接会话</button></div><p id="sessionBindingNotice" class="field-help" role="status"></p>
-</section>
 <p id="usageCoverage" class="notice">尚未取得用量记录。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
 <p id="usageBreakdown" class="usage-detail">详细用量尚未采集。</p>
 <div class="table-scroll"><table><caption>各阶段用量与时间</caption><thead><tr><th scope="col">阶段</th><th scope="col">已记录 token</th><th scope="col">历时</th><th scope="col">失败 / 操作</th></tr></thead><tbody id="usageStages"><tr><td colspan="4">尚无阶段报告。</td></tr></tbody></table></div>

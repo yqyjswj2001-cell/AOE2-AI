@@ -13,7 +13,7 @@ python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-a
 python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 ```
 
-启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `wait / next` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按四步前进：选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。设置页选择本次实际使用的 AI Agent、脚本名和时代偏好。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
+启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `wait / next` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。设置页选择本次实际使用的 AI Agent、脚本名和时代偏好。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
 
 网页偏好不是参数答案；作者仍需根据卡片与事实填写。本地服务不是文件系统沙箱：源码隔离依靠仅向新作者交付隔离输入包，并限制作者读取范围。
 
@@ -39,7 +39,7 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 
 ## Agent 与计量接入
 
-选择 Agent 表示本轮实际运行宿主，不会由网页自动切换工具。自动采集、会话快照导入、SDK usage 上报按各宿主真实能力区分，见 [计量说明](METERING.md)。未开放真实用量的宿主明确显示缺口；上下文长度不是消耗。
+第一步选择 Agent，并明确授权“自动计量”或“本轮不计量”。授权后用量会话由后台/主 Agent 自动识别和登记，网页不再让用户选择 session；只有唯一可证明的本轮活跃会话才自动绑定，多候选时直接保留缺口。选择 Agent 不会由网页自动切换工具。自动采集、会话快照导入、SDK usage 上报按各宿主真实能力区分，见 [计量说明](METERING.md)。未开放真实用量的宿主明确显示缺口；上下文长度不是消耗。
 
 Cursor 另有可选官方链路：仓库项目 Hook 只记录 conversation_id 等元数据；若启动服务前设置 `CURSOR_ADMIN_API_KEY`，服务会把当前 conversation 自动归属到唯一活动项目并在后台低频刷新 Cursor Team Admin Usage Events，用户无需手动绑定或刷新。API key 不写入项目、网页或报告；无权限时不会回退用本机 tokenCount/上下文占用估算。
 

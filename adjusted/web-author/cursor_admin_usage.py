@@ -65,7 +65,8 @@ def _active_project(repo_root):
     project = value.get("project") if isinstance(value, dict) else None
     if value.get("schema") != "aoe2-cursor-active-project-v1" or project_id is None or not isinstance(project, str):
         return None
-    return {"project_id": project_id, "project": project}
+    return {"project_id": project_id, "project": project,
+            "agent": value.get("agent"), "usage_authorized": value.get("usage_authorized") is True}
 
 
 def _connect(path, readonly=False):
@@ -104,8 +105,10 @@ def record_hook_payload(payload, repo_root, observed_at=None):
     background = 1 if payload.get("is_background_agent") is True else 0
     session_start = 1 if event == "sessionStart" else 0
     active = _active_project(repo_root)
-    project_id = active["project_id"] if active else None
-    project_path = active["project"] if active else None
+    if not active or active.get("usage_authorized") is not True or active.get("agent") != "cursor":
+        return False
+    project_id = active["project_id"]
+    project_path = active["project"]
     path = hook_db_path(repo_root)
     db = _connect(path)
     try:

@@ -13,12 +13,24 @@ class WizardContractTests(unittest.TestCase):
   self.project=Path(self.temp.name)/'project';self.app=Controller(self.project,engine=FakeEngine(),meter_factory=FakeMeter)
  def payload(self,**extra):
   s=self.app.state();return dict(project_id=s['project_id'],expected_revision=s['revision'],mode='ffa8',civilization=self.app.civilizations[0]['id'],script_name='Fixture',preferences=dict(dark=50,feudal=50,castle=50,imperial=50),**extra)
- def test_agent_frozen_and_passed_to_meter(self):
-  state=self.app.start(self.payload(agent='cursor'))
+ def test_agent_and_usage_authorization_are_frozen_and_passed_to_meter(self):
+  auth=self.app.authorize_usage(self.payload(agent='cursor',usage_authorized=True))
+  self.assertEqual(auth['usage_authorization']['agent'],'cursor')
+  self.assertTrue(auth['usage_authorization']['authorized'])
+  state=self.app.start(self.payload(agent='cursor',usage_authorized=True))
   self.assertEqual(state['request']['agent'],'cursor')
+  self.assertTrue(state['request']['usage_authorized'])
   self.assertEqual(self.app.meter.identity['agent'],'cursor')
+  self.assertTrue(self.app.meter.identity['auto_capture'])
   self.assertEqual(self.app.meter.identity['workspace_root'],str(ROOT))
   self.assertEqual(self.app.next()['usage_connection']['agent'],'cursor')
+ def test_start_rejects_unconfirmed_automatic_usage_choice(self):
+  with self.assertRaises(ValueError):
+   self.app.start(self.payload(agent='cursor',usage_authorized=True))
+  self.assertFalse((self.project/'author-input').exists())
+ def test_usage_authorization_requires_boolean(self):
+  with self.assertRaises(ValueError):self.app.start(self.payload(agent='codex',usage_authorized='yes'))
+  self.assertFalse((self.project/'author-input').exists())
  def test_unknown_agent_rejected_before_export(self):
   with self.assertRaises(ValueError):self.app.start(self.payload(agent='made-up-host'))
   self.assertFalse((self.project/'author-input').exists())
@@ -30,19 +42,6 @@ class WizardContractTests(unittest.TestCase):
   self.assertEqual(again.data['task_sha256'],old)
   self.assertNotIn('agent',again.data['request'])
   self.assertEqual(again.meter.identity['agent'],'auto')
- def test_browser_bind_rejects_foreign_session_and_preserves_task(self):
-  class ScopedMeter(FakeMeter):
-   def report(self,include_records=False):
-    return {"state":"RUNNING","run_id":"fixture-run","auto_capture":{"selected_agent":"cursor","session_candidates":[{"agent":"cursor","session_id":"owned-session","workspace_match":True}]}}
-   def bind_sessions(self,sessions):self.bound=sessions;return self.report()
-  self.app=Controller(self.project,engine=FakeEngine(),meter_factory=ScopedMeter)
-  state=self.app.start(self.payload(agent='cursor'));frozen=self.app.data['task_sha256']
-  base={'project_id':state['project_id'],'expected_revision':state['revision'],'run_id':'fixture-run','agent':'cursor'}
-  with self.assertRaises(ValueError):self.app.bind_usage_candidate({**base,'session_id':'other-project'})
-  with self.assertRaises(ValueError):self.app.bind_usage_candidate({**base,'session_id':'owned-session','run_id':'another-run'})
-  self.app.bind_usage_candidate({**base,'session_id':'owned-session'})
-  self.assertEqual(self.app.data['usage_sessions'],{'cursor':['owned-session']})
-  self.assertEqual(self.app.data['task_sha256'],frozen)
  def test_skill_keeps_browser_interaction_user_owned(self):
   root=(ROOT/'SKILL.md').read_text(encoding='utf-8')
   detail=(ROOT/'adjusted/skills/aoe2-web-author/SKILL.md').read_text(encoding='utf-8')
@@ -65,13 +64,19 @@ class WizardContractTests(unittest.TestCase):
   self.assertNotIn('progressColumn',html+js)
   self.assertIn("$('authorForm').classList.toggle('hidden', finalRunning)",js)
   self.assertIn("$('generationDashboard').hidden = !finalRunning",js)
- def test_cursor_admin_is_background_and_hook_config_is_privacy_scoped(self):
+ def test_usage_authorization_is_first_and_session_selection_is_not_user_ui(self):
   html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
   js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
   hooks=json.loads((ROOT/'.cursor/hooks.json').read_text(encoding='utf-8'))
   hook_py=(ROOT/'.cursor/hooks/aoe2-usage.py').read_text(encoding='utf-8')
-  self.assertNotIn('cursorAdminRefresh',html+js)
-  self.assertIn("auto.selected_agent !== 'cursor'",js)
+  self.assertIn('<span>01</span>授权',html)
+  self.assertIn('name="usage_auth"',html)
+  self.assertIn('允许自动计量',html)
+  self.assertNotIn('sessionBinding',html+js)
+  self.assertNotIn('usageSession',html+js)
+  self.assertNotIn('bindSessionButton',html+js)
+  self.assertNotIn('/api/usage/bind-session',js)
+  self.assertIn("usage_authorized: usageConsent() === 'allow'",js)
   self.assertEqual(hooks['version'],1)
   self.assertIn('beforeSubmitPrompt',hooks['hooks'])
   self.assertIn('afterAgentResponse',hooks['hooks'])

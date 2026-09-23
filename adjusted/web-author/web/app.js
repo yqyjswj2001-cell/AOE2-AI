@@ -4,7 +4,7 @@
   const $ = id => document.getElementById(id);
   const AGES = ['dark', 'feudal', 'castle', 'imperial'];
   const MODES = ['1v1', '2v2', '3v3', '4v4', 'ffa4', 'ffa8'];
-  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v2';
+  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v3';
   const STATUS = {
     configuring: ['待开始', '完成设置后开始生成。'],
     selecting: ['选择文明', '正在选择文明。'],
@@ -18,8 +18,8 @@
   let project = null, draftLoaded = false, storageAvailable = true, dirty = false, networkError = false;
   let lastRequestSignature = null, civilizationSignature = null, agentSignature = null;
   let wizardStep = 0, previewCivilization = null, catalog = [], agents = [], catalogReady = false, agentsReady = false;
-  let lastUsage = null, bindingBusy = false, bindingSignature = null, reportBusy = false;
-  const STEP_NAMES = ['游戏模式', '文明', '设置', '生成'];
+  let lastUsage = null, reportBusy = false;
+  const STEP_NAMES = ['授权', '游戏模式', '文明', '设置', '生成'];
   const MODE_NAMES = {'1v1':'1v1 单挑','2v2':'2v2 团队战','3v3':'3v3 团队战','4v4':'4v4 团队战',ffa4:'4 人混战',ffa8:'8 人混战'};
   const finite = value => typeof value === 'number' && Number.isFinite(value);
   const integer = value => Number.isInteger(value) && value >= 0;
@@ -68,11 +68,31 @@
       $(age).setAttribute('aria-valuetext', value + '，' + stance(value));
     });
   }
+  function usageConsent() {
+    return document.querySelector('input[name="usage_auth"]:checked')?.value || '';
+  }
+  function authorizationReady() {
+    return agents.some(agent => agent.id === ($('agent')?.value || '')) && ['allow','decline'].includes(usageConsent());
+  }
+  function authorizationConfirmed() {
+    const auth = state?.usage_authorization;
+    return !!auth && auth.agent === ($('agent')?.value || '') &&
+      auth.authorized === (usageConsent() === 'allow');
+  }
+  function applyUsageAuthorization(auth) {
+    if (!auth || typeof auth.agent !== 'string' || typeof auth.authorized !== 'boolean') return;
+    if ($('agent') && agents.some(agent => agent.id === auth.agent)) $('agent').value = auth.agent;
+    document.querySelectorAll('input[name="usage_auth"]').forEach(input => {
+      input.checked = input.value === (auth.authorized ? 'allow' : 'decline');
+    });
+    renderAgentHelp();
+  }
   function selection() {
     return {
       mode: document.querySelector('input[name="mode"]:checked')?.value || '',
       civilization: $('civilization').value,
       agent: $('agent')?.value || '',
+      usage_authorized: usageConsent() === 'allow',
       script_name: $('scriptName').value,
       preferences: Object.fromEntries(AGES.map(age => [age, Number($(age).value)]))
     };
@@ -81,6 +101,10 @@
     document.querySelectorAll('input[name="mode"]').forEach(input => { input.checked = input.value === value.mode; });
     $('civilization').value = typeof value.civilization === 'string' ? value.civilization : '';
     if ($('agent')) $('agent').value = typeof value.agent === 'string' ? value.agent : '';
+    document.querySelectorAll('input[name="usage_auth"]').forEach(input => {
+      input.checked = typeof value.usage_authorized === 'boolean' &&
+        input.value === (value.usage_authorized ? 'allow' : 'decline');
+    });
     $('scriptName').value = typeof value.script_name === 'string' ? value.script_name : '';
     AGES.forEach(age => { $(age).value = integer(value.preferences?.[age]) && value.preferences[age] <= 100 ? value.preferences[age] : 50; });
     updateSliders();
@@ -91,9 +115,8 @@
     return p && Object.keys(p).length === AGES.length && AGES.every(age => integer(p[age]) && p[age] <= 100);
   }
   function validSelection(value) {
-    return MODES.includes(value.mode) && (state?.civilizations || []).length > 0 &&
+    return authorizationReady() && MODES.includes(value.mode) && (state?.civilizations || []).length > 0 &&
       (value.civilization === 'auto' || state.civilizations.some(c => c.id === value.civilization)) &&
-      agents.some(agent => agent.id === value.agent) &&
       /^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(value.script_name) && validPreferences(value.preferences);
   }
   function draftKey() { return 'aoe2.web-author.draft.' + project; }
@@ -117,11 +140,14 @@
     draftLoaded = true;
     try {
       const raw = localStorage.getItem(draftKey());
-      if (!raw) return;
+      if (!raw) {
+        applyUsageAuthorization(state.usage_authorization);
+        return;
+      }
       const draft = JSON.parse(raw), value = draft?.value;
       const allowedCiv = value?.civilization === '' || value?.civilization === 'auto' ||
         (state.civilizations || []).some(c => c.id === value?.civilization);
-      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
+      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v2', 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
           (value.mode !== '' && !MODES.includes(value.mode)) || !allowedCiv ||
           typeof value.script_name !== 'string' || value.script_name.length > 48 || !validPreferences(value.preferences)) {
         notice('draftNotice', '这份浏览器草稿与当前资料不匹配，未恢复。请重新设置。');
@@ -129,7 +155,8 @@
       }
       applySelection(value);
       if (value.agent && !agents.some(agent => agent.id === value.agent)) $('agent').value = '';
-      wizardStep = integer(draft.step) ? Math.min(draft.step, 3) : 0;
+      applyUsageAuthorization(state.usage_authorization);
+      wizardStep = integer(draft.step) ? Math.min(draft.step, 4) : 0;
       while (wizardStep > 0 && !canVisit(wizardStep)) wizardStep--;
       dirty = true;
       notice('draftNotice', '已恢复设置。');
@@ -151,10 +178,17 @@
   function canVisit(step) {
     if (state && state.status !== 'configuring') return true;
     const value = selection();
-    return step === 0 || (MODES.includes(value.mode) && (step === 1 || (selectedCivValid() && (step === 2 || validSelection(value)))));
+    if (step === 0) return true;
+    if (!authorizationReady() || !authorizationConfirmed()) return false;
+    if (step === 1) return true;
+    if (!MODES.includes(value.mode)) return false;
+    if (step === 2) return true;
+    if (!selectedCivValid()) return false;
+    if (step === 3) return true;
+    return step === 4 && validSelection(value);
   }
   function goStep(step, focus = true) {
-    if (!canVisit(step) || step < 0 || step > 3 || busy) return;
+    if (!canVisit(step) || step < 0 || step > 4 || busy) return;
     wizardStep = step; saveDraft(); syncActions();
     if (focus) {
       $('configTitle').focus({preventScroll: true});
@@ -166,10 +200,11 @@
     const civ = civData(value.civilization);
     const agent = agents.find(a => a.id === value.agent);
     const lines = [
+      ['使用的 AI', agent?.label || (value.agent ? value.agent : '未选择')],
+      ['用量授权', value.usage_authorized === true ? '允许自动计量' : value.usage_authorized === false ? '本轮不计量' : '未选择'],
       ['游戏模式', MODE_NAMES[value.mode] || '尚未选择'],
       ['文明', value.civilization === 'auto' ? '让 AI 选择' : civ?.name || value.civilization || '尚未选择'],
       ['脚本名', value.script_name || '尚未填写'],
-      ['使用的 AI', agent?.label || (value.agent ? value.agent : '未选择')],
       ['攻防倾向', AGES.map((age, i) => ['黑暗', '封建', '城堡', '帝王'][i] + ' ' + (integer(value.preferences?.[age]) ? value.preferences[age] : '未记录')).join(' · ')]
     ];
     $('selectionSummary').replaceChildren();
@@ -180,17 +215,17 @@
   }
   function syncActions() {
     const locked = state && state.status !== 'configuring';
-    document.body.classList.toggle('civilization-step', wizardStep === 1);
+    document.body.classList.toggle('civilization-step', wizardStep === 2);
     document.body.classList.toggle('is-configuring', state?.status === 'configuring');
     $('configFields').disabled = !editable();
-    $('startButton').disabled = !editable() || wizardStep !== 3 || !validSelection(selection());
+    $('startButton').disabled = !editable() || wizardStep !== 4 || !validSelection(selection());
     text('startButton', busy ? '正在提交…' : state?.status === 'completed' ? (state.build?.installable === false ? '文件已生成' : '完成') : locked ? '已开始' : '开始生成');
     $('startButton').setAttribute('aria-busy', String(busy));
     text('settingsState', state?.status === 'configuring' ? '设置已保存' : state ? '设置已确认' : '正在读取');
     text('startHint', !online ? '连接恢复后才能提交。' : state?.status === 'configuring' ? '确认后开始生成。' : '设置已确认。');
     text('configTitle', STEP_NAMES[wizardStep]);
-    text('stepEyebrow', ['第一步', '第二步', '第三步', '第四步'][wizardStep] + ' / 共四步');
-    for (let step = 0; step < 4; step++) {
+    text('stepEyebrow', ['第一步', '第二步', '第三步', '第四步', '第五步'][wizardStep] + ' / 共五步');
+    for (let step = 0; step < 5; step++) {
       const button = $('wizardNav' + step);
       $('wizardPanel' + step).hidden = wizardStep !== step;
       button.disabled = busy || !state || !canVisit(step);
@@ -198,20 +233,21 @@
       else button.removeAttribute('aria-current');
       button.classList.toggle('complete', step < wizardStep);
     }
-    const finalRunning = wizardStep === 3 && locked;
+    const finalRunning = wizardStep === 4 && locked;
     $('reviewBeforeStart').hidden = locked;
     $('authorForm').classList.toggle('hidden', finalRunning);
     $('generationDashboard').hidden = !finalRunning;
     $('wizardActions').classList.toggle('hidden', finalRunning);
     $('previousStep').classList.toggle('hidden', wizardStep === 0);
     $('previousStep').disabled = busy;
-    $('nextStep').classList.toggle('hidden', wizardStep === 3);
-    $('nextStep').disabled = busy || !state || !canVisit(wizardStep + 1);
-    text('nextStep', ['下一步 · 文明', '下一步 · 设置', '下一步 · 确认', ''][wizardStep]);
+    $('nextStep').classList.toggle('hidden', wizardStep === 4);
+    $('nextStep').disabled = busy || !state || (wizardStep === 0 ? !authorizationReady() : !canVisit(wizardStep + 1));
+    text('nextStep', ['下一步 · 游戏模式', '下一步 · 文明', '下一步 · 设置', '下一步 · 确认', ''][wizardStep]);
     text('navigationHint', locked ? '设置已确认。' :
-      wizardStep === 0 ? '请选择一种对局模式。' :
-      wizardStep === 1 ? (selectedCivValid() ? '文明已选择。' : '选择文明或使用 AI 选择。') :
-      wizardStep === 2 ? '选择 AI 并填写脚本名。' : '可返回修改。');
+      wizardStep === 0 ? (authorizationReady() ? '授权设置已确认。' : '请选择 AI，并允许自动计量或选择本轮不计量。') :
+      wizardStep === 1 ? '请选择一种对局模式。' :
+      wizardStep === 2 ? (selectedCivValid() ? '文明已选择。' : '选择文明或使用 AI 选择。') :
+      wizardStep === 3 ? '填写脚本名和攻防倾向。' : '可返回修改。');
     renderSummary(); updateCivilizationSelection();
     if ($('generateReportButton')) {
       $('generateReportButton').disabled = reportBusy || !online || !state || stopped;
@@ -348,9 +384,16 @@
   }
   function renderAgentHelp() {
     const agent = agents.find(agent => agent.id === $('agent')?.value);
-    const labels = {local_session:'绑定本机会话后采集',local_telemetry:'绑定本轮遥测后采集',sdk_import:'需要 SDK 用量导入',explicit_import:'需要真实用量导入',explicit_binding:'需要明确绑定会话'};
-    text('agentHelp', agent ? [labels[agent.metering_mode] || '', agent.description || agent.help || '', typeof agent.requirements === 'string' ? agent.requirements : '', '用于记录本次用量。'].filter(Boolean).join(' ') :
-      agentsReady ? '用于统计本次用量。' : 'AI 列表暂不可用，请稍后再试。');
+    const labels = {local_session:'可自动读取本机真实 usage',local_telemetry:'可读取本轮官方遥测',sdk_import:'需要 SDK 真实 usage',explicit_import:'需要额外真实 usage 来源',explicit_binding:'由后台自动确认会话'};
+    let access = '';
+    if (agent?.id === 'cursor') access = state?.usage_access?.cursor_admin_configured ? 'Cursor 官方 Team Usage API 已连接。' : 'Cursor Team Usage API 当前未连接；授权后仍会保留其他真实 usage 来源和缺口。';
+    if (agent?.id === 'copilot') access = state?.usage_access?.copilot_telemetry_configured ? 'Copilot 本轮遥测文件已配置。' : 'Copilot 本轮遥测当前未配置。';
+    text('agentHelp', agent ? [labels[agent.metering_mode] || '', agent.description || agent.help || '', access, '允许自动计量后，后台自己识别会话；不会要求你选择 session。'].filter(Boolean).join(' ') :
+      agentsReady ? '选择本轮实际使用的 AI。' : 'AI 列表暂不可用，请稍后再试。');
+    const consent = usageConsent();
+    text('authorizationStatus', !agent ? '先选择本轮实际使用的 AI。' :
+      consent === 'allow' ? '已允许本轮自动计量。' :
+      consent === 'decline' ? '本轮不读取 usage，token 将保持未采集。' : '请选择是否允许本轮自动计量。');
   }
   function renderCivilizationDecision() {
     const actual = state.request?.civilization;
@@ -402,7 +445,7 @@
     } else if (known) {
       clearDraft();
       const signature = JSON.stringify(state.request);
-      if (signature !== lastRequestSignature && state.request) { applySelection(state.request); wizardStep = 3; lastRequestSignature = signature; }
+      if (signature !== lastRequestSignature && state.request) { applySelection(state.request); wizardStep = 4; lastRequestSignature = signature; }
     }
     const position = {configuring: 0, selecting: 1, authoring: 2, invalid: 3, ready: 3, rendering: 4, completed: 5}[state.status];
     ['stepConfig', 'stepSelect', 'stepAuthor', 'stepValidate', 'stepBuild'].forEach((id, index) => {
@@ -432,32 +475,9 @@
     if (tag === 'th') element.scope = 'row';
     return element;
   }
-  function renderSessionBinding(report) {
-    const auto = report?.auto_capture || {};
-    const candidates = (Array.isArray(auto.session_candidates) ? auto.session_candidates : []).filter(item => typeof item?.session_id === 'string' && item.session_id && item.workspace_match !== false);
-    const visible = auto.selected_agent !== 'cursor' && auto.bound_session_count === 0 && candidates.length > 0;
-    $('sessionBinding').classList.toggle('hidden', !visible);
-    const signature = JSON.stringify([project, auto.selected_agent, candidates]);
-    if (bindingSignature !== signature) {
-      const previous = $('usageSession').value;
-      $('usageSession').replaceChildren(new Option('请选择本轮会话', ''));
-      candidates.forEach(candidate => {
-        const rawTime = candidate.updated_at ?? candidate.created_at;
-        const when = rawTime == null || rawTime === '' ? null : new Date(typeof rawTime === 'number' ? rawTime * 1000 : rawTime);
-        const timeLabel = when && !Number.isNaN(when.getTime()) ? when.toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '时间未记录';
-        $('usageSession').append(new Option(timeLabel + ' · ' + (candidate.is_child ? '子代理 · ' : '') + candidate.session_id.slice(-8), candidate.session_id));
-      });
-      if (candidates.some(candidate => candidate.session_id === previous)) $('usageSession').value = previous;
-      bindingSignature = signature;
-    }
-    $('usageSession').disabled = bindingBusy || !online || stopped;
-    $('bindSessionButton').disabled = bindingBusy || !online || stopped || !visible || !$('usageSession').value || !auto.selected_agent || !report.run_id;
-    $('bindSessionButton').setAttribute('aria-busy', String(bindingBusy));
-    text('bindSessionButton', bindingBusy ? '正在连接…' : '连接会话');
-  }
   function renderUsage(report) {
     if (!report || typeof report !== 'object') return;
-    lastUsage = report; renderSessionBinding(report);
+    lastUsage = report;
     const tokens = report.tokens || {}, time = report.time || {}, auto = report.auto_capture || {};
     text('usageState', {RUNNING: '记录中', COMPLETED: '已完成', SESSION_CLOSED: '已关闭', ABORTED: '已中止'}[report.state] || '等待用量记录');
     text('usageTokens', number(tokens.total_tokens)); text('usageElapsed', duration(time.elapsed_seconds));
@@ -476,7 +496,7 @@
     const selectedAgent = agents.find(agent => agent.id === (auto.selected_agent || state?.request?.agent));
     const agentLabel = selectedAgent?.label || (auto.selected_agent || state?.request?.agent ? (auto.selected_agent || state.request.agent) : '未选择宿主');
     const message = typeof connection.message === 'string' ? connection.message : captureLabel || '等待采集连接信息';
-    const action = typeof connection.action_label === 'string' ? connection.action_label : ({bind_session:'请选择本次会话。', import_usage:'请导入本次用量。', wait_for_usage:'等待用量记录。', enable_telemetry:'请开启用量记录。', select_agent:'请先选择使用的 AI。'}[connection.action] || '');
+    const action = typeof connection.action_label === 'string' ? connection.action_label : ({import_usage:'需要额外真实 usage 来源。', wait_for_usage:'等待自动识别或用量记录。', enable_telemetry:'请开启用量记录。', select_agent:'请先选择使用的 AI。'}[connection.action] || '');
     text('usageCapture', 'AI：' + agentLabel + '。' + message + (action ? ' ' + action : ''));
     $('usageCapture').className = 'capture-status ' + (String(auto.status || '').startsWith('CONNECTED') ? 'connected' : 'attention');
     text('usageCoverage', coverage);
@@ -558,7 +578,24 @@
   }
   document.querySelectorAll('.wizard-nav button').forEach(button => button.addEventListener('click', () => goStep(Number(button.dataset.step))));
   $('previousStep').addEventListener('click', () => goStep(wizardStep - 1));
-  $('nextStep').addEventListener('click', () => goStep(wizardStep + 1));
+  $('nextStep').addEventListener('click', async () => {
+    if (wizardStep !== 0) { goStep(wizardStep + 1); return; }
+    if (!editable() || !authorizationReady()) return;
+    busy = true; syncActions(); notice('errorNotice', '');
+    try {
+      const value = selection();
+      const next = await api('/api/usage/authorize', {method:'POST', body:JSON.stringify({
+        project_id:project, expected_revision:state.revision,
+        agent:value.agent, usage_authorized:value.usage_authorized
+      })});
+      validateState(next); state = next; wizardStep = 1;
+    } catch (error) {
+      const message = error.name === 'AbortError' ? '授权提交超时，请重试。' : error.message;
+      notice('errorNotice', message); rememberDeveloperIssue('usage_authorization', message);
+    } finally {
+      busy = false; saveDraft(); syncActions();
+    }
+  });
   $('autoCivilization').addEventListener('click', () => chooseCivilization('auto'));
   $('civilizationGrid').addEventListener('pointerleave', () => showCivilization(document.activeElement?.dataset.civilization || $('civilization').value || null));
   $('civilizationGrid').addEventListener('keydown', event => {
@@ -580,26 +617,6 @@
   $('resetPreferences').addEventListener('click', () => {
     if (!editable()) return;
     AGES.forEach(age => { $(age).value = 50; }); updateSliders(); saveDraft(); syncActions();
-  });
-  $('usageSession').addEventListener('change', () => { if (lastUsage) renderSessionBinding(lastUsage); });
-  $('bindSessionButton').addEventListener('click', async () => {
-    const auto = lastUsage?.auto_capture || {}, sessionId = $('usageSession').value;
-    if (bindingBusy || !online || stopped || !sessionId || auto.bound_session_count !== 0 ||
-        !auto.session_candidates?.some(candidate => candidate.session_id === sessionId && candidate.workspace_match !== false)) return;
-    bindingBusy = true; text('sessionBindingNotice', '正在连接已选会话…'); renderSessionBinding(lastUsage);
-    try {
-      await api('/api/usage/bind-session', {method:'POST', body:JSON.stringify({
-        project_id:project, expected_revision:state.revision, run_id:lastUsage.run_id, agent:auto.selected_agent, session_id:sessionId
-      })});
-      text('sessionBindingNotice', '会话已连接。');
-    } catch (error) {
-      const message = error.name === 'AbortError' ? '连接超时，请重试。' : error.message;
-      text('sessionBindingNotice', message);
-      rememberDeveloperIssue('usage_binding', message);
-    } finally {
-      await refresh(); bindingBusy = false;
-      if (lastUsage) renderSessionBinding(lastUsage);
-    }
   });
   $('generateReportButton').addEventListener('click', async () => {
     if (reportBusy || !online || !state || !project || stopped) return;
@@ -641,7 +658,7 @@
   $('refreshButton').addEventListener('click', () => { if (!stopped) { notice('errorNotice', ''); refresh(); } });
   $('authorForm').addEventListener('submit', async event => {
     event.preventDefault();
-    if (wizardStep !== 3) { if (editable()) goStep(wizardStep + 1); return; }
+    if (wizardStep !== 4) { if (editable()) goStep(wizardStep + 1); return; }
     const value = selection();
     if (!editable() || !validSelection(value)) return;
     busy = true; syncActions(); notice('errorNotice', '');

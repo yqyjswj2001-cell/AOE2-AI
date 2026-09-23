@@ -244,7 +244,12 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(request("GET", "/api/state", headers={"Origin": "http://evil.example"})[0], 403)
             self.assertEqual(request("GET", "/api/state", headers={"Host": "evil.example"})[0], 403)
             self.assertEqual(request("GET", "/../../official/raw/Promisory/units.per")[0], 404)
-            task = self.payload(mode="1v1", civilization="Synthetic", script_name="Fixture",
+            auth = self.payload(agent="codex", usage_authorized=True)
+            self.assertEqual(request("POST", "/api/usage/authorize", auth)[0], 403)
+            self.assertEqual(request("POST", "/api/usage/authorize", auth,
+                {"Origin": f"http://127.0.0.1:{server.server_port}"})[0], 200)
+            task = self.payload(mode="1v1", civilization="Synthetic", script_name="Fixture", agent="codex",
+                                usage_authorized=True,
                                 preferences={age: 50 for age in ("dark", "feudal", "castle", "imperial")})
             self.assertEqual(request("POST", "/api/start", task)[0], 403)
             self.assertEqual(request("POST", "/api/start", task, {"Origin": f"http://127.0.0.1:{server.server_port}"})[0], 200)
