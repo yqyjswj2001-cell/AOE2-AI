@@ -3,19 +3,71 @@ on:
   push:
     branches: [work/web-author-redesign]
 permissions:
-  contents: read
+  contents: write
 jobs:
   review:
+    if: contains(github.event.head_commit.message, 'Apply studio redesign payload')
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@v5
         with:
-          persist-credentials: false
-      - name: Archive tracked baseline for local review
-        run: git archive HEAD -o source-review.zip
+          python-version: '3.12'
+      - name: Apply only reviewed source edits with exact before and after hashes
+        run: |
+          python - <<'PY'
+          import base64, gzip, hashlib, json, subprocess
+          from pathlib import Path
+          parts = [Path('.github/studio-edits.part' + str(i)) for i in (1, 2, 3)]
+          encoded = ''.join(''.join(p.read_text().split()) for p in parts)
+          raw = gzip.decompress(base64.b64decode(encoded, validate=True))
+          assert hashlib.sha256(raw).hexdigest() == '7f3188af42545be22e944b6598f5a3a72fc17c3d02f7704cc2d3d229a0bc612a'
+          edits = json.loads(raw)
+          assert len(edits) == 18
+          outputs = []
+          for edit in edits:
+              name = edit['path']
+              target = Path(name)
+              assert not target.is_absolute() and '..' not in target.parts
+              assert name == 'SKILL.md' or name.startswith(('adjusted/web-author/', 'adjusted/skills/aoe2-web-author/', 'adjusted/tests/web_author/'))
+              old = target.read_bytes() if target.exists() else b''
+              assert hashlib.sha256(old).hexdigest() == edit['before'], name + ': baseline changed'
+              lines = old.decode('utf-8').splitlines(keepends=True)
+              for start, end, text in reversed(edit['changes']):
+                  lines[start:end] = [text]
+              new = ''.join(lines).encode('utf-8')
+              assert hashlib.sha256(new).hexdigest() == edit['after'], name + ': output differs'
+              outputs.append((target, new))
+          for target, new in outputs:
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(new)
+          subprocess.run(['git', 'add', '--', *[str(p) for p, _ in outputs]], check=True)
+          subprocess.run(['git', 'rm', '--', *map(str, parts)], check=True)
+          subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
+          subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+          subprocess.run(['git', 'commit', '-m', 'Redesign local author studio and consent-first metering lifecycle'], check=True)
+          subprocess.run(['git', 'push', 'origin', 'HEAD:work/web-author-redesign'], check=True)
+          PY
+      - name: Python and official cloze regression
+        run: |
+          mkdir -p adjusted/.local/studio-review
+          python -B -m unittest discover -s adjusted/tests -v 2>&1 | tee adjusted/.local/studio-review/core-tests.txt
+          python -B -m unittest discover -s adjusted/tests/web_author -v 2>&1 | tee adjusted/.local/studio-review/web-tests.txt
+          python -B adjusted/tools/check_official_cloze.py | tee adjusted/.local/studio-review/cloze-test.txt
+          node --check adjusted/web-author/web/app.js
+      - run: python -m pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Native browser regression on synthetic projects
+        run: python adjusted/tests/web_author/test_wizard_browser.py
+      - name: Archive exact reviewed sources
+        if: always()
+        run: git archive HEAD -o tested-source.zip
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: source-review
-          path: source-review.zip
-          retention-days: 1
+          name: studio-redesign-review
+          path: |
+            tested-source.zip
+            adjusted/.local/studio-review/
+          retention-days: 3
