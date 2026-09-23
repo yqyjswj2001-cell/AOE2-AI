@@ -360,6 +360,8 @@ class Controller:
         if not self.data.get("request"):
             return
         selecting = self._selection_pending()
+        previous_status = self.data["status"]
+        previous_errors = list((self.data.get("progress") or {}).get("errors") or [])
         try:
             _, current, progress, _ = self._answers()
             if self.engine.source_digest() != self.data["fixed_sha256"]:
@@ -382,6 +384,10 @@ class Controller:
             self.data["status"] = next_status
             self.data["revision"] += 1
             self._save()
+            if source_error and (previous_status != "invalid" or previous_errors != progress["errors"]):
+                self._dev_event("workflow", "input_invalid", "error",
+                                "作者输入或答案结构检查失败。",
+                                {"errors": list(progress["errors"])})
         elif self.data["status"] in {"authoring", "configuring", "selecting"} and self.data["progress"] != progress:
             self.data["progress"] = progress
             self._save()
@@ -390,6 +396,8 @@ class Controller:
             self.data["progress"]["errors"] = ["Delivery files changed after build"]
             self.data["revision"] += 1
             self._save()
+            self._dev_event("workflow", "delivery_changed", "error",
+                            "构建完成后交付文件发生变化，原构建已失效。")
 
     def usage(self, include_records=False):
         if self.meter:
