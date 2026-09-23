@@ -59,7 +59,7 @@ python -X utf8 -B adjusted/web-author/web_session.py choose-civilization --proje
 python -X utf8 -B tools/query_strategy_cards.py --module gatherers --groups
 python -X utf8 -I -B adjusted/tools/query_creator_facts.py civilization Portuguese
 ```
-命令在隔离输入包中运行。遇到“能不能填 0、范围是什么、和哪些键联动”时先查 PARAMETER_CONSTRAINTS.json：它只记录当前静态校验能证明的规则；zero_rule=allowed_by_static_rule 只表示机械校验允许 0，不表示策略上应该填 0，unspecified 则不能自行推断。资料 UNKNOWN 时指出缺口；不要因缺资料读取固定实现。
+命令在隔离输入包中运行。遇到“能不能填 0、范围是什么、和哪些键联动”时先查 PARAMETER_CONSTRAINTS.json：required_for_delivery 只表示生成完整脚本必须给值，runtime_applicability=not_proven 表示并未证明该分支本局会触发；zero_rule=allowed_by_static_rule 只表示机械校验允许 0，不表示策略上应该填 0，unspecified 则不能自行推断。资料 UNKNOWN 时指出缺口；不要因缺资料读取固定实现。
 
 ## 检查与交付
 

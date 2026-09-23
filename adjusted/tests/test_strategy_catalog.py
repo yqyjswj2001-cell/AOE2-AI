@@ -33,6 +33,8 @@ class StrategyClassificationTests(unittest.TestCase):
         fixed={r['key'] for p in self.catalog['modules'].values() for r in p['parameters'] if r['decision']=='fixed'}
         self.assertEqual(set(contracts['by_key']),dynamic)
         self.assertFalse(set(contracts['by_key']) & fixed)
+        self.assertTrue(contracts['by_key']['ORB_ATTACK_GROUP_001']['required_for_delivery'])
+        self.assertEqual(contracts['by_key']['ORB_ATTACK_GROUP_001']['runtime_applicability'],'not_proven')
         self.assertEqual(contracts['by_key']['ORB_ATTACK_GROUP_001']['zero_rule'],'forbidden')
         self.assertEqual(contracts['by_key']['ORB_ATTACK_GROUP_003']['zero_rule'],'allowed_by_static_rule')
         self.assertTrue(all(not (set(c['keys']) & fixed) for c in contracts['constraints']))
