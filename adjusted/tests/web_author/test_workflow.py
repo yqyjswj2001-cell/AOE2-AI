@@ -62,6 +62,20 @@ class FakeEngine:
                 raise WorkflowError("Synthetic constraint: positive integers")
         for index in range(36):
             (out / f"module{index}.per").write_text("; SYNTHETIC FIXTURE ONLY\n", encoding="utf-8")
+    def package(self, modules, script_name, output):
+        ai_root = output / "resources/_common/ai"
+        module_root = ai_root / script_name
+        module_root.mkdir(parents=True)
+        for source in modules.glob("*.per"):
+            (module_root / source.name).write_bytes(source.read_bytes())
+        (ai_root / (script_name + ".ai")).write_bytes(b"")
+        (ai_root / (script_name + ".per")).write_text(
+            '(load "' + script_name + '\\\\module0")\n', encoding="utf-8")
+        return {"entrypoint_validation": "PASS", "official_entrypoint_sha256": "synthetic",
+                "loaded_modules": ["module0.per"],
+                "unreferenced_modules": [f"module{i}.per" for i in range(1, 36)],
+                "ai_root": "resources/_common/ai",
+                "entrypoint": "resources/_common/ai/" + script_name + ".per"}
 
 
 class WorkflowTests(unittest.TestCase):
@@ -112,7 +126,11 @@ class WorkflowTests(unittest.TestCase):
         result = self.app.build(self.payload())
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["build"]["modules"], 36)
-        self.assertFalse(result["build"]["installable"])
+        self.assertTrue(result["build"]["installable"])
+        self.assertEqual(result["build"]["artifact_kind"], "aoe2de_ai_package")
+        self.assertEqual(result["build"]["entrypoint_validation"], "PASS")
+        self.assertTrue((Path(result["build"]["path"]) / "resources/_common/ai/SYNTHETIC.ai").is_file())
+        self.assertTrue((Path(result["build"]["path"]) / "resources/_common/ai/SYNTHETIC.per").is_file())
         self.assertEqual(result["build"]["parser_load"], "Unverified")
         self.assertFalse(self.app.meter.closed, "Build must leave time for usage backfill")
         old_path = Path(result["build"]["path"])
@@ -129,7 +147,7 @@ class WorkflowTests(unittest.TestCase):
         self.fill()
         self.app.validate(self.payload())
         build = self.app.build(self.payload())["build"]
-        file = next((Path(build["path"]) / "SYNTHETIC").glob("*.per"))
+        file = next((Path(build["path"]) / "resources/_common/ai/SYNTHETIC").glob("*.per"))
         file.write_text("altered", encoding="utf-8")
         self.assertEqual(self.app.state()["status"], "invalid")
         self.assertIsNone(self.app.state()["build"])

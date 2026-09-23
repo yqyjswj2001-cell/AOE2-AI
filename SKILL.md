@@ -13,4 +13,4 @@ description: 使用完整 AOE2-AI 仓库启动网页、选择模式与文明，�
 
 作者必须是独立的新上下文，仅给本轮隔离输入和答卷目录；不得给官方固定源码、模板、分类表或官方答案。宿主无法创建独立作者时说明能力缺口，不用已读固定实现的主代理冒充作者。
 
-运行产物仅放 adjusted/.local/author-projects/。实际创作数量由本轮 manifest 决定；保留未知 token 和未覆盖来源。当前产物为模块包，不能声称已经可安装、通过游戏加载或实战验证。
+运行产物仅放 adjusted/.local/author-projects/。实际创作数量由本轮 manifest 决定；保留未知 token 和未覆盖来源。成功 build 可生成带独立 .ai/.per 入口的安装结构，但不能声称已经实际安装、通过游戏 Parser/Load 或实战验证。

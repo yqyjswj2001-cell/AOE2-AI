@@ -72,7 +72,9 @@ python -X utf8 -B adjusted/web-author/web_session.py build --project <名称>
 
 校验缺项或类型错误时读取项目 tmp/answer-diagnostics.json，把其中具体文件和参数键交给同一作者修正；不要只转述“未填完整”。其他错误只反馈参数键、类型、范围或关联要求，不要反馈官方参考值或固定源码。用现有 renderer 机械代入，不编译另一套策略语言。不能把 null 填零或默默回退默认值。完成时返回真实交付目录、哈希回执和静态结果。
 
-当前 build 是 36 个模块的交付包，不含独立游戏入口；`installable=false`。不要把模块交付声称为游戏已安装、Parser/Load 通过、完整对局或强度通过。游戏验证另需用户授权。
+build 会从本机 AoE2DE 安装目录读取官方 `PromiDE.per2`，核对其实际引用模块与仓库 `official/raw/Promisory/` 基线逐字节一致，再生成同名空 `.ai`、主 `.per`、36 个模块和 `resources/_common/ai` 安装结构。找不到入口时设置 `AOE2DE_PROMIDE_PER2` 指向游戏的 `resources/_common/drs/gamedata_x2/PromiDE.per2`；基线版本不一致时停止构建，不能猜加载顺序或混用不同补丁文件。
+
+成功 build 标记 `installable=true` 仅表示安装结构和入口完整。不要把它声称为已经安装、Parser/Load 通过、完整对局或强度通过；这些游戏验证仍需用户授权。
 
 ## 用量与结束
 

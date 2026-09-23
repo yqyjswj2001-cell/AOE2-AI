@@ -15,6 +15,7 @@ import uuid
 
 from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
+from installable_ai import InstallableAIError, package_installable_ai
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -116,6 +117,7 @@ class RealEngine:
         files = [safe_path(path) for directory, pattern in groups for path in sorted(directory.glob(pattern))]
         files += [ROOT / "adjusted/cloze/classification/parameters.json", HERE / "standard-edition.json", HERE / "civilizations.py"]
         files += [TOOLS / name for name in ("render_per_cloze.py", "strategy_catalog.py", "cloze_boundary.py", "build_strategy_input.py")]
+        files += [HERE / "installable_ai.py"]
         if len(list((ROOT / "official/raw/Promisory").glob("*.per"))) != 36:
             raise WorkflowError("Expected 36 fixed source modules")
         return digest(json_bytes({str(path.relative_to(ROOT)): digest(safe_path(path).read_bytes()) for path in files}))
@@ -130,6 +132,11 @@ class RealEngine:
                 (out / source.name).write_bytes(safe_path(source).read_bytes())
         if len(list(out.glob("*.per"))) != 36:
             raise WorkflowError("Delivery must contain all 36 modules")
+
+    def package(self, modules, script_name, output):
+        return package_installable_ai(
+            modules, script_name, output, ROOT / "official/raw/Promisory"
+        )
 
 
 class Controller:
@@ -527,22 +534,30 @@ class Controller:
                 build_id = "build-" + uuid.uuid4().hex[:12]
                 output = safe_path(self.project / "delivery" / build_id)
                 output.mkdir(parents=True)
-                module_root = output / self.data["request"]["script_name"]
-                module_root.mkdir()
-                files = {}
-                for source in sorted(modules.glob("*.per")):
-                    target = module_root / source.name
-                    target.write_bytes(source.read_bytes())
-                    files[target.relative_to(output).as_posix()] = digest(target.read_bytes())
-                receipt = {"schema": "aoe2-web-author-delivery-v1", "project_id": self.data["project_id"],
-                           "build_id": build_id, "script_name": self.data["request"]["script_name"],
+                script_name = self.data["request"]["script_name"]
+                package = self.engine.package(modules, script_name, output)
+                files = {path.relative_to(output).as_posix(): digest(path.read_bytes())
+                         for path in output.rglob("*") if path.is_file()}
+                receipt = {"schema": "aoe2-web-author-delivery-v2", "project_id": self.data["project_id"],
+                           "build_id": build_id, "script_name": script_name,
                            "answers_sha256": signature, "fixed_sha256": self.data["fixed_sha256"],
-                           "input_sha256": self.data["input_sha256"], "files": files, "modules": len(files),
-                           "artifact_kind": "parameter_modules", "installable": False,
-                           "entrypoint_status": "not_included", "static_validation": "PASS",
-                           "parser_load": "Unverified", "smoke": "Unverified", "full_game": "Unverified", "strength": "Unverified"}
+                           "input_sha256": self.data["input_sha256"], "files": files, "modules": 36,
+                           "artifact_kind": "aoe2de_ai_package", "installable": True,
+                           "entrypoint_status": "included", "entrypoint_validation": package["entrypoint_validation"],
+                           "entrypoint_source_sha256": package["official_entrypoint_sha256"],
+                           "loaded_modules": package["loaded_modules"],
+                           "unreferenced_modules": package["unreferenced_modules"],
+                           "ai_root": package["ai_root"], "entrypoint": package["entrypoint"],
+                           "static_validation": "PASS", "parser_load": "Unverified",
+                           "smoke": "Unverified", "full_game": "Unverified", "strength": "Unverified"}
                 atomic_json(output / "receipt.json", receipt)
-                (output / "README.md").write_text("36 个参数化模块交付。未附主入口，不是可安装 AI 包。\n静态校验 PASS；Parser/Load、Smoke、完整对局及强度均为 Unverified。\n", encoding="utf-8")
+                (output / "README.md").write_text(
+                    "AOE2 DE 可安装 AI 包。将 resources 目录作为本地模组内容；"
+                    "也可将 resources/_common/ai 下的内容复制到游戏 AI 目录。\n"
+                    "已生成同名 .ai、主 .per 和 36 个模块。入口来自本机游戏 PromiDE.per2，"
+                    "且入口引用的官方模块已与仓库 official/raw 基线逐字节核对。\n"
+                    "静态入口检查 PASS；游戏 Parser/Load、Smoke、完整对局及强度仍为 Unverified。\n",
+                    encoding="utf-8")
                 if self._answers()[1] != signature or self.engine.source_digest() != self.data["fixed_sha256"]:
                     raise WorkflowError("Answers or source changed before delivery; the new directory is not a valid build")
                 artifact_hashes = {path.relative_to(output).as_posix(): digest(path.read_bytes())
@@ -553,6 +568,13 @@ class Controller:
                 self.data["revision"] += 1
                 self._save()
                 return self.next()
+            except InstallableAIError:
+                if 'output' in locals() and output.exists():
+                    shutil.rmtree(output)
+                self.data.update(status="ready", build=None)
+                self.data["revision"] += 1
+                self._save()
+                raise
             except (OSError, ValueError):
                 self.data.update(status="invalid", build=None, validation=None)
                 self.data["revision"] += 1

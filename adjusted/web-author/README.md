@@ -29,7 +29,7 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 
 ## 验证边界
 
-当前交付是参数渲染后的 36 个模块，未含游戏主入口，不能直接称为可安装 AI。Parser/Load、实机对局和强度均为 Unverified。本功能不启动或安装游戏。
+构建会使用本机游戏的官方 PromiDE.per2 作为加载顺序来源，并要求它引用的官方 Promisory 模块与仓库冻结基线逐字节一致；随后生成同名 .ai、主 .per、36 个模块及 resources/_common/ai 目录，作为可安装包。若找不到游戏入口或基线版本不一致则拒绝构建，不猜加载顺序。Parser/Load、实机开局、完整对局和强度仍为 Unverified；本功能不会自动安装或启动游戏。
 
 [用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。来源版本与许可见 [UPSTREAM.json](UPSTREAM.json) 和 [LICENSE](LICENSE)。
 

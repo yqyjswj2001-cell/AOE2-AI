@@ -26,7 +26,7 @@ python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-a
 - 作者只接收策略卡、空答卷和基础事实，不接收固定实现或官方答案。
 - 默认 AI 自主选文明，限制为标准版 42 文明，鼓励有战术理由的多样选择。
 - 已移除生成简报、简报审批；保留真实 token、耗时及计量缺口。
-- 交付为 36 个 PER 模块，尚无独立游戏主入口，installable=false。Parser/Load、实机完整对局和强度均未验证。
+- build 使用本机 AoE2DE 的官方 PromiDE.per2 生成独立主入口，输出同名 .ai/.per、36 个模块和 resources/_common/ai 安装结构；成功时 installable=true。Parser/Load、实机完整对局和强度仍未验证。
 
 ## 目录地图
 
