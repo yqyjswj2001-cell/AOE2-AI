@@ -141,6 +141,8 @@ def wait_for_agent(meta, timeout=20, interval=0.5, *, read=request, sleep=time.s
         state = read(meta, "/api/author/next", waiting=True)
         if state.get("project_id") != meta["project_id"]:
             raise SessionError("Next action belongs to a different project")
+        if state.get("usage_task"):
+            return {**state, "web_event": "USAGE_CONNECTION_REQUIRED", "url": meta["url"]}
         if state.get("status") != "configuring":
             return {**state, "web_event": "AUTHOR_ACTION_REQUIRED", "url": meta["url"]}
         if clock() >= deadline:
@@ -249,6 +251,8 @@ def main(argv=None):
         sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
         if name in {"launch", "serve"}:
             sub.add_argument("--port", type=int, default=0)
+            sub.add_argument("--agent", help="Actual host ID; records identity, never grants consent")
+            sub.add_argument("--session-id", help="Proven current host session ID; never a guessed recent session")
         if name == "launch":
             sub.add_argument("--no-browser", action="store_true")
         if name in {"launch", "wait"}:
@@ -263,11 +267,22 @@ def main(argv=None):
             sub.add_argument("--source", default="host", choices=["host", "author"])
             sub.add_argument("--message", required=True)
         if name == "usage":
-            sub.add_argument("--action", choices=["report", "source", "events", "seal", "complete", "bind", "ccusage", "cursor-admin"], default="report")
+            sub.add_argument("--action", choices=["report", "connect", "source", "events", "seal", "complete", "bind", "ccusage", "cursor-admin"], default="report")
             sub.add_argument("--payload", type=Path)
     args = parser.parse_args(argv)
     try:
         project = project_path(args.project, args.test_project)
+        if args.command in {"launch", "serve"}:
+            from agent_catalog import normalize_agent
+            if args.agent:
+                os.environ["AOE2_AUTHOR_AGENT"] = normalize_agent(args.agent)
+            if args.session_id:
+                import re
+                if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,199}", args.session_id):
+                    raise SessionError("Invalid host session ID")
+                if not args.agent or normalize_agent(args.agent) == "auto":
+                    raise SessionError("--session-id requires the actual --agent")
+                os.environ["AOE2_AUTHOR_SESSION_ID"] = args.session_id
         if args.command == "serve":
             serve(project, args.port)
             return 0

@@ -57,6 +57,8 @@ class MeterAdapter:
         self.lock = threading.RLock()
         self._cursor_stop = threading.Event()
         self._cursor_refresh_thread = None
+        self._poll_thread = None
+        self._last_sync = 0.0
         require(bool(identity.get("project_id")) and bool(identity.get("source_sha256")), "计量缺少项目或来源标识。")
         existed = (self.project / "authoring/metrics/usage.sqlite3").exists()
         self.meter = Meter(self.project, identity["project_id"], identity["source_sha256"], new_project=not existed)
@@ -67,20 +69,66 @@ class MeterAdapter:
             bindings = {k: list(v) for k, v in identity.get("usage_sessions", {}).items()}
             thread = os.environ.get("AOE2_AUTHOR_CODEX_THREAD_ID") or os.environ.get("CODEX_THREAD_ID")
             selected_agent = normalize_agent(identity.get("agent", "auto"))
+            if selected_agent == "auto":
+                selected_agent = normalize_agent(os.environ.get("AOE2_AUTHOR_AGENT", "codex" if thread else "auto"))
+            host_session = os.environ.get("AOE2_AUTHOR_SESSION_ID")
+            if host_session and not existed and os.environ.get("AOE2_AUTHOR_AGENT") == selected_agent:
+                bindings.setdefault(selected_agent, []).append(host_session)
             if thread and not existed and selected_agent in {"auto", "codex"}:
                 bindings.setdefault("codex", []).append(thread)
             self.auto = MultiAgentUsage(self.meter, self.project, Path(__file__).parent, bindings=bindings,
                 selected_agent=selected_agent, workspace_root=identity.get("workspace_root"))
         self._sync()
+        if self.auto is not None:
+            self._poll_thread = threading.Thread(target=self._poll_loop, name="aoe2-usage-collector", daemon=True)
+            self._poll_thread.start()
         if (self.auto is not None and self.auto.selected_agent == "cursor"
                 and os.environ.get("CURSOR_ADMIN_API_KEY")):
             self._cursor_refresh_thread = threading.Thread(
                 target=self._cursor_refresh_loop, name="aoe2-cursor-usage", daemon=True)
             self._cursor_refresh_thread.start()
 
+    def _poll_loop(self):
+        """Collection continues without an open browser; HTTP reads are not the scheduler."""
+        while not self._cursor_stop.wait(3):
+            with self.lock:
+                if self.auto is None or self.meter.meta["state"] != "RUNNING":
+                    return
+                try:
+                    self._sync()
+                except (OSError, ValueError):
+                    self.meter.capture({"status": "ERROR", "scope": "BOUND_SESSIONS_ONLY"},
+                        [{"code": "AUTO_CAPTURE_ERROR", "message": GAP_MESSAGES["AUTO_CAPTURE_ERROR"]}])
+
+    def connect(self, agent, session_ids):
+        with self.lock:
+            require(self.meter.meta["state"] == "RUNNING", "计量已结束，不能重新接入。")
+            require(self.auto is not None, "本轮未授权采集。")
+            agent = normalize_agent(agent)
+            require(self.auto.selected_agent in {"auto", agent}, "不能替换已确认的采集宿主。")
+            self.auto.selected_agent = agent
+            if session_ids:
+                self.auto.bind({agent: session_ids})
+            self.auto._save()
+            self._sync()
+            if agent == "cursor" and os.environ.get("CURSOR_ADMIN_API_KEY") and self._cursor_refresh_thread is None:
+                self._cursor_refresh_thread = threading.Thread(target=self._cursor_refresh_loop,
+                    name="aoe2-cursor-usage", daemon=True)
+                self._cursor_refresh_thread.start()
+            return self.report()
+
+    def revoke(self):
+        """Stop before any further scan or final refresh. Preserve the existing ledger."""
+        self._cursor_stop.set()
+        with self.lock:
+            self.auto = None
+            self.meter.capture({"status": "DISABLED", "scope": "REVOKED",
+                                "active_sessions": [], "events_added": 0},
+                               [{"code": "CONSENT_REVOKED", "message": "授权已撤回；停止后发生的消耗不在覆盖范围内。"}])
+
     def _cursor_refresh_loop(self):
         """Official endpoint recommends at most hourly polling; UI polling never calls it."""
-        delay = 3600
+        delay = 1
         while not self._cursor_stop.wait(delay):
             delay = 3600
             try:
@@ -91,13 +139,17 @@ class MeterAdapter:
                     if not self.auto.state.get("bindings", {}).get("cursor"):
                         delay = 15
                         continue
+                    last = self.auto.state.get("cursor_admin_last_refresh")
+                    if isinstance(last, (int, float)) and time.time() - last < 3600:
+                        delay = max(1, 3600 - (time.time() - last))
+                        continue
                     self.auto.ingest_cursor_admin()
                     self._sync()
             except (OSError, ValueError):
                 delay = 3600
 
     def _cursor_final_refresh(self):
-        if (self.auto is None or self.auto.selected_agent != "cursor"
+        if (self.auto is None or getattr(self.auto, "selected_agent", None) != "cursor"
                 or not os.environ.get("CURSOR_ADMIN_API_KEY")
                 or not self.auto.state.get("bindings", {}).get("cursor")):
             return
@@ -134,11 +186,16 @@ class MeterAdapter:
             "detected_agents": [], "events_added": 0, "gaps": [], "unbound_children_covered": False}
         gaps = [{**gap, "message": GAP_MESSAGES.get(gap["code"], "用量采集存在未核实区间。")}
                 for gap in capture.get("gaps", [])]
+        # Revocation is a permanent coverage boundary for this run.
+        if self.auto is None and any(g.get("code") == "CONSENT_REVOKED" for g in self.meter.meta.get("capture_gaps", [])):
+            gaps.append({"code": "CONSENT_REVOKED", "message": "授权已撤回；停止后发生的消耗不在覆盖范围内。"})
         self.meter.capture(capture, gaps)
+        self._last_sync = time.monotonic()
 
     def report(self, include_records=False) -> dict:
         with self.lock:
-            self._sync()
+            if time.monotonic() - self._last_sync >= 3:
+                self._sync()
             result = self.meter.report(include_records=include_records)
             result.setdefault("auto_capture", {"status": "NOT_CONNECTED"})
             result.setdefault("capture_gaps", [])

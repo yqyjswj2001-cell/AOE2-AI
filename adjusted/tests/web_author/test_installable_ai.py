@@ -26,7 +26,7 @@ class InstallableAITests(unittest.TestCase):
         self.game = self.root / "AoE2DE"
         self.promisory = self.game / "resources/_common/ai/Promisory"
         self.promisory.mkdir(parents=True)
-        for index in range(2):
+        for index in range(10):
             (self.promisory / f"module{index}.per").write_bytes((self.baseline / f"module{index}.per").read_bytes())
         self.promide = self.game / "resources/_common/drs/gamedata_x2/PromiDE.per2"
         self.promide.parent.mkdir(parents=True)
@@ -35,7 +35,7 @@ class InstallableAITests(unittest.TestCase):
             '#load-if-not-defined BATTLE-ROYALE\n'
             '(load "Promisory\\module1")\n'
             '#end-if\n'
-            '; official loader fixture\n',
+            '; official loader fixture\n' + ''.join(f'(load "Promisory\\module{i}")\n' for i in range(2, 10)),
             encoding="utf-8")
 
     def test_package_rewrites_official_loader_and_is_installable(self):
@@ -50,8 +50,8 @@ class InstallableAITests(unittest.TestCase):
         self.assertNotIn("Promisory", entry)
         self.assertEqual(len(list((ai / "My_AI").glob("*.per"))), 36)
         self.assertEqual(result["entrypoint_validation"], "PASS")
-        self.assertEqual(result["loaded_modules"], ["module0.per", "module1.per"])
-        self.assertEqual(len(result["unreferenced_modules"]), 34)
+        self.assertEqual(result["loaded_modules"], [f"module{i}.per" for i in range(10)])
+        self.assertEqual(len(result["unreferenced_modules"]), 26)
 
     def test_baseline_mismatch_refuses_package(self):
         (self.promisory / "module1.per").write_text("; changed game baseline\n", encoding="utf-8")
