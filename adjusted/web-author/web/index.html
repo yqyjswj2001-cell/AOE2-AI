@@ -5,7 +5,7 @@
 <title>AOE2 AI</title><link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
 </head>
 <body>
-<a class="skip-link" href="#main">跳到创作设置</a>
+<a class="skip-link" href="#main">跳到设置</a>
 <header class="topbar"><a class="brand" href="/" aria-label="AOE2 AI 首页"><span class="brand-mark" aria-hidden="true">A</span><span>AOE2 <strong>AI</strong></span></a><span class="local-label">本地</span><span id="connection" class="connection" role="status">正在连接</span></header>
 <main id="main" class="shell">
 <div class="intro"><div><h1>AOE2 AI</h1></div><span id="statusBadge" class="badge">正在读取</span></div>
@@ -74,7 +74,7 @@
 <section class="panel usage-panel" aria-labelledby="usageTitle"><div class="panel-head"><h2 id="usageTitle">用量</h2><span id="usageState" class="muted">等待记录</span></div>
 <div class="usage-cards"><div><span>token</span><strong id="usageTokens">尚未采集</strong></div><div><span>总用时</span><strong id="usageElapsed">等待记录</strong></div></div><details><summary>详细信息</summary><div class="usage-cards"><div><span>处理时间</span><strong id="usageWork">尚未开始</strong></div><div><span>未统计时间</span><strong id="usageUnobserved">尚未确定</strong></div></div>
 <p id="usageCapture" class="capture-status" role="status">正在读取…</p>
-<details id="sessionBinding" class="session-binding hidden"><summary>用量会话</summary><p id="sessionBindingHelp" class="field-help">选择本次使用的会话。</p><div class="session-binding-controls"><div class="field"><label for="usageSession">本轮创作会话</label><select id="usageSession" aria-describedby="sessionBindingHelp"><option value="">请选择会话</option></select></div><button id="bindSessionButton" class="button secondary" type="button" disabled>连接会话</button></div><p id="sessionBindingNotice" class="field-help" role="status"></p></details><p id="usageCoverage" class="notice">尚未取得用量记录。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
+<details id="sessionBinding" class="session-binding hidden"><summary>用量会话</summary><p id="sessionBindingHelp" class="field-help">选择本次使用的会话。</p><div class="session-binding-controls"><div class="field"><label for="usageSession">本次会话</label><select id="usageSession" aria-describedby="sessionBindingHelp"><option value="">请选择会话</option></select></div><button id="bindSessionButton" class="button secondary" type="button" disabled>连接会话</button></div><p id="sessionBindingNotice" class="field-help" role="status"></p></details><p id="usageCoverage" class="notice">尚未取得用量记录。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
 <details><summary>阶段与导出</summary><p id="usageBreakdown" class="usage-detail">详细用量尚未采集。</p><div class="table-scroll"><table><caption>各阶段用量与时间</caption><thead><tr><th scope="col">阶段</th><th scope="col">已记录 token</th><th scope="col">历时</th><th scope="col">失败 / 操作</th></tr></thead><tbody id="usageStages"><tr><td colspan="4">尚无阶段报告。</td></tr></tbody></table></div><p id="usageModels" class="usage-detail">模型用量尚未采集。</p><p id="usageQuality" class="usage-detail"></p>
 <div class="export-links"><a class="button secondary" href="/api/author/usage/export?format=json" download>导出完整 JSON</a><a class="button secondary" href="/api/author/usage/export?format=stages" download>导出阶段 CSV</a><a class="button secondary" href="/api/author/usage/export?format=calls" download>导出调用 CSV</a></div></details>
 <p class="boundary">未记录的数据不会计入。</p></details></section>

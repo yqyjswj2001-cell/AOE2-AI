@@ -8,7 +8,7 @@
   const STATUS = {
     configuring: ['待开始', '完成设置后开始生成。'],
     selecting: ['选择文明', '正在选择文明。'],
-    authoring: ['生成中', '生成文件参数。'],
+    authoring: ['生成中', '正在生成参数。'],
     invalid: ['检查中', '发现需要修正的参数。'],
     ready: ['准备文件', '检查通过，准备生成文件。'],
     rendering: ['生成文件', '正在生成文件。'],
@@ -335,7 +335,7 @@
     if (!show) return;
     const fields = [
       ['文件类型', build.installable === false ? '模块文件，暂不能直接安装' : build.installable === true ? '具备游戏入口，尚未实测' : '安装状态未知'],
-      ['AI 名称', build.script_name || state.request?.script_name],
+      ['脚本名', build.script_name || state.request?.script_name],
       ['文件编号', build.build_id || build.id],
       ['答卷指纹', build.answers_sha256 || build.parameter_sha256 || build.parameters_sha256],
       ['文件指纹', build.package_sha256 || build.manifest_sha256]
@@ -354,7 +354,7 @@
     renderCivilizations(); renderAgents();
     const known = Object.hasOwn(STATUS, state.status);
     const label = state.status === 'completed' && state.build?.installable === false
-      ? ['模块已交付', '模块文件，暂不能直接安装。游戏加载与实战效果仍需独立验证。']
+      ? ['文件已生成', '模块文件暂不能直接安装，尚未进行游戏实测。']
       : known ? STATUS[state.status] : ['阶段未识别', '服务返回未知阶段，已暂停提交。'];
     text('statusBadge', label[0]); text('statusBanner', label[1]);
     $('statusBadge').className = 'badge' + (state.status === 'completed' ? ' success' : state.status === 'invalid' ? ' warning' : '');
@@ -422,7 +422,7 @@
     if (!report || typeof report !== 'object') return;
     lastUsage = report; renderSessionBinding(report);
     const tokens = report.tokens || {}, time = report.time || {}, auto = report.auto_capture || {};
-    text('usageState', {RUNNING: '正在记录项目', COMPLETED: '已登记交付', SESSION_CLOSED: '会话已关闭', ABORTED: '已中止'}[report.state] || '等待用量记录');
+    text('usageState', {RUNNING: '记录中', COMPLETED: '已完成', SESSION_CLOSED: '已关闭', ABORTED: '已中止'}[report.state] || '等待用量记录');
     text('usageTokens', number(tokens.total_tokens)); text('usageElapsed', duration(time.elapsed_seconds));
     text('usageWork', duration(time.workflow_seconds)); text('usageUnobserved', duration(time.unobserved_seconds));
     const coverage = {
