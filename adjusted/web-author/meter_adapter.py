@@ -78,7 +78,7 @@ class MeterAdapter:
 
     def _cursor_refresh_loop(self):
         """Official endpoint recommends at most hourly polling; UI polling never calls it."""
-        delay = 5
+        delay = 3600
         while not self._cursor_stop.wait(delay):
             delay = 3600
             try:
