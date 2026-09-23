@@ -49,6 +49,25 @@ def hook_db_path(repo_root):
     return Path(repo_root).resolve() / "adjusted/.local/cursor-hook-events.sqlite3"
 
 
+def active_project_path(repo_root):
+    return Path(repo_root).resolve() / "adjusted/.local/cursor-active-project.json"
+
+
+def _active_project(repo_root):
+    path = active_project_path(repo_root)
+    try:
+        if not path.is_file() or path.is_symlink() or path.stat().st_size > 64 * 1024:
+            return None
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    project_id = _safe_id(value.get("project_id")) if isinstance(value, dict) else None
+    project = value.get("project") if isinstance(value, dict) else None
+    if value.get("schema") != "aoe2-cursor-active-project-v1" or project_id is None or not isinstance(project, str):
+        return None
+    return {"project_id": project_id, "project": project}
+
+
 def _connect(path, readonly=False):
     path = Path(path)
     if readonly:
@@ -84,6 +103,9 @@ def record_hook_payload(payload, repo_root, observed_at=None):
     cursor_version = _safe_text(payload.get("cursor_version"), 80)
     background = 1 if payload.get("is_background_agent") is True else 0
     session_start = 1 if event == "sessionStart" else 0
+    active = _active_project(repo_root)
+    project_id = active["project_id"] if active else None
+    project_path = active["project"] if active else None
     path = hook_db_path(repo_root)
     db = _connect(path)
     try:
@@ -97,9 +119,19 @@ def record_hook_payload(payload, repo_root, observed_at=None):
             workspace_roots TEXT NOT NULL,
             is_background INTEGER NOT NULL DEFAULT 0,
             session_start_seen INTEGER NOT NULL DEFAULT 0,
-            last_event TEXT NOT NULL
+            last_event TEXT NOT NULL,
+            project_id TEXT,
+            project_path TEXT
         )""")
-        db.execute("""INSERT INTO conversations VALUES(?,?,?,?,?,?,?,?,?,?)
+        cols = {row[1] for row in db.execute("PRAGMA table_info(conversations)")}
+        if "project_id" not in cols:
+            db.execute("ALTER TABLE conversations ADD COLUMN project_id TEXT")
+        if "project_path" not in cols:
+            db.execute("ALTER TABLE conversations ADD COLUMN project_path TEXT")
+        db.execute("""INSERT INTO conversations(
+                conversation_id,first_seen,last_seen,user_email,model,cursor_version,
+                workspace_roots,is_background,session_start_seen,last_event,project_id,project_path)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(conversation_id) DO UPDATE SET
                 first_seen=min(conversations.first_seen,excluded.first_seen),
                 last_seen=max(conversations.last_seen,excluded.last_seen),
@@ -109,9 +141,12 @@ def record_hook_payload(payload, repo_root, observed_at=None):
                 workspace_roots=excluded.workspace_roots,
                 is_background=max(conversations.is_background,excluded.is_background),
                 session_start_seen=max(conversations.session_start_seen,excluded.session_start_seen),
-                last_event=excluded.last_event""",
+                last_event=excluded.last_event,
+                project_id=COALESCE(excluded.project_id,conversations.project_id),
+                project_path=COALESCE(excluded.project_path,conversations.project_path)""",
             (conversation, now, now, email, model, cursor_version,
-             json.dumps(clean_roots, ensure_ascii=False), background, session_start, event))
+             json.dumps(clean_roots, ensure_ascii=False), background, session_start, event,
+             project_id, project_path))
         db.commit()
     finally:
         db.close()
@@ -124,9 +159,11 @@ def _hook_rows(workspace, repo_root):
         return []
     try:
         try:
+            cols = {row[1] for row in db.execute("PRAGMA table_info(conversations)")}
+            project_cols = ",project_id,project_path" if {"project_id","project_path"} <= cols else ",NULL,NULL"
             rows = db.execute("""SELECT conversation_id,first_seen,last_seen,user_email,model,
-                cursor_version,workspace_roots,is_background,session_start_seen,last_event
-                FROM conversations""").fetchall()
+                cursor_version,workspace_roots,is_background,session_start_seen,last_event""" +
+                project_cols + " FROM conversations").fetchall()
         except sqlite3.Error:
             return []
     finally:
@@ -144,7 +181,7 @@ def _hook_rows(workspace, repo_root):
             "conversation_id": row[0], "first_seen": row[1], "last_seen": row[2],
             "user_email": row[3], "model": row[4], "cursor_version": row[5],
             "is_background": bool(row[7]), "session_start_seen": bool(row[8]),
-            "last_event": row[9],
+            "last_event": row[9], "project_id": row[10], "project_path": row[11],
         })
     return result
 
@@ -156,6 +193,7 @@ def cursor_hook_candidates(workspace, repo_root):
         "is_child": row["is_background"], "workspace_match": True,
         "source": "cursor_hook", "hook_verified": True,
         "has_user_email": bool(row["user_email"]),
+        "project_id": row.get("project_id"),
     } for row in sorted(_hook_rows(workspace, repo_root), key=lambda x: x["last_seen"], reverse=True)]
 
 

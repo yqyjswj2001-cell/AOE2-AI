@@ -20,6 +20,7 @@ from controller import Controller, PROJECTS, ROOT, WorkflowError, atomic_json, p
 from server import SESSION_SCHEMA, make_server
 
 SESSION_FILE = ".author-web-session.json"
+CURSOR_ACTIVE_FILE = ROOT / "adjusted/.local/cursor-active-project.json"
 
 
 class SessionError(WorkflowError):
@@ -158,6 +159,12 @@ def serve(project, port=0):
         meta["url"] = "http://127.0.0.1:" + str(server.server_port)
         try:
             atomic_json(project / SESSION_FILE, meta)
+            atomic_json(CURSOR_ACTIVE_FILE, {
+                "schema": "aoe2-cursor-active-project-v1",
+                "project_id": app.data["project_id"],
+                "project": str(project),
+                "started_at": time.time(),
+            })
             print(json.dumps(public_meta(meta), ensure_ascii=False), flush=True)
             server.serve_forever(poll_interval=0.2)
         except KeyboardInterrupt:
@@ -169,6 +176,12 @@ def serve(project, port=0):
             finally:
                 if descriptor(project) == meta:
                     (project / SESSION_FILE).unlink(missing_ok=True)
+                try:
+                    active = parse_json(CURSOR_ACTIVE_FILE.read_bytes()) if CURSOR_ACTIVE_FILE.is_file() else None
+                except (OSError, ValueError):
+                    active = None
+                if isinstance(active, dict) and active.get("project_id") == app.data["project_id"]:
+                    CURSOR_ACTIVE_FILE.unlink(missing_ok=True)
 
 
 def launch(project, port=0, *, open_browser=True, test_project=False):

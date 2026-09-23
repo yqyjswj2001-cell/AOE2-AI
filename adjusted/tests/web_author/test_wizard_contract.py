@@ -65,14 +65,13 @@ class WizardContractTests(unittest.TestCase):
   self.assertNotIn('progressColumn',html+js)
   self.assertIn("$('authorForm').classList.toggle('hidden', finalRunning)",js)
   self.assertIn("$('generationDashboard').hidden = !finalRunning",js)
- def test_cursor_admin_ui_is_explicit_and_hook_config_is_privacy_scoped(self):
+ def test_cursor_admin_is_background_and_hook_config_is_privacy_scoped(self):
   html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
   js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
   hooks=json.loads((ROOT/'.cursor/hooks.json').read_text(encoding='utf-8'))
   hook_py=(ROOT/'.cursor/hooks/aoe2-usage.py').read_text(encoding='utf-8')
-  self.assertIn('id="cursorAdminRefresh"',html)
-  self.assertIn("connection.action === 'refresh_cursor_admin'",js)
-  self.assertIn('/api/usage/cursor-admin',js)
+  self.assertNotIn('cursorAdminRefresh',html+js)
+  self.assertIn("auto.selected_agent !== 'cursor'",js)
   self.assertEqual(hooks['version'],1)
   self.assertIn('beforeSubmitPrompt',hooks['hooks'])
   self.assertIn('afterAgentResponse',hooks['hooks'])

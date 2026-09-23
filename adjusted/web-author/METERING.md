@@ -11,7 +11,7 @@
 | OpenAI Codex | 指定 rollout 的累计 token_count 差值 | 绑定当前真实 thread ID；旧会话扣除创作前基线；子代理单独绑定 |
 | Claude Code | 指定 session JSONL 的 assistant usage | 绑定真实 session ID；输入、输出及缓存读写必须实际存在 |
 | Gemini CLI | 指定 chat 文件的消息 tokens | 绑定 session ID/文件名；按 total 区分输入内缓存，包含 tool/thoughts，不重复累加缓存 |
-| Cursor IDE | 项目 Hook 记录 conversation_id，再用官方 Team Admin Usage Events 按 conversationId 精确关联 | 需 Cursor Hook 生效、绑定本轮 conversation，并在启动服务前设置 CURSOR_ADMIN_API_KEY；官方接口可能有聚合延迟 |
+| Cursor IDE | 项目 Hook 自动归属当前项目 conversation，再用官方 Team Admin Usage Events 按 conversationId 精确关联 | 需 Cursor Hook 生效，并在启动服务前设置 CURSOR_ADMIN_API_KEY；服务自动绑定并低频刷新，用户无需页面操作；官方接口可能有聚合延迟 |
 | Cursor SDK | 显式导入最终 RunResult.usage / getUsage() | format=cursor-sdk；只接收本轮 finished/error/cancelled 的真实 usage，不把运行中累计快照相加 |
 | OpenCode | SQLite 按 session_id 先筛选，或 storage/message/<session> | 绑定 session ID；支持 assistant tokens 的缓存及 reasoning 字段；不扫全账户消息 |
 | GitHub Copilot CLI | 本轮专用本地 OTel 文件的 chat span | 配置 AOE2_COPILOT_USAGE_FILE 并绑定 conversation ID；忽略 invoke_agent 父汇总避免重复计数 |
@@ -33,7 +33,7 @@ identity 接受 agent、workspace_root、usage_sessions。只有首次创建计�
 - SESSION_BINDING_REQUIRED：未绑定，先绑定候选或已知本轮 ID。
 - WAITING_FOR_USAGE：已绑定，等待真实日志字段或核对来源条件。
 - BASELINE_CAPTURED：旧会话首份累计快照仅建立基线，尚未取得本轮增量。
-- CURSOR_ADMIN_READY：已绑定 Hook 验证的 Cursor conversation，且进程中存在 CURSOR_ADMIN_API_KEY，可以手动刷新官方 Usage Events。
+- CURSOR_ADMIN_READY：已由项目 Hook 自动绑定 Cursor conversation，且进程中存在 CURSOR_ADMIN_API_KEY；后台会低频刷新官方 Usage Events。
 - EXPLICIT_USAGE_REQUIRED（Cursor）：没有可用的 Cursor Team Admin API key；普通 IDE 不回退读取本机气泡，可改用 Cursor SDK 真实 usage。
 - EXPLICIT_USAGE_REQUIRED：当前 Agent 尚无经核实的本地解析方式，需显式导入。
 - RECORDED_PARTIAL：已记录绑定来源的小计，未绑定子代理仍不在覆盖内。
@@ -60,13 +60,13 @@ Agent 选择不会切换或启动宿主，更不会自行发起模型调用。�
 $env:CURSOR_ADMIN_API_KEY="<你的 Cursor Team Admin API key>"
 ```
 
-不要把 key 写入仓库、网页字段、报告或项目 JSON。开始创作后，页面会列出当前 workspace 的 Hook/Composer conversation 候选；绑定当前 conversation 后，最后生成页会出现“刷新 Cursor 官方用量”。也可由宿主显式执行：
+不要把 key 写入仓库、网页字段、报告或项目 JSON。开始创作后，项目 Hook 会把当前 Cursor conversation 与唯一活动 project_id 关联；服务只在归属证据唯一时自动绑定。正常使用不需要在页面选会话或点击刷新。开发排查时仍可显式执行：
 
 ```powershell
 python -X utf8 -B adjusted/web-author/web_session.py usage --project <项目名称> --action cursor-admin
 ```
 
-刷新只请求 `POST /teams/filtered-usage-events`，用 Hook 的当前用户邮箱缩小时间范围，再在本机内存中按已绑定 `conversationId` 精确过滤；其他 conversation/team event 不写入项目。官方事件的 `inputTokens + cacheReadTokens + cacheWriteTokens` 作为规范化输入，`outputTokens` 作为输出，reasoning 未单独暴露时保持 null。接口文档说明数据按小时聚合，因此刚结束的调用可能暂时查不到；这种情况显示 WAITING_FOR_USAGE，不补零也不估算。
+后台低频刷新只请求 `POST /teams/filtered-usage-events`，并在 complete / finish 前补一次最终刷新。它用 Hook 的当前用户邮箱缩小时间范围，再在本机内存中按已绑定 `conversationId` 精确过滤；其他 conversation/team event 不写入项目。官方事件的 `inputTokens + cacheReadTokens + cacheWriteTokens` 作为规范化输入，`outputTokens` 作为输出，reasoning 未单独暴露时保持 null。接口文档说明数据按小时聚合，因此刚结束的调用可能暂时查不到；这种情况显示 WAITING_FOR_USAGE，不补零也不估算。
 
 Cursor 当前仍有一个已确认的 Hook 限制：本地子代理 conversation 不能可靠回链 parent conversation。主会话可以按 conversationId 精确统计，但无法证明归属的 Cursor 子代理不会自动并入，报告继续保持 PARTIAL。这个缺口不能用“同工作区、时间接近”猜测。
 

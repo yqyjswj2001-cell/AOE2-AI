@@ -11,6 +11,7 @@ Tests must set identity["auto_capture"]=False or AOE2_USAGE_DISABLE_AUTO=1.
 from pathlib import Path
 import os
 import threading
+import time
 
 from agent_catalog import normalize_agent
 from metering import Meter
@@ -41,6 +42,8 @@ GAP_MESSAGES = {
     "CURSOR_ADMIN_EVENT_TIMESTAMP_INVALID": "Cursor 官方 usage event 时间字段无效，未计入。",
     "CURSOR_ADMIN_RANGE_TRUNCATED": "项目跨度超过 Cursor Admin API 单次 30 天范围，只查询最近 30 天。",
     "CURSOR_ADMIN_API_ERROR": "Cursor Admin API 刷新失败；未使用本地估算替代。",
+    "CURSOR_HOOK_PROJECT_WAITING": "正在等待 Cursor 项目 Hook 自动确认当前 conversation；无需用户手动绑定。",
+    "CURSOR_HOOK_PROJECT_AMBIGUOUS": "多个 Cursor 主 conversation 同时标记为当前项目，未自动猜选。",
     "TASK_AGGREGATE_NOT_ATTRIBUTABLE": "任务有已折叠或子任务汇总，无法归属本轮，未重复计入。",
     "AUTO_CAPTURE_ERROR": "自动采集发生错误，当前只保留已记录小计。",
 }
@@ -50,6 +53,8 @@ class MeterAdapter:
         require(isinstance(identity, dict), "计量 identity 必须是对象。")
         self.project = Path(project).resolve()
         self.lock = threading.RLock()
+        self._cursor_stop = threading.Event()
+        self._cursor_refresh_thread = None
         require(bool(identity.get("project_id")) and bool(identity.get("source_sha256")), "计量缺少项目或来源标识。")
         existed = (self.project / "authoring/metrics/usage.sqlite3").exists()
         self.meter = Meter(self.project, identity["project_id"], identity["source_sha256"], new_project=not existed)
@@ -65,6 +70,42 @@ class MeterAdapter:
             self.auto = MultiAgentUsage(self.meter, self.project, Path(__file__).parent, bindings=bindings,
                 selected_agent=selected_agent, workspace_root=identity.get("workspace_root"))
         self._sync()
+        if (self.auto is not None and self.auto.selected_agent == "cursor"
+                and os.environ.get("CURSOR_ADMIN_API_KEY")):
+            self._cursor_refresh_thread = threading.Thread(
+                target=self._cursor_refresh_loop, name="aoe2-cursor-usage", daemon=True)
+            self._cursor_refresh_thread.start()
+
+    def _cursor_refresh_loop(self):
+        """Official endpoint recommends at most hourly polling; UI polling never calls it."""
+        delay = 5
+        while not self._cursor_stop.wait(delay):
+            delay = 3600
+            try:
+                with self.lock:
+                    if self.meter.meta["state"] != "RUNNING" or self.auto is None:
+                        return
+                    self._sync()
+                    if not self.auto.state.get("bindings", {}).get("cursor"):
+                        delay = 15
+                        continue
+                    self.auto.ingest_cursor_admin()
+                    self._sync()
+            except (OSError, ValueError):
+                delay = 3600
+
+    def _cursor_final_refresh(self):
+        if (self.auto is None or self.auto.selected_agent != "cursor"
+                or not os.environ.get("CURSOR_ADMIN_API_KEY")
+                or not self.auto.state.get("bindings", {}).get("cursor")):
+            return
+        last = self.auto.state.get("cursor_admin_last_refresh")
+        if isinstance(last, (int, float)) and time.time() - last < 3600:
+            return
+        try:
+            self.auto.ingest_cursor_admin()
+        except (OSError, ValueError):
+            pass
 
     def update_context(self, changes: dict) -> dict:
         """Persist selection metadata without replacing the frozen task identity."""
@@ -154,6 +195,8 @@ class MeterAdapter:
                 require(self.meter.meta["delivery"] == build, "不能更换已完成计量的交付物。")
                 return self._export_result()
             self._sync()
+            self._cursor_final_refresh()
+            self._sync()
             require(self.meter.meta["phase"] == "5", "请先进入整理交付阶段。")
             if all_sources_declared:
                 require(not self.meter.meta.get("capture_gaps"), "采集存在缺口，不能声明完整覆盖。")
@@ -167,7 +210,10 @@ class MeterAdapter:
         return result
 
     def close(self) -> dict:
+        self._cursor_stop.set()
         with self.lock:
+            self._sync()
+            self._cursor_final_refresh()
             self._sync()
             self.meter.close("SESSION_CLOSED")
             return self._export_result()

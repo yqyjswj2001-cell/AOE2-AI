@@ -843,19 +843,29 @@ class MultiAgentUsage:
                 [Path(p) for p in selected["roots"]], self.home, self.environ)
             self.state["session_candidates"] = candidates
             self._bind_verified_children(self.selected_agent, candidates)
-            # Only auto-bind a uniquely identified current workspace session started
-            # during this project. Existing/multiple sessions require host confirmation.
-            if self.selected_agent != "cursor" and not self.state.get("bindings", {}).get(self.selected_agent):
-                eligible = [r for r in candidates if r.get("created_at") is not None and
-                            r["created_at"] >= self.meter.meta["started_at"] and not r.get("is_child")]
-                if len(candidates) == 1 and len(eligible) == 1:
-                    self.bind({self.selected_agent: [eligible[0]["session_id"]]})
+            # Only auto-bind when ownership is mechanically provable.
             if self.selected_agent == "cursor":
+                current = self.state.get("bindings", {}).get("cursor", [])
+                if not current:
+                    exact = [r for r in candidates if r.get("hook_verified") is True
+                             and r.get("project_id") == self.meter.meta.get("project_id")
+                             and not r.get("is_child")]
+                    if len(exact) == 1:
+                        self.bind({"cursor": [exact[0]["session_id"]]})
+                        self.state["cursor_project_auto_bound"] = True
+                    elif self.environ.get("CURSOR_ADMIN_API_KEY"):
+                        code = "CURSOR_HOOK_PROJECT_WAITING" if not exact else "CURSOR_HOOK_PROJECT_AMBIGUOUS"
+                        missing.append({"agent": "cursor", "session": _hash("hook-project"), "code": code})
                 if self.environ.get("CURSOR_ADMIN_API_KEY"):
                     missing.extend(self.state.get("cursor_admin_gaps", []))
                 else:
                     missing.append({"agent": "cursor", "session": _hash("ide"),
                                     "code": "CURSOR_IDE_USAGE_UNAVAILABLE"})
+            elif not self.state.get("bindings", {}).get(self.selected_agent):
+                eligible = [r for r in candidates if r.get("created_at") is not None and
+                            r["created_at"] >= self.meter.meta["started_at"] and not r.get("is_child")]
+                if len(candidates) == 1 and len(eligible) == 1:
+                    self.bind({self.selected_agent: [eligible[0]["session_id"]]})
             supported = {"codex", "claude", "gemini", "opencode", "copilot", "kimi", "cline", "roo"}
             for info in detected:
                 agent = info["id"]
@@ -921,13 +931,18 @@ class MultiAgentUsage:
             code, message, action = "AGENT_SELECTION_REQUIRED", "请选择创作使用的 Agent，并由宿主绑定本轮会话。", "select_agent"
         elif self.selected_agent == "cursor" and not cursor_admin_configured:
             code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
+        elif self.selected_agent == "cursor" and cursor_admin_configured and not bound:
+            if any(g["code"] == "CURSOR_HOOK_PROJECT_AMBIGUOUS" for g in gaps):
+                code, message, action = "CURSOR_HOOK_PROJECT_AMBIGUOUS", "检测到多个同时归属本项目的 Cursor 主 conversation，未自动猜选。", "check_requirements"
+            else:
+                code, message, action = "CURSOR_HOOK_PROJECT_WAITING", "正在等待项目 Hook 自动关联当前 Cursor conversation；无需手动绑定。", "check_requirements"
         elif self.selected_agent == "cursor" and bound:
             if active and known:
-                code, message, action = "RECORDED_PARTIAL", "已记录 Cursor 官方 Usage Events；可稍后再次刷新，未能可靠回链的子代理仍保留缺口。", "refresh_cursor_admin"
+                code, message, action = "RECORDED_PARTIAL", "已自动记录 Cursor 官方 Usage Events；后台会继续低频刷新，未能可靠回链的子代理仍保留缺口。", "check_requirements"
             elif any(g["code"] == "CURSOR_ADMIN_NO_MATCHING_EVENTS" for g in gaps):
-                code, message, action = "WAITING_FOR_USAGE", "Cursor 官方 Usage Events 暂未返回本轮 conversation 的 token；该接口可能存在聚合延迟。", "refresh_cursor_admin"
+                code, message, action = "WAITING_FOR_USAGE", "已自动绑定当前 Cursor conversation；官方 Usage Events 暂未返回 token，后台会稍后重试。", "check_requirements"
             else:
-                code, message, action = "CURSOR_ADMIN_READY", "已绑定 Cursor conversation，可从官方 Usage Events 刷新真实 token。", "refresh_cursor_admin"
+                code, message, action = "CURSOR_ADMIN_READY", "已自动绑定当前 Cursor conversation；官方用量由后台低频刷新。", "check_requirements"
         elif self.selected_agent in {"windsurf", "trae", "augment", "other"}:
             code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
         elif self.state.get("status") == "ERROR":

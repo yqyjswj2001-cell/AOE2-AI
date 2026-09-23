@@ -85,6 +85,7 @@ def cursor_metadata(workspace, home=None, environ=None):
                             "source": existing.get("source", "cursor_composer"),
                             "hook_verified": bool(existing.get("hook_verified")),
                             "has_user_email": bool(existing.get("has_user_email")),
+                            "project_id": existing.get("project_id"),
                         }
             except sqlite3.Error:
                 continue

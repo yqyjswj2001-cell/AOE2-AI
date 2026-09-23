@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'web-author'))
 from host_usage import cursor_metadata, project_candidates
-from cursor_admin_usage import collect_cursor_admin_usage, hook_db_path, record_hook_payload
+from cursor_admin_usage import active_project_path, collect_cursor_admin_usage, hook_db_path, record_hook_payload
 from meter_adapter import MeterAdapter
 from metering import Meter
 from multi_agent_usage import MultiAgentUsage, detect_agents
@@ -116,6 +116,9 @@ class HostUsageTests(unittest.TestCase):
         self.assertNotIn('PRIVATE_CONTENT', auto.path.read_text())
 
     def test_cursor_hook_identity_and_admin_events_are_exactly_scoped(self):
+        active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
+        active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
+            'project':str(self.project)}),encoding='utf-8')
         payload={'conversation_id':'cursor-conv-1','generation_id':'gen-1',
             'hook_event_name':'afterAgentResponse','workspace_roots':[str(self.workspace)],
             'user_email':'dev@example.com','model':'fixture-model','text':'PRIVATE_RESPONSE'}
@@ -124,6 +127,7 @@ class HostUsageTests(unittest.TestCase):
         row=next(r for r in candidates if r['session_id']=='cursor-conv-1')
         self.assertTrue(row['hook_verified'])
         self.assertTrue(row['has_user_email'])
+        self.assertEqual(row['project_id'],'synthetic')
         self.assertNotIn(b'PRIVATE_RESPONSE',hook_db_path(self.workspace).read_bytes())
 
         def transport(api_key,body):
@@ -149,13 +153,17 @@ class HostUsageTests(unittest.TestCase):
 
     def test_cursor_admin_refresh_records_official_usage_without_persisting_key(self):
         self.cursor([])
+        active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
+        active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
+            'project':str(self.project)}),encoding='utf-8')
         record_hook_payload({'conversation_id':'cursor-conv-1','hook_event_name':'sessionStart',
             'workspace_roots':[str(self.workspace)],'user_email':'dev@example.com'},self.workspace,
             observed_at=self.start+1)
         env={**self.env,'CURSOR_ADMIN_API_KEY':'secret-key'}
         auto=MultiAgentUsage(self.meter,self.project,self.root,environ=env,home=self.root,
-            selected_agent='cursor',workspace_root=self.workspace,bindings={'cursor':['cursor-conv-1']})
+            selected_agent='cursor',workspace_root=self.workspace,bindings={})
         self.assertEqual(auto.sync()['connection']['code'],'CURSOR_ADMIN_READY')
+        self.assertEqual(auto.state['bindings']['cursor'],['cursor-conv-1'])
         item={'agent':'cursor','session':'cursor-conv-1','key':'cursor-admin:event-1',
             'timestamp':self.start+2,'model':'fixture-model','usage':{
                 'input_tokens':13,'output_tokens':5,'total_tokens':18,

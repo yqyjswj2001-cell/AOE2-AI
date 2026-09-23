@@ -86,7 +86,7 @@ build 会从本机 AoE2DE 安装目录读取官方 `PromiDE.per2`，核对其实
 
 ## 用量与结束
 
-先查看 next.usage_connection 与网页选定的 Agent，按 METERING.md 接入该宿主来源。创建子代理后绑定本次主会话和子会话；不把检测到安装目录当作已采集。不自动把所有宿主会话或其他项目计入。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 优先走仓库项目 Hook + Cursor Team Admin Usage Events：Hook 只记录 conversation_id 等元数据；如有 Team Admin API key，在启动网页服务前通过环境变量 CURSOR_ADMIN_API_KEY 提供，绝不能写进仓库或网页。绑定当前 Cursor conversation 后可在最后生成页刷新官方 token。官方接口可能有聚合延迟；普通 IDE 不回退读取 bubble.tokenCount，也不按上下文占用/estimatedTokens 估算。没有 Admin API 权限时可导入 Cursor SDK 的真实 RunResult.usage / getUsage()，否则保持明确缺口。Cursor 子代理目前无法由官方 Hook 可靠回链 parent conversation，不能凭时间或同工作区猜归属。用户选择 Agent 不构成自动计量成功。
+先查看 next.usage_connection 与网页选定的 Agent，按 METERING.md 接入该宿主来源。创建子代理后绑定本次主会话和子会话；不把检测到安装目录当作已采集。不自动把所有宿主会话或其他项目计入。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 优先走仓库项目 Hook + Cursor Team Admin Usage Events：Hook 只记录 conversation_id 等元数据；如有 Team Admin API key，在启动网页服务前通过环境变量 CURSOR_ADMIN_API_KEY 提供，绝不能写进仓库或网页。服务会用唯一活动 project_id 自动归属并绑定当前 Cursor conversation，后台低频刷新官方 token，complete / finish 前再补一次最终刷新；用户不需要在网页选会话或点刷新。官方接口可能有聚合延迟；普通 IDE 不回退读取 bubble.tokenCount，也不按上下文占用/estimatedTokens 估算。没有 Admin API 权限时可导入 Cursor SDK 的真实 RunResult.usage / getUsage()，否则保持明确缺口。Cursor 子代理目前无法由官方 Hook 可靠回链 parent conversation，不能凭时间或同工作区猜归属。用户选择 Agent 不构成自动计量成功。
 
 用量来自已绑定本项目的宿主实际 usage 或显式上报。上下文/工作流版本号不是模型 token。没有数据显示未采集；不按字数估算、不补零、不把并行无关任务算进来。子代理必须有可验证的会话或 usage 来源绑定；未能覆盖全部作者/审查调用时保持 PARTIAL。见计量说明登记来源、补报和封账。
 
