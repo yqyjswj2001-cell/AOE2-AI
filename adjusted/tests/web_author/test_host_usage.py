@@ -102,31 +102,17 @@ class HostUsageTests(unittest.TestCase):
         self.assertEqual(status['auto_bound_child_count'],2)
         self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
 
-    def test_cursor_zero_placeholder_then_actual_snapshot_delta(self):
-        path = self.cursor([('bubbleId:own-session:b1', {'type': 2, 'createdAt': iso(self.start+1),
-            'tokenCount': {'inputTokens': 0, 'outputTokens': 0}, 'text': 'PRIVATE_CONTENT'}),
-            ('bubbleId:other-session:huge', {'type': 2, 'createdAt': iso(self.start+1),
-            'tokenCount': {'inputTokens': 9000, 'outputTokens': 9000}})])
-        auto = self.auto('cursor', ['own-session'])
+    def test_cursor_ide_local_token_count_is_not_used_as_usage(self):
+        self.cursor([('bubbleId:own-session:b1', {'type': 2, 'createdAt': iso(self.start+1),
+            'tokenCount': {'inputTokens': 9000, 'outputTokens': 9000}, 'text': 'PRIVATE_CONTENT'})])
+        auto = self.auto('cursor', [])
         status = auto.sync()
         self.assertIsNone(self.meter.report()['tokens']['total_tokens'])
-        self.assertEqual(status['connection']['code'], 'CURSOR_USAGE_NOT_REPORTED')
+        self.assertEqual(status['connection']['code'], 'EXPLICIT_USAGE_REQUIRED')
         self.assertEqual([r['session_id'] for r in status['session_candidates']], ['own-session'])
-        db = sqlite3.connect(path)
-        db.execute("UPDATE cursorDiskKV SET value=json_set(value,'$.tokenCount.inputTokens',20,'$.tokenCount.outputTokens',5) WHERE key='bubbleId:own-session:b1'")
-        db.commit(); db.close()
-        auto.sync(); auto.sync()
-        self.assertEqual(self.meter.report()['tokens']['total_tokens'], 25)
+        self.assertFalse(auto.state.get('bindings', {}).get('cursor'))
+        self.assertIn('CURSOR_IDE_USAGE_UNAVAILABLE', {g['code'] for g in status['gaps']})
         self.assertNotIn('PRIVATE_CONTENT', auto.path.read_text())
-        self.assertIsNone(self.meter.report()['tokens']['cached_input_tokens'])
-
-    def test_cursor_old_and_missing_timestamp_are_not_charged(self):
-        self.cursor([('bubbleId:own-session:old', {'type': 2, 'createdAt': iso(self.start-50),
-            'tokenCount': {'inputTokens': 300, 'outputTokens': 20}}),
-            ('bubbleId:own-session:unknown', {'type': 2, 'tokenCount': {'inputTokens': 50, 'outputTokens': 5}})])
-        status = self.auto('cursor', ['own-session']).sync()
-        self.assertIsNone(self.meter.report()['tokens']['total_tokens'])
-        self.assertIn('MISSING_USAGE_TIMESTAMP', {g['code'] for g in status['gaps']})
 
     def test_selected_cursor_does_not_inherit_codex_environment(self):
         with patch.dict(os.environ, {'CODEX_THREAD_ID': 'unrelated-codex-thread', 'AOE2_USAGE_DISABLE_AUTO': '0'}):

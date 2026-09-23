@@ -31,7 +31,8 @@ GAP_MESSAGES = {
     "MISSING_OR_UNSUPPORTED_USAGE": "来源缺少计数或字段无法可靠归一化。",
     "UNSUPPORTED_CODEX_USAGE": "Codex 日志没有受支持的累计 usage。",
     "INVALID_CODEX_TOTAL": "Codex 总数与输入输出不一致。",
-    "CURSOR_USAGE_NOT_REPORTED": "Cursor 气泡 tokenCount 缺失或全零；没有按上下文占用估算。",
+    "CURSOR_USAGE_NOT_REPORTED": "旧版 Cursor 本机气泡 tokenCount 缺失或全零；该来源已停用，不按上下文占用估算。",
+    "CURSOR_IDE_USAGE_UNAVAILABLE": "Cursor IDE 没有可靠的项目级本机 token 来源；仅接受本轮 Cursor SDK 或其他明确逐次真实 usage。",
     "TASK_AGGREGATE_NOT_ATTRIBUTABLE": "任务有已折叠或子任务汇总，无法归属本轮，未重复计入。",
     "AUTO_CAPTURE_ERROR": "自动采集发生错误，当前只保留已记录小计。",
 }

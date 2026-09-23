@@ -13,7 +13,7 @@ from pathlib import Path
 import re
 import sqlite3
 from agent_catalog import agent_catalog, agent_info, normalize_agent
-from host_usage import project_candidates, cursor_usage, session_files
+from host_usage import project_candidates, session_files
 from usage_formats import PHASES, normalize
 
 SAFE_MODEL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:/+ -]{0,159}$")
@@ -725,7 +725,7 @@ class MultiAgentUsage:
         if agent == "copilot":
             return _copilot_scoped_events(roots, bindings, start)
         if agent == "cursor":
-            return cursor_usage(self.workspace_root, bindings, start, self.home, self.environ) if self.workspace_root else []
+            return []
         files = session_files(agent, roots, bindings)
         if agent == "claude":
             return _claude_like_events(agent, [p for _, p in files], start)
@@ -798,12 +798,14 @@ class MultiAgentUsage:
             self._bind_verified_children(self.selected_agent, candidates)
             # Only auto-bind a uniquely identified current workspace session started
             # during this project. Existing/multiple sessions require host confirmation.
-            if not self.state.get("bindings", {}).get(self.selected_agent):
+            if self.selected_agent != "cursor" and not self.state.get("bindings", {}).get(self.selected_agent):
                 eligible = [r for r in candidates if r.get("created_at") is not None and
                             r["created_at"] >= self.meter.meta["started_at"] and not r.get("is_child")]
                 if len(candidates) == 1 and len(eligible) == 1:
                     self.bind({self.selected_agent: [eligible[0]["session_id"]]})
-            supported = {"codex", "claude", "gemini", "cursor", "opencode", "copilot", "kimi", "cline", "roo"}
+            if self.selected_agent == "cursor":
+                missing.append({"agent": "cursor", "session": "ide", "code": "CURSOR_IDE_USAGE_UNAVAILABLE"})
+            supported = {"codex", "claude", "gemini", "opencode", "copilot", "kimi", "cline", "roo"}
             for info in detected:
                 agent = info["id"]
                 bindings = self.state.get("bindings", {}).get(agent, [])
@@ -811,6 +813,8 @@ class MultiAgentUsage:
                     continue
                 local = [sid for sid in bindings if self.state.get("backend_by_session", {}).get(_hash(agent, sid)) != "ccusage-import"]
                 if not local:
+                    continue
+                if agent == "cursor":
                     continue
                 if agent not in supported:
                     missing += [{"agent": agent, "session": _hash(sid), "code": "UNSUPPORTED_BOUND_HOST"} for sid in local]
@@ -863,10 +867,8 @@ class MultiAgentUsage:
         code, message, action = "SESSION_BINDING_REQUIRED", "尚未绑定本轮宿主会话，token 不是 0。", "bind_session"
         if self.selected_agent == "auto" and not bound:
             code, message, action = "AGENT_SELECTION_REQUIRED", "请选择创作使用的 Agent，并由宿主绑定本轮会话。", "select_agent"
-        elif self.selected_agent in {"windsurf", "trae", "augment", "other"}:
+        elif self.selected_agent in {"cursor", "windsurf", "trae", "augment", "other"}:
             code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
-        elif self.selected_agent == "cursor" and bound and not active and any(g["code"] == "CURSOR_USAGE_NOT_REPORTED" for g in gaps):
-            code, message, action = "CURSOR_USAGE_NOT_REPORTED", "Cursor 本机 composer/气泡尚未提供非零真实消耗；上下文占用和全零占位均不计入。可导入本轮 SDK 最终 usage。", "import_usage"
         elif self.state.get("status") == "ERROR":
             code, message, action = "CAPTURE_ERROR", "采集遇到格式或来源错误；查看采集缺口并提供原始 usage。", "inspect_source"
         elif active and known:

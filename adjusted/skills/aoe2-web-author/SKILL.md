@@ -86,7 +86,7 @@ build 会从本机 AoE2DE 安装目录读取官方 `PromiDE.per2`，核对其实
 
 ## 用量与结束
 
-先查看 next.usage_connection 与网页选定的 Agent，按 METERING.md 接入该宿主来源。创建子代理后绑定本次主会话和子会话；不把检测到安装目录当作已采集。不自动把所有宿主会话或其他项目计入。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor SDK 的真实 RunResult 可上报 cursor-sdk；普通 Cursor IDE 的上下文占用和 estimatedTokens 不等于消耗，来源缺失时保留明确缺口。用户选择 Agent 不构成自动计量成功。
+先查看 next.usage_connection 与网页选定的 Agent，按 METERING.md 接入该宿主来源。创建子代理后绑定本次主会话和子会话；不把检测到安装目录当作已采集。不自动把所有宿主会话或其他项目计入。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor SDK 的真实 RunResult.usage / getUsage() 可上报 cursor-sdk；普通 Cursor IDE 不再尝试读取本机 bubble tokenCount，因为该字段并非可靠账本。Cursor IDE 的上下文占用和 estimatedTokens 也不等于消耗，来源缺失时保留明确缺口。用户选择 Agent 不构成自动计量成功。
 
 用量来自已绑定本项目的宿主实际 usage 或显式上报。上下文/工作流版本号不是模型 token。没有数据显示未采集；不按字数估算、不补零、不把并行无关任务算进来。子代理必须有可验证的会话或 usage 来源绑定；未能覆盖全部作者/审查调用时保持 PARTIAL。见计量说明登记来源、补报和封账。
 

@@ -11,8 +11,8 @@
 | OpenAI Codex | 指定 rollout 的累计 token_count 差值 | 绑定当前真实 thread ID；旧会话扣除创作前基线；子代理单独绑定 |
 | Claude Code | 指定 session JSONL 的 assistant usage | 绑定真实 session ID；输入、输出及缓存读写必须实际存在 |
 | Gemini CLI | 指定 chat 文件的消息 tokens | 绑定 session ID/文件名；按 total 区分输入内缓存，包含 tool/thoughts，不重复累加缓存 |
-| Cursor IDE | 精确 composer 的 assistant bubble tokenCount，只读 SQL 投影 | workspace 必须匹配；createdAt 必须可归属本轮；全零或缺失表示未报告，保持 null；缓存/推理细项未知 |
-| Cursor SDK | 显式导入最终 RunResult.usage | format=cursor-sdk；只接收 finished/error/cancelled，不把运行中累计快照相加 |
+| Cursor IDE | 不自动采集 token；只保留项目 composer 元数据用于识别当前工作区 | 本机 bubble.tokenCount 属于 best-effort 且常为 0，不作为账本；上下文占用也不能替代真实 token |
+| Cursor SDK | 显式导入最终 RunResult.usage / getUsage() | format=cursor-sdk；只接收本轮 finished/error/cancelled 的真实 usage，不把运行中累计快照相加 |
 | OpenCode | SQLite 按 session_id 先筛选，或 storage/message/<session> | 绑定 session ID；支持 assistant tokens 的缓存及 reasoning 字段；不扫全账户消息 |
 | GitHub Copilot CLI | 本轮专用本地 OTel 文件的 chat span | 配置 AOE2_COPILOT_USAGE_FILE 并绑定 conversation ID；忽略 invoke_agent 父汇总避免重复计数 |
 | Kimi CLI / Kimi Code | 指定 wire.jsonl 的 StatusUpdate.token_usage / turn usage.record | 主会话用 session ID，Code 子代理用 session:agent；不统计 context_tokens 或 session 累计行 |
@@ -20,7 +20,7 @@
 | Windsurf / Trae / Augment | 本轮真实 usage 显式导入 | 尚未核实稳定、按项目归属的 IDE 本地消耗接口；不宣称自动接通 |
 | 其他 Agent | agent-usage / 提供商最终响应导入 | 必须有本轮真实来源和稳定事件 ID |
 
-以上是已实现的格式支持及合成测试范围，不是所有 Agent 的本机实测认证。某些 Cursor IDE 版本会将 bubble.tokenCount 保留为全零或使 composer.usageData 为空；这时仍显示未采集，不代表实际调用免费或消耗为 0。contextTokensUsed、contextUsagePercent 和 promptTokenBreakdown.estimatedTokens 均被排除。
+以上是已实现的格式支持及合成测试范围，不是所有 Agent 的本机实测认证。Cursor IDE 的本机 bubble.tokenCount 已不再作为用量来源：Cursor 官方人员说明该字段是 best-effort、当前并不可靠。普通 IDE 会话因此保持未采集；contextTokensUsed、contextUsagePercent 和 promptTokenBreakdown.estimatedTokens 仍全部排除。若实际通过 Cursor SDK 运行，则导入本轮 RunResult.usage / getUsage() 的真实计数。
 
 ## 会话绑定与连接提示
 
@@ -33,7 +33,7 @@ identity 接受 agent、workspace_root、usage_sessions。只有首次创建计�
 - SESSION_BINDING_REQUIRED：未绑定，先绑定候选或已知本轮 ID。
 - WAITING_FOR_USAGE：已绑定，等待真实日志字段或核对来源条件。
 - BASELINE_CAPTURED：旧会话首份累计快照仅建立基线，尚未取得本轮增量。
-- CURSOR_USAGE_NOT_REPORTED：已绑定 Cursor 气泡没有可用非零计数；可使用本轮 SDK/真实 usage 导入。
+- EXPLICIT_USAGE_REQUIRED（Cursor）：普通 Cursor IDE 不再尝试从本机气泡读取 token；如本轮通过 Cursor SDK 运行，导入 SDK 的真实 usage，否则保持未采集。
 - EXPLICIT_USAGE_REQUIRED：当前 Agent 尚无经核实的本地解析方式，需显式导入。
 - RECORDED_PARTIAL：已记录绑定来源的小计，未绑定子代理仍不在覆盖内。
 
@@ -105,8 +105,8 @@ input_tokens 包含缓存读写，output_tokens 包含推理；细项是子集�
 
 ## 核查来源
 
-- [Cursor SDK Token usage](https://cursor.com/docs/sdk/typescript)：最终 RunResult、缓存与推理语义。
-- [tokstat Cursor reader 固定提交](https://github.com/thiga-co/tokstat/blob/cdd513707dd1c5d29bb6f8e7251193b167df7842/src/tokstat/cursor_cli.py)：仅用于定位 bubble tokenCount；本实现另有当前项目只读字段证据，不沿用其全库扫描、零值默认或计费估算。
+- [Cursor SDK Token usage](https://cursor.com/docs/sdk/typescript)：最终 RunResult、getUsage()、缓存与推理语义。
+- Cursor 官方社区说明（2026-03-27）：桌面端 cursorDiskKV 的 tokenCount 是 best-effort，当前不可靠；因此本实现不再把它作为真实 token 来源。
 - [Gemini 官方 ChatRecordingService](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/services/chatRecordingService.ts)：消息 tokens 的实际字段。
 - [Kimi 官方 Wire 类型](https://github.com/MoonshotAI/kimi-cli/blob/main/src/kimi_cli/wire/types.py) 和 [ccusage Kimi](https://github.com/ccusage/ccusage/blob/main/docs/guide/kimi/index.md)：step usage 与 context/session 字段区别。
 - [Copilot CLI 官方 OTel 参考](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference)：chat 与 invoke_agent 层级、真实 token、默认关闭消息内容捕获。
