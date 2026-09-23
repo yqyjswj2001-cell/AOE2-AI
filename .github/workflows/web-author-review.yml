@@ -1,0 +1,21 @@
+name: Web author review
+on:
+  push:
+    branches: [work/web-author-redesign]
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Archive tracked baseline for local review
+        run: git archive HEAD -o source-review.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-review
+          path: source-review.zip
+          retention-days: 1
