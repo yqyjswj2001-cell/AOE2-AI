@@ -176,12 +176,15 @@ def make_author_constraints(catalog: dict) -> dict:
             indexes = [index for index, constraint in enumerate(constraints)
                        if constraint["module"] == module and key in constraint["keys"]]
             relevant = [constraints[index] for index in indexes]
-            by_key[key] = {"module": module, "required": True, "type": "integer",
+            by_key[key] = {"module": module, "required_for_delivery": True, "type": "integer",
+                           "runtime_applicability": "not_proven",
                            "zero_rule": _zero_rule(relevant), "constraint_ids": indexes}
     result = {
         "schema": "aoe2-author-parameter-contracts-v1",
-        "note": ("required/type are delivery requirements. zero_rule describes only current static validation: "
-                 "allowed_by_static_rule does not mean zero is strategically correct; unspecified means no proof either way."),
+        "note": ("required_for_delivery/type are renderer requirements, not proof that a branch executes in this match. "
+                 "runtime_applicability=not_proven means do not infer active/inactive from this file. "
+                 "zero_rule describes only current static validation: allowed_by_static_rule does not mean zero is "
+                 "strategically correct; unspecified means no proof either way."),
         "constraints": constraints,
         "by_key": by_key,
     }
