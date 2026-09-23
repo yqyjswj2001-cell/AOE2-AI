@@ -16,6 +16,7 @@ import uuid
 from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
 from installable_ai import InstallableAIError, package_installable_ai
+from development_report import DevelopmentJournal, DevelopmentReportError, generate_bundle, report_bundle
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -147,7 +148,9 @@ class Controller:
         self.engine = engine or RealEngine()
         self.civilizations = self.engine.civilizations()
         self.state_file = self.project / "project.json"
-        if self.state_file.exists():
+        state_existed = self.state_file.exists()
+        journal_existed = (self.project / "development/events.json").is_file()
+        if state_existed:
             self.data = parse_json(safe_path(self.state_file).read_bytes())
             if self.data.get("schema") != SCHEMA or self.data.get("project") != str(self.project):
                 raise WorkflowError("Saved project identity does not match")
@@ -156,6 +159,12 @@ class Controller:
                          "status": "configuring", "revision": 0, "request": None, "build": None,
                          "progress": {"filled": 0, "total": 0, "errors": []}}
             self._save()
+        self.development = DevelopmentJournal(self.project, self.data["project_id"])
+        if not state_existed:
+            self._dev_event("system", "project_created", "info", "创作项目已创建。")
+        elif not journal_existed:
+            self._dev_event("system", "journal_started", "info",
+                            "开发事件记录从当前版本开始；此前项目历史可能不完整。")
         self._injected_meter = meter_factory is not None
         if meter_factory is None:
             from meter_adapter import MeterAdapter
@@ -169,6 +178,55 @@ class Controller:
 
     def _save(self):
         atomic_json(self.state_file, self.data)
+
+    def _dev_event(self, source, kind, severity, message, data=None):
+        return self.development.record(source, kind, severity, message, data)
+
+    def _runtime_state(self):
+        build = self.data.get("build") or {}
+        return {name: build.get(name, "Unverified") for name in ("parser_load", "smoke", "full_game", "strength")}
+
+    def _browser_observations(self, value):
+        if value is None:
+            return []
+        if not isinstance(value, list) or len(value) > 200:
+            raise WorkflowError("browser observations must be an array of at most 200 items")
+        clean = []
+        allowed = {"kind", "message", "count", "first_at", "last_at"}
+        for row in value:
+            if not isinstance(row, dict) or not set(row) <= allowed:
+                raise WorkflowError("browser observation fields are invalid")
+            kind, message = row.get("kind"), row.get("message")
+            if not isinstance(kind, str) or not re.fullmatch(r"[a-z][a-z0-9_-]{0,63}", kind):
+                raise WorkflowError("browser observation kind is invalid")
+            if not isinstance(message, str) or not 1 <= len(message.strip()) <= 1000:
+                raise WorkflowError("browser observation message is invalid")
+            item = {"kind": kind, "message": message.strip()}
+            if type(row.get("count")) is int and 1 <= row["count"] <= 1000000:
+                item["count"] = row["count"]
+            for key in ("first_at", "last_at"):
+                if isinstance(row.get(key), str) and len(row[key]) <= 64:
+                    item[key] = row[key]
+            clean.append(item)
+        return clean
+
+    def _generate_development_report(self, browser_observations=None):
+        usage = self.usage(include_records=True)
+        from metering import Meter
+        result = generate_bundle(
+            project=self.project,
+            repository_root=ROOT,
+            project_snapshot=self.data,
+            usage=usage,
+            runtime=self._runtime_state(),
+            civilization_selection=self._selection_state(),
+            events=self.development.read(),
+            browser_observations=browser_observations or [],
+            usage_csv={"usage-stages.csv": Meter.csv_bytes(usage, "stages"),
+                       "usage-calls.csv": Meter.csv_bytes(usage, "calls")},
+        )
+        result["download_url"] = "/api/report/download?id=" + result["report_id"]
+        return result
 
     def _open_meter(self):
         request = self.data["request"]
@@ -345,8 +403,7 @@ class Controller:
             return {key: self.data[key] for key in ("status", "revision", "request", "progress", "build", "project_id")} | {
                 "usage": self.usage(), "civilizations": self.civilizations, "agents": agent_catalog(),
                 "content_profile": content_profile(), "civilization_selection": self._selection_state(),
-                "runtime": {"parser_load": "Unverified", "smoke": "Unverified", "full_game": "Unverified", "strength": "Unverified"},
-                "host_required": True}
+                "runtime": self._runtime_state(), "host_required": True}
 
     def start(self, payload):
         with self.lock:
@@ -392,6 +449,9 @@ class Controller:
             self._save()
             self._open_meter()
             self.meter.phase("researching" if civ == "auto" else "authoring")
+            self._dev_event("workflow", "project_started", "info", "创作已开始。",
+                            {"mode": mode, "civilization": civ, "script_name": name, "agent": agent,
+                             "preferences": preferences})
             self._sync()
             return self.state()
 
@@ -419,6 +479,9 @@ class Controller:
                              civilization_choice=choice, status="authoring")
             self.data["revision"] += 1
             self._save()
+            self._dev_event("author", "civilization_selected", "info",
+                            "AI 已确定文明：" + civilization,
+                            {"civilization": civilization, "reason": reason.strip()})
             return self.next()
 
     def next(self):
@@ -496,11 +559,16 @@ class Controller:
                 self.data["progress"]["errors"] = ["Validation failed; the host must inspect and repair the submitted answers"]
                 self.data["revision"] += 1
                 self._save()
+                evidence = self.development.snapshot("validation_failed", self.project / "tmp/answer-diagnostics.json")
+                self._dev_event("workflow", "validation_failed", "error", str(exc),
+                                {"evidence": evidence} if evidence else {})
                 raise WorkflowError(str(exc)) from None
             self.data.update(status="ready", validation={"answers_sha256": signature, "fixed_sha256": self.data["fixed_sha256"]}, build=None)
             self.data["progress"]["errors"] = []
             self.data["revision"] += 1
             self._save()
+            self._dev_event("workflow", "validation_passed", "info", "参数静态校验通过。",
+                            {"answers_sha256": signature})
             return self.next()
 
     def _delivery_valid(self):
@@ -567,18 +635,25 @@ class Controller:
                 self.data.update(build=build, status="completed")
                 self.data["revision"] += 1
                 self._save()
+                self._dev_event("workflow", "build_completed", "info", "构建完成。",
+                                {"build_id": build_id, "package_sha256": build["package_sha256"],
+                                 "installable": build.get("installable")})
                 return self.next()
-            except InstallableAIError:
+            except InstallableAIError as exc:
                 if 'output' in locals() and output.exists():
                     shutil.rmtree(output)
                 self.data.update(status="ready", build=None)
                 self.data["revision"] += 1
                 self._save()
+                self._dev_event("workflow", "build_failed", "error", str(exc),
+                                {"stage": "installable_package"})
                 raise
-            except (OSError, ValueError):
+            except (OSError, ValueError) as exc:
                 self.data.update(status="invalid", build=None, validation=None)
                 self.data["revision"] += 1
                 self._save()
+                self._dev_event("workflow", "build_failed", "error", str(exc),
+                                {"stage": "render_or_delivery"})
                 raise
             finally:
                 if work:
@@ -592,7 +667,10 @@ class Controller:
                 raise WorkflowError("Start the project before changing its phase")
             if self._selection_pending() and payload.get("value") != "researching":
                 raise WorkflowError("Only the research phase is allowed before choosing a civilization")
-            return self.meter.phase(payload["value"])
+            result = self.meter.phase(payload["value"])
+            self._dev_event("workflow", "phase_changed", "info", "创作阶段切换：" + payload["value"],
+                            {"phase": payload["value"]})
+            return result
 
     def bind_usage_candidate(self, payload):
         """Browser may bind only a candidate already scoped to this workspace/host."""
@@ -630,6 +708,8 @@ class Controller:
                 for host, ids in sessions.items():
                     existing[host] = sorted(set(existing.get(host, [])) | set(ids))
                 self._save()
+                self._dev_event("system", "usage_sessions_bound", "info", "已绑定用量会话。",
+                                {"hosts": {host: len(ids) for host, ids in sessions.items()}})
                 return result
             if action == "complete":
                 self._sync()
@@ -638,8 +718,42 @@ class Controller:
                 declared = payload.get("all_sources_declared", False)
                 if type(declared) is not bool:
                     raise WorkflowError("all_sources_declared must be a JSON boolean")
-                return self.meter.complete(self.data["build"], declared)
+                result = self.meter.complete(self.data["build"], declared)
+                self._dev_event("system", "usage_completed", "info", "用量记录已封账。",
+                                {"all_sources_declared": declared, "coverage": result.get("coverage")})
+                return result
             return self.meter.handle(action, payload)
+
+    def feedback(self, payload):
+        with self.lock:
+            self._expected(payload)
+            source = payload.get("source", "host")
+            kind = payload.get("kind")
+            message = payload.get("message")
+            event = self.development.feedback(source, kind, message, {"revision": self.data["revision"]})
+            return {"ok": True, "event": event}
+
+    def development_report(self, payload):
+        with self.lock:
+            if payload.get("project_id") != self.data["project_id"]:
+                raise WorkflowError("Project identity does not match")
+            self._sync()
+            feedback = payload.get("feedback")
+            if feedback is not None:
+                if not isinstance(feedback, str) or len(feedback.strip()) > 4000:
+                    raise WorkflowError("Report feedback must be at most 4000 characters")
+                if feedback.strip():
+                    self.development.feedback("browser", "note", feedback.strip(),
+                                              {"revision": self.data["revision"]})
+            observations = self._browser_observations(payload.get("browser_observations"))
+            result = self._generate_development_report(observations)
+            self._dev_event("system", "report_generated", "info", "开发报告已生成。",
+                            {"report_id": result["report_id"], "issue_count": result["issue_count"],
+                             "feedback_count": result["feedback_count"]})
+            return result
+
+    def development_report_bundle(self, report_id):
+        return report_bundle(self.project, report_id)
 
     def close(self):
         with self.lock:
@@ -649,6 +763,16 @@ class Controller:
             if self.meter and self.data["status"] == "completed" and self._delivery_valid():
                 self.meter.complete(self.data["build"], all_sources_declared=False)
             report = self.meter.close() if self.meter else self.usage()
+            self._dev_event("workflow", "session_finished", "info", "创作会话已结束。",
+                            {"status": self.data["status"], "coverage": report.get("coverage")})
+            try:
+                final_report = self._generate_development_report()
+                self._dev_event("system", "final_report_generated", "info", "最终开发报告已自动生成。",
+                                {"report_id": final_report["report_id"]})
+            except (OSError, ValueError, DevelopmentReportError) as exc:
+                final_report = {"error": str(exc)}
+                self._dev_event("system", "final_report_failed", "error", "最终开发报告生成失败。",
+                                {"error": str(exc)})
             self._closed_result = {"status": "SESSION_FINISHED", "project_id": self.data["project_id"], "usage": report,
-                                   "build": self.data.get("build")}
+                                   "build": self.data.get("build"), "development_report": final_report}
             return self._closed_result

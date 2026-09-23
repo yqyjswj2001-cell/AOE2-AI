@@ -61,6 +61,12 @@ python -X utf8 -I -B adjusted/tools/query_creator_facts.py civilization Portugue
 ```
 命令在隔离输入包中运行。遇到“能不能填 0、范围是什么、和哪些键联动”时先查 PARAMETER_CONSTRAINTS.json：required_for_delivery 只表示生成完整脚本必须给值，runtime_applicability=not_proven 表示并未证明该分支本局会触发；zero_rule=allowed_by_static_rule 只表示机械校验允许 0，不表示策略上应该填 0，unspecified 则不能自行推断。资料 UNKNOWN 时指出缺口；不要因缺资料读取固定实现。
 
+作者或主代理一旦发现说明缺口、工具异常、无效返工或改进建议，立即登记到本项目开发事件中，不必在用户聊天里展开：
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py feedback --project <名称> --source author --kind issue --message "<具体问题>"
+python -X utf8 -B adjusted/web-author/web_session.py feedback --project <名称> --source author --kind suggestion --message "<具体建议>"
+```
+
 ## 检查与交付
 
 阶段按实际动作更新：researching、authoring、checking、repairing、packaging。
@@ -88,4 +94,4 @@ build 会从本机 AoE2DE 安装目录读取官方 `PromiDE.per2`，核对其实
 python -X utf8 -B adjusted/web-author/web_session.py usage --project <名称> --action complete
 python -X utf8 -B adjusted/web-author/web_session.py finish --project <名称>
 ```
-单纯关闭浏览器或结束会话不代表交付或用量完整。最终简短报告参数交付、实际用量覆盖和未验证部分。
+单纯关闭浏览器或结束会话不代表交付或用量完整。网页“开发报告”可随时一键生成 ZIP 快照；finish 时还会自动保留最终开发报告。报告包含历史错误、反馈、参数诊断、阶段/调用用量、构建回执和现有日志，但不能把未执行的游戏验证写成通过。最终聊天只需简短报告参数交付、实际用量覆盖和未验证部分。

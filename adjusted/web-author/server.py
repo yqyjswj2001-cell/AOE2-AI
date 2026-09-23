@@ -1,4 +1,4 @@
-"""Loopback HTTP surface; only explicit Start is a browser mutation."""
+"""Loopback HTTP surface for authoring, metering and developer report snapshots."""
 from __future__ import annotations
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import hmac
@@ -25,10 +25,14 @@ def make_server(controller, meta, port=0):
             raw = (json.dumps(value, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
             self._send(raw, "application/json; charset=utf-8", status)
 
-        def _send(self, raw, content_type, status=200):
+        def _send(self, raw, content_type, status=200, filename=None):
             self.send_response(status)
             self.send_header("Content-Type", content_type)
             self.send_header("Content-Length", str(len(raw)))
+            if filename is not None:
+                if not re.fullmatch(r"[A-Za-z0-9_.-]{1,180}", filename):
+                    raise WorkflowError("Invalid download filename")
+                self.send_header("Content-Disposition", 'attachment; filename="' + filename + '"')
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
             self.send_header("Referrer-Policy", "no-referrer")
@@ -93,6 +97,10 @@ def make_server(controller, meta, port=0):
                     return self._json(controller.next())
                 if route == "/api/author/usage":
                     return self._json(controller.usage())
+                if route == "/api/report/download":
+                    report_id = parse_qs(parsed.query).get("id", [""])[0]
+                    bundle = controller.development_report_bundle(report_id)
+                    return self._send(bundle.read_bytes(), "application/zip", filename=bundle.name)
                 if route == "/api/author/usage/export":
                     fmt = parse_qs(parsed.query).get("format", ["json"])[0]
                     if fmt not in {"json", "stages", "calls"}:
@@ -130,6 +138,8 @@ def make_server(controller, meta, port=0):
                     return self._json(controller.start(payload))
                 if route == "/api/usage/bind-session":
                     return self._json(controller.bind_usage_candidate(payload))
+                if route == "/api/report/generate":
+                    return self._json(controller.development_report(payload))
                 if not self._host():
                     return
                 if payload.get("project_id") != meta["project_id"]:
@@ -142,6 +152,8 @@ def make_server(controller, meta, port=0):
                     return self._json(controller.build(payload))
                 if route == "/api/host/phase":
                     return self._json(controller.phase(payload))
+                if route == "/api/host/feedback":
+                    return self._json(controller.feedback(payload))
                 if route == "/api/author/session/finish":
                     with controller.lock:
                         controller._sync()

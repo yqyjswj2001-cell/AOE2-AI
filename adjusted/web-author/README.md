@@ -31,7 +31,11 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 
 构建会使用本机游戏的官方 PromiDE.per2 作为加载顺序来源，并要求它引用的官方 Promisory 模块与仓库冻结基线逐字节一致；随后生成同名 .ai、主 .per、36 个模块及 resources/_common/ai 目录，作为可安装包。若找不到游戏入口或基线版本不一致则拒绝构建，不猜加载顺序。Parser/Load、实机开局、完整对局和强度仍为 Unverified；本功能不会自动安装或启动游戏。
 
-[用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。来源版本与许可见 [UPSTREAM.json](UPSTREAM.json) 和 [LICENSE](LICENSE)。
+[用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
+
+网页底部提供“生成创作报告”。点击后会生成开发用 ZIP，包含可读 Markdown、结构化 JSON、阶段/调用 CSV、历史开发事件，以及存在时的参数诊断、构建回执和 Web 会话日志；finish 时自动再保存一份最终报告。作者或主代理可用 `web_session.py feedback` 随时登记 issue / suggestion / note，避免修复后的问题从最终状态里消失。
+
+来源版本与许可见 [UPSTREAM.json](UPSTREAM.json) 和 [LICENSE](LICENSE)。
 
 ## Agent 与计量接入
 

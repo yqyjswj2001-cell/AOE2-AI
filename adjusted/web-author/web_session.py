@@ -227,7 +227,7 @@ def main(argv=None):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("launch", "serve", "wait", "next", "choose-civilization", "validate", "build", "phase", "finish", "usage"):
+    for name in ("launch", "serve", "wait", "next", "choose-civilization", "validate", "build", "phase", "feedback", "report", "finish", "usage"):
         sub = commands.add_parser(name)
         sub.add_argument("--project", required=True)
         sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
@@ -242,6 +242,10 @@ def main(argv=None):
                              help="JSON with civilization, reason and the expected_revision returned for this decision")
         if name == "phase":
             sub.add_argument("--value", required=True, choices=["researching", "authoring", "checking", "repairing", "packaging"])
+        if name == "feedback":
+            sub.add_argument("--kind", required=True, choices=["issue", "suggestion", "note"])
+            sub.add_argument("--source", default="host", choices=["host", "author"])
+            sub.add_argument("--message", required=True)
         if name == "usage":
             sub.add_argument("--action", choices=["report", "source", "events", "seal", "complete", "bind", "ccusage"], default="report")
             sub.add_argument("--payload", type=Path)
@@ -269,6 +273,10 @@ def main(argv=None):
                 result = request(meta, "/api/author/next")
             elif args.command == "choose-civilization":
                 result = host_action(meta, args.command, parse_json(args.choice.read_bytes()))
+            elif args.command == "feedback":
+                result = host_action(meta, "feedback", {"kind": args.kind, "source": args.source, "message": args.message})
+            elif args.command == "report":
+                result = request(meta, "/api/report/generate", {"project_id": meta["project_id"]}, timeout=30)
             elif args.command == "usage":
                 if args.action == "report":
                     result = request(meta, "/api/author/usage")

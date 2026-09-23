@@ -18,7 +18,7 @@
   let project = null, draftLoaded = false, storageAvailable = true, dirty = false, networkError = false;
   let lastRequestSignature = null, civilizationSignature = null, agentSignature = null;
   let wizardStep = 0, previewCivilization = null, catalog = [], agents = [], catalogReady = false, agentsReady = false;
-  let lastUsage = null, bindingBusy = false, bindingSignature = null;
+  let lastUsage = null, bindingBusy = false, bindingSignature = null, reportBusy = false;
   const STEP_NAMES = ['游戏模式', '文明', '设置', '生成'];
   const MODE_NAMES = {'1v1':'1v1 单挑','2v2':'2v2 团队战','3v3':'3v3 团队战','4v4':'4v4 团队战',ffa4:'4 人混战',ffa8:'8 人混战'};
   const finite = value => typeof value === 'number' && Number.isFinite(value);
@@ -30,6 +30,31 @@
     return (h ? h + '时 ' : '') + m + '分 ' + seconds % 60 + '秒';
   };
   const text = (id, value) => { $(id).textContent = value; };
+  function developerKey() { return project ? 'aoe2.web-author.developer.' + project : null; }
+  function developerObservations() {
+    const key = developerKey();
+    if (!key) return [];
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(value) ? value.filter(row => row && typeof row.kind === 'string' && typeof row.message === 'string') : [];
+    } catch (_) { return []; }
+  }
+  function rememberDeveloperIssue(kind, message) {
+    const key = developerKey();
+    if (!key || typeof message !== 'string' || !message.trim()) return;
+    try {
+      const now = new Date().toISOString(), rows = developerObservations();
+      const current = rows.find(row => row.kind === kind && row.message === message.trim());
+      if (current) { current.count = (Number.isInteger(current.count) ? current.count : 1) + 1; current.last_at = now; }
+      else rows.push({kind, message:message.trim().slice(0,1000), count:1, first_at:now, last_at:now});
+      localStorage.setItem(key, JSON.stringify(rows));
+    } catch (_) {}
+  }
+  function clearDeveloperIssues() {
+    const key = developerKey();
+    if (!key) return;
+    try { localStorage.removeItem(key); } catch (_) {}
+  }
   function notice(id, message) {
     text(id, message || '');
     $(id).classList.toggle('hidden', !message);
@@ -74,7 +99,9 @@
   function draftKey() { return 'aoe2.web-author.draft.' + project; }
   function storageFailure() {
     storageAvailable = false;
-    notice('draftNotice', '浏览器无法保存草稿。未提交的设置在关闭页面后可能丢失。');
+    const message = '浏览器无法保存草稿。未提交的设置在关闭页面后可能丢失。';
+    notice('draftNotice', message);
+    rememberDeveloperIssue('storage_failure', message);
   }
   function saveDraft() {
     if (!editable() || !project) return;
@@ -183,6 +210,11 @@
       wizardStep === 1 ? (selectedCivValid() ? '文明已选择。' : '选择文明或使用 AI 选择。') :
       wizardStep === 2 ? '选择 AI 并填写脚本名。' : '可返回修改。');
     renderSummary(); updateCivilizationSelection();
+    if ($('generateReportButton')) {
+      $('generateReportButton').disabled = reportBusy || !online || !state || stopped;
+      $('generateReportButton').setAttribute('aria-busy', String(reportBusy));
+      text('generateReportButton', reportBusy ? '正在生成…' : '生成创作报告');
+    }
   }
   async function api(path, options = {}) {
     const controller = new AbortController();
@@ -277,6 +309,7 @@
           img.hidden = true;
           const fallback = document.createElement('span'); fallback.className = 'civ-fallback'; fallback.textContent = '—'; button.prepend(fallback);
           notice('civilizationAssetNotice', '部分盾徽暂不可用，文明名称与选择仍可使用。');
+          rememberDeveloperIssue('civilization_asset', '部分文明盾徽加载失败。');
         }, {once:true});
         button.append(img);
       } else {
@@ -482,7 +515,9 @@
       catalogReady ? Promise.resolve({civilizations:catalog}) : api('/api/civilizations'),
       agentsReady ? Promise.resolve({agents}) : api('/api/agents')]);
     if (results[2].status === 'fulfilled' && Array.isArray(results[2].value.civilizations)) { catalog = results[2].value.civilizations; catalogReady = true; }
+    else if (!catalogReady && project) rememberDeveloperIssue('civilization_catalog', results[2].reason?.message || '文明资料读取失败。');
     if (results[3].status === 'fulfilled' && Array.isArray(results[3].value.agents)) { agents = results[3].value.agents; agentsReady = true; }
+    else if (!agentsReady && project) rememberDeveloperIssue('agent_catalog', results[3].reason?.message || 'AI 列表读取失败。');
     try {
       if (results[0].status === 'fulfilled') {
         validateState(results[0].value);
@@ -492,8 +527,10 @@
         renderState();
       } else {
         online = false; networkError = true;
+        const message = '连接中断，正在重试。';
         text('connection', '连接中断'); $('connection').className = 'connection offline';
-        notice('errorNotice', '连接中断，正在重试。');
+        notice('errorNotice', message);
+        rememberDeveloperIssue('state_refresh', results[0].reason?.message || message);
         syncActions();
       }
       if (results[1].status === 'fulfilled') renderUsage(results[1].value);
@@ -501,11 +538,12 @@
       else {
         text('usageState', '用量暂不可用');
         text('usageCoverage', '暂时无法读取用量。');
+        rememberDeveloperIssue('usage_refresh', results[1].reason?.message || '用量读取失败。');
       }
     } catch (error) {
       online = false; networkError = !stopped;
       text('connection', stopped ? '项目已变更' : '状态读取失败'); $('connection').className = 'connection offline';
-      notice('errorNotice', error.message); syncActions();
+      notice('errorNotice', error.message); rememberDeveloperIssue('state_validation', error.message); syncActions();
     }
   }
   function refresh() {
@@ -551,10 +589,32 @@
       })});
       text('sessionBindingNotice', '会话已连接。');
     } catch (error) {
-      text('sessionBindingNotice', error.name === 'AbortError' ? '连接超时，请重试。' : error.message);
+      const message = error.name === 'AbortError' ? '连接超时，请重试。' : error.message;
+      text('sessionBindingNotice', message);
+      rememberDeveloperIssue('usage_binding', message);
     } finally {
       await refresh(); bindingBusy = false;
       if (lastUsage) renderSessionBinding(lastUsage);
+    }
+  });
+  $('generateReportButton').addEventListener('click', async () => {
+    if (reportBusy || !online || !state || !project || stopped) return;
+    reportBusy = true; syncActions(); text('reportState', '正在生成…');
+    try {
+      const feedback = $('reportFeedback').value.trim();
+      const result = await api('/api/report/generate', {method:'POST', body:JSON.stringify({
+        project_id:project, feedback, browser_observations:developerObservations()
+      })});
+      const link = document.createElement('a');
+      link.href = result.download_url; link.download = result.download_name || 'aoe2-development-report.zip';
+      link.hidden = true; document.body.append(link); link.click(); link.remove();
+      $('reportFeedback').value = ''; clearDeveloperIssues();
+      text('reportState', '已生成 · ' + number(result.issue_count) + ' 个问题/提醒 · ' + number(result.feedback_count) + ' 条反馈');
+    } catch (error) {
+      const message = error.name === 'AbortError' ? '报告生成超时，请重试。' : error.message;
+      text('reportState', message); rememberDeveloperIssue('report_generation', message);
+    } finally {
+      reportBusy = false; syncActions();
     }
   });
   $('refreshButton').addEventListener('click', () => { if (!stopped) { notice('errorNotice', ''); refresh(); } });
@@ -568,7 +628,8 @@
       await api('/api/start', {method: 'POST', body: JSON.stringify({expected_revision: state.revision, ...value})});
       clearDraft();
     } catch (error) {
-      notice('errorNotice', error.name === 'AbortError' ? '提交超时，正在刷新状态。' : error.message);
+      const message = error.name === 'AbortError' ? '提交超时，正在刷新状态。' : error.message;
+      notice('errorNotice', message); rememberDeveloperIssue('start_submit', message);
     } finally {
       if (refreshPromise) await refreshPromise;
       await refresh();
