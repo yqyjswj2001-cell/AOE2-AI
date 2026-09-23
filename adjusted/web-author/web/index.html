@@ -56,37 +56,59 @@
 </div><button id="resetPreferences" class="text-button" type="button">恢复为均衡</button></fieldset>
 </section>
 <section id="wizardPanel3" class="wizard-panel" aria-labelledby="reviewTitle" hidden>
+<div id="reviewBeforeStart">
 <h3 id="reviewTitle" class="section-title">确认设置</h3>
 <dl id="selectionSummary" class="selection-summary"></dl>
 <div class="start-actions"><p id="startHint" class="field-help">开始后本次设置不能修改。</p><button id="startButton" class="button primary" type="submit" disabled>开始生成</button></div>
+</div>
 </section>
 </fieldset>
 <div id="wizardActions" class="wizard-actions"><button id="previousStep" class="button secondary hidden" type="button">上一步</button><span id="navigationHint" class="field-help">请选择一种对局模式。</span><button id="nextStep" class="button primary" type="button" disabled>下一步 · 选择文明</button></div>
 </form>
-</section>
-<aside id="progressColumn" class="side-column" aria-label="生成状态" hidden>
-<section class="panel progress-panel" aria-labelledby="progressTitle"><div class="panel-head"><h2 id="progressTitle">进度</h2><button id="refreshButton" class="text-button" type="button">刷新</button></div>
-<ol class="workflow"><li id="stepConfig"><span class="workflow-dot"></span><span>设置</span></li><li id="stepSelect"><span class="workflow-dot"></span><span>文明</span></li><li id="stepAuthor"><span class="workflow-dot"></span><span>参数</span></li><li id="stepValidate"><span class="workflow-dot"></span><span>检查</span></li><li id="stepBuild"><span class="workflow-dot"></span><span>文件</span></li></ol>
-<div id="civilizationDecision" class="civilization-decision hidden" aria-live="polite"><p class="eyebrow" id="civilizationDecisionLabel">已选文明</p><h3 id="civilizationDecisionName"></h3><p id="civilizationDecisionReason" class="field-help"></p></div><div class="progress-heading"><span>参数</span><strong id="fillCount">等待记录</strong></div><progress id="fillProgress" aria-label="参数填写进度"></progress><p id="validationState" class="field-help">等待项目状态。</p>
-<div id="buildResult" class="build-result hidden"><h3>文件已生成</h3><dl id="buildDetails"></dl></div><p class="boundary">尚未进行游戏实测。</p></section>
 
-</aside></div>
-<section class="panel usage-panel" aria-labelledby="usageTitle"><div class="panel-head"><h2 id="usageTitle">用量</h2><span id="usageState" class="muted">等待记录</span></div>
-<div class="usage-cards"><div><span>token</span><strong id="usageTokens">尚未采集</strong></div><div><span>总用时</span><strong id="usageElapsed">等待记录</strong></div></div><details><summary>详细信息</summary><div class="usage-cards"><div><span>处理时间</span><strong id="usageWork">尚未开始</strong></div><div><span>未统计时间</span><strong id="usageUnobserved">尚未确定</strong></div></div>
+<div id="generationDashboard" class="generation-dashboard" hidden>
+<section class="final-section progress-section" aria-labelledby="progressTitle">
+<div class="panel-head"><h3 id="progressTitle">生成进度</h3><button id="refreshButton" class="text-button" type="button">刷新</button></div>
+<ol class="workflow"><li id="stepConfig"><span class="workflow-dot"></span><span>设置</span></li><li id="stepSelect"><span class="workflow-dot"></span><span>文明</span></li><li id="stepAuthor"><span class="workflow-dot"></span><span>参数</span></li><li id="stepValidate"><span class="workflow-dot"></span><span>检查</span></li><li id="stepBuild"><span class="workflow-dot"></span><span>文件</span></li></ol>
+<div id="civilizationDecision" class="civilization-decision hidden" aria-live="polite"><p class="eyebrow" id="civilizationDecisionLabel">已选文明</p><h3 id="civilizationDecisionName"></h3><p id="civilizationDecisionReason" class="field-help"></p></div>
+<div class="progress-heading"><span>参数</span><strong id="fillCount">等待记录</strong></div><progress id="fillProgress" aria-label="参数填写进度"></progress><p id="validationState" class="field-help">等待项目状态。</p>
+<div id="buildResult" class="build-result hidden"><h3>文件已生成</h3><dl id="buildDetails"></dl></div>
+<p class="boundary">尚未进行游戏实测。</p>
+</section>
+
+<section id="usagePanel" class="final-section usage-panel" aria-labelledby="usageTitle">
+<div class="panel-head"><h3 id="usageTitle">用量</h3><span id="usageState" class="muted">等待记录</span></div>
+<div class="usage-cards">
+<div><span>token</span><strong id="usageTokens">尚未采集</strong></div>
+<div><span>总用时</span><strong id="usageElapsed">等待记录</strong></div>
+<div><span>处理时间</span><strong id="usageWork">尚未开始</strong></div>
+<div><span>未统计时间</span><strong id="usageUnobserved">尚未确定</strong></div>
+</div>
 <p id="usageCapture" class="capture-status" role="status">正在读取…</p>
-<details id="sessionBinding" class="session-binding hidden"><summary>用量会话</summary><p id="sessionBindingHelp" class="field-help">选择本次使用的会话。</p><div class="session-binding-controls"><div class="field"><label for="usageSession">本次会话</label><select id="usageSession" aria-describedby="sessionBindingHelp"><option value="">请选择会话</option></select></div><button id="bindSessionButton" class="button secondary" type="button" disabled>连接会话</button></div><p id="sessionBindingNotice" class="field-help" role="status"></p></details><p id="usageCoverage" class="notice">尚未取得用量记录。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
-<details><summary>阶段与导出</summary><p id="usageBreakdown" class="usage-detail">详细用量尚未采集。</p><div class="table-scroll"><table><caption>各阶段用量与时间</caption><thead><tr><th scope="col">阶段</th><th scope="col">已记录 token</th><th scope="col">历时</th><th scope="col">失败 / 操作</th></tr></thead><tbody id="usageStages"><tr><td colspan="4">尚无阶段报告。</td></tr></tbody></table></div><p id="usageModels" class="usage-detail">模型用量尚未采集。</p><p id="usageQuality" class="usage-detail"></p>
-<div class="export-links"><a class="button secondary" href="/api/author/usage/export?format=json" download>导出完整 JSON</a><a class="button secondary" href="/api/author/usage/export?format=stages" download>导出阶段 CSV</a><a class="button secondary" href="/api/author/usage/export?format=calls" download>导出调用 CSV</a></div></details>
-<p class="boundary">未记录的数据不会计入。</p></details></section>
-<section class="panel developer-report-panel" aria-labelledby="developerReportTitle">
-<div class="panel-head"><h2 id="developerReportTitle">开发报告</h2><button id="generateReportButton" class="button secondary" type="button">生成创作报告</button></div>
-<details><summary>补充反馈</summary><div class="field"><label for="reportFeedback">问题或建议</label><textarea id="reportFeedback" maxlength="4000" rows="4" placeholder="可选。写下这轮遇到的问题、建议或异常现象。"></textarea></div></details>
+<section id="sessionBinding" class="session-binding hidden" aria-labelledby="sessionBindingTitle">
+<h4 id="sessionBindingTitle">用量会话</h4><p id="sessionBindingHelp" class="field-help">选择本次使用的会话。</p>
+<div class="session-binding-controls"><div class="field"><label for="usageSession">本次会话</label><select id="usageSession" aria-describedby="sessionBindingHelp"><option value="">请选择会话</option></select></div><button id="bindSessionButton" class="button secondary" type="button" disabled>连接会话</button></div><p id="sessionBindingNotice" class="field-help" role="status"></p>
+</section>
+<p id="usageCoverage" class="notice">尚未取得用量记录。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
+<p id="usageBreakdown" class="usage-detail">详细用量尚未采集。</p>
+<div class="table-scroll"><table><caption>各阶段用量与时间</caption><thead><tr><th scope="col">阶段</th><th scope="col">已记录 token</th><th scope="col">历时</th><th scope="col">失败 / 操作</th></tr></thead><tbody id="usageStages"><tr><td colspan="4">尚无阶段报告。</td></tr></tbody></table></div>
+<p id="usageModels" class="usage-detail">模型用量尚未采集。</p><p id="usageQuality" class="usage-detail"></p>
+<div class="export-links"><a class="button secondary" href="/api/author/usage/export?format=json" download>完整 JSON</a><a class="button secondary" href="/api/author/usage/export?format=stages" download>阶段 CSV</a><a class="button secondary" href="/api/author/usage/export?format=calls" download>调用 CSV</a></div>
+<p class="boundary">未记录的数据不会计入。</p>
+</section>
+
+<section class="final-section developer-report-panel" aria-labelledby="developerReportTitle">
+<div class="panel-head"><h3 id="developerReportTitle">开发报告</h3><button id="generateReportButton" class="button secondary" type="button">生成创作报告</button></div>
+<div class="field report-feedback"><label for="reportFeedback">补充问题或建议</label><textarea id="reportFeedback" maxlength="4000" rows="4" placeholder="可选。写下这轮遇到的问题、建议或异常现象。"></textarea></div>
 <p id="reportState" class="field-help" role="status">生成两个 Markdown：主报告直接发给开发，技术明细用于追问题。</p>
 <div id="reportResult" class="report-result hidden">
 <div class="report-actions"><button id="copyReportButton" class="button secondary" type="button">复制主报告</button><a id="downloadReportLink" class="button secondary" href="#" download>下载主报告</a><a id="downloadDetailsLink" class="button secondary" href="#" download>下载技术明细</a></div>
 <label class="report-output-label" for="reportOutput">主报告内容</label><textarea id="reportOutput" class="report-output" readonly rows="18"></textarea>
 </div>
 </section>
+</div>
+</section>
+</div>
 <footer><span id="projectLabel">项目 · 等待连接</span><span>本地运行</span></footer>
 </main><noscript><p class="notice">此网页需要启用 JavaScript 才能读取项目状态和提交设置。</p></noscript>
 </body></html>

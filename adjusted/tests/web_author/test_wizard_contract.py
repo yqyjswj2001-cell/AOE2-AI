@@ -54,6 +54,17 @@ class WizardContractTests(unittest.TestCase):
   self.assertIn('主代理负责网页服务，不负责网页交互',detail)
   self.assertIn('等待我完成设置',agent)
   self.assertIn('我点击开始生成后',agent)
+ def test_final_step_owns_flat_usage_and_report_layout(self):
+  html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
+  js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
+  self.assertNotIn('<details',html)
+  self.assertIn('id="generationDashboard"',html)
+  self.assertIn('id="usagePanel"',html)
+  self.assertGreater(html.index('id="usagePanel"'),html.index('id="generationDashboard"'))
+  self.assertGreater(html.index('id="developerReportTitle"'),html.index('id="usagePanel"'))
+  self.assertNotIn('progressColumn',html+js)
+  self.assertIn("$('authorForm').classList.toggle('hidden', finalRunning)",js)
+  self.assertIn("$('generationDashboard').hidden = !finalRunning",js)
  def test_public_catalogs_and_only_allowlisted_icons(self):
   meta={'host_token':'fixture-token','instance_id':'fixture','project_id':self.app.data['project_id']}
   server=make_server(self.app,meta,0);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()

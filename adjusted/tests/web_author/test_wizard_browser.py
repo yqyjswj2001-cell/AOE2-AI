@@ -58,8 +58,8 @@ def main():
             page.wait_for_selector("#agent", state="attached")
             assert page.locator("#wizardPanel0").is_visible()
             assert page.locator("#nextStep").is_disabled()
-            assert page.locator("#usageTokens").inner_text() == "未采集"
-            assert "尚未绑定本轮会话" in page.locator("#usageCapture").inner_text()
+            assert not page.locator("#generationDashboard").is_visible()
+            assert not page.locator("#usagePanel").is_visible()
             page.locator('input[name="mode"][value="ffa8"]').check()
             page.locator("#nextStep").click()
             assert page.locator("#civilizationGrid button").count() == 42
@@ -105,6 +105,7 @@ def main():
             assert not posts
             page.locator("#nextStep").click()
             assert page.locator("#wizardPanel3").is_visible()
+            assert not page.locator("#generationDashboard").is_visible()
             assert not posts
             assert "OpenAI Codex" in page.locator("#selectionSummary").inner_text()
             page.locator("#wizardNav2").click()
@@ -119,12 +120,15 @@ def main():
             page.screenshot(path=str(OUT / "wizard-settings-desktop.png"), full_page=True)
             page.locator("#nextStep").click()
             page.locator("#startButton").click()
-            page.wait_for_function("document.querySelector('#statusBadge').textContent==='填写参数中'")
+            page.wait_for_function("document.querySelector('#statusBadge').textContent==='生成中'")
+            assert page.locator("#generationDashboard").is_visible()
+            assert page.locator("#usagePanel").is_visible()
+            assert not page.locator("#authorForm").is_visible()
             assert len(posts) == 1 and posts[0]["agent"] == "codex"
             assert posts[0]["civilization"] == first["id"] and posts[0]["preferences"]["imperial"] == 83
             assert page.locator("#startButton").is_disabled()
             page.reload(wait_until="networkidle")
-            assert len(posts) == 1 and page.locator("#progressColumn").is_visible()
+            assert len(posts) == 1 and page.locator("#generationDashboard").is_visible()
             page.screenshot(path=str(OUT / "wizard-progress-desktop.png"), full_page=True)
             checks.append("agent required; help says selection is not connection; settings restored; Enter cannot start from settings; final start sends once and reload never resubmits")
             project.update(project_id="synthetic-wizard-b",status="configuring",revision=1,request=None)
@@ -145,12 +149,10 @@ def main():
                 build={"installable":False,"script_name":"Legacy_Test","build_id":"synthetic-only"})
             flags["catalog_failure"] = True
             page.reload(wait_until="networkidle")
-            assert page.locator("#statusBadge").inner_text() == "模块已交付"
-            assert page.locator("#progressColumn").is_visible()
-            assert "未选择宿主" in page.locator("#selectionSummary").inner_text()
-            assert "尚无游戏入口" in page.locator("#buildDetails").inner_text()
+            assert page.locator("#statusBadge").inner_text() == "文件已生成"
+            assert page.locator("#generationDashboard").is_visible()
+            assert "暂不能直接安装" in page.locator("#buildDetails").inner_text()
             assert len(posts) == 1
-            page.locator("summary").click()
             export_links = page.locator(".export-links a").evaluate_all("(xs)=>xs.map(x=>x.getAttribute('href'))")
             assert export_links == ["/api/author/usage/export?format=json", "/api/author/usage/export?format=stages", "/api/author/usage/export?format=calls"]
             checks.append("legacy project with no agent and catalog 404 retains state, progress, build details and all three export links")
@@ -167,7 +169,7 @@ def binding_preview():
     civs, agents = catalog(), agent_catalog()
     project_id = "synthetic-desktop-and-binding"
     selected = {"mode":"ffa8","civilization":civs["civilizations"][0]["id"],"agent":"codex","script_name":"Synthetic_Only","preferences":dict.fromkeys(("dark","feudal","castle","imperial"),50)}
-    state = {"project_id":project_id,"status":"configuring","revision":7,"request":None,"civilizations":civs["civilizations"],"progress":{"filled":None,"total":1715}}
+    state = {"project_id":project_id,"status":"authoring","revision":7,"request":selected,"civilizations":civs["civilizations"],"progress":{"filled":420,"total":1715,"errors":[]}}
     usage = {"run_id":"synthetic-meter-run","state":"RUNNING","coverage":"NOT_CONNECTED","tokens":{"total_tokens":None},"time":{"elapsed_seconds":17},
         "auto_capture":{"selected_agent":"codex","status":"NO_BINDINGS","bound_session_count":0,"session_candidates":[{"session_id":"synthetic-current-session-12345678","updated_at":"2026-09-22T03:20:00Z","is_child":False,"workspace_match":True}],
             "connection":{"code":"NO_BINDINGS","message":"尚未绑定本轮会话。","action":"bind_session","action_label":"请选择本轮创作会话。"}}}
@@ -196,7 +198,7 @@ def binding_preview():
             page=context.new_page()
             page.on("pageerror",lambda error:errors.append(str(error)))
             page.goto("http://wizard.test/",wait_until="networkidle")
-            page.wait_for_function("document.querySelectorAll('#civilizationGrid img').length===42 && [...document.querySelectorAll('#civilizationGrid img')].every(x=>x.complete&&x.naturalWidth>0)")
+            page.wait_for_function("document.querySelector('#generationDashboard') && !document.querySelector('#generationDashboard').hidden")
             for width in (1440,1920):
                 page.set_viewport_size({"width":width,"height":1080})
                 page.evaluate("scrollTo(0,0)")
@@ -205,7 +207,7 @@ def binding_preview():
             assert all(row["lastShieldBottom"]<1080 and not row["horizontalOverflow"] for row in dimensions),dimensions
             assert "请选择本轮创作会话" in page.locator("#usageCapture").inner_text()
             assert "bind_session" not in page.locator("#usageCapture").inner_text()
-            page.locator("#sessionBinding summary").click()
+            assert page.locator("#sessionBinding").is_visible()
             assert page.locator("#bindSessionButton").is_disabled()
             assert not posts
             page.locator("#usageSession").select_option("synthetic-current-session-12345678")

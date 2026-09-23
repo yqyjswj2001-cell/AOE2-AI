@@ -198,8 +198,11 @@
       else button.removeAttribute('aria-current');
       button.classList.toggle('complete', step < wizardStep);
     }
-    $('workspace').classList.toggle('show-progress', wizardStep === 3);
-    $('progressColumn').hidden = wizardStep !== 3;
+    const finalRunning = wizardStep === 3 && locked;
+    $('reviewBeforeStart').hidden = locked;
+    $('authorForm').classList.toggle('hidden', finalRunning);
+    $('generationDashboard').hidden = !finalRunning;
+    $('wizardActions').classList.toggle('hidden', finalRunning);
     $('previousStep').classList.toggle('hidden', wizardStep === 0);
     $('previousStep').disabled = busy;
     $('nextStep').classList.toggle('hidden', wizardStep === 3);
