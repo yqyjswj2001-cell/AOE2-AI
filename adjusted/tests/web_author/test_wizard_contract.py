@@ -43,6 +43,17 @@ class WizardContractTests(unittest.TestCase):
   self.app.bind_usage_candidate({**base,'session_id':'owned-session'})
   self.assertEqual(self.app.data['usage_sessions'],{'cursor':['owned-session']})
   self.assertEqual(self.app.data['task_sha256'],frozen)
+ def test_skill_keeps_browser_interaction_user_owned(self):
+  root=(ROOT/'SKILL.md').read_text(encoding='utf-8')
+  detail=(ROOT/'adjusted/skills/aoe2-web-author/SKILL.md').read_text(encoding='utf-8')
+  agent=(ROOT/'adjusted/skills/aoe2-web-author/agents/openai.yaml').read_text(encoding='utf-8')
+  self.assertIn('网页设置默认由用户完成',root)
+  self.assertIn('不得因为流程出现“网页、选择、点击”等描述就自行调用 Computer Use',root)
+  self.assertIn('网页设置默认由用户操作',detail)
+  self.assertIn('只有用户明确要求代理代为操作网页时',detail)
+  self.assertIn('主代理负责网页服务，不负责网页交互',detail)
+  self.assertIn('等待我完成设置',agent)
+  self.assertIn('我点击开始生成后',agent)
  def test_public_catalogs_and_only_allowlisted_icons(self):
   meta={'host_token':'fixture-token','instance_id':'fixture','project_id':self.app.data['project_id']}
   server=make_server(self.app,meta,0);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()

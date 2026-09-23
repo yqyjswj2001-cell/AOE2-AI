@@ -1,6 +1,6 @@
 interface:
   display_name: "AOE2 AI"
   short_description: "选择模式和文明，生成 AOE2 AI 脚本"
-  default_prompt: "使用 $aoe2-web-author 打开 AOE2 AI 页面，按我的设置生成脚本。"
+  default_prompt: "使用 $aoe2-web-author 启动 AOE2 AI 页面并等待我完成设置；我点击开始生成后，再继续生成脚本。"
 policy:
   allow_implicit_invocation: true
