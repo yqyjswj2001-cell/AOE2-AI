@@ -116,10 +116,11 @@ def main():
             page.locator('[data-civilization="auto"]').click()
             assert page.locator('#civilization').input_value() == 'auto'
             page.locator('[data-civilization="random"]').click()
-            assert page.locator('#civilization').input_value() in {c['id'] for c in civs['civilizations']}
+            random_choice = page.locator('#civilization').input_value()
+            assert random_choice in {c['id'] for c in civs['civilizations']}
             page.locator(f'[data-civilization="{first["id"]}"]').hover()
             assert page.locator('#detailName').inner_text() == first['name']
-            assert page.locator('#civilization').input_value() == ''
+            assert page.locator('#civilization').input_value() == random_choice
             page.locator('#civilizationSearch').fill(first['name'])
             assert page.locator('#civilizationGrid button:visible').count() >= 1
             page.locator(f'[data-civilization="{first["id"]}"]').click()
