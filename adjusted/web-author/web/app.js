@@ -4,7 +4,8 @@
   const $ = id => document.getElementById(id);
   const AGES = ['dark', 'feudal', 'castle', 'imperial'];
   const MODES = ['1v1', '2v2', '3v3', '4v4', 'ffa4', 'ffa8'];
-  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v3';
+  const OUTPUT_MODES = ['raw_scripts', 'share_package'];
+  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v4';
   const STATUS = {
     configuring: ['待配置', ''],
     selecting: ['选择文明', '正在选择文明。'],
@@ -94,6 +95,7 @@
       agent: $('agent')?.value || '',
       usage_authorized: usageConsent() === 'allow',
       script_name: $('scriptName').value,
+      output_mode: document.querySelector('input[name="output_mode"]:checked')?.value || '',
       preferences: Object.fromEntries(AGES.map(age => [age, Number($(age).value)]))
     };
   }
@@ -106,6 +108,9 @@
         input.value === (value.usage_authorized ? 'allow' : 'decline');
     });
     $('scriptName').value = typeof value.script_name === 'string' ? value.script_name : '';
+    document.querySelectorAll('input[name="output_mode"]').forEach(input => {
+      input.checked = input.value === value.output_mode;
+    });
     AGES.forEach(age => { $(age).value = integer(value.preferences?.[age]) && value.preferences[age] <= 100 ? value.preferences[age] : 50; });
     updateSliders();
     updateCivilizationSelection(); showCivilization($('civilization').value || state?.civilizations[0]?.id); renderAgentHelp();
@@ -117,7 +122,7 @@
   function validSelection(value) {
     return authorizationReady() && authorizationConfirmed() && MODES.includes(value.mode) && (state?.civilizations || []).length > 0 &&
       (value.civilization === 'auto' || state.civilizations.some(c => c.id === value.civilization)) &&
-      /^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(value.script_name) && validPreferences(value.preferences);
+      /^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(value.script_name) && OUTPUT_MODES.includes(value.output_mode) && validPreferences(value.preferences);
   }
   function draftKey() { return 'aoe2.web-author.draft.' + project; }
   function storageFailure() {
@@ -147,7 +152,7 @@
       const draft = JSON.parse(raw), value = draft?.value;
       const allowedCiv = value?.civilization === '' || value?.civilization === 'auto' ||
         (state.civilizations || []).some(c => c.id === value?.civilization);
-      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v2', 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
+      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v3', 'aoe2-parameter-web-draft-v2', 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
           (value.mode !== '' && !MODES.includes(value.mode)) || !allowedCiv ||
           typeof value.script_name !== 'string' || value.script_name.length > 48 || !validPreferences(value.preferences)) {
         notice('draftNotice', '这份浏览器草稿与当前资料不匹配，未恢复。请重新设置。');
@@ -203,7 +208,8 @@
     const agent = agents.find(a => a.id === value.agent);
     const lines = [
       ['对局', MODE_NAMES[value.mode] || '尚未选择'],
-      ['文明', value.civilization === 'auto' ? '由 AI 选择' : civ?.name || value.civilization || '尚未选择']
+      ['文明', value.civilization === 'auto' ? '由 AI 选择' : civ?.name || value.civilization || '尚未选择'],
+      ['输出', value.output_mode === 'share_package' ? '分享脚本包' : value.output_mode === 'raw_scripts' ? '原生脚本' : '尚未选择']
     ];
     $('selectionSummary').replaceChildren();
     lines.forEach(([name, value]) => {
@@ -469,17 +475,28 @@
     $('buildDetails').replaceChildren();
     if (!show) return;
     const fields = [
-      ['文件类型', 'PER 脚本'],
+      ['输出', build.output_mode === 'share_package' ? '分享脚本包' : '原生脚本'],
       ['脚本名', build.script_name || state.request?.script_name],
       ['脚本文件', integer(build.script_files) ? build.script_files + ' 个 .per' : '—'],
-      ['输出目录', build.script_root || build.path],
+      ['输出位置', build.package_file || build.script_root || build.path],
       ['答卷 SHA-256', build.answers_sha256 || build.parameter_sha256 || build.parameters_sha256],
       ['文件 SHA-256', build.package_sha256 || build.manifest_sha256]
     ];
     fields.forEach(([label, value]) => {
       if (typeof value !== 'string' || !value) return;
       const dt = document.createElement('dt'), dd = document.createElement('dd');
-      dt.textContent = label; dd.textContent = value; $('buildDetails').append(dt, dd);
+      dt.textContent = label;
+      if (label === '输出位置' && build.output_mode === 'share_package') {
+        const link = document.createElement('a');
+        link.href = '/api/delivery/download';
+        link.download = build.package_name || (build.script_name || 'scripts') + '.zip';
+        link.className = 'text-button delivery-download';
+        link.textContent = '下载 ' + link.download;
+        dd.append(link);
+      } else {
+        dd.textContent = value;
+      }
+      $('buildDetails').append(dt, dd);
     });
   }
   function renderState() {
