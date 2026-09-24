@@ -240,6 +240,7 @@ def _markdown(report):
         f"- 脚本名：{request.get('script_name') or '尚未设置'}",
         f"- 模式：{request.get('mode') or '尚未设置'}",
         f"- 文明：{request.get('civilization') or '尚未设置'}",
+        f"- 输出：{'分享脚本包' if request.get('output_mode') == 'share_package' else '原生脚本' if request.get('output_mode') == 'raw_scripts' else '旧项目未记录'}",
         f"- 用量授权：{'允许自动计量' if request.get('usage_authorized') is True else '本轮不计量' if request.get('usage_authorized') is False else '旧项目未记录'}",
         "",
         "## 问题汇总",
@@ -305,9 +306,10 @@ def _markdown(report):
         "## 脚本输出",
         "",
         f"- 构建 ID：{build.get('build_id') or '尚无'}",
+        f"- 输出方式：{'分享脚本包' if build.get('output_mode') == 'share_package' else '原生脚本' if build else '尚无构建'}",
         f"- 脚本文件：{build.get('script_files') if build else '尚无构建'}",
         f"- 静态校验：{build.get('static_validation') or '未记录'}",
-        f"- 输出目录：{build.get('script_root') or build.get('path') or '尚无'}",
+        f"- 输出位置：{build.get('package_file') or build.get('script_root') or build.get('path') or '尚无'}",
     ]
 
     lines += ["", "## 过程记录", ""]

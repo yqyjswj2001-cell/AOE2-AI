@@ -12,6 +12,7 @@ import tempfile
 import threading
 import time
 import uuid
+import zipfile
 
 from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
@@ -27,6 +28,7 @@ UI_TEST_ROOT = ROOT / "adjusted/.local/ui-token-revision/tmp"
 TOOLS = ROOT / "adjusted/tools"
 NAME = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,47}\Z")
 MODES = {"1v1", "2v2", "3v3", "4v4", "ffa4", "ffa8"}
+OUTPUT_MODES = {"raw_scripts", "share_package"}
 AGES = {"dark", "feudal", "castle", "imperial"}
 SCHEMA = "aoe2-web-author-project-v1"
 
@@ -626,12 +628,15 @@ class Controller:
             civ = payload.get("civilization")
             preferences = payload.get("preferences")
             name = payload.get("script_name")
+            output_mode = payload.get("output_mode", "raw_scripts")
             if not isinstance(mode, str) or not isinstance(civ, str) or mode not in MODES or civ not in {"auto", *(row["id"] for row in self.civilizations)}:
                 raise WorkflowError("Select a supported mode and civilization")
             if not isinstance(name, str) or not NAME.fullmatch(name):
                 raise WorkflowError("Script name must start with a letter and contain 1-48 ASCII letters, digits, underscore or hyphen")
             if not isinstance(preferences, dict) or set(preferences) != AGES or any(type(v) is not int or not 0 <= v <= 100 for v in preferences.values()):
                 raise WorkflowError("All four age preferences must be integers within 0..100")
+            if not isinstance(output_mode, str) or output_mode not in OUTPUT_MODES:
+                raise WorkflowError("Select raw scripts or a share package")
             agent = normalize_agent(payload.get("agent", "auto"))
             explicit_usage_choice = "usage_authorized" in payload
             usage_authorized = payload.get("usage_authorized", False)
@@ -643,7 +648,7 @@ class Controller:
                     or authorization.get("authorized") is not usage_authorized):
                 raise WorkflowError("Confirm usage authorization before starting generation")
             request = {"mode": mode, "civilization": civ, "preferences": preferences, "script_name": name,
-                       "agent": agent, "usage_authorized": usage_authorized}
+                       "output_mode": output_mode, "agent": agent, "usage_authorized": usage_authorized}
             selection = selection_context(self.civilizations, self.data["project_id"]) if civ == "auto" else {}
             choice = None if civ == "auto" else {
                 "civilization": civ, "reason": "", "selected_by": "user", "selected_at": time.time()}
@@ -672,8 +677,8 @@ class Controller:
             self._open_meter()
             self.meter.phase("researching" if civ == "auto" else "authoring")
             self._dev_event("workflow", "project_started", "info", "创作已开始。",
-                            {"mode": mode, "civilization": civ, "script_name": name, "agent": agent,
-                             "usage_authorized": usage_authorized, "preferences": preferences})
+                            {"mode": mode, "civilization": civ, "script_name": name, "output_mode": output_mode,
+                             "agent": agent, "usage_authorized": usage_authorized, "preferences": preferences})
             self._sync()
             self._write_handoff()
             return self.state()
@@ -815,6 +820,20 @@ class Controller:
         except (OSError, ValueError):
             return False
 
+    def delivery_file(self):
+        with self.lock:
+            self._sync()
+            build = self.data.get("build") or {}
+            if self.data.get("status") != "completed" or build.get("output_mode") != "share_package":
+                raise WorkflowError("This project has no share package")
+            if not self._delivery_valid():
+                raise WorkflowError("Share package delivery is no longer valid")
+            path = safe_path(build.get("package_file", ""))
+            root = safe_path(self.project / "delivery" / build["build_id"])
+            if path.parent != root or path.suffix.lower() != ".zip" or not path.is_file():
+                raise WorkflowError("Share package path is invalid")
+            return path
+
     def build(self, payload):
         with self.lock:
             self._sync()
@@ -836,43 +855,87 @@ class Controller:
                     raise WorkflowError("Script delivery requires exactly 36 rendered PER files")
                 build_id = "build-" + uuid.uuid4().hex[:12]
                 output = safe_path(self.project / "delivery" / build_id)
+                output.mkdir(parents=True)
                 script_name = self.data["request"]["script_name"]
-                script_root = safe_path(output / script_name)
-                script_root.mkdir(parents=True)
-                for source in rendered:
-                    (script_root / source.name).write_bytes(source.read_bytes())
-                files = {path.relative_to(output).as_posix(): digest(path.read_bytes())
-                         for path in output.rglob("*") if path.is_file()}
-                if len(files) != 36 or any(not name.lower().endswith(".per") for name in files):
-                    raise WorkflowError("Script delivery must contain only the 36 rendered PER files")
+                output_mode = self.data["request"].get("output_mode", "raw_scripts")
+                if output_mode not in OUTPUT_MODES:
+                    raise WorkflowError("Saved output mode is invalid")
+
+                build_extra = {}
+                if output_mode == "raw_scripts":
+                    script_root = safe_path(output / script_name)
+                    script_root.mkdir()
+                    for source in rendered:
+                        (script_root / source.name).write_bytes(source.read_bytes())
+                    files = {path.relative_to(output).as_posix(): digest(path.read_bytes())
+                             for path in output.rglob("*") if path.is_file()}
+                    if len(files) != 36 or any(not name.lower().endswith(".per") for name in files):
+                        raise WorkflowError("Raw script delivery must contain only the 36 rendered PER files")
+                    artifact_kind = "aoe2_per_scripts"
+                    package_sha256 = digest(json_bytes(files))
+                    build_extra["script_root"] = str(script_root)
+                else:
+                    per_hashes = {source.name: digest(source.read_bytes()) for source in rendered}
+                    manifest = {
+                        "schema": "aoe2-share-script-package-v1",
+                        "script_name": script_name,
+                        "script_files": 36,
+                        "files_sha256": per_hashes,
+                        "installable": False,
+                        "description": "Portable AOE2-AI PER script bundle; no game installation files included.",
+                    }
+                    package_name = script_name + ".zip"
+                    package_path = safe_path(output / package_name)
+                    with zipfile.ZipFile(package_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+                        for source in rendered:
+                            info = zipfile.ZipInfo(script_name + "/" + source.name, (1980, 1, 1, 0, 0, 0))
+                            info.compress_type = zipfile.ZIP_DEFLATED
+                            info.external_attr = 0o644 << 16
+                            archive.writestr(info, source.read_bytes())
+                        readme = (
+                            "AOE2-AI 分享脚本包\n"
+                            "包含 36 个 .per 脚本文件。\n"
+                            "这是便于发送和保存的脚本归档，不是游戏安装包。\n"
+                        ).encode("utf-8")
+                        for name, data in (("README.txt", readme), ("manifest.json", json_bytes(manifest))):
+                            info = zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0))
+                            info.compress_type = zipfile.ZIP_DEFLATED
+                            info.external_attr = 0o644 << 16
+                            archive.writestr(info, data)
+                    files = {package_name: digest(package_path.read_bytes())}
+                    artifact_kind = "aoe2_per_share_package"
+                    package_sha256 = files[package_name]
+                    build_extra.update(package_file=str(package_path), package_name=package_name)
+
                 if self._answers()[1] != signature or self.engine.source_digest() != self.data["fixed_sha256"]:
                     raise WorkflowError("Answers or source changed before delivery; the new directory is not a valid build")
                 artifact_hashes = dict(files)
                 build = {
-                    "schema": "aoe2-web-author-script-delivery-v1",
+                    "schema": "aoe2-web-author-script-delivery-v2",
                     "project_id": self.data["project_id"],
                     "build_id": build_id,
                     "script_name": script_name,
+                    "output_mode": output_mode,
                     "answers_sha256": signature,
                     "fixed_sha256": self.data["fixed_sha256"],
                     "input_sha256": self.data["input_sha256"],
-                    "artifact_kind": "aoe2_per_scripts",
+                    "artifact_kind": artifact_kind,
                     "modules": 36,
                     "script_files": 36,
                     "static_validation": "PASS",
                     "path": str(output),
-                    "script_root": str(script_root),
                     "artifact_hashes": artifact_hashes,
-                    "package_sha256": digest(json_bytes(artifact_hashes)),
+                    "package_sha256": package_sha256,
+                    **build_extra,
                 }
                 self.data.update(build=build, status="completed")
                 self.data["revision"] += 1
                 self._save()
                 self._dev_event("workflow", "build_completed", "info", "脚本生成完成。",
                                 {"build_id": build_id, "package_sha256": build["package_sha256"],
-                                 "script_files": 36})
+                                 "script_files": 36, "output_mode": output_mode})
                 return self.next()
-            except (OSError, ValueError) as exc:
+            except (OSError, ValueError, zipfile.BadZipFile) as exc:
                 if output is not None and output.exists():
                     shutil.rmtree(output)
                 self.data.update(status="invalid", build=None, validation=None)

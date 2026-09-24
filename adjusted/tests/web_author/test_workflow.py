@@ -7,6 +7,7 @@ import sys
 import tempfile
 import threading
 import unittest
+import zipfile
 
 HERE = Path(__file__).resolve().parents[2] / "web-author"
 sys.path.insert(0, str(HERE))
@@ -77,9 +78,10 @@ class WorkflowTests(unittest.TestCase):
         self.temp.cleanup()
     def payload(self, **extra):
         return {"expected_revision": self.app.state()["revision"], "project_id": self.app.data["project_id"], **extra}
-    def start(self):
+    def start(self, output_mode="raw_scripts"):
         return self.app.start(self.payload(mode="ffa8", civilization="Synthetic",
-                             script_name="SYNTHETIC", preferences={age: 50 for age in ("dark", "feudal", "castle", "imperial")}))
+                             script_name="SYNTHETIC", output_mode=output_mode,
+                             preferences={age: 50 for age in ("dark", "feudal", "castle", "imperial")}))
     def fill(self, value=2):
         for path in (self.project / "answers").glob("*.json"):
             data = json.loads(path.read_bytes())
@@ -129,6 +131,46 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(old_path.is_dir(), "Earlier deliveries must be preserved")
         with self.assertRaises(WorkflowError):
             self.app.build(self.payload())
+
+    def test_share_package_contains_scripts_manifest_and_readme(self):
+        self.start("share_package")
+        self.fill()
+        self.app.validate(self.payload())
+        result = self.app.build(self.payload())
+        build = result["build"]
+        self.assertEqual(build["output_mode"], "share_package")
+        self.assertEqual(build["artifact_kind"], "aoe2_per_share_package")
+        package = Path(build["package_file"])
+        self.assertTrue(package.is_file())
+        self.assertEqual(list(Path(build["path"]).iterdir()), [package])
+        with zipfile.ZipFile(package) as archive:
+            names = archive.namelist()
+            per_names = [name for name in names if name.endswith(".per")]
+            self.assertEqual(len(per_names), 36)
+            self.assertTrue(all(name.startswith("SYNTHETIC/") for name in per_names))
+            self.assertIn("README.txt", names)
+            self.assertIn("manifest.json", names)
+            manifest = json.loads(archive.read("manifest.json"))
+            self.assertEqual(manifest["script_files"], 36)
+            self.assertFalse(manifest["installable"])
+            self.assertEqual(set(manifest["files_sha256"]), {Path(name).name for name in per_names})
+        self.assertEqual(self.app.delivery_file(), package)
+        meta = {"instance_id": "share", "project_id": self.app.data["project_id"], "host_token": "secret"}
+        server = make_server(self.app, meta, 0)
+        worker = threading.Thread(target=server.serve_forever, daemon=True); worker.start()
+        try:
+            connection = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=5)
+            connection.request("GET", "/api/delivery/download")
+            response = connection.getresponse(); raw = response.read(); connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertTrue(raw.startswith(b"PK"))
+            self.assertIn("SYNTHETIC.zip", response.getheader("Content-Disposition"))
+        finally:
+            server.shutdown(); server.server_close(); worker.join(timeout=3)
+
+    def test_invalid_output_mode_is_rejected(self):
+        with self.assertRaisesRegex(WorkflowError, "raw scripts or a share package"):
+            self.start("installable_package")
 
     def test_development_report_collects_failures_feedback_and_evidence(self):
         self.start()

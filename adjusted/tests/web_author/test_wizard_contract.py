@@ -83,6 +83,16 @@ class WizardContractTests(unittest.TestCase):
   self.assertIn('record_hook_payload',hook_py)
   self.assertNotIn('prompt',hook_py.lower())
   self.assertNotIn('response text',hook_py.lower())
+ def test_output_mode_is_required_in_ui_and_share_package_is_not_installable(self):
+  html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
+  js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
+  skill=(ROOT/'adjusted/skills/aoe2-web-author/SKILL.md').read_text(encoding='utf-8')
+  self.assertIn('name="output_mode" value="raw_scripts" required',html)
+  self.assertIn('name="output_mode" value="share_package" required',html)
+  self.assertIn("const OUTPUT_MODES = ['raw_scripts', 'share_package']",js)
+  self.assertIn('分享包不是游戏安装包',skill)
+  self.assertNotIn('installable_package',html+js)
+
  def test_civilization_actions_are_grid_shields(self):
   html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
   js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
