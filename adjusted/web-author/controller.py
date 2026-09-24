@@ -635,7 +635,7 @@ class Controller:
                 raise WorkflowError("Script name must start with a letter and contain 1-48 ASCII letters, digits, underscore or hyphen")
             if not isinstance(preferences, dict) or set(preferences) != AGES or any(type(v) is not int or not 0 <= v <= 100 for v in preferences.values()):
                 raise WorkflowError("All four age preferences must be integers within 0..100")
-            if output_mode not in OUTPUT_MODES:
+            if not isinstance(output_mode, str) or output_mode not in OUTPUT_MODES:
                 raise WorkflowError("Select raw scripts or a share package")
             agent = normalize_agent(payload.get("agent", "auto"))
             explicit_usage_choice = "usage_authorized" in payload
