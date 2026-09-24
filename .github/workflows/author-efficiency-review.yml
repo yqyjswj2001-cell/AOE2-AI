@@ -7,6 +7,9 @@ permissions:
 concurrency:
   group: author-efficiency-review
   cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
 jobs:
   review:
     if: github.ref == 'refs/heads/fix/author-workflow-efficiency'
