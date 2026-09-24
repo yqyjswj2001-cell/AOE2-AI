@@ -10,10 +10,10 @@
 
 ```powershell
 python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-ai
-python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
+python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai --until start --timeout 600
 ```
 
-启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `wait / next` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。授权页默认由当前 Agent 确认身份；设置页只设脚本名和时代偏好。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
+启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `watch` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。授权页默认由当前 Agent 确认身份；设置页只设脚本名和时代偏好。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
 
 网页偏好不是参数答案；作者仍需根据卡片与事实填写。本地服务不是文件系统沙箱：源码隔离依靠仅向新作者交付隔离输入包，并限制作者读取范围。
 
@@ -22,14 +22,14 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 - 本目录：服务、静态页面、计量模块、来源与说明。
 - ../skills/aoe2-web-author/：仓库内可复用 skill；可让宿主直接读取 SKILL.md 使用。
 - ../tests/web_author/：合成流程和计量测试。
-- ../.local/author-projects/<名称>/：本轮 author-input、answers、delivery、logs、tmp、project.json、.author-web-session.json 和 authoring/metrics。
+- ../.local/author-projects/<名称>/：本轮 author-input、author-session、submissions、answers、delivery、logs、tmp、project.json、.author-web-session.json 和 authoring/metrics。
 - ../.local/web-author-migration/：来源快照、备份、日志、验证证据与临时材料。
 
 作者输入由现有 build_strategy_input.py 生成；只含动态卡片、空答卷和冻结基础事实。官方原件、固定代码、模板及参考值不通过网页发送。交付采用现有 renderer，不改变固定/动态分类。
 
 ## 验证边界
 
-构建会使用本机游戏的官方 PromiDE.per2 作为加载顺序来源，并要求它引用的官方 Promisory 模块与仓库冻结基线逐字节一致；随后生成同名 .ai、主 .per、36 个模块及 resources/_common/ai 目录，作为可安装包。若找不到游戏入口或基线版本不一致则拒绝构建，不猜加载顺序。Parser/Load、实机开局、完整对局和强度仍为 Unverified；本功能不会自动安装或启动游戏。
+构建优先使用 [仓库安装模板](../install-template/README.md)，一次导入真实 DE 入口并核对全部36个官方模块后，可重复离线打包。显式指定游戏路径时仍核对真实游戏来源。入口、加载顺序或基线哈希不匹配则拒绝；没有真实入口不伪造模板。launch 会提前返回 preflight，缺失时可完成参数，但不能生成安装包。最终结构为同名 .ai、主 .per、36 个模块及 resources/_common/ai 目录。Parser/Load、实机开局、完整对局和强度仍为 Unverified；本功能不会自动安装或启动游戏。
 
 [用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
 
@@ -39,7 +39,7 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project my-first-ai
 
 ## Agent 与计量接入
 
-第一步点击“授权并继续”后即创建同一个持久账本并开始配置阶段计量，不等“开始生成”。Agent 身份默认自动确认，也能选择实际宿主；网页不会启动或切换工具。`wait / next` 会优先交回 `usage_task`，主 Agent 通过认证的 `usage --action connect --payload ...` 提交真实会话身份或明确缺口，不让用户选 session。详细命令见 [Skill](../skills/aoe2-web-author/SKILL.md)。
+第一步点击“授权并继续”后即创建同一个持久账本并开始配置阶段计量，不等“开始生成”。Agent 身份默认自动确认，也能选择实际宿主；网页不会启动或切换工具。`watch / next` 会优先交回 `usage_task`，主 Agent 通过认证的 `usage --action connect --payload ...` 提交真实会话身份或明确缺口，不让用户选 session。详细命令见 [Skill](../skills/aoe2-web-author/SKILL.md)。
 
 后台每 3 秒读取选定宿主的本轮来源，不依赖浏览器轮询。未知宿主没有精确绑定时不扫描其他 Agent 的数据目录。配置与生成共用 run；刷新、重复授权和恢复项目不会重置计数。顶部只显示“待授权 / 接入中 / 已接入待记录 / 正在记录 / 存在缺口 / 已停止”等状态，不反复堆叠数字。
 
@@ -64,3 +64,11 @@ python adjusted/tests/web_author/test_wizard_browser.py
 ```
 
 浏览器用合成项目拦截请求，不读取账号或真实作品；测试图中的示例 token 不是实测。`AOE2_BROWSER_EXECUTABLE` 可指定现有浏览器，`AOE2_UI_TEST_OUTPUT` 可指定测试输出目录。CI 同时覆盖网页子目录，避免只运行上层 unittest 而漏掉网页与计量回归。
+
+## 减少流程往返
+
+`web_session.py handoff --project <名称>` 自动生成 `author-session/task.json`，包含完整文明允许池、候选、设置和唯一提交位置。作者只提交参数增量，由项目内 `submit_answers.py` 合并、校验并保留其他空项；不直接重写完整答卷。完成策略检查后执行该工具的 `--complete`，主代理再运行原有完整校验。
+
+`watch --until answers --timeout 600` 在同一程序进程中等待作者完成或错误，不把普通进度变化交回模型。调试时可用 `next --compact` 读取简短状态，完整 next 仍保留。服务不能唤醒已经退出的宿主；优先使用宿主原生完成通知，不反复新建等待进程。
+
+参数数量、策略卡、事实文件、官方固定源码和最终渲染校验未减少。省时与 token 效果需要真实创作前后比较，合成测试不证明策略质量或账单节省。

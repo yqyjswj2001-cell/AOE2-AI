@@ -151,6 +151,33 @@ def wait_for_agent(meta, timeout=20, interval=0.5, *, read=request, sleep=time.s
         sleep(min(interval, max(0, deadline - clock())))
 
 
+def watch_for_agent(meta, timeout=600, interval=2, *, until="start", read=request,
+                    sleep=time.sleep, clock=time.monotonic):
+    """Wait inside one tool process; ordinary progress never returns to the model."""
+    if not math.isfinite(timeout) or not 0 <= timeout <= 3600:
+        raise SessionError("Watch timeout must be within 0..3600 seconds")
+    if not math.isfinite(interval) or interval <= 0 or until not in {"start", "answers"}:
+        raise SessionError("Invalid watch interval or target")
+    deadline = clock() + timeout
+    while True:
+        identity = read(meta, "/api/author/session")
+        if (identity.get("instance_id"), identity.get("project_id")) != (meta["instance_id"], meta["project_id"]):
+            raise SessionError("Project/session identity changed while watching")
+        state = read(meta, "/api/author/signal", waiting=True)
+        if state.get("project_id") != meta["project_id"]:
+            raise SessionError("Signal belongs to a different project")
+        if state.get("usage_task"):
+            return {**state, "web_event": "USAGE_CONNECTION_REQUIRED"}
+        action = state.get("next_action")
+        waiting = action == "wait_for_start" or (until == "answers" and action == "wait_for_answers")
+        if not waiting:
+            return {**state, "web_event": "AUTHOR_ACTION_REQUIRED"}
+        if clock() >= deadline:
+            return {"project_id": meta["project_id"], "web_event": "WATCH_TIMEOUT",
+                    "status": state["status"], "continue_waiting": True}
+        sleep(min(interval, max(0, deadline - clock())))
+
+
 def serve(project, port=0):
     with ActiveLock():
         app = Controller(project)
@@ -245,7 +272,7 @@ def main(argv=None):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("launch", "serve", "wait", "next", "choose-civilization", "validate", "build", "phase", "feedback", "report", "finish", "usage"):
+    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "phase", "feedback", "report", "finish", "usage"):
         sub = commands.add_parser(name)
         sub.add_argument("--project", required=True)
         sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
@@ -257,6 +284,11 @@ def main(argv=None):
             sub.add_argument("--no-browser", action="store_true")
         if name in {"launch", "wait"}:
             sub.add_argument("--timeout", type=float, default=0 if name == "launch" else 20)
+        if name == "watch":
+            sub.add_argument("--timeout", type=float, default=600)
+            sub.add_argument("--until", choices=["start", "answers"], default="start")
+        if name == "next":
+            sub.add_argument("--compact", action="store_true")
         if name == "choose-civilization":
             sub.add_argument("--choice", type=Path, required=True,
                              help="JSON with civilization, reason and the expected_revision returned for this decision")
@@ -290,7 +322,8 @@ def main(argv=None):
             if not math.isfinite(args.timeout) or not 0 <= args.timeout <= 20:
                 raise SessionError("Wait must be between 0 and 20 seconds")
             meta, opened = launch(project, args.port, open_browser=not args.no_browser, test_project=args.test_project)
-            result = {**public_meta(meta), "browser_opened": opened, "web_event": "SESSION_READY"}
+            result = {**public_meta(meta), "browser_opened": opened, "web_event": "SESSION_READY",
+                      "preflight": request(meta, "/api/author/preflight")}
             if args.timeout:
                 print(json.dumps(result, ensure_ascii=False), flush=True)
                 result = wait_for_agent(meta, args.timeout)
@@ -300,8 +333,12 @@ def main(argv=None):
                 raise SessionError("No running author session; the host must run launch")
             if args.command == "wait":
                 result = wait_for_agent(meta, args.timeout)
+            elif args.command == "watch":
+                result = watch_for_agent(meta, args.timeout, until=args.until)
+            elif args.command == "preflight":
+                result = request(meta, "/api/author/preflight")
             elif args.command == "next":
-                result = request(meta, "/api/author/next")
+                result = request(meta, "/api/author/signal" if args.compact else "/api/author/next")
             elif args.command == "choose-civilization":
                 result = host_action(meta, args.command, parse_json(args.choice.read_bytes()))
             elif args.command == "feedback":

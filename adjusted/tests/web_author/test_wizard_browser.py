@@ -89,6 +89,15 @@ def main():
             assert not page.locator('#usagePanel').is_visible()
             page.locator('#agent').focus(); page.keyboard.press('Enter')
             assert not consents and not posts
+            state['preflight'] = {'ready':False,'source':'unavailable'}
+            page.reload(wait_until='networkidle')
+            assert page.locator('#preflightNotice').is_visible()
+            assert page.locator('#nextStep').is_enabled(), 'Missing template does not block parameter authoring'
+            no_overflow(page,'missing-template')
+            state['preflight'] = {'ready':True,'source':'repository_template'}
+            page.reload(wait_until='networkidle')
+            assert not page.locator('#preflightNotice').is_visible()
+            assert not consents and not posts
             no_overflow(page,'authorization')
             page.screenshot(path=str(OUT/'01-authorization-desktop.png'),full_page=True)
             page.set_viewport_size({'width':390,'height':844})

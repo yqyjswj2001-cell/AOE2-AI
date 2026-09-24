@@ -1,8 +1,6 @@
-"""Build a custom AoE2DE AI entrypoint from the installed game's own PromiDE.per2.
+"""Build from a verified repository loader template or matching installed DE files.
 
-The loader order is never guessed.  A package is emitted only when every module
-referenced by the installed entrypoint matches this repository's frozen official
-Promisory baseline byte-for-byte.
+No inferred load order, strategy defaults, or model calls are used for packaging.
 """
 from __future__ import annotations
 
@@ -108,6 +106,7 @@ def parse_promide(raw: bytes) -> tuple[str, list[str]]:
     if "\x00" in text:
         raise InstallableAIError("PromiDE.per2 contains NUL bytes")
     loads = []
+    conditions = []
     for number, line in enumerate(text.splitlines(), 1):
         stripped = line.strip()
         if not stripped or stripped.startswith(";"):
@@ -119,9 +118,20 @@ def parse_promide(raw: bytes) -> tuple[str, list[str]]:
                 raise InstallableAIError(f"PromiDE.per2 line {number} has an unsafe load target")
             loads.append(target)
             continue
-        if CONDITION.fullmatch(line) or CONTROL.fullmatch(line):
+        if CONDITION.fullmatch(line):
+            conditions.append(False)
+            continue
+        if CONTROL.fullmatch(line):
+            if not conditions or (stripped.startswith("#else") and conditions[-1]):
+                raise InstallableAIError(f"PromiDE.per2 line {number} has unmatched control flow")
+            if stripped.startswith("#else"):
+                conditions[-1] = True
+            else:
+                conditions.pop()
             continue
         raise InstallableAIError(f"PromiDE.per2 line {number} is not a load/control line")
+    if conditions:
+        raise InstallableAIError("PromiDE.per2 has an unclosed conditional")
     if len(loads) < 10:
         raise InstallableAIError("PromiDE.per2 contains too few Promisory loads")
     return text, loads
@@ -133,7 +143,7 @@ def _module_name(target: str) -> str:
 
 def package_installable_ai(modules: Path, script_name: str, output: Path, official_baseline: Path,
                            *, promide: Path | None = None, game_promisory: Path | None = None,
-                           environ=None, home=None) -> dict:
+                           environ=None, home=None, template_dir=None) -> dict:
     modules = Path(modules)
     output = Path(output)
     official_baseline = Path(official_baseline)
@@ -143,15 +153,27 @@ def package_installable_ai(modules: Path, script_name: str, output: Path, offici
     if len(rendered) != 36:
         raise InstallableAIError("Installable package requires exactly 36 rendered PER modules")
 
-    promide = Path(promide).resolve() if promide is not None else find_promide(environ=environ, home=home)
-    raw = promide.read_bytes()
-    text, targets = parse_promide(raw)
-    if game_promisory is None:
-        try:
-            game_promisory = promide.parents[2] / "ai/Promisory"
-        except IndexError as exc:
-            raise InstallableAIError("Cannot locate the installed Promisory directory from PromiDE.per2") from exc
-    game_promisory = Path(game_promisory)
+    from install_template import DEFAULT_TEMPLATE, template_ready, load_template
+    env = os.environ if environ is None else environ
+    template_dir = DEFAULT_TEMPLATE if template_dir is None else Path(template_dir)
+    use_template = (promide is None and not env.get("AOE2DE_PROMIDE_PER2") and
+                    not env.get("AOE2DE_ROOT") and template_ready(template_dir))
+    if use_template:
+        raw, text, targets = load_template(template_dir, official_baseline)
+        entry_source = template_dir / "PromiDE.per2"
+        source_kind = "repository_template"
+    else:
+        promide = Path(promide).resolve() if promide is not None else find_promide(environ=env, home=home)
+        raw = promide.read_bytes()
+        text, targets = parse_promide(raw)
+        entry_source = promide
+        source_kind = "installed_game"
+        if game_promisory is None:
+            try:
+                game_promisory = promide.parents[2] / "ai/Promisory"
+            except IndexError as exc:
+                raise InstallableAIError("Cannot locate installed Promisory from PromiDE.per2") from exc
+        game_promisory = Path(game_promisory)
 
     loaded = []
     mismatches = []
@@ -159,22 +181,21 @@ def package_installable_ai(modules: Path, script_name: str, output: Path, offici
         name = _module_name(target)
         key = name.casefold()
         if key not in rendered:
-            raise InstallableAIError("Installed PromiDE.per2 loads a module missing from this build: " + name)
-        repo_file = official_baseline / rendered[key].name
-        game_file = game_promisory / rendered[key].name
-        try:
-            repo_bytes, game_bytes = repo_file.read_bytes(), game_file.read_bytes()
-        except OSError:
-            mismatches.append(name + " (missing)")
-            continue
-        if repo_bytes != game_bytes:
-            mismatches.append(name + " (different)")
+            raise InstallableAIError("DE entrypoint loads a module missing from this build: " + name)
+        if not use_template:
+            repo_file = official_baseline / rendered[key].name
+            game_file = game_promisory / rendered[key].name
+            try:
+                repo_bytes, game_bytes = repo_file.read_bytes(), game_file.read_bytes()
+            except OSError:
+                mismatches.append(name + " (missing)")
+                continue
+            if repo_bytes != game_bytes:
+                mismatches.append(name + " (different)")
         loaded.append(rendered[key].name)
     if mismatches:
         shown = ", ".join(mismatches[:8]) + (" ..." if len(mismatches) > 8 else "")
-        raise InstallableAIError(
-            "Installed DE AI baseline differs from official/raw; refresh the frozen official baseline before packaging: " + shown
-        )
+        raise InstallableAIError("Installed DE AI baseline differs from official/raw: " + shown)
 
     rewritten = LOAD.sub(lambda m: m.group(1) + script_name + "\\" + m.group("target") + m.group(3), text)
     ai_root = output / "resources/_common/ai"
@@ -203,7 +224,8 @@ def package_installable_ai(modules: Path, script_name: str, output: Path, offici
     unreferenced = [path.name for key, path in sorted(rendered.items()) if key not in loaded_set]
     return {
         "entrypoint_validation": "PASS",
-        "entrypoint_source": str(promide),
+        "entrypoint_source": str(entry_source),
+        "entrypoint_source_kind": source_kind,
         "official_entrypoint_sha256": sha256(raw),
         "loaded_modules": loaded,
         "unreferenced_modules": unreferenced,
