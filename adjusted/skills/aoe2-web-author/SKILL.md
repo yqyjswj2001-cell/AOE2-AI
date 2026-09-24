@@ -115,11 +115,7 @@ python -X utf8 -B adjusted/web-author/web_session.py build --project <名称>
 
 校验缺项或类型错误时读取项目 tmp/answer-diagnostics.json，把其中具体文件和参数键交给同一作者修正；不要只转述“未填完整”。其他错误只反馈参数键、类型、范围或关联要求，不要反馈官方参考值或固定源码。用现有 renderer 机械代入，不编译另一套策略语言。不能把 null 填零或默默回退默认值。完成时返回真实交付目录、哈希回执和静态结果。
 
-`launch` 返回安装模板预检，网页也显示缺失提示。正常 build 优先读取 `adjusted/install-template/` 的固定模板；核对入口、加载顺序清单和全部36个官方基线哈希后，机械替换脚本名并放入本轮模块。显式设置 `AOE2DE_PROMIDE_PER2` 或 `AOE2DE_ROOT` 时仍可使用匹配的本机游戏文件，不混用版本。
-
-模板需要维护者一次导入真实 `PromiDE.per2` 和配套游戏模块，命令见 [安装模板说明](../../install-template/README.md)。没有真实入口时不伪造样例。预检 `ready=false` 时说明本轮只能完成参数、暂不能打包；不要写完后反复全盘搜索或循环 build。输入资料与答卷继续保留。模板仅供打包程序使用，不给隔离作者。
-
-成功 build 标记 `installable=true` 仅表示安装结构和入口完整。不要把它声称为已经安装、Parser/Load 通过、完整对局或强度通过；这些游戏验证仍需用户授权。
+`build` 不需要本机安装 AoE2DE，也不读取或检查 `PromiDE.per2`。参数完整校验通过后，直接把渲染后的 36 个 `.per` 文件输出到本项目 delivery 目录并结束。不要生成 `.ai`、`resources/_common/ai` 安装结构、主入口或安装模板，也不要因为本机没有游戏而阻止 launch、授权、文明选择、参数创作、validate 或 build。
 
 ## 用量与结束
 
