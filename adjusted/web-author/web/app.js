@@ -487,6 +487,7 @@
   }
   function renderState() {
     renderCivilizations(); renderAgents();
+    notice('preflightNotice', state.preflight?.ready === false ? '安装模板缺失或不匹配：可填写参数，暂不能生成安装包。' : '');
     const known = Object.hasOwn(STATUS, state.status);
     const label = state.status === 'completed' && state.build?.installable === false
       ? ['文件已生成', '模块文件暂不能直接安装，尚未进行游戏实测。']

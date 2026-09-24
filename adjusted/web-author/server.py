@@ -89,6 +89,12 @@ def make_server(controller, meta, port=0):
                     return self._json({"schema": SESSION_SCHEMA, "instance_id": meta["instance_id"],
                                        "project_id": meta["project_id"], "agent_waiting": elapsed is not None and elapsed < 25,
                                        "host_required": True, "ui_version": "studio-consent-v3"})
+                if route in {"/api/author/signal", "/api/author/preflight"}:
+                    if not self._host():
+                        return
+                    if self.headers.get("X-Author-Wait") == "1":
+                        Handler.last_wait = time.monotonic()
+                    return self._json(controller.signal() if route.endswith("/signal") else controller.preflight(force=True))
                 if route == "/api/author/next":
                     if not self._host():
                         return
@@ -150,6 +156,8 @@ def make_server(controller, meta, port=0):
                     raise WorkflowError("Project identity does not match")
                 if route == "/api/host/choose-civilization":
                     return self._json(controller.choose_civilization(payload))
+                if route == "/api/host/handoff":
+                    return self._json(controller.handoff(payload))
                 if route == "/api/host/validate":
                     return self._json(controller.validate(payload))
                 if route == "/api/host/build":

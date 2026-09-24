@@ -15,21 +15,21 @@ description: 在 AOE2-AI 中启动本地网页，先等待用户选择实际 Age
 在仓库根执行：
 ```powershell
 python -X utf8 -B adjusted/web-author/web_session.py launch --project <本轮唯一名称>
-python -X utf8 -B adjusted/web-author/web_session.py wait --project <名称> --timeout 20
-python -X utf8 -B adjusted/web-author/web_session.py next --project <名称>
+python -X utf8 -B adjusted/web-author/web_session.py watch --project <名称> --until start --timeout 600
+python -X utf8 -B adjusted/web-author/web_session.py next --project <名称> --compact
 ```
 
 使用启动结果的实际本机 URL，不猜端口。项目自动进入 `adjusted/.local/author-projects/<名称>/`，不复用历史作品。浏览器打开失败时提供真实 URL；不得报告已打开。这里只允许“打开页面”，不代表授权代理控制浏览器。
 
-**网页设置默认由用户操作。** 主代理负责网页服务，不负责网页交互：执行 `launch` 后等待用户自己选择模式、文明、Agent、脚本名和时代偏好，并点击“开始生成”；主代理通过 `wait / next` 得知提交结果后再继续。不得因为任务包含“网页、选择、点击开始”等描述就自行调用 Computer Use、浏览器自动化、屏幕控制或视觉点击工具，也不得替用户填写或提交设置。**只有用户明确要求代理代为操作网页时，才可以使用这类工具。**
+**网页设置默认由用户操作。** 主代理负责网页服务，不负责网页交互：执行 `launch` 后等待用户自己选择模式、文明、Agent、脚本名和时代偏好，并点击“开始生成”；主代理通过 `watch` 得知提交结果后再继续。不得因为任务包含“网页、选择、点击开始”等描述就自行调用 Computer Use、浏览器自动化、屏幕控制或视觉点击工具，也不得替用户填写或提交设置。**只有用户明确要求代理代为操作网页时，才可以使用这类工具。**
 
-网页由用户依次完成授权 → 对局 → 文明 → 打法，设置页直接点击“开始生成”进入作品页，不再增加确认页。第一步默认“当前 Agent（自动确认）”，用户点击“授权并继续”或“本轮不计量”。允许只授权本项目读取真实 usage、会话 ID、模型、时间等计量元数据，不授权搜集、上传聊天正文或账号凭据（适配器仅从本机记录提取计量字段）；外部厂商账户权限仍以本机已有连接为准。文明页完整展示42个标准版盾徽，悬停或键盘焦点只预览右侧资料，点击即固定选择，无额外文明确认；也可选择让 AI 决定。设置只保留脚本名和四时代攻防偏好。Agent 选择不会自动启动或切换另一工具。开始后自主模式先选文明，手动模式直接填参数。滑块是用户偏好，不是某个官方参数的数值。没有简报、方案发布、permit 或二次审批。未点击前继续短周期 wait；超时不是授权，也不是任务结束。网页不能唤醒已退出的宿主代理，执行期间保持本会话工作。用户明确暂停或取消时尊重指令并结束会话。
+网页由用户依次完成授权 → 对局 → 文明 → 打法，设置页直接点击“开始生成”进入作品页，不再增加确认页。第一步默认“当前 Agent（自动确认）”，用户点击“授权并继续”或“本轮不计量”。允许只授权本项目读取真实 usage、会话 ID、模型、时间等计量元数据，不授权搜集、上传聊天正文或账号凭据（适配器仅从本机记录提取计量字段）；外部厂商账户权限仍以本机已有连接为准。文明页完整展示42个标准版盾徽，悬停或键盘焦点只预览右侧资料，点击即固定选择，无额外文明确认；也可选择让 AI 决定。设置只保留脚本名和四时代攻防偏好。Agent 选择不会自动启动或切换另一工具。开始后自主模式先选文明，手动模式直接填参数。滑块是用户偏好，不是某个官方参数的数值。没有简报、方案发布、permit 或二次审批。未点击前由同一个 watch 进程等待；超时不是授权，也不是任务结束。网页不能唤醒已退出的宿主代理，执行期间保持本会话工作。用户明确暂停或取消时尊重指令并结束会话。
 
 ## 授权后立即接入，不等开始生成
 
 已知当前宿主时，在 `launch` 增加 `--agent codex`（或实际支持的 Agent ID）；掌握确切当前会话 ID 时可再传 `--session-id <真实ID>`。只传能够证明的身份，不凭目录名、时间接近或历史会话猜测。启动参数不是用户授权，点击前不得读取自动计量来源；网页选择也不会启动另一种工具。
 
-用户授权后服务立即创建账本、记录配置阶段并启动独立采集循环。`wait` 会提前返回 `web_event=USAGE_CONNECTION_REQUIRED`，`next.usage_task` 给出本轮 `authorization_id` 和 `run_id`。**先处理此任务，再继续等待游戏设置；不要因为 status 仍是 configuring 就忽略计量，也不要因此提前创作。**
+用户授权后服务立即创建账本、记录配置阶段并启动独立采集循环。`watch`（兼容旧 `wait`）会提前返回 `web_event=USAGE_CONNECTION_REQUIRED`，`next.usage_task` 给出本轮 `authorization_id` 和 `run_id`。**先处理此任务，再继续等待游戏设置；不要因为 status 仍是 configuring 就忽略计量，也不要因此提前创作。**
 
 主代理将自己掌握的当前宿主/会话身份写入本项目 `tmp/usage-connect.json`：
 ```json
@@ -46,7 +46,7 @@ python -X utf8 -B adjusted/web-author/web_session.py usage --project <名称> --
 
 按 [文明选择规则](../../web-author/CIVILIZATION_SELECTION.md) 执行。资格由 next 返回的标准版允许池决定：42 个文明，包含官方免费并入的前三个资料片，未购买额外 DLC。事实库有 53 个文明不代表都可选。
 
-next.status=selecting 时，立即以 fork_turns="none" 创建作者，提供隔离输入、本轮条件和 civilization_selection，不给固定源码或旧作品。让同一作者先读候选相关事实与卡片，再选文明；固定执行机制不需要作者重写，特殊加成应作为打法素材，不能仅因不熟悉或不好算而回避。
+收到 choose_civilization 动作后，先执行 `web_session.py handoff --project <名称>`。以 fork_turns="none" 创建作者，只交回执中的 task_file 及其中许可路径；自动生成的 task.json 已包含完整本轮条件、42项允许池和推荐候选，不要手抄或漏传。不给固定源码或旧作品。让同一作者先读候选相关事实与卡片，再选文明；固定执行机制不需要作者重写，特殊加成应作为打法素材，不能仅因不熟悉或不好算而回避。
 
 推荐候选来自近期较少选择的文明；先比较其中三种不同打法，给出最终文明和一两句具体战术理由。仍可从全部合资格文明中选择，用户手动指定时不重选。不得伪造文明加成或历史使用频率。
 
@@ -58,20 +58,38 @@ next.status=selecting 时，立即以 fork_turns="none" 创建作者，提供隔
 ```powershell
 python -X utf8 -B adjusted/web-author/web_session.py choose-civilization --project <名称> --choice <本轮选择JSON>
 ```
-成功前保持全部答案为 null；登记成功后，通过 followup_task 让同一作者继续填写。过期 revision 时重新取得 next 并核对条件，不能把旧决定直接升级为新版本。选择理由是轻量任务元数据，不生成简报、不要求用户批准，也不能代替完整参数创作。
+成功前保持全部答案为 null；登记成功后重新执行 handoff 更新 task.json，通过 followup_task 让同一作者读取更新后的任务并继续填写。过期 revision 时重新取得 next 并核对条件，不能把旧决定直接升级为新版本。选择理由是轻量任务元数据，不生成简报、不要求用户批准，也不能代替完整参数创作。
 
 ## 作者与主代理分工
 
 主代理负责网页服务的启动/等待、计量、导出输入、检查和渲染；默认不负责点击或填写网页。不要自己看完固定实现后再冒充隔离作者。
 
-手动模式取得 next 返回的输入与答案目录后，以 `fork_turns="none"` 创建新作者；自主模式复用刚选定文明的同一作者。只给：
-- 本次模式、文明和偏好，以及专属答案目录；
-- 隔离输入包的 README、manifest、ANSWER_CONSTRAINTS；
-- strategy 卡片、全 null 答卷、PARAMETER_CONSTRAINTS.json、基础 facts 和包内两种只读查询工具。
+手动模式在开始后执行 `web_session.py handoff --project <名称>`，以 `fork_turns="none"` 创建新作者；自主模式复用刚选定文明的同一作者。只交回执中的 task_file；文件自动列出本轮条件、隔离输入、写入工具和提交目录，不转述整份 next，不重复发送固定说明或计量历史。
 
-选定文明后，让作者按卡片的 group_id / 模块成组处理：查一组、决定一组、立即写入本轮 answers JSON，不要读完整包后才第一次落盘。每完成若干组就保存现有文件；主代理用 next 的 filled/total 看真实进度，长时间不增长时只让同一作者检查当前组，不重开整轮。无需逐批向用户汇报。自主选择阶段仅额外允许上面的选择元数据文件。
+作者按卡片 group_id / 模块查资料、决定一组、提交一组。只在本项目 `submissions/` 写小段 JSON，然后调用 task.json 指定的项目内 `author-session/submit_answers.py`。不要直接修改 author-input 或维护完整 answers 文件。
 
-作者只写本轮 answers JSON。不要提供仓库模板、分类审查、官方默认答案、固定 PER、历史作品或其他 AI。不得增删键、用官方答案补空、自由编写 PER、改说明卡或把未知事实编成已验证结论。以 manifest 动态项数为准，不能硬编码旧版空位数。
+```json
+{"module":"<模块名，不带路径>","answers":{"<该组参数键>":42}}
+```
+这里的 42 只是格式示意，不是推荐参数。主代理不得把示意值填入答卷。
+
+```powershell
+python -X utf8 -B <task.writer> --patch <本项目submissions内的JSON>
+```
+
+程序合并已提交值、保留其余 null、校验已具备条件的关联要求并原子保存。`deferred_constraints` 表示尚有其他成员未填写，不是错误，也不代表最终校验通过。修改已填值时先用 `--status <模块名>` 取得当前 sha256，放进增量的 `expected_sha256`；冲突时核对当前值再改，不覆盖其他已完成组。提交失败不改变原答卷。
+
+作者必须填写 manifest 要求的全部键；不能按文明名称自行让其他分支保持 null，也不能用官方答案、默认值或零补空。保留原有参数卡、事实查询、策略检查和完整最终校验。作者不可读仓库模板、分类审查、官方默认答案、固定 PER、历史作品或其他 AI。
+
+作者完成策略检查后执行 `python -X utf8 -B <task.writer> --complete`，再向主代理报告完成。程序会固定这一版答卷的完成回执；只填满数字不算作者完成。之后修改任何答案都会使旧回执失效，需要检查后重新 complete。
+
+主代理优先使用宿主原生的作者完成通知；否则执行一次下列命令并让同一个进程持续等待：
+
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py watch --project <名称> --until answers --timeout 600
+```
+
+程序在内部检查进度，普通增量不会交回模型；仅在计量需要接入、文明需要决定、作者标记完成或出现错误时返回。宿主命令提前返回进程句柄时，等待同一进程，不反复新开 watch、next 或向作者催进度。超时仅返回短状态，不重开作者、不减参数。确认作者完成后才做最终校验与打包。旧 `wait` 的20秒上限仅为兼容，不再作为正常等待方式。
 
 卡片按需查：
 ```powershell
@@ -97,7 +115,9 @@ python -X utf8 -B adjusted/web-author/web_session.py build --project <名称>
 
 校验缺项或类型错误时读取项目 tmp/answer-diagnostics.json，把其中具体文件和参数键交给同一作者修正；不要只转述“未填完整”。其他错误只反馈参数键、类型、范围或关联要求，不要反馈官方参考值或固定源码。用现有 renderer 机械代入，不编译另一套策略语言。不能把 null 填零或默默回退默认值。完成时返回真实交付目录、哈希回执和静态结果。
 
-build 会从本机 AoE2DE 安装目录读取官方 `PromiDE.per2`，核对其实际引用模块与仓库 `official/raw/Promisory/` 基线逐字节一致，再生成同名空 `.ai`、主 `.per`、36 个模块和 `resources/_common/ai` 安装结构。找不到入口时设置 `AOE2DE_PROMIDE_PER2` 指向游戏的 `resources/_common/drs/gamedata_x2/PromiDE.per2`；基线版本不一致时停止构建，不能猜加载顺序或混用不同补丁文件。
+`launch` 返回安装模板预检，网页也显示缺失提示。正常 build 优先读取 `adjusted/install-template/` 的固定模板；核对入口、加载顺序清单和全部36个官方基线哈希后，机械替换脚本名并放入本轮模块。显式设置 `AOE2DE_PROMIDE_PER2` 或 `AOE2DE_ROOT` 时仍可使用匹配的本机游戏文件，不混用版本。
+
+模板需要维护者一次导入真实 `PromiDE.per2` 和配套游戏模块，命令见 [安装模板说明](../../install-template/README.md)。没有真实入口时不伪造样例。预检 `ready=false` 时说明本轮只能完成参数、暂不能打包；不要写完后反复全盘搜索或循环 build。输入资料与答卷继续保留。模板仅供打包程序使用，不给隔离作者。
 
 成功 build 标记 `installable=true` 仅表示安装结构和入口完整。不要把它声称为已经安装、Parser/Load 通过、完整对局或强度通过；这些游戏验证仍需用户授权。
 

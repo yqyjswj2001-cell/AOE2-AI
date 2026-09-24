@@ -135,6 +135,10 @@ class RealEngine:
         if len(list(out.glob("*.per"))) != 36:
             raise WorkflowError("Delivery must contain all 36 modules")
 
+    def preflight(self):
+        from install_template import preflight
+        return preflight()
+
     def package(self, modules, script_name, output):
         return package_installable_ai(
             modules, script_name, output, ROOT / "official/raw/Promisory"
@@ -147,6 +151,7 @@ class Controller:
         self.project.mkdir(parents=True, exist_ok=True)
         self.lock = threading.RLock()
         self.engine = engine or RealEngine()
+        self._preflight_result = None
         self.civilizations = self.engine.civilizations()
         self.state_file = self.project / "project.json"
         state_existed = self.state_file.exists()
@@ -463,6 +468,97 @@ class Controller:
         return {"state": "NOT_STARTED", "tokens": {"total_tokens": None}, "time": {"elapsed_seconds": 0},
                 "coverage": "NOT_CONNECTED", "stages": [], "by_model": [], "capture_gaps": []}
 
+    def preflight(self, force=False):
+        if force or self._preflight_result is None:
+            check = getattr(self.engine, "preflight", None)
+            self._preflight_result = check() if callable(check) else {"ready": None, "source": "engine_not_checked"}
+        return dict(self._preflight_result)
+
+    def _write_handoff(self):
+        root, manifest = self._input()
+        directory = safe_path(self.project / "author-session")
+        directory.mkdir(exist_ok=True)
+        submissions = safe_path(self.project / "submissions")
+        submissions.mkdir(exist_ok=True)
+        writer = safe_path(directory / "submit_answers.py")
+        writer.write_bytes(safe_path(HERE / "submit_answers.py").read_bytes())
+        task = {"schema": "aoe2-author-task-v1", "project_id": self.data["project_id"],
+                "task_sha256": self.data["task_sha256"], "input_sha256": self.data["input_sha256"],
+                "expected_revision": self.data["revision"], "request": self.data["request"],
+                "civilization_selection": self._selection_state(), "eligible_civilizations": self.civilizations,
+                "input_read_only": str(root), "answers_read_only": str(self.project / "answers"),
+                "submissions": str(submissions), "writer": str(writer),
+                "dynamic_slots": manifest["dynamic_slots"],
+                "answer_modules": sorted(Path(n).stem for n in manifest["files"] if n.startswith("answers/")),
+                "instructions": [
+                    "Read only this task, the isolated input, the local writer, and your own submissions/answers.",
+                    "Do not read fixed PER, templates, classification, official answers or other projects.",
+                    "When civilization is auto, choose first; all answers must remain null until host freezes the choice.",
+                    "Query strategy cards by group, decide values, write a small patch under submissions and run the local writer.",
+                    "Patch: {module: module_name, answers: {KEY: integer}}. Do not rewrite whole sheets or input files.",
+                    "To revise an existing value, read --status MODULE and include its sha256 as expected_sha256.",
+                    "Fill every required key, including branches whose runtime applicability is not proven; never auto-fill zero.",
+                    "After your strategy review is finished, run the local writer with --complete; filling the last field alone is not completion.",
+                    "Do not reduce research, invent facts, or skip the final complete validation."]}
+        target = directory / "task.json"
+        atomic_json(target, task)
+        return {"task_file": str(target), "writer": str(writer), "submissions": str(submissions),
+                "dynamic_slots": manifest["dynamic_slots"], "fresh_context_required": True}
+
+    def handoff(self, payload):
+        with self.lock:
+            self._sync()
+            self._expected(payload)
+            if not self.data.get("request") or self.data["status"] == "completed":
+                raise WorkflowError("Handoff requires a started, unfinished project")
+            return self._write_handoff()
+
+    def _author_completed(self):
+        path = safe_path(self.project / "author-session/completion.json")
+        if not path.is_file():
+            return False
+        try:
+            done = parse_json(path.read_bytes())
+            return (done.get("schema") == "aoe2-author-complete-v1" and
+                    done.get("project_id") == self.data["project_id"] and
+                    done.get("task_sha256") == self.data.get("task_sha256") and
+                    done.get("answers_sha256") == self.data.get("answers_sha256"))
+        except (OSError, ValueError, AttributeError):
+            return False
+
+    def signal(self):
+        """Small host-only observation; no catalogs, answer lists or usage histories."""
+        with self.lock:
+            self._sync()
+            task = self._usage_task()
+            status = self.data["status"]
+            progress = self.data["progress"]
+            if task:
+                action = "connect_usage"
+            elif status == "configuring":
+                action = "wait_for_start"
+            elif status == "invalid":
+                action = "repair_answers"
+            elif self._selection_pending():
+                action = "choose_civilization"
+            elif status == "completed":
+                action = "finish"
+            elif status == "ready":
+                action = "build"
+            elif progress["total"] and progress["filled"] == progress["total"] and self._author_completed():
+                action = "validate"
+            else:
+                action = "wait_for_answers"
+            result = {"project_id": self.data["project_id"], "revision": self.data["revision"],
+                      "status": status, "next_action": action,
+                      "progress": {k: progress[k] for k in ("filled", "total")}}
+            if task:
+                result["usage_task"] = task
+            if status == "invalid":
+                result["error"] = "Inspect current diagnostics; do not restart the author or discard answers"
+                result["diagnostics"] = str(self.project / "tmp/answer-diagnostics.json")
+            return result
+
     def state(self):
         with self.lock:
             self._sync()
@@ -473,6 +569,7 @@ class Controller:
                 "civilizations": self.civilizations, "agents": agent_catalog(),
                 "content_profile": content_profile(), "civilization_selection": self._selection_state(),
                 "runtime": self._runtime_state(), "host_required": True,
+                "preflight": self.preflight(),
                 "usage_authorization": self.data.get("usage_authorization"),
                 "usage_access": {
                     "consent_required": True,
@@ -557,6 +654,10 @@ class Controller:
             selection = selection_context(self.civilizations, self.data["project_id"]) if civ == "auto" else {}
             choice = None if civ == "auto" else {
                 "civilization": civ, "reason": "", "selected_by": "user", "selected_at": time.time()}
+            self.data["preflight"] = self.preflight(force=True)
+            if self.data["preflight"].get("ready") is False:
+                self._dev_event("workflow", "preflight_unavailable", "warning",
+                                "安装模板不可用；本轮可完成参数，但暂不能打包。", self.data["preflight"])
             # Existing partial exports are never silently reused or overwritten.
             out = safe_path(self.project / "author-input")
             self.engine.export(out)
@@ -585,6 +686,7 @@ class Controller:
                             {"mode": mode, "civilization": civ, "script_name": name, "agent": agent,
                              "usage_authorized": usage_authorized, "preferences": preferences})
             self._sync()
+            self._write_handoff()
             return self.state()
 
     def choose_civilization(self, payload):
@@ -614,6 +716,7 @@ class Controller:
             self._dev_event("author", "civilization_selected", "info",
                             "AI 已确定文明：" + civilization,
                             {"civilization": civilization, "reason": reason.strip()})
+            self._write_handoff()
             return self.next()
 
     def next(self):
@@ -631,6 +734,8 @@ class Controller:
                                        if self._selection_pending() else None,
                     "author_input": str(self.project / "author-input") if state["request"] else None,
                     "answers_output": str(self.project / "answers") if state["request"] else None,
+                    "author_task": str(self.project / "author-session/task.json") if state["request"] else None,
+                    "preflight": self.preflight(),
                     "usage_task": self._usage_task(),
                     "usage_connection": {
                         **state["usage_connection"],
@@ -648,8 +753,8 @@ class Controller:
         raw, signature, progress, diagnostics = self._answers()
         if self.engine.source_digest() != self.data["fixed_sha256"]:
             raise WorkflowError("Fixed source changed; cannot render this project")
+        report, missing_count, invalid_count = self._write_answer_diagnostics(progress, diagnostics)
         if progress["errors"] or progress["filled"] != progress["total"]:
-            report, missing_count, invalid_count = self._write_answer_diagnostics(progress, diagnostics)
             summary = []
             if missing_count:
                 summary.append(str(missing_count) + " missing")
@@ -668,7 +773,11 @@ class Controller:
         try:
             for name, content in raw.items():
                 (answers / name).write_bytes(content)
-            self.engine.render(answers, modules)
+            try:
+                self.engine.render(answers, modules)
+            except (OSError, ValueError) as exc:
+                self._write_answer_diagnostics({**progress, "errors": [str(exc)]}, diagnostics)
+                raise
             if self._answers()[1] != signature or self.engine.source_digest() != self.data["fixed_sha256"]:
                 raise WorkflowError("Answers or fixed source changed during validation")
             return work, modules, signature
@@ -731,6 +840,9 @@ class Controller:
             self._save()
             work = None
             try:
+                prerequisites = self.preflight(force=True)
+                if prerequisites.get("ready") is False:
+                    raise InstallableAIError(prerequisites["message"])
                 work, modules, signature = self._render_snapshot()
                 build_id = "build-" + uuid.uuid4().hex[:12]
                 output = safe_path(self.project / "delivery" / build_id)
@@ -746,6 +858,7 @@ class Controller:
                            "artifact_kind": "aoe2de_ai_package", "installable": True,
                            "entrypoint_status": "included", "entrypoint_validation": package["entrypoint_validation"],
                            "entrypoint_source_sha256": package["official_entrypoint_sha256"],
+                           "entrypoint_source_kind": package.get("entrypoint_source_kind", "unrecorded"),
                            "loaded_modules": package["loaded_modules"],
                            "unreferenced_modules": package["unreferenced_modules"],
                            "ai_root": package["ai_root"], "entrypoint": package["entrypoint"],
@@ -755,8 +868,8 @@ class Controller:
                 (output / "README.md").write_text(
                     "AOE2 DE 可安装 AI 包。将 resources 目录作为本地模组内容；"
                     "也可将 resources/_common/ai 下的内容复制到游戏 AI 目录。\n"
-                    "已生成同名 .ai、主 .per 和 36 个模块。入口来自本机游戏 PromiDE.per2，"
-                    "且入口引用的官方模块已与仓库 official/raw 基线逐字节核对。\n"
+                    "已生成同名 .ai、主 .per 和 36 个模块。入口来自已核对的仓库安装模板或本机游戏文件，"
+                    "具体来源与入口哈希见 receipt.json。\n"
                     "静态入口检查 PASS；游戏 Parser/Load、Smoke、完整对局及强度仍为 Unverified。\n",
                     encoding="utf-8")
                 if self._answers()[1] != signature or self.engine.source_digest() != self.data["fixed_sha256"]:
