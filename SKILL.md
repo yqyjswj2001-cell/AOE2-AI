@@ -13,6 +13,6 @@ description: 使用完整 AOE2-AI 仓库启动本地网页，先让用户选择�
 
 作者必须是独立的新上下文，仅给自动生成的 `author-session/task.json`、本轮隔离输入和项目内增量写入工具；不得给官方固定源码、模板、分类表或官方答案。宿主无法创建独立作者时说明能力缺口，不用已读固定实现的主代理冒充作者。
 
-作者只提交参数增量，由程序合并完整答卷；完成自己的策略检查后用 `submit_answers.py --complete` 标记完成。主代理使用宿主完成通知或长时 `watch --until answers` 等待，不反复读取整份 next。启动先看安装模板预检；真实入口未导入时仅完成参数，不猜加载顺序或反复搜盘。
+作者只提交参数增量，由程序合并完整答卷；完成自己的策略检查后用 `submit_answers.py --complete` 标记完成。主代理使用宿主完成通知或长时 `watch --until answers` 等待，不反复读取整份 next。创作不要求本机安装游戏，也不检查 `PromiDE.per2`；完整校验通过后直接输出 36 个生成后的 `.per` 脚本文件。
 
-运行产物仅放 adjusted/.local/author-projects/。实际创作数量由本轮 manifest 决定；保留未知 token 和未覆盖来源。成功 build 可生成带独立 .ai/.per 入口的安装结构，但不能声称已经实际安装、通过游戏 Parser/Load 或实战验证。
+运行产物仅放 adjusted/.local/author-projects/。实际创作数量由本轮 manifest 决定；保留未知 token 和未覆盖来源。`build` 只生成本轮 36 个 `.per` 脚本文件，不生成 `.ai`、游戏安装目录或入口文件。
