@@ -302,15 +302,13 @@ def _markdown(report):
 
     lines += [
         "",
-        "## 构建与验证",
+        "## 脚本输出",
         "",
         f"- 构建 ID：{build.get('build_id') or '尚无'}",
-        f"- 可安装结构：{build.get('installable') if build else '尚无构建'}",
+        f"- 脚本文件：{build.get('script_files') if build else '尚无构建'}",
         f"- 静态校验：{build.get('static_validation') or '未记录'}",
-        f"- 入口校验：{build.get('entrypoint_validation') or '未记录'}",
+        f"- 输出目录：{build.get('script_root') or build.get('path') or '尚无'}",
     ]
-    for name, value in report.get("runtime", {}).items():
-        lines.append(f"- {name}：{value}")
 
     lines += ["", "## 过程记录", ""]
     events = report["events"]
@@ -326,8 +324,8 @@ def _markdown(report):
         "",
         "- creation-report.md 是给开发直接阅读/粘贴的主报告。",
         "- technical-details.md 合并参数诊断、完整问题/反馈、usage 调用、构建详情、事件时间线和日志摘要。",
-        "- 未采集不等于 0；未执行的 Parser/Load、Smoke、完整对局和强度测试不能由静态结果推断。",
-        "- 这是开发快照，不替代游戏内实测。",
+        "- 未采集不等于 0；脚本输出只代表静态生成完成。",
+        "- 这是开发快照，不包含游戏安装或实机验证。",
         "",
     ]
     return "\n".join(lines)
@@ -447,9 +445,8 @@ def _technical_markdown(report, project: Path):
     else:
         lines += ["- 无操作记录。", ""]
 
-    lines += ["## 构建与运行验证完整数据", "", *_json_block({
+    lines += ["## 脚本输出完整数据", "", *_json_block({
         "build": build,
-        "runtime": report.get("runtime"),
         "civilization_selection": report.get("civilization_selection"),
     }), ""]
 
