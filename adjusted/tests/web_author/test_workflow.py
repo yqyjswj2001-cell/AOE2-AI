@@ -155,6 +155,18 @@ class WorkflowTests(unittest.TestCase):
             self.assertFalse(manifest["installable"])
             self.assertEqual(set(manifest["files_sha256"]), {Path(name).name for name in per_names})
         self.assertEqual(self.app.delivery_file(), package)
+        meta = {"instance_id": "share", "project_id": self.app.data["project_id"], "host_token": "secret"}
+        server = make_server(self.app, meta, 0)
+        worker = threading.Thread(target=server.serve_forever, daemon=True); worker.start()
+        try:
+            connection = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=5)
+            connection.request("GET", "/api/delivery/download")
+            response = connection.getresponse(); raw = response.read(); connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertTrue(raw.startswith(b"PK"))
+            self.assertIn("SYNTHETIC.zip", response.getheader("Content-Disposition"))
+        finally:
+            server.shutdown(); server.server_close(); worker.join(timeout=3)
 
     def test_invalid_output_mode_is_rejected(self):
         with self.assertRaisesRegex(WorkflowError, "raw scripts or a share package"):
