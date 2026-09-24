@@ -12,7 +12,7 @@
     invalid: ['检查中', '发现需要修正的参数。'],
     ready: ['准备文件', '检查通过，准备生成文件。'],
     rendering: ['生成文件', '正在生成文件。'],
-    completed: ['已完成', '文件已生成，尚未进行游戏实测。']
+    completed: ['已完成', '脚本已生成。']
   };
   let state = null, online = false, busy = false, refreshPromise = null, stopped = false;
   let project = null, draftLoaded = false, storageAvailable = true, dirty = false, networkError = false;
@@ -469,25 +469,21 @@
     $('buildDetails').replaceChildren();
     if (!show) return;
     const fields = [
-      ['文件类型', build.installable === false ? '模块文件，暂不能直接安装' : build.installable === true ? '具备游戏入口，尚未实测' : '安装状态未知'],
+      ['文件类型', 'PER 脚本'],
       ['脚本名', build.script_name || state.request?.script_name],
-      ['构建 ID', build.build_id || build.id],
+      ['脚本文件', integer(build.script_files) ? build.script_files + ' 个 .per' : '—'],
+      ['输出目录', build.script_root || build.path],
       ['答卷 SHA-256', build.answers_sha256 || build.parameter_sha256 || build.parameters_sha256],
       ['文件 SHA-256', build.package_sha256 || build.manifest_sha256]
     ];
     fields.forEach(([label, value]) => {
       if (typeof value !== 'string' || !value) return;
       const dt = document.createElement('dt'), dd = document.createElement('dd');
-      dt.textContent = label; dd.textContent = value;
-      $('buildDetails').append(dt, dd);
+      dt.textContent = label; dd.textContent = value; $('buildDetails').append(dt, dd);
     });
-    const dt = document.createElement('dt'), dd = document.createElement('dd');
-    dt.textContent = '游戏测试'; dd.textContent = '未测试';
-    $('buildDetails').append(dt, dd);
   }
   function renderState() {
     renderCivilizations(); renderAgents();
-    notice('preflightNotice', state.preflight?.ready === false ? '安装模板缺失或不匹配：可填写参数，暂不能生成安装包。' : '');
     const known = Object.hasOwn(STATUS, state.status);
     const label = state.status === 'completed' && state.build?.installable === false
       ? ['文件已生成', '模块文件暂不能直接安装，尚未进行游戏实测。']
