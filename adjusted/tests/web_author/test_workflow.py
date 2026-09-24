@@ -182,12 +182,12 @@ class WorkflowTests(unittest.TestCase):
         with self.assertRaises(WorkflowError):
             self.app.validate(self.payload())
 
-    def test_delivery_receipt_and_extra_file_guards(self):
+    def test_delivery_hash_and_extra_file_guards(self):
         self.start()
         self.fill()
         self.app.validate(self.payload())
-        receipt_build = self.app.build(self.payload())["build"]
-        Path(receipt_build["receipt"]).write_text("{}", encoding="utf-8")
+        changed_build = self.app.build(self.payload())["build"]
+        next(Path(changed_build["script_root"]).glob("*.per")).write_text("changed", encoding="utf-8")
         self.assertEqual(self.app.state()["status"], "invalid")
         self.app.validate(self.payload())
         extra_build = self.app.build(self.payload())["build"]
