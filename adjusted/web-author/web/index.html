@@ -22,7 +22,6 @@
 <main id="main" class="shell">
 <div class="panel-head page-head"><div><p id="stepEyebrow" class="eyebrow">步骤 1 / 5</p><h2 id="configTitle" tabindex="-1">Token 采集</h2></div><span id="statusBadge" class="badge">正在读取</span></div>
 <p id="statusBanner" class="status-banner" role="status" aria-live="polite">正在读取当前项目…</p>
-<p id="preflightNotice" class="notice hidden" role="status"></p>
 <p id="draftNotice" class="notice hidden" role="status"></p><p id="errorNotice" class="notice error hidden" role="alert"></p>
 <div id="workspace" class="workspace"><section class="config-panel" aria-label="生成配置">
 <form id="authorForm" novalidate><fieldset id="configFields" disabled>
@@ -65,10 +64,10 @@
 <div id="generationDashboard" class="generation-dashboard" hidden>
 <nav class="result-tabs" aria-label="生成结果"><button type="button" data-result="progress" aria-pressed="true">生成进度</button><button type="button" data-result="usage" aria-pressed="false">Token 用量</button><button type="button" data-result="report" aria-pressed="false">开发报告</button></nav>
 <section id="progressPanel" class="final-section progress-section" aria-labelledby="progressTitle"><div class="panel-head"><h3 id="progressTitle">参数进度</h3><button id="refreshButton" class="text-button" type="button">刷新状态</button></div>
-<ol class="workflow"><li id="stepConfig"><span class="workflow-dot"></span><span>设置就绪</span></li><li id="stepSelect"><span class="workflow-dot"></span><span>文明确定</span></li><li id="stepAuthor"><span class="workflow-dot"></span><span>填写参数</span></li><li id="stepValidate"><span class="workflow-dot"></span><span>检查修正</span></li><li id="stepBuild"><span class="workflow-dot"></span><span>生成文件</span></li></ol>
+<ol class="workflow"><li id="stepConfig"><span class="workflow-dot"></span><span>设置就绪</span></li><li id="stepSelect"><span class="workflow-dot"></span><span>文明确定</span></li><li id="stepAuthor"><span class="workflow-dot"></span><span>填写参数</span></li><li id="stepValidate"><span class="workflow-dot"></span><span>检查修正</span></li><li id="stepBuild"><span class="workflow-dot"></span><span>生成脚本</span></li></ol>
 <div class="progress-heading"><div><p class="eyebrow">参数完成率</p><strong id="progressPercent">—</strong></div><span id="fillCount">等待记录</span></div><progress id="fillProgress" aria-label="参数填写进度"></progress><p id="validationState" class="field-help">等待项目状态。</p>
 <div id="civilizationDecision" class="civilization-decision hidden"><p class="eyebrow" id="civilizationDecisionLabel">已选文明</p><h3 id="civilizationDecisionName"></h3><p id="civilizationDecisionReason" class="field-help"></p></div>
-<div id="buildResult" class="build-result hidden"><h3>生成文件</h3><dl id="buildDetails"></dl></div><p class="boundary">游戏验证：Parser / Load、实战均未执行。</p></section>
+<div id="buildResult" class="build-result hidden"><h3>生成脚本</h3><dl id="buildDetails"></dl></div></section>
 <section id="usagePanel" class="final-section usage-panel" aria-labelledby="usageTitle" hidden><div class="panel-head"><div><h3 id="usageTitle">Token 用量</h3></div><span id="usageState" class="badge">等待记录</span></div>
 <div class="usage-cards"><div><span>已记录 token</span><strong id="usageTokens">未采集</strong></div><div><span>已记录历时</span><strong id="usageElapsed">等待记录</strong></div><div><span>处理时间</span><strong id="usageWork">尚未开始</strong></div><div><span>未统计时间</span><strong id="usageUnobserved">尚未确定</strong></div></div>
 <p id="usageCapture" class="capture-status" role="status"></p><p id="usageCoverage" class="notice">尚未取得用量记录。</p><ul id="usageGaps" class="usage-gaps hidden"></ul>
