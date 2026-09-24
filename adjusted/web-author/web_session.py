@@ -322,8 +322,7 @@ def main(argv=None):
             if not math.isfinite(args.timeout) or not 0 <= args.timeout <= 20:
                 raise SessionError("Wait must be between 0 and 20 seconds")
             meta, opened = launch(project, args.port, open_browser=not args.no_browser, test_project=args.test_project)
-            result = {**public_meta(meta), "browser_opened": opened, "web_event": "SESSION_READY",
-                      "preflight": request(meta, "/api/author/preflight")}
+            result = {**public_meta(meta), "browser_opened": opened, "web_event": "SESSION_READY"}
             if args.timeout:
                 print(json.dumps(result, ensure_ascii=False), flush=True)
                 result = wait_for_agent(meta, args.timeout)
