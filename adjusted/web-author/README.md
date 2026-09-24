@@ -13,7 +13,7 @@ python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-a
 python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai --until start --timeout 600
 ```
 
-启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `watch` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。授权页默认由当前 Agent 确认身份；设置页只设脚本名和时代偏好。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
+启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `watch` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。授权页默认由当前 Agent 确认身份；设置页选择脚本名、输出方式和时代偏好。输出方式为原生脚本或分享脚本包。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
 
 网页偏好不是参数答案；作者仍需根据卡片与事实填写。本地服务不是文件系统沙箱：源码隔离依靠仅向新作者交付隔离输入包，并限制作者读取范围。
 
@@ -29,11 +29,11 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 
 ## 输出边界
 
-创作不依赖本机游戏。完整参数校验通过后，`build` 只把 36 个生成后的 `.per` 脚本文件写入本项目 delivery 目录，不读取 `PromiDE.per2`，不生成 `.ai`、主入口、安装包或游戏目录，也不会自动安装或启动游戏。
+创作不依赖本机游戏。完整参数校验通过后，原生模式写出 36 个 `.per`；分享模式生成一个 `.zip`，内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`。两种都不读取 `PromiDE.per2`，不生成 `.ai`、主入口或游戏安装目录，也不会自动安装或启动游戏。
 
 [用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
 
-作品页“开发报告”标签提供“生成创作报告”，先预览，用户主动点击才下载。每次只生成两个 Markdown：`creation-report.md` 是可直接复制给开发的主报告；`technical-details.md` 合并完整问题/反馈、参数诊断、usage 调用、构建详情、事件时间线和日志摘要。没有 ZIP。原始计量数据库和项目事件文件仍留在项目目录供程序复查；finish 时自动保存最终两份报告。作者或主代理可用 `web_session.py feedback` 随时登记 issue / suggestion / note，避免修复后的问题从最终状态里消失。
+作品页“开发报告”标签提供“生成创作报告”，先预览，用户主动点击才下载。每次只生成两个 Markdown：`creation-report.md` 是可直接复制给开发的主报告；`technical-details.md` 合并完整问题/反馈、参数诊断、usage 调用、构建详情、事件时间线和日志摘要。报告本身不额外打 ZIP。原始计量数据库和项目事件文件仍留在项目目录供程序复查；finish 时自动保存最终两份报告。作者或主代理可用 `web_session.py feedback` 随时登记 issue / suggestion / note，避免修复后的问题从最终状态里消失。
 
 来源版本与许可见 [UPSTREAM.json](UPSTREAM.json) 和 [LICENSE](LICENSE)。
 
