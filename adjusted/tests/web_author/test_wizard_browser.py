@@ -141,6 +141,8 @@ def main():
             page.locator('#nextStep').click()
             assert page.locator('#wizardPanel3').is_visible()
             assert page.locator('#scriptName').input_value()
+            assert not page.locator('input[name=output_mode]:checked').count()
+            assert page.locator('#startButton').is_disabled()
             name = page.locator('#scriptName').input_value()
             page.locator('#suggestName').click()
             assert page.locator('#scriptName').input_value() != name
@@ -148,6 +150,9 @@ def main():
             assert page.locator('#startButton').is_disabled()
             page.locator('#scriptName').fill('Studio_Test')
             page.locator('#imperial').fill('83')
+            assert page.locator('#startButton').is_disabled()
+            page.locator('input[name=output_mode][value="share_package"]').check()
+            assert page.locator('#startButton').is_enabled()
             no_overflow(page,'preferences')
             page.screenshot(path=str(OUT/'04-preferences-desktop.png'),full_page=True)
             flags['offline'] = True
@@ -158,10 +163,12 @@ def main():
             page.reload(wait_until='networkidle')
             assert page.locator('#wizardPanel3').is_visible()
             assert page.locator('#scriptName').input_value() == 'Studio_Test'
+            assert page.locator('input[name=output_mode][value="share_package"]').is_checked()
             assert page.locator('#startButton').is_enabled()
             page.locator('#startButton').click()
             page.wait_for_function("document.querySelector('#generationDashboard').hidden === false")
             assert len(posts) == 1 and posts[0]['preferences']['imperial'] == 83
+            assert posts[0]['output_mode'] == 'share_package'
             assert not page.locator('#authorForm').is_visible()
             assert page.locator('#progressPanel').is_visible()
             assert not page.locator('#usagePanel').is_visible()
@@ -223,7 +230,7 @@ def main():
             assert not errors, errors
             checks = ['explicit one-click authorization and opt-out; no consent via Enter',
                 'no default game mode; AI/random special shields plus 42 real shields; search, hover and keyboard selection',
-                'project-scoped draft and offline recovery; direct start exactly once; no game preflight',
+                'project-scoped draft and offline recovery; required raw/share output choice; direct start exactly once',
                 'progress, usage, report are separate flat views; disabled past steps',
                 'unknown counters stay unknown; synthetic totals and revocation retain data',
                 'report preview does not auto-download; explicit download works',
