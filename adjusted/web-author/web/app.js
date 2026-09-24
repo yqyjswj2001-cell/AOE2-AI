@@ -246,7 +246,7 @@
     $('skipMetering').classList.toggle('hidden', wizardStep !== 0 || authorizationConfirmed());
     $('skipMetering').disabled = !editable() || !agentsReady;
     text('navigationHint', wizardStep === 1 && !MODES.includes(selection().mode) ? '请选择游戏模式' :
-      wizardStep === 2 && !selectedCivValid() ? '请选择文明或使用 AI 选择' : '');
+      wizardStep === 2 && !selectedCivValid() ? '请选择文明、AI 选择或随机文明' : '');
     document.querySelectorAll('[data-result]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.result === resultView)));
     ['progress', 'usage', 'report'].forEach(view => { $(view + 'Panel').hidden = resultView !== view; });
     renderMeterStatus(); renderSummary(); updateCivilizationSelection();
@@ -276,8 +276,12 @@
     const term = $('civilizationSearch').value.trim().toLocaleLowerCase();
     let visible = 0;
     document.querySelectorAll('.civilization-card').forEach(button => {
-      const civ = civData(button.dataset.civilization);
-      button.hidden = ![civ?.name, civ?.name_en, civ?.id].some(value => String(value || '').toLocaleLowerCase().includes(term));
+      if (button.dataset.special === 'true') {
+        button.hidden = false;
+      } else {
+        const civ = civData(button.dataset.civilization);
+        button.hidden = ![civ?.name, civ?.name_en, civ?.id].some(value => String(value || '').toLocaleLowerCase().includes(term));
+      }
       if (!button.hidden) visible++;
     });
     $('civilizationEmpty').classList.toggle('hidden', visible > 0 || !catalogReady);
@@ -321,11 +325,13 @@
     const selected = $('civilization').value;
     $('detailIcon').classList.add('hidden');
     $('detailSections').replaceChildren(); text('detailSource', '');
-    if (!id || id === 'auto') {
-      text('detailName', id === 'auto' ? 'AI 选择文明' : '选择文明');
+    if (!id || id === 'auto' || id === 'random') {
+      const isAuto = id === 'auto', isRandom = id === 'random';
+      text('detailName', isAuto ? 'AI 选择' : isRandom ? '随机文明' : '选择文明');
       text('detailEnglish', '');
-      text('detailState', id === 'auto' && selected === 'auto' ? 'AI 选择' : '文明资料');
-      text('detailDescription', id === 'auto' ? 'AI 将根据当前设置选择文明。' : '点击盾徽选择文明。');
+      text('detailState', isAuto && selected === 'auto' ? '已选中' : isRandom ? '随机选择' : isAuto ? 'AI 选择' : '文明资料');
+      text('detailDescription', isAuto ? '由 AI 根据当前对局与参数偏好选择文明。' :
+        isRandom ? '从当前可选文明池随机选择一个文明。' : '点击盾徽选择文明。');
     } else {
       const civ = civData(id); if (!civ) return;
       text('detailName', civ.name); text('detailEnglish', civ.name_en || '');
@@ -353,7 +359,6 @@
   function updateCivilizationSelection() {
     const id = $('civilization').value;
     document.querySelectorAll('.civilization-card').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.civilization === id)));
-    $('autoCivilization').setAttribute('aria-pressed', String(id === 'auto'));
     text('selectedCivilization', id === 'auto' ? '已选择：AI 选择' : id && civData(id) ? '已选中：' + civData(id).name + '' : '尚未选择文明');
     if (previewCivilization === id && id) text('detailState', id === 'auto' ? 'AI 选择' : '已选中');
   }
@@ -361,11 +366,32 @@
     if (!editable()) return;
     $('civilization').value = id; showCivilization(id); saveDraft(); syncActions();
   }
+  function chooseRandomCivilization() {
+    if (!editable()) return;
+    const available = (state?.civilizations || []).filter(civ => typeof civ?.id === 'string' && civ.id);
+    if (!available.length) return;
+    const choice = available[Math.floor(Math.random() * available.length)];
+    chooseCivilization(choice.id);
+  }
   function renderCivilizations() {
     const signature = JSON.stringify([state.civilizations, catalog]);
     if (civilizationSignature === signature) return;
     civilizationSignature = signature;
     $('civilizationGrid').replaceChildren();
+    const addSpecial = (id, label, mark) => {
+      const button = document.createElement('button'), shield = document.createElement('span'), name = document.createElement('span');
+      button.type = 'button'; button.className = 'civilization-card special-civilization-card';
+      button.dataset.civilization = id; button.dataset.special = 'true';
+      button.setAttribute('aria-pressed', 'false'); button.setAttribute('aria-label', label);
+      shield.className = 'special-civ-shield'; shield.textContent = mark; shield.setAttribute('aria-hidden', 'true');
+      name.className = 'civ-name'; name.textContent = label; button.append(shield, name);
+      button.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') showCivilization(id); });
+      button.addEventListener('focus', () => showCivilization(id));
+      button.addEventListener('click', () => id === 'auto' ? chooseCivilization('auto') : chooseRandomCivilization());
+      $('civilizationGrid').append(button);
+    };
+    addSpecial('auto', 'AI 选择', 'AI');
+    addSpecial('random', '随机文明', '?');
     state.civilizations.forEach(basic => {
       if (typeof basic.id !== 'string' || typeof basic.name !== 'string') return;
       const civ = civData(basic.id), button = document.createElement('button'), name = document.createElement('span'), icon = safeIcon(civ.icon);
@@ -393,7 +419,7 @@
     text('contentScope', '标准版 · ' + state.civilizations.length + ' 个文明');
     if (!catalogReady) notice('civilizationAssetNotice', '文明资料暂不可用。');
     else notice('civilizationAssetNotice', '');
-    updateCivilizationSelection(); showCivilization($('civilization').value || state.civilizations[0]?.id); filterCivilizations();
+    updateCivilizationSelection(); showCivilization($('civilization').value || 'auto'); filterCivilizations();
   }
   function renderAgents() {
     const signature = JSON.stringify(agents);
@@ -644,7 +670,6 @@
   document.querySelectorAll('[data-result]').forEach(button => button.addEventListener('click', () => {
     resultView = button.dataset.result; syncActions();
   }));
-  $('autoCivilization').addEventListener('click', () => chooseCivilization('auto'));
   $('civilizationGrid').addEventListener('pointerleave', () => showCivilization(document.activeElement?.dataset.civilization || $('civilization').value || null));
   $('civilizationGrid').addEventListener('keydown', event => {
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
