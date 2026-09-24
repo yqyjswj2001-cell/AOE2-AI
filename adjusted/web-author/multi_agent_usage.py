@@ -14,7 +14,7 @@ import re
 import sqlite3
 import time
 from agent_catalog import agent_catalog, agent_info, normalize_agent
-from cursor_admin_usage import collect_cursor_admin_usage, CursorAdminUsageError
+from cursor_admin_usage import collect_cursor_admin_usage, collect_cursor_hook_usage, CursorAdminUsageError
 from host_usage import project_candidates, session_files
 from usage_formats import PHASES, normalize
 
@@ -774,6 +774,9 @@ class MultiAgentUsage:
         self.state.pop("cursor_admin_last_error", None)
 
         for item in result.get("items", []):
+            owner = _hash("cursor", item["session"])
+            if self.state.get("backend_by_session", {}).get(owner) == "cursor-hook":
+                continue
             self._record(item, "unattributed")
         sessions = self.state.setdefault("cursor_admin_sessions", {})
         for sid in result.get("matched_sessions", []):
@@ -829,15 +832,45 @@ class MultiAgentUsage:
         self._save()
         return self.sync()
 
+    def _autobind_cursor_hook(self):
+        if self.workspace_root is None or self.selected_agent != "auto":
+            return
+        candidates = project_candidates("cursor", self.workspace_root, [], self.home, self.environ)
+        exact = [r for r in candidates if r.get("hook_verified") is True
+                 and r.get("project_id") == self.meter.meta.get("project_id") and not r.get("is_child")]
+        if len(exact) == 1:
+            self.bind({"cursor": [exact[0]["session_id"]]})
+            self.state["cursor_project_auto_bound"] = True
+
+    def _ingest_cursor_hook(self, phase, missing, active):
+        bindings = list(self.state.get("bindings", {}).get("cursor", []))
+        if not bindings or self.workspace_root is None or self.selected_agent not in {"auto", "cursor"}:
+            return
+        result = collect_cursor_hook_usage(
+            self.workspace_root, self.workspace_root, bindings, self.meter.meta["started_at"])
+        seen = set()
+        for item in result.get("items", []):
+            owner = _hash("cursor", item["session"])
+            if self.state.get("backend_by_session", {}).get(owner) == "cursor-admin-api":
+                continue
+            self._record(item, phase)
+            self.state.setdefault("backend_by_session", {})[owner] = "cursor-hook"
+            self._gap("CURSOR_HOOK_SUBAGENT_UNREPORTED", "cursor", item["session"])
+            seen.add(item["session"])
+        for gap in result.get("gaps", []):
+            missing.append({"agent": "cursor", "session": _hash(gap.get("session") or "unknown"), "code": gap["code"]})
+        active.extend({"agent": "cursor", "session": _hash(sid)} for sid in seen)
+
     def sync(self, phase=None):
         if self.meter.meta["state"] != "RUNNING":
             return self.status()
         phase = phase or self.meter.meta.get("phase") or "unattributed"
         if self.selected_agent == "auto" and not any(self.state.get("bindings", {}).values()):
-            # Agent identity comes from the running host, never from unrelated installed apps.
-            self.state["status"] = "NO_BOUND_SESSIONS"
-            self._save()
-            return self.status()
+            self._autobind_cursor_hook()
+            if not any(self.state.get("bindings", {}).values()):
+                self.state["status"] = "NO_BOUND_SESSIONS"
+                self._save()
+                return self.status()
         detected = detect_agents(self.home, self.environ,
             list(self.state.get("bindings", {})) if self.selected_agent == "auto" else self.selected_agent)
         self.state["agents"] = [{k: row[k] for k in ("id", "label", "mode", "detected", "detection_basis")} for row in detected]
@@ -861,14 +894,13 @@ class MultiAgentUsage:
                     if len(exact) == 1:
                         self.bind({"cursor": [exact[0]["session_id"]]})
                         self.state["cursor_project_auto_bound"] = True
-                    elif self.environ.get("CURSOR_ADMIN_API_KEY"):
+                    else:
                         code = "CURSOR_HOOK_PROJECT_WAITING" if not exact else "CURSOR_HOOK_PROJECT_AMBIGUOUS"
                         missing.append({"agent": "cursor", "session": _hash("hook-project"), "code": code})
                 if self.environ.get("CURSOR_ADMIN_API_KEY"):
                     missing.extend(self.state.get("cursor_admin_gaps", []))
-                else:
-                    missing.append({"agent": "cursor", "session": _hash("ide"),
-                                    "code": "CURSOR_IDE_USAGE_UNAVAILABLE"})
+            if self.selected_agent in {"auto", "cursor"}:
+                self._ingest_cursor_hook(phase, missing, active)
             elif not self.state.get("bindings", {}).get(self.selected_agent):
                 started = self.meter.meta["started_at"]
                 def activity(row):
@@ -947,16 +979,21 @@ class MultiAgentUsage:
         gaps = list(self.state.get("gaps", {}).values()) + self.state.get("pending_bindings", [])
         bound = sum(len(v) for k, v in self.state.get("bindings", {}).items() if self.selected_agent in {"auto", k})
         code, message, action = "AUTO_SESSION_DISCOVERY", "正在自动确认本轮宿主会话；无需手动选择。", "wait_for_usage"
+        cursor_hook_recorded = any(
+            self.state.get("backend_by_session", {}).get(_hash("cursor", sid)) == "cursor-hook"
+            for sid in self.state.get("bindings", {}).get("cursor", []))
         cursor_admin_configured = bool(self.environ.get("CURSOR_ADMIN_API_KEY"))
         if self.selected_agent == "auto" and not bound:
             code, message, action = "WAITING_FOR_HOST", "已授权，等待当前 Agent 确认用量来源；无需选择会话。", "wait_for_usage"
-        elif self.selected_agent == "cursor" and not cursor_admin_configured:
-            code, message, action = "EXPLICIT_USAGE_REQUIRED", info["help"], "import_usage"
-        elif self.selected_agent == "cursor" and cursor_admin_configured and not bound:
+        elif self.selected_agent == "cursor" and not bound:
             if any(g["code"] == "CURSOR_HOOK_PROJECT_AMBIGUOUS" for g in gaps):
                 code, message, action = "CURSOR_HOOK_PROJECT_AMBIGUOUS", "检测到多个同时归属本项目的 Cursor 主 conversation，未自动猜选。", "check_requirements"
             else:
                 code, message, action = "CURSOR_HOOK_PROJECT_WAITING", "正在等待项目 Hook 自动关联当前 Cursor conversation；无需手动绑定。", "check_requirements"
+        elif self.selected_agent in {"auto", "cursor"} and bound and cursor_hook_recorded:
+            code, message, action = "RECORDED_PARTIAL", "已记录 Cursor stop Hook 的父代理 token；子代理不在该计数内，也不会与 Admin 事件相加。", "check_requirements"
+        elif self.selected_agent == "cursor" and bound and not cursor_admin_configured and any(g["code"] == "CURSOR_HOOK_USAGE_WAITING" for g in gaps):
+            code, message, action = "WAITING_FOR_USAGE", "已绑定当前 Cursor conversation；本轮 stop Hook 尚未带回 token。", "check_requirements"
         elif self.selected_agent == "cursor" and bound:
             if active and known:
                 code, message, action = "RECORDED_PARTIAL", "已自动记录 Cursor 官方 Usage Events；后台会继续低频刷新，未能可靠回链的子代理仍保留缺口。", "check_requirements"

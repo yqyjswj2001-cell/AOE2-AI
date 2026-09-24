@@ -24,7 +24,7 @@
 | OpenAI Codex | rollout 的累计 token_count 差值 | 优先继承当前 thread ID；否则唯一的本轮活跃主会话自动绑定；旧会话扣除创作前基线，spawn 子会话按 parent→child 证据自动纳入 |
 | Claude Code | 项目 session JSONL 的 assistant usage | 唯一的本轮活跃项目会话自动绑定；无法唯一确认时保留缺口，不要求用户选择 |
 | Gemini CLI | chat 文件的消息 tokens | 主 Agent 能证明当前 session 时自动登记；按 total 区分缓存/tool/thoughts；无法证明时保留缺口 |
-| Cursor IDE | 项目 Hook 自动归属当前项目 conversation，再用官方 Team Admin Usage Events 按 conversationId 精确关联 | 需 Cursor Hook 生效，并在启动服务前设置 CURSOR_ADMIN_API_KEY；服务自动绑定并低频刷新，用户无需页面操作；官方接口可能有聚合延迟 |
+| Cursor IDE | 项目 Hook 自动归属当前项目 conversation；`stop` 事件中的父代理 token 直接入账 | 需已授权且 Hook 生效。`input_tokens` 已含缓存读写，只记 `stop`，不与 `afterAgentResponse` 相加。子代理不在该计数内。有 Admin API 时也不再把同一 conversation 的官方事件叠加进来 |
 | Cursor SDK | 显式导入最终 RunResult.usage / getUsage() | format=cursor-sdk；只接收本轮 finished/error/cancelled 的真实 usage，不把运行中累计快照相加 |
 | OpenCode | SQLite 按 session_id 先筛选，或 storage/message/<session> | 主 Agent 自动登记可证明的 session；支持缓存及 reasoning；不扫全账户消息 |
 | GitHub Copilot CLI | 本轮专用本地 OTel 文件的 chat span | 配置 AOE2_COPILOT_USAGE_FILE；主 Agent 自动登记可证明的 conversation ID；忽略 invoke_agent 父汇总 |

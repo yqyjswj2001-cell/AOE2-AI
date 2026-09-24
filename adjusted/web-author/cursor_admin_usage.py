@@ -30,8 +30,16 @@ class CursorAdminUsageError(ValueError):
     pass
 
 
+def _normalize_root(value):
+    """Cursor on Windows sends workspace roots as /E:/repo. Drop that extra slash."""
+    text = str(value).strip()
+    if len(text) >= 3 and text[0] in "/\\" and text[2] == ":":
+        text = text[1:]
+    return str(Path(text).resolve())
+
+
 def _path_key(value):
-    return os.path.normcase(os.path.abspath(str(value))).replace("\\", "/").rstrip("/").casefold()
+    return os.path.normcase(os.path.abspath(_normalize_root(value))).replace("\\", "/").rstrip("/").casefold()
 
 
 def _safe_id(value):
@@ -95,7 +103,7 @@ def record_hook_payload(payload, repo_root, observed_at=None):
     repo_root = Path(repo_root).resolve()
     if conversation is None or event is None or not isinstance(roots, list):
         return False
-    clean_roots = [str(Path(root).resolve()) for root in roots if isinstance(root, str)]
+    clean_roots = [_normalize_root(root) for root in roots if isinstance(root, str)]
     if _path_key(repo_root) not in {_path_key(root) for root in clean_roots}:
         return False
     now = time.time() if observed_at is None else float(observed_at)
@@ -105,10 +113,9 @@ def record_hook_payload(payload, repo_root, observed_at=None):
     background = 1 if payload.get("is_background_agent") is True else 0
     session_start = 1 if event == "sessionStart" else 0
     active = _active_project(repo_root)
-    if not active or active.get("usage_authorized") is not True or active.get("agent") != "cursor":
-        return False
-    project_id = active["project_id"]
-    project_path = active["project"]
+    attributed = bool(active and active.get("usage_authorized") is True and active.get("agent") in {"cursor", "auto"})
+    project_id = active["project_id"] if attributed else None
+    project_path = active["project"] if attributed else None
     path = hook_db_path(repo_root)
     db = _connect(path)
     try:
@@ -150,10 +157,63 @@ def record_hook_payload(payload, repo_root, observed_at=None):
             (conversation, now, now, email, model, cursor_version,
              json.dumps(clean_roots, ensure_ascii=False), background, session_start, event,
              project_id, project_path))
+        _store_hook_turn(db, payload, conversation, now)
         db.commit()
     finally:
         db.close()
     return True
+
+
+def _token_field(payload, name):
+    """Absent stays unknown. A present non-integer is invalid, not zero."""
+    if name not in payload or payload.get(name) is None:
+        return None
+    value = payload.get(name)
+    if type(value) is not int or not 0 <= value <= 10**12:
+        return False
+    return value
+
+
+def _store_hook_turn(db, payload, conversation, observed_at):
+    """Keep stop/afterAgentResponse counters only. Prompt and response text never land here."""
+    event = payload.get("hook_event_name")
+    generation = _safe_id(payload.get("generation_id"))
+    if event not in {"stop", "afterAgentResponse"} or generation is None:
+        return
+    parsed = {name: _token_field(payload, name) for name in
+              ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens")}
+    if any(value is False for value in parsed.values()):
+        return
+    if parsed["input_tokens"] is None or parsed["output_tokens"] is None:
+        return
+    model = _safe_text(payload.get("model") or payload.get("model_id"), 160)
+    db.execute("""CREATE TABLE IF NOT EXISTS hook_turns(
+        conversation_id TEXT NOT NULL,
+        generation_id TEXT NOT NULL,
+        event TEXT NOT NULL,
+        observed_at REAL NOT NULL,
+        model TEXT,
+        input_tokens INTEGER NOT NULL,
+        output_tokens INTEGER NOT NULL,
+        cache_read_tokens INTEGER,
+        cache_write_tokens INTEGER,
+        PRIMARY KEY (conversation_id, generation_id, event)
+    )""")
+    db.execute("""INSERT INTO hook_turns(
+            conversation_id,generation_id,event,observed_at,model,
+            input_tokens,output_tokens,cache_read_tokens,cache_write_tokens)
+        VALUES(?,?,?,?,?,?,?,?,?)
+        ON CONFLICT(conversation_id,generation_id,event) DO UPDATE SET
+            observed_at=excluded.observed_at,
+            model=COALESCE(excluded.model,hook_turns.model),
+            input_tokens=excluded.input_tokens,
+            output_tokens=excluded.output_tokens,
+            cache_read_tokens=excluded.cache_read_tokens,
+            cache_write_tokens=excluded.cache_write_tokens
+        WHERE excluded.observed_at>=hook_turns.observed_at""",
+        (conversation, generation, event, observed_at, model,
+         parsed["input_tokens"], parsed["output_tokens"],
+         parsed["cache_read_tokens"], parsed["cache_write_tokens"]))
 
 
 def _hook_rows(workspace, repo_root):
@@ -206,6 +266,89 @@ def cursor_hook_identity(workspace, repo_root, conversation_id):
         return None
     return next((row for row in _hook_rows(workspace, repo_root)
                  if row["conversation_id"] == conversation_id), None)
+
+
+def collect_cursor_hook_usage(workspace, repo_root, conversation_ids, started_at):
+    """Account Cursor stop-hook turn totals. input_tokens already includes cache.
+
+    afterAgentResponse carries the same generation total, so it is stored but not
+    added. Subagent tokens are not in this payload and stay uncounted.
+    """
+    ids = []
+    for raw in conversation_ids:
+        cid = _safe_id(raw)
+        if cid is not None and cid not in ids:
+            ids.append(cid)
+    if not ids:
+        return {"items": [], "gaps": [], "matched_sessions": []}
+    db = _connect(hook_db_path(repo_root), readonly=True)
+    if db is None:
+        return {"items": [], "gaps": [
+            {"code": "CURSOR_HOOK_USAGE_WAITING", "session": cid} for cid in ids],
+            "matched_sessions": []}
+    try:
+        try:
+            tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            if "hook_turns" not in tables:
+                rows = []
+            else:
+                marks = ",".join("?" for _ in ids)
+                rows = db.execute(
+                    "SELECT conversation_id,generation_id,event,observed_at,model,"
+                    "input_tokens,output_tokens,cache_read_tokens,cache_write_tokens "
+                    "FROM hook_turns WHERE conversation_id IN (" + marks + ")", ids).fetchall()
+        except sqlite3.Error:
+            rows = []
+    finally:
+        db.close()
+    start = float(started_at)
+    grouped = defaultdict(dict)
+    for cid, gid, event, observed_at, model, inp, out, cache_read, cache_write in rows:
+        if observed_at is None or float(observed_at) < start:
+            continue
+        current = grouped[(cid, gid)].get(event)
+        if current is None or float(observed_at) >= current["observed_at"]:
+            grouped[(cid, gid)][event] = {
+                "observed_at": float(observed_at), "model": model,
+                "input_tokens": inp, "output_tokens": out,
+                "cache_read_tokens": cache_read, "cache_write_tokens": cache_write,
+            }
+    items = []
+    gaps = []
+    matched = set()
+    for (cid, gid), events in sorted(grouped.items()):
+        chosen = events.get("stop")
+        if chosen is None:
+            continue
+        inp, out = chosen["input_tokens"], chosen["output_tokens"]
+        cache_read, cache_write = chosen["cache_read_tokens"], chosen["cache_write_tokens"]
+        if type(inp) is not int or type(out) is not int:
+            gaps.append({"code": "CURSOR_HOOK_TOKEN_FIELDS_INVALID", "session": cid})
+            continue
+        if ((cache_read is not None and cache_read > inp) or
+                (cache_write is not None and cache_write > inp) or
+                (cache_read is not None and cache_write is not None and cache_read + cache_write > inp)):
+            gaps.append({"code": "CURSOR_HOOK_TOKEN_FIELDS_INVALID", "session": cid})
+            continue
+        usage = {
+            "input_tokens": inp,
+            "output_tokens": out,
+            "total_tokens": inp + out,
+            "cached_input_tokens": cache_read,
+            "cache_write_tokens": cache_write,
+            "reasoning_output_tokens": None,
+        }
+        key = "cursor-hook:" + hashlib.sha256((cid + "\n" + gid).encode("utf-8")).hexdigest()[:24]
+        items.append({
+            "agent": "cursor", "session": cid, "key": key,
+            "timestamp": chosen["observed_at"], "model": chosen["model"] or "unknown",
+            "usage": usage,
+        })
+        matched.add(cid)
+    for cid in ids:
+        if cid not in matched:
+            gaps.append({"code": "CURSOR_HOOK_USAGE_WAITING", "session": cid})
+    return {"items": items, "gaps": gaps, "matched_sessions": sorted(matched)}
 
 
 def _default_transport(api_key, body):

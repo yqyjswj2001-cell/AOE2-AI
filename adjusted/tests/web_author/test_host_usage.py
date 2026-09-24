@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'web-author'))
 from host_usage import cursor_metadata, project_candidates
-from cursor_admin_usage import active_project_path, collect_cursor_admin_usage, hook_db_path, record_hook_payload
+from cursor_admin_usage import active_project_path, collect_cursor_admin_usage, collect_cursor_hook_usage, hook_db_path, record_hook_payload
 from meter_adapter import MeterAdapter
 from metering import Meter
 from multi_agent_usage import MultiAgentUsage, detect_agents
@@ -134,21 +134,27 @@ class HostUsageTests(unittest.TestCase):
         auto = self.auto('cursor', [])
         status = auto.sync()
         self.assertIsNone(self.meter.report()['tokens']['total_tokens'])
-        self.assertEqual(status['connection']['code'], 'EXPLICIT_USAGE_REQUIRED')
+        self.assertEqual(status['connection']['code'], 'CURSOR_HOOK_PROJECT_WAITING')
         self.assertEqual([r['session_id'] for r in status['session_candidates']], ['own-session'])
         self.assertFalse(auto.state.get('bindings', {}).get('cursor'))
-        self.assertIn('CURSOR_IDE_USAGE_UNAVAILABLE', {g['code'] for g in status['gaps']})
+        self.assertIn('CURSOR_HOOK_PROJECT_WAITING', {g['code'] for g in status['gaps']})
         self.assertNotIn('PRIVATE_CONTENT', auto.path.read_text())
 
     def test_cursor_hook_does_not_record_before_usage_authorization(self):
         active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
         active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
             'project':str(self.project),'agent':'cursor','usage_authorized':False}),encoding='utf-8')
-        recorded=record_hook_payload({'conversation_id':'cursor-denied','hook_event_name':'afterAgentResponse',
-            'workspace_roots':[str(self.workspace)],'user_email':'dev@example.com','text':'PRIVATE'},
+        recorded=record_hook_payload({'conversation_id':'cursor-denied','hook_event_name':'stop',
+            'generation_id':'gen-denied','workspace_roots':[str(self.workspace)],'user_email':'dev@example.com',
+            'text':'PRIVATE','input_tokens':9,'output_tokens':1},
             self.workspace,observed_at=self.start+1)
-        self.assertFalse(recorded)
-        self.assertFalse(hook_db_path(self.workspace).exists())
+        self.assertTrue(recorded)
+        self.assertNotIn(b'PRIVATE',hook_db_path(self.workspace).read_bytes())
+        candidates=project_candidates('cursor',self.workspace,[],self.root,self.env)
+        row=next(r for r in candidates if r['session_id']=='cursor-denied')
+        self.assertIsNone(row['project_id'])
+        self.auto('cursor',[]).sync()
+        self.assertIsNone(self.meter.report()['tokens']['total_tokens'])
 
     def test_cursor_hook_identity_and_admin_events_are_exactly_scoped(self):
         active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
@@ -209,6 +215,31 @@ class HostUsageTests(unittest.TestCase):
         self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
         self.assertEqual(status['connection']['code'],'RECORDED_PARTIAL')
         self.assertNotIn('secret-key',auto.path.read_text(encoding='utf-8'))
+
+    def test_cursor_stop_hook_tokens_are_counted_once(self):
+        active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
+        active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
+            'project':str(self.project),'agent':'auto','usage_authorized':True}),encoding='utf-8')
+        root=self.workspace.resolve()
+        cursor_root='/' + root.drive + root.as_posix().split(':',1)[1]
+        common={'conversation_id':'cursor-conv-1','generation_id':'gen-1',
+            'workspace_roots':[cursor_root],'model':'fixture-model','text':'PRIVATE_RESPONSE',
+            'input_tokens':13,'output_tokens':5,'cache_read_tokens':2,'cache_write_tokens':1}
+        self.assertTrue(record_hook_payload({**common,'hook_event_name':'afterAgentResponse'},self.workspace,observed_at=self.start+1))
+        self.assertTrue(record_hook_payload({**common,'hook_event_name':'stop'},self.workspace,observed_at=self.start+2))
+        self.assertNotIn(b'PRIVATE_RESPONSE',hook_db_path(self.workspace).read_bytes())
+        result=collect_cursor_hook_usage(self.workspace,self.workspace,['cursor-conv-1'],self.start)
+        self.assertEqual(len(result['items']),1)
+        self.assertEqual(result['items'][0]['usage']['input_tokens'],13)
+        self.assertEqual(result['items'][0]['usage']['cached_input_tokens'],2)
+        self.assertEqual(result['items'][0]['usage']['total_tokens'],18)
+        auto=self.auto('auto',[])
+        status=auto.sync()
+        self.assertEqual(auto.state['bindings']['cursor'],['cursor-conv-1'])
+        self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
+        self.assertEqual(status['connection']['code'],'RECORDED_PARTIAL')
+        auto.sync()
+        self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
 
     def test_selected_cursor_does_not_inherit_codex_environment(self):
         with patch.dict(os.environ, {'CODEX_THREAD_ID': 'unrelated-codex-thread', 'AOE2_USAGE_DISABLE_AUTO': '0'}):
