@@ -581,31 +581,87 @@
     $('usageGaps').classList.toggle('hidden', !$('usageGaps').children.length);
     [['inputTokens','input_tokens'],['outputTokens','output_tokens'],['cacheTokens','cached_input_tokens'],
       ['cacheWriteTokens','cache_write_tokens'],['reasoningTokens','reasoning_tokens']].forEach(([id,key]) => text(id, finite(tokens[key]) ? number(tokens[key]) : '未提供'));
-    text('usageBreakdown', '失败或取消的已知消耗 ' + number(tokens.failed_or_cancelled_tokens) +
-      '；重试 ' + number(tokens.retry_records) + ' 条，消耗 ' + number(tokens.retry_tokens) + '（已计入总量）。');
+    renderTokenMix(tokens);
     $('usageStages').replaceChildren();
     const stages = Array.isArray(report.stages) ? report.stages : [];
+    const stageTotal = stages.reduce((sum, stage) => sum + (finite(stage.total_tokens) && stage.total_tokens > 0 ? stage.total_tokens : 0), 0);
     stages.forEach(stage => {
-      const row = document.createElement('tr');
-      row.append(tableCell('th', typeof stage.label === 'string' ? stage.label : '阶段未记录'), tableCell('td', number(stage.total_tokens)),
-        tableCell('td', duration(stage.elapsed_seconds)), tableCell('td', number(stage.action_failures) + ' / ' + number(stage.action_attempts)));
+      const row = document.createElement('tr'), tokenCell = document.createElement('td');
+      const wrap = document.createElement('div'), bar = document.createElement('span'), fill = document.createElement('i'), value = document.createElement('span');
+      wrap.className = 'stage-token'; bar.className = 'stage-bar'; bar.setAttribute('aria-hidden', 'true'); value.textContent = number(stage.total_tokens);
+      const share = stageTotal > 0 && finite(stage.total_tokens) ? Math.max(0, stage.total_tokens) / stageTotal : 0;
+      fill.style.width = (share * 100).toFixed(2) + '%';
+      bar.append(fill); wrap.append(bar, value); tokenCell.append(wrap);
+      const failures = document.createElement('td');
+      failures.textContent = number(stage.action_failures) + ' / ' + number(stage.action_attempts);
+      if (integer(stage.action_failures) && stage.action_failures > 0) failures.className = 'has-failures';
+      row.append(tableCell('th', typeof stage.label === 'string' ? stage.label : '阶段未记录'), tokenCell,
+        tableCell('td', duration(stage.elapsed_seconds)), failures);
       $('usageStages').append(row);
     });
     if (!stages.length) {
       const row = document.createElement('tr'), cell = tableCell('td', '尚无阶段报告。');
-      cell.colSpan = 4; row.append(cell); $('usageStages').append(row);
+      cell.colSpan = 4; cell.className = 'empty-cell'; row.append(cell); $('usageStages').append(row);
     }
-    const models = Array.isArray(report.by_model) ? report.by_model : [];
-    text('usageModels', models.length ? '按模型：' + models.map(m => (m.model || '模型未记录') + '：' + number(m.total_tokens) + ' token').join('；') : '模型用量尚未采集。');
-    text('usageQuality', '已记录 ' + number(tokens.usage_interval_records) + ' 个累计用量区间、' +
-      number(tokens.request_records) + ' 个请求、' + number(tokens.turn_records) + ' 个聚合轮次；结果未知 ' +
-      number(tokens.unknown_outcome_records) + ' 条；缺 usage ' + number(tokens.missing_usage_records) + ' 条。' +
-      ((integer(tokens.unknown_outcome_records) && tokens.unknown_outcome_records > 0) || tokens.outcome_complete === false
-        ? '' : '') +
-      '配置耗时 ' + duration(time.configuration_seconds) +
-      '；工具执行合计 ' + duration(time.tool_seconds) + '，可能与流程时间重叠，不额外相加。' +
-      (report.timing_origin === 'ATTACHED_LATE' ? '' : '') +
+    renderModels(Array.isArray(report.by_model) ? report.by_model : [], tokens.total_tokens);
+    const warn = value => integer(value) && value > 0;
+    $('usageQuality').replaceChildren();
+    [['请求', number(tokens.request_records)],
+      ['累计用量区间', number(tokens.usage_interval_records)],
+      ['聚合轮次', number(tokens.turn_records)],
+      ['结果未知', number(tokens.unknown_outcome_records), warn(tokens.unknown_outcome_records) || tokens.outcome_complete === false],
+      ['缺 usage', number(tokens.missing_usage_records), warn(tokens.missing_usage_records)],
+      ['失败或取消消耗', number(tokens.failed_or_cancelled_tokens), warn(tokens.failed_or_cancelled_tokens)],
+      ['重试', number(tokens.retry_records) + ' 条 · ' + number(tokens.retry_tokens)],
+      ['配置耗时', duration(time.configuration_seconds)],
+      ['工具执行合计', duration(time.tool_seconds)]
+    ].forEach(([label, value, attention]) => {
+      const item = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd');
+      dt.textContent = label; dd.textContent = value;
+      if (attention) item.className = 'attention';
+      item.append(dt, dd); $('usageQuality').append(item);
+    });
+    text('usageBreakdown', '重试消耗已计入总量；工具执行时间可能与流程时间重叠，不额外相加。' +
       (tokens.detail_complete && Object.values(tokens.detail_complete).some(value => value === false) ? ' 部分 token 数据未记录。' : ''));
+  }
+  function percent(part, whole) {
+    return finite(part) && finite(whole) && whole > 0 ? Math.round(part / whole * 1000) / 10 + '%' : '';
+  }
+  function renderTokenMix(tokens) {
+    const input = finite(tokens.input_tokens) ? Math.max(0, tokens.input_tokens) : null;
+    const output = finite(tokens.output_tokens) ? Math.max(0, tokens.output_tokens) : null;
+    const cached = input !== null && finite(tokens.cached_input_tokens) ? Math.min(input, Math.max(0, tokens.cached_input_tokens)) : 0;
+    const reasoning = output !== null && finite(tokens.reasoning_tokens) ? Math.min(output, Math.max(0, tokens.reasoning_tokens)) : 0;
+    const whole = (input || 0) + (output || 0);
+    const segments = {'mix-input': (input || 0) - cached, 'mix-cache': cached, 'mix-output': (output || 0) - reasoning, 'mix-reasoning': reasoning};
+    Object.entries(segments).forEach(([name, value]) => {
+      $('tokenMix').querySelector('.' + name).style.flexGrow = whole > 0 ? String(value) : '0';
+    });
+    $('tokenMix').classList.toggle('is-empty', whole <= 0);
+    $('tokenMix').setAttribute('aria-label', whole > 0
+      ? 'Token 构成：输入 ' + percent(input, whole) + '，输出 ' + percent(output, whole)
+      : 'Token 构成暂无数据');
+    text('inputShare', input !== null ? percent(input, whole) && '占输入+输出 ' + percent(input, whole) : '');
+    text('outputShare', output !== null ? percent(output, whole) && '占输入+输出 ' + percent(output, whole) : '');
+    text('cacheShare', finite(tokens.cached_input_tokens) && input ? '占输入 ' + percent(tokens.cached_input_tokens, input) : '');
+    text('cacheWriteShare', finite(tokens.cache_write_tokens) && input ? '占输入 ' + percent(tokens.cache_write_tokens, input) : '');
+    text('reasoningShare', finite(tokens.reasoning_tokens) && output ? '占输出 ' + percent(tokens.reasoning_tokens, output) : '');
+  }
+  function renderModels(models, total) {
+    $('usageModels').replaceChildren();
+    if (!models.length) {
+      const empty = document.createElement('p'); empty.className = 'field-help'; empty.textContent = '模型用量尚未采集。';
+      $('usageModels').append(empty); return;
+    }
+    models.forEach(model => {
+      const row = document.createElement('div'), name = document.createElement('span'), value = document.createElement('strong');
+      const bar = document.createElement('span'), fill = document.createElement('i');
+      row.className = 'model-row'; name.className = 'model-name'; bar.className = 'stage-bar'; bar.setAttribute('aria-hidden', 'true');
+      name.textContent = typeof model.model === 'string' && model.model ? model.model : '模型未记录';
+      value.textContent = number(model.total_tokens);
+      fill.style.width = finite(model.total_tokens) && finite(total) && total > 0 ? Math.min(100, model.total_tokens / total * 100).toFixed(2) + '%' : '0%';
+      bar.append(fill); row.append(name, value, bar); $('usageModels').append(row);
+    });
   }
   async function doRefresh() {
     const results = await Promise.allSettled([api('/api/state'), api('/api/author/usage'),
