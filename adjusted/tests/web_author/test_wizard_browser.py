@@ -89,14 +89,7 @@ def main():
             assert not page.locator('#usagePanel').is_visible()
             page.locator('#agent').focus(); page.keyboard.press('Enter')
             assert not consents and not posts
-            state['preflight'] = {'ready':False,'source':'unavailable'}
-            page.reload(wait_until='networkidle')
-            assert page.locator('#preflightNotice').is_visible()
-            assert page.locator('#nextStep').is_enabled(), 'Missing template does not block parameter authoring'
-            no_overflow(page,'missing-template')
-            state['preflight'] = {'ready':True,'source':'repository_template'}
-            page.reload(wait_until='networkidle')
-            assert not page.locator('#preflightNotice').is_visible()
+            assert not page.locator('#preflightNotice').count()
             assert not consents and not posts
             no_overflow(page,'authorization')
             page.screenshot(path=str(OUT/'01-authorization-desktop.png'),full_page=True)
@@ -230,7 +223,7 @@ def main():
             assert not errors, errors
             checks = ['explicit one-click authorization and opt-out; no consent via Enter',
                 'no default game mode; AI/random special shields plus 42 real shields; search, hover and keyboard selection',
-                'project-scoped draft and offline recovery; direct start exactly once',
+                'project-scoped draft and offline recovery; direct start exactly once; no game preflight',
                 'progress, usage, report are separate flat views; disabled past steps',
                 'unknown counters stay unknown; synthetic totals and revocation retain data',
                 'report preview does not auto-download; explicit download works',
