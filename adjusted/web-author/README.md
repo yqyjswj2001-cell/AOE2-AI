@@ -27,9 +27,9 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 
 作者输入由现有 build_strategy_input.py 生成；只含动态卡片、空答卷和冻结基础事实。官方原件、固定代码、模板及参考值不通过网页发送。交付采用现有 renderer，不改变固定/动态分类。
 
-## 验证边界
+## 输出边界
 
-构建优先使用 [仓库安装模板](../install-template/README.md)，一次导入真实 DE 入口并核对全部36个官方模块后，可重复离线打包。显式指定游戏路径时仍核对真实游戏来源。入口、加载顺序或基线哈希不匹配则拒绝；没有真实入口不伪造模板。launch 会提前返回 preflight，缺失时可完成参数，但不能生成安装包。最终结构为同名 .ai、主 .per、36 个模块及 resources/_common/ai 目录。Parser/Load、实机开局、完整对局和强度仍为 Unverified；本功能不会自动安装或启动游戏。
+创作不依赖本机游戏。完整参数校验通过后，`build` 只把 36 个生成后的 `.per` 脚本文件写入本项目 delivery 目录，不读取 `PromiDE.per2`，不生成 `.ai`、主入口、安装包或游戏目录，也不会自动安装或启动游戏。
 
 [用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
 
