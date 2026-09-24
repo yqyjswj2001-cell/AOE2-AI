@@ -19,6 +19,8 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project <名称> --
 python -X utf8 -B adjusted/web-author/web_session.py next --project <名称> --compact
 ```
 
+**硬规则：`launch`、授权、网页配置、参数创作、校验和脚本生成均不要求安装游戏。不要在启动前寻找 AoE2DE、`PromiDE.per2`、Steam 目录或安装模板，也不得因这些文件不存在而拒绝创作。**
+
 使用启动结果的实际本机 URL，不猜端口。项目自动进入 `adjusted/.local/author-projects/<名称>/`，不复用历史作品。浏览器打开失败时提供真实 URL；不得报告已打开。这里只允许“打开页面”，不代表授权代理控制浏览器。
 
 **网页设置默认由用户操作。** 主代理负责网页服务，不负责网页交互：执行 `launch` 后等待用户自己选择模式、文明、Agent、脚本名和时代偏好，并点击“开始生成”；主代理通过 `watch` 得知提交结果后再继续。不得因为任务包含“网页、选择、点击开始”等描述就自行调用 Computer Use、浏览器自动化、屏幕控制或视觉点击工具，也不得替用户填写或提交设置。**只有用户明确要求代理代为操作网页时，才可以使用这类工具。**
