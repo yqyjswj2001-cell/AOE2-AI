@@ -103,6 +103,9 @@ def make_server(controller, meta, port=0):
                     return self._json(controller.next())
                 if route == "/api/author/usage":
                     return self._json(controller.usage())
+                if route == "/api/delivery/download":
+                    package = controller.delivery_file()
+                    return self._send(package.read_bytes(), "application/zip", filename=package.name)
                 if route == "/api/report/download":
                     query = parse_qs(parsed.query)
                     report_id = query.get("id", [""])[0]
