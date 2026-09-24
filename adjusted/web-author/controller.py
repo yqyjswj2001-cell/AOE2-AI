@@ -15,7 +15,6 @@ import uuid
 
 from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
-from installable_ai import InstallableAIError, package_installable_ai
 from development_report import DevelopmentJournal, DevelopmentReportError, generate_reports, report_file
 from cursor_admin_usage import active_project_path
 
@@ -119,7 +118,6 @@ class RealEngine:
         files = [safe_path(path) for directory, pattern in groups for path in sorted(directory.glob(pattern))]
         files += [ROOT / "adjusted/cloze/classification/parameters.json", HERE / "standard-edition.json", HERE / "civilizations.py"]
         files += [TOOLS / name for name in ("render_per_cloze.py", "strategy_catalog.py", "cloze_boundary.py", "build_strategy_input.py")]
-        files += [HERE / "installable_ai.py"]
         if len(list((ROOT / "official/raw/Promisory").glob("*.per"))) != 36:
             raise WorkflowError("Expected 36 fixed source modules")
         return digest(json_bytes({str(path.relative_to(ROOT)): digest(safe_path(path).read_bytes()) for path in files}))
@@ -134,15 +132,6 @@ class RealEngine:
                 (out / source.name).write_bytes(safe_path(source).read_bytes())
         if len(list(out.glob("*.per"))) != 36:
             raise WorkflowError("Delivery must contain all 36 modules")
-
-    def preflight(self):
-        from install_template import preflight
-        return preflight()
-
-    def package(self, modules, script_name, output):
-        return package_installable_ai(
-            modules, script_name, output, ROOT / "official/raw/Promisory"
-        )
 
 
 class Controller:
@@ -196,8 +185,7 @@ class Controller:
         return self.development.record(source, kind, severity, message, data)
 
     def _runtime_state(self):
-        build = self.data.get("build") or {}
-        return {name: build.get(name, "Unverified") for name in ("parser_load", "smoke", "full_game", "strength")}
+        return {}
 
     def _browser_observations(self, value):
         if value is None:
@@ -469,9 +457,14 @@ class Controller:
                 "coverage": "NOT_CONNECTED", "stages": [], "by_model": [], "capture_gaps": []}
 
     def preflight(self, force=False):
-        if force or self._preflight_result is None:
-            check = getattr(self.engine, "preflight", None)
-            self._preflight_result = check() if callable(check) else {"ready": None, "source": "engine_not_checked"}
+        # Authoring and script rendering never require a local game installation.
+        self._preflight_result = {
+            "ready": True,
+            "source": "not_required",
+            "parameter_authoring_available": True,
+            "script_rendering_available": True,
+            "game_installation_required": False,
+        }
         return dict(self._preflight_result)
 
     def _write_handoff(self):
@@ -654,10 +647,6 @@ class Controller:
             selection = selection_context(self.civilizations, self.data["project_id"]) if civ == "auto" else {}
             choice = None if civ == "auto" else {
                 "civilization": civ, "reason": "", "selected_by": "user", "selected_at": time.time()}
-            self.data["preflight"] = self.preflight(force=True)
-            if self.data["preflight"].get("ready") is False:
-                self._dev_event("workflow", "preflight_unavailable", "warning",
-                                "安装模板不可用；本轮可完成参数，但暂不能打包。", self.data["preflight"])
             # Existing partial exports are never silently reused or overwritten.
             out = safe_path(self.project / "author-input")
             self.engine.export(out)
@@ -839,67 +828,58 @@ class Controller:
             self.data["status"] = "rendering"
             self._save()
             work = None
+            output = None
             try:
-                prerequisites = self.preflight(force=True)
-                if prerequisites.get("ready") is False:
-                    raise InstallableAIError(prerequisites["message"])
                 work, modules, signature = self._render_snapshot()
+                rendered = sorted(path for path in modules.glob("*.per") if path.is_file())
+                if len(rendered) != 36 or len({path.name.casefold() for path in rendered}) != 36:
+                    raise WorkflowError("Script delivery requires exactly 36 rendered PER files")
                 build_id = "build-" + uuid.uuid4().hex[:12]
                 output = safe_path(self.project / "delivery" / build_id)
-                output.mkdir(parents=True)
                 script_name = self.data["request"]["script_name"]
-                package = self.engine.package(modules, script_name, output)
+                script_root = safe_path(output / script_name)
+                script_root.mkdir(parents=True)
+                for source in rendered:
+                    (script_root / source.name).write_bytes(source.read_bytes())
                 files = {path.relative_to(output).as_posix(): digest(path.read_bytes())
                          for path in output.rglob("*") if path.is_file()}
-                receipt = {"schema": "aoe2-web-author-delivery-v2", "project_id": self.data["project_id"],
-                           "build_id": build_id, "script_name": script_name,
-                           "answers_sha256": signature, "fixed_sha256": self.data["fixed_sha256"],
-                           "input_sha256": self.data["input_sha256"], "files": files, "modules": 36,
-                           "artifact_kind": "aoe2de_ai_package", "installable": True,
-                           "entrypoint_status": "included", "entrypoint_validation": package["entrypoint_validation"],
-                           "entrypoint_source_sha256": package["official_entrypoint_sha256"],
-                           "entrypoint_source_kind": package.get("entrypoint_source_kind", "unrecorded"),
-                           "loaded_modules": package["loaded_modules"],
-                           "unreferenced_modules": package["unreferenced_modules"],
-                           "ai_root": package["ai_root"], "entrypoint": package["entrypoint"],
-                           "static_validation": "PASS", "parser_load": "Unverified",
-                           "smoke": "Unverified", "full_game": "Unverified", "strength": "Unverified"}
-                atomic_json(output / "receipt.json", receipt)
-                (output / "README.md").write_text(
-                    "AOE2 DE 可安装 AI 包。将 resources 目录作为本地模组内容；"
-                    "也可将 resources/_common/ai 下的内容复制到游戏 AI 目录。\n"
-                    "已生成同名 .ai、主 .per 和 36 个模块。入口来自已核对的仓库安装模板或本机游戏文件，"
-                    "具体来源与入口哈希见 receipt.json。\n"
-                    "静态入口检查 PASS；游戏 Parser/Load、Smoke、完整对局及强度仍为 Unverified。\n",
-                    encoding="utf-8")
+                if len(files) != 36 or any(not name.lower().endswith(".per") for name in files):
+                    raise WorkflowError("Script delivery must contain only the 36 rendered PER files")
                 if self._answers()[1] != signature or self.engine.source_digest() != self.data["fixed_sha256"]:
                     raise WorkflowError("Answers or source changed before delivery; the new directory is not a valid build")
-                artifact_hashes = {path.relative_to(output).as_posix(): digest(path.read_bytes())
-                                   for path in output.rglob("*") if path.is_file()}
-                build = {**receipt, "path": str(output), "receipt": str(output / "receipt.json"),
-                         "artifact_hashes": artifact_hashes, "package_sha256": digest(json_bytes(artifact_hashes))}
+                artifact_hashes = dict(files)
+                build = {
+                    "schema": "aoe2-web-author-script-delivery-v1",
+                    "project_id": self.data["project_id"],
+                    "build_id": build_id,
+                    "script_name": script_name,
+                    "answers_sha256": signature,
+                    "fixed_sha256": self.data["fixed_sha256"],
+                    "input_sha256": self.data["input_sha256"],
+                    "artifact_kind": "aoe2_per_scripts",
+                    "modules": 36,
+                    "script_files": 36,
+                    "static_validation": "PASS",
+                    "path": str(output),
+                    "script_root": str(script_root),
+                    "artifact_hashes": artifact_hashes,
+                    "package_sha256": digest(json_bytes(artifact_hashes)),
+                }
                 self.data.update(build=build, status="completed")
                 self.data["revision"] += 1
                 self._save()
-                self._dev_event("workflow", "build_completed", "info", "构建完成。",
+                self._dev_event("workflow", "build_completed", "info", "脚本生成完成。",
                                 {"build_id": build_id, "package_sha256": build["package_sha256"],
-                                 "installable": build.get("installable")})
+                                 "script_files": 36})
                 return self.next()
-            except InstallableAIError as exc:
-                if 'output' in locals() and output.exists():
-                    shutil.rmtree(output)
-                self.data.update(status="ready", build=None)
-                self.data["revision"] += 1
-                self._save()
-                self._dev_event("workflow", "build_failed", "error", str(exc),
-                                {"stage": "installable_package"})
-                raise
             except (OSError, ValueError) as exc:
+                if output is not None and output.exists():
+                    shutil.rmtree(output)
                 self.data.update(status="invalid", build=None, validation=None)
                 self.data["revision"] += 1
                 self._save()
                 self._dev_event("workflow", "build_failed", "error", str(exc),
-                                {"stage": "render_or_delivery"})
+                                {"stage": "script_render"})
                 raise
             finally:
                 if work:
