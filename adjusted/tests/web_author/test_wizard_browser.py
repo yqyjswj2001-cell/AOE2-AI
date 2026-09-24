@@ -106,18 +106,27 @@ def main():
             page.screenshot(path=str(OUT/'02-mode-desktop.png'),full_page=True)
             page.locator('input[name=mode][value="2v2"]').check()
             page.locator('#nextStep').click()
-            assert page.locator('#civilizationGrid button').count() == 42
+            assert page.locator('#civilizationGrid button').count() == 44
+            assert page.locator('#civilizationGrid button').nth(0).get_attribute('data-civilization') == 'auto'
+            assert page.locator('#civilizationGrid button').nth(1).get_attribute('data-civilization') == 'random'
+            assert page.locator('.special-civ-shield').count() == 2
             page.wait_for_function("[...document.querySelectorAll('#civilizationGrid img')].every(i => i.complete && i.naturalWidth > 0)")
             assert page.locator('#civilizationGrid img').evaluate_all('(xs)=>xs.every(x=>getComputedStyle(x).objectFit === "contain")')
             first, second = civs['civilizations'][:2]
+            page.locator('[data-civilization="auto"]').click()
+            assert page.locator('#civilization').input_value() == 'auto'
+            page.locator('[data-civilization="random"]').click()
+            random_choice = page.locator('#civilization').input_value()
+            assert random_choice in {c['id'] for c in civs['civilizations']}
             page.locator(f'[data-civilization="{first["id"]}"]').hover()
             assert page.locator('#detailName').inner_text() == first['name']
-            assert page.locator('#civilization').input_value() == ''
+            assert page.locator('#civilization').input_value() == random_choice
             page.locator('#civilizationSearch').fill(first['name'])
             assert page.locator('#civilizationGrid button:visible').count() >= 1
             page.locator(f'[data-civilization="{first["id"]}"]').click()
             page.locator('#civilizationSearch').fill('no-such-civilization')
-            assert page.locator('#civilizationEmpty').is_visible()
+            assert page.locator('#civilizationGrid button:visible').count() == 2
+            assert not page.locator('#civilizationEmpty').is_visible()
             page.locator('#civilizationSearch').fill('')
             page.locator(f'[data-civilization="{second["id"]}"]').focus()
             assert page.locator('#civilization').input_value() == first['id']
@@ -211,7 +220,7 @@ def main():
             assert len(posts) == 1
             assert not errors, errors
             checks = ['explicit one-click authorization and opt-out; no consent via Enter',
-                'no default game mode; 42 real shields; search, hover and keyboard selection',
+                'no default game mode; AI/random special shields plus 42 real shields; search, hover and keyboard selection',
                 'project-scoped draft and offline recovery; direct start exactly once',
                 'progress, usage, report are separate flat views; disabled past steps',
                 'unknown counters stay unknown; synthetic totals and revocation retain data',

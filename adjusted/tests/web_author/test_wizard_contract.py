@@ -83,6 +83,17 @@ class WizardContractTests(unittest.TestCase):
   self.assertIn('record_hook_payload',hook_py)
   self.assertNotIn('prompt',hook_py.lower())
   self.assertNotIn('response text',hook_py.lower())
+ def test_civilization_actions_are_grid_shields(self):
+  html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
+  js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
+  css=(ROOT/'adjusted/web-author/web/styles.css').read_text(encoding='utf-8')
+  self.assertNotIn('id="autoCivilization"',html)
+  self.assertIn("addSpecial('auto', 'AI 选择', 'AI')",js)
+  self.assertIn("addSpecial('random', '随机文明', '?')",js)
+  self.assertIn('function chooseRandomCivilization()',js)
+  self.assertIn("button.dataset.special = 'true'",js)
+  self.assertIn('.special-civ-shield',css)
+  self.assertIn('.special-civilization-card',css)
  def test_public_catalogs_and_only_allowlisted_icons(self):
   meta={'host_token':'fixture-token','instance_id':'fixture','project_id':self.app.data['project_id']}
   server=make_server(self.app,meta,0);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
