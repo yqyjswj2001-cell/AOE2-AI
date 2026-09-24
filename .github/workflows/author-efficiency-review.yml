@@ -4,17 +4,119 @@ on:
     branches: [fix/author-workflow-efficiency]
 permissions:
   contents: read
+concurrency:
+  group: author-efficiency-review
+  cancel-in-progress: true
 jobs:
   review:
+    if: github.ref == 'refs/heads/fix/author-workflow-efficiency'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - run: git archive HEAD -o efficiency-source.zip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/setup-python@v5
         with:
-          name: efficiency-source
-          path: efficiency-source.zip
+          python-version: '3.12'
+      - name: Apply readable edits after verifying exact baseline and result hashes
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          allowed = set('''SKILL.md
+          adjusted/install-template/README.md
+          adjusted/install-template/manifest.json
+          adjusted/skills/aoe2-web-author/SKILL.md
+          adjusted/tests/web_author/test_author_efficiency.py
+          adjusted/tests/web_author/test_install_template.py
+          adjusted/tests/web_author/test_wizard_browser.py
+          adjusted/web-author/README.md
+          adjusted/web-author/controller.py
+          adjusted/web-author/install_template.py
+          adjusted/web-author/installable_ai.py
+          adjusted/web-author/server.py
+          adjusted/web-author/submit_answers.py
+          adjusted/web-author/web/app.js
+          adjusted/web-author/web/index.html
+          adjusted/web-author/web_session.py'''.splitlines())
+          payloads = ['.review/efficiency-code.json', '.review/efficiency-tests.json', '.review/efficiency-runtime.json', '.review/efficiency-docs-ui.json']
+          changes = {}
+          for name in payloads:
+              doc = json.loads(Path(name).read_bytes())
+              assert not set(doc) & set(changes), 'duplicate target'
+              changes.update(doc)
+          assert set(changes) == allowed, 'unexpected path set'
+          prepared = {}
+          for name, change in changes.items():
+              path = Path(name)
+              assert not path.is_symlink()
+              raw = path.read_bytes() if path.exists() else None
+              actual = hashlib.sha256(raw).hexdigest() if raw is not None else None
+              assert actual == change['before'], 'baseline hash mismatch: ' + name
+              text = '' if raw is None else raw.decode('utf-8')
+              cursor = 0
+              for edit in change['edits']:
+                  assert type(edit['start']) is int and type(edit['end']) is int
+                  assert cursor <= edit['start'] <= edit['end'] <= len(text)
+                  cursor = edit['end']
+              for edit in reversed(change['edits']):
+                  text = text[:edit['start']] + edit['text'] + text[edit['end']:]
+              result = text.encode('utf-8')
+              assert hashlib.sha256(result).hexdigest() == change['after'], 'result hash mismatch: ' + name
+              prepared[name] = result
+          for name, raw in prepared.items():
+              path = Path(name); path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(raw)
+          Path('review-results').mkdir(exist_ok=True)
+          Path('review-results/source-sha.json').write_text(json.dumps({n:c['after'] for n,c in changes.items()}, indent=2))
+          print('Verified and applied', len(prepared), 'source files')
+          PY
+      - name: Official baseline and complete parameter roundtrip
+        run: python -B adjusted/tools/check_official_cloze.py 2>&1 | tee review-results/cloze.log
+      - name: Core regression
+        run: python -B -m unittest discover -s adjusted/tests -v 2>&1 | tee review-results/core.log
+      - name: Workflow, metering, answer writer and template regression
+        run: python -B -m unittest discover -s adjusted/tests/web_author -v 2>&1 | tee review-results/web.log
+      - name: JavaScript syntax
+        run: node --check adjusted/web-author/web/app.js
+      - run: python -m pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Synthetic Chromium wizard regression
+        run: python -B adjusted/tests/web_author/test_wizard_browser.py 2>&1 | tee review-results/browser.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: efficiency-validation
+          path: |
+            review-results/
+            adjusted/.local/studio-review/
           retention-days: 3
+      - name: Commit verified implementation and remove transfer files
+        env:
+          GH_REVIEW_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, os, subprocess
+          from pathlib import Path
+          branch = 'fix/author-workflow-efficiency'
+          assert os.environ['GITHUB_REF'] == 'refs/heads/' + branch
+          hashes = json.loads(Path('review-results/source-sha.json').read_bytes())
+          for name, expected in hashes.items():
+              assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == expected, name
+          env = dict(os.environ)
+          auth = base64.b64encode(('x-access-token:' + env.pop('GH_REVIEW_TOKEN')).encode()).decode()
+          env.update(GIT_CONFIG_COUNT='1', GIT_CONFIG_KEY_0='http.https://github.com/.extraheader', GIT_CONFIG_VALUE_0='AUTHORIZATION: basic ' + auth)
+          remote = subprocess.check_output(['git','ls-remote','origin','refs/heads/'+branch], env=env, text=True).split()[0]
+          assert remote == os.environ['GITHUB_SHA'], 'branch moved; refusing to overwrite'
+          subprocess.run(['git','config','user.name','github-actions[bot]'], check=True)
+          subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+          subprocess.run(['git','add','--',*hashes], check=True)
+          transfers = ['.review/efficiency-code.json','.review/efficiency-tests.json','.review/efficiency-runtime.json','.review/efficiency-docs-ui.json']
+          subprocess.run(['git','rm','--',*transfers], check=True)
+          subprocess.run(['git','commit','-m','Implement incremental answers, complete handoff, quiet wait and verified template packaging'], check=True)
+          subprocess.run(['git','push','origin','HEAD:refs/heads/'+branch], env=env, check=True)
+          PY
