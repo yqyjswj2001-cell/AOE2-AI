@@ -33,6 +33,8 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 
 用户明确要求直接安装到本机游戏时，可在 build 完成后执行 `web_session.py install --project <名称> --confirm-install`。该独立步骤才会定位真实 AoE2DE 根目录，只读游戏自带 `PromiDE.per2` 和 `Promisory`，生成同名 `.ai`、主 `.per` 与 36 模块并写入 `resources/_common/ai`。它不会修改官方 AI；同名旧安装先备份到项目 `install-backups/`。只有返回 `installed=true` 与 `verification=PASS` 才表示安装完成。
 
+针对 2026-09-22 的 AoE2 DE Update 185872 后进入对局可能重新显示文明领袖名的情况，直接安装还会生成一个名字兼容 XS 到 `resources/_common/xs`，主 AI 入口在开局通过 `xsSetPlayerName` 把当前 AI 玩家名设回脚本名。该文件只负责显示名称，不参与策略决策。
+
 [用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
 
 作品页“开发报告”标签提供“生成创作报告”，先预览，用户主动点击才下载。每次只生成两个 Markdown：`creation-report.md` 是可直接复制给开发的主报告；`technical-details.md` 合并完整问题/反馈、参数诊断、usage 调用、构建详情、事件时间线和日志摘要。报告本身不额外打 ZIP。原始计量数据库和项目事件文件仍留在项目目录供程序复查；finish 时自动保存最终两份报告。作者或主代理可用 `web_session.py feedback` 随时登记 issue / suggestion / note，避免修复后的问题从最终状态里消失。
