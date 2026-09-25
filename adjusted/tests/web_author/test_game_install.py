@@ -190,7 +190,8 @@ class GameInstallTests(unittest.TestCase):
         self.assertIn("<AoE2DE>/resources/_common/ai", skill)
         self.assertIn("installed=true", skill)
         self.assertIn("verification=PASS", skill)
-        self.assertIn("不要先把异常解释成", skill)
+        self.assertIn("scoreboard_name_method=xsSetPlayerName", skill)
+        self.assertIn("静态安装校验不能代替真实游戏记分板实测", skill)
 
 
 if __name__ == "__main__":
