@@ -351,6 +351,17 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
 .output-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; clear: both; }
 .output-card { min-height: 80px; background: var(--bg); }
 .preferences-section legend { margin-bottom: 4px; }
+.preference-toggle { clear: both; display: flex; align-items: center; gap: 16px; justify-content: space-between; padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); cursor: pointer; }
+.preference-toggle-copy { min-width: 0; }
+.preference-toggle-copy strong { display: block; font-size: 14px; font-weight: 650; }
+.preference-toggle-copy small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.preference-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch-control { position: relative; flex: 0 0 42px; width: 42px; height: 24px; border-radius: 999px; background: var(--line-strong); transition: background .15s; }
+.switch-control::after { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: var(--text); transition: transform .15s; }
+.preference-toggle:has(input:checked) { border-color: var(--gold-line); background: var(--gold-soft); }
+.preference-toggle:has(input:checked) .switch-control { background: var(--gold); }
+.preference-toggle:has(input:checked) .switch-control::after { transform: translateX(18px); background: #211b10; }
+.preference-toggle:focus-within { outline: 2px solid var(--gold); outline-offset: 3px; }
 .preference-help { clear: both; margin: 0 0 20px; }
 .age-sliders { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; clear: both; }
 .age-row { padding: 14px 16px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); }
