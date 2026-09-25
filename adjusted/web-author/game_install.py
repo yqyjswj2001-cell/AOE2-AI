@@ -212,11 +212,18 @@ def find_game_root(game_root=None, *, environ=None, home=None) -> Path:
     for steam in _steam_roots(environ, home):
         for library in _steam_libraries(steam):
             candidates.append(library / "steamapps/common/AoE2DE")
+    valid = []
     for candidate in candidates:
         try:
-            return _game_paths(candidate)[0]
+            root = _game_paths(candidate)[0]
         except GameInstallError:
             continue
+        if root not in valid:
+            valid.append(root)
+    if len(valid) == 1:
+        return valid[0]
+    if len(valid) > 1:
+        raise GameInstallError("Multiple AoE2DE installations were found; pass --game-root to choose the intended game folder")
     raise GameInstallError(
         "AoE2DE installation was not found. Set AOE2DE_ROOT to the game folder or pass --game-root."
     )
@@ -269,23 +276,27 @@ def _casefold_per_files(root: Path):
 def _verify_game_baseline(promisory: Path, modules: dict[str, bytes], targets: list[str]):
     baseline = _casefold_per_files(OFFICIAL_BASELINE)
     game = _casefold_per_files(promisory)
+    if len(baseline) != 36 or set(modules) != set(baseline):
+        raise GameInstallError("Completed build does not match the repository's 36-module AI baseline")
+
     mismatches = []
-    for target in targets:
-        name = _module_name(target)
-        key = name.casefold()
-        if key not in modules:
-            raise GameInstallError("Installed loader references a module missing from this build: " + name)
-        if key not in baseline or key not in game:
-            mismatches.append(name + " (missing)")
-            continue
-        if baseline[key].read_bytes() != game[key].read_bytes():
-            mismatches.append(name + " (different)")
+    for key, baseline_path in baseline.items():
+        game_path = game.get(key)
+        if game_path is None:
+            mismatches.append(baseline_path.name + " (missing)")
+        elif baseline_path.read_bytes() != game_path.read_bytes():
+            mismatches.append(baseline_path.name + " (different)")
     if mismatches:
         shown = ", ".join(mismatches[:8]) + (" ..." if len(mismatches) > 8 else "")
         raise GameInstallError(
             "Installed game AI baseline differs from this repository. Update the repository baseline before direct install: "
             + shown
         )
+
+    for target in targets:
+        name = _module_name(target)
+        if name.casefold() not in modules:
+            raise GameInstallError("Installed loader references a module missing from this build: " + name)
 
 
 def _write_layout(root: Path, script_name: str, modules: dict[str, bytes], loader_text: str, targets: list[str]):
