@@ -303,7 +303,7 @@ def _verify_game_baseline(promisory: Path, modules: dict[str, bytes], targets: l
 def _choose_name_goal(modules: dict[str, bytes]) -> int:
     text = "\n".join(data.decode("utf-8", errors="ignore") for data in modules.values())
     for goal in range(16000, 15899, -1):
-        if not re.search(r"(?<!\\d)" + str(goal) + r"(?!\\d)", text):
+        if not re.search(r"(?<!\d)" + str(goal) + r"(?!\d)", text):
             return goal
     raise GameInstallError("Could not reserve a safe AI goal for the scoreboard-name compatibility shim")
 
@@ -364,7 +364,7 @@ def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targ
     generated = entry.read_text(encoding="utf-8")
     if "Promisory\\" in generated or "Promisory/" in generated:
         raise GameInstallError("Custom AI entrypoint still points to the official Promisory directory")
-    found = re.findall(r'\\(load\\s+"' + re.escape(script_name) + r'[\\\\/]([^"]+)"\\)', generated, re.IGNORECASE)
+    found = re.findall(r'\(load\s+"' + re.escape(script_name) + r'[\\/]([^"]+)"\)', generated, re.IGNORECASE)
     if len(found) != len(targets):
         raise GameInstallError("Custom AI entrypoint did not rewrite every official load")
     files = _casefold_per_files(module_root)
@@ -382,7 +382,7 @@ def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targ
     xs_text = xs_file.read_text(encoding="utf-8")
     if "xsSetPlayerName" not in xs_text or ('"' + script_name + '"') not in xs_text:
         raise GameInstallError("Scoreboard-name XS compatibility shim is invalid")
-    include = re.search(r'\\(include\\s+"([^"]+\\.xs)"\\)', generated, re.IGNORECASE)
+    include = re.search(r'\(include\s+"([^"]+\.xs)"\)', generated, re.IGNORECASE)
     if not include or include.group(1) != xs_file.name or "xs-script-call" not in generated:
         raise GameInstallError("Custom AI entrypoint does not call the scoreboard-name compatibility shim")
 
