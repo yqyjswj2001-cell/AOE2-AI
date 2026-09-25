@@ -35,7 +35,7 @@ class ConsentTests(unittest.TestCase):
         return self.app.authorize_usage(self.payload(agent=agent,usage_authorized=value))
     def start(self, **extra):
         return self.app.start(self.payload(mode='1v1',civilization='Synthetic',agent='auto',usage_authorized=True,
-            script_name='Test_AI',preferences=dict.fromkeys(('dark','feudal','castle','imperial'),50),**extra))
+            script_name='Test_AI',**extra))
 
     def test_no_meter_before_explicit_consent_and_no_generation_on_grant(self):
         self.app.state(); self.app.next()
@@ -124,8 +124,7 @@ class ConsentTests(unittest.TestCase):
     def test_existing_consent_cannot_be_overridden_by_legacy_start(self):
         self.consent()
         with self.assertRaises(WorkflowError):
-            self.app.start(self.payload(mode='1v1',civilization='Synthetic',script_name='Old',
-                preferences=dict.fromkeys(('dark','feudal','castle','imperial'),50)))
+            self.app.start(self.payload(mode='1v1',civilization='Synthetic',script_name='Old'))
         self.assertFalse((self.project/'author-input').exists())
 
     def test_connect_endpoint_requires_host_authentication(self):
