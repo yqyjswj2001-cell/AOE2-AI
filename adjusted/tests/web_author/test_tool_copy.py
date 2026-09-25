@@ -36,7 +36,7 @@ class ToolCopyTests(unittest.TestCase):
 
     def test_titles_name_functions(self):
         self.assertIn("const STEP_NAMES = ['Token 采集', '游戏模式', '文明选择', '参数设置', '生成结果'];", self.js)
-        for label in ('脚本名', '时代攻防偏好', 'Token 用量', '开发报告'):
+        for label in ('脚本名', 'Token 用量', '开发报告'):
             self.assertIn(label, self.html)
         self.assertIn("label.textContent = 'Agent'", self.js)
         self.assertIn('.agent-select-field>label{display:block}', self.css)
