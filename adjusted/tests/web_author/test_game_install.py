@@ -15,6 +15,7 @@ sys.path.insert(0, str(HERE))
 
 import game_install
 from game_install import GameInstallError, install_project
+from web_session import main as web_session_main
 
 
 def digest(data: bytes) -> str:
@@ -160,6 +161,25 @@ class GameInstallTests(unittest.TestCase):
         with patch.object(game_install, "OFFICIAL_BASELINE", self.baseline):
             with self.assertRaisesRegex(GameInstallError, "Not a usable AoE2DE install root"):
                 install_project(self.project, game_root=personal)
+
+    def test_cli_requires_explicit_install_confirmation(self):
+        self.raw_build()
+        result = web_session_main([
+            "install", "--project", str(self.project), "--test-project",
+            "--game-root", str(self.game),
+        ])
+        self.assertEqual(result, 2)
+        self.assertFalse((self.ai_root / "SYNTHETIC.ai").exists())
+        self.assertFalse((self.ai_root / "SYNTHETIC.per").exists())
+
+    def test_skill_locks_install_to_verified_game_directory(self):
+        skill = (Path(__file__).resolve().parents[2] / "skills/aoe2-web-author/SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("web_session.py install", skill)
+        self.assertIn("--confirm-install", skill)
+        self.assertIn("<AoE2DE>/resources/_common/ai", skill)
+        self.assertIn("installed=true", skill)
+        self.assertIn("verification=PASS", skill)
+        self.assertIn("不要先把异常解释成", skill)
 
 
 if __name__ == "__main__":
