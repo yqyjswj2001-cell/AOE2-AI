@@ -13,9 +13,9 @@ python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-a
 python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai --until start --timeout 600
 ```
 
-启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `watch` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。授权页默认由当前 Agent 确认身份；设置页选择脚本名、输出方式和时代偏好。输出方式为原生脚本或分享脚本包。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
+启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `watch` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。授权页默认由当前 Agent 确认身份；设置页选择脚本名和输出方式。输出方式为原生脚本或分享脚本包。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
 
-网页偏好不是参数答案；作者仍需根据卡片与事实填写。本地服务不是文件系统沙箱：源码隔离依靠仅向新作者交付隔离输入包，并限制作者读取范围。
+作者仍需根据卡片与事实填写参数。本地服务不是文件系统沙箱：源码隔离依靠仅向新作者交付隔离输入包，并限制作者读取范围。
 
 ## 固定位置
 
@@ -29,7 +29,9 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 
 ## 输出边界
 
-创作不依赖本机游戏。完整参数校验通过后，原生模式写出 36 个 `.per`；分享模式生成一个 `.zip`，内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`。两种都不读取 `PromiDE.per2`，不生成 `.ai`、主入口或游戏安装目录，也不会自动安装或启动游戏。
+创作不依赖本机游戏。完整参数校验通过后，原生模式写出 36 个 `.per`；分享模式生成一个 `.zip`，内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`。普通 build 不读取 `PromiDE.per2`，不生成 `.ai`、主入口或游戏安装目录，也不会自动安装或启动游戏。
+
+用户明确要求直接安装到本机游戏时，可在 build 完成后执行 `web_session.py install --project <名称> --confirm-install`。该独立步骤才会定位真实 AoE2DE 根目录，只读游戏自带 `PromiDE.per2` 和 `Promisory`，生成同名 `.ai`、主 `.per` 与 36 模块并写入 `resources/_common/ai`。它不会修改官方 AI；同名旧安装先备份到项目 `install-backups/`。只有返回 `installed=true` 与 `verification=PASS` 才表示安装完成。
 
 [用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
 
