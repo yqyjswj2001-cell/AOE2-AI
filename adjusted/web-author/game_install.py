@@ -177,13 +177,14 @@ def _game_paths(root: Path):
     root = Path(root).expanduser().resolve()
     promide = root / "resources/_common/drs/gamedata_x2/PromiDE.per2"
     ai_root = root / "resources/_common/ai"
+    xs_root = root / "resources/_common/xs"
     promisory = ai_root / "Promisory"
     if not promide.is_file() or not ai_root.is_dir() or not promisory.is_dir():
         raise GameInstallError(
             "Not a usable AoE2DE install root; expected resources/_common/drs/gamedata_x2/PromiDE.per2 "
             "and resources/_common/ai/Promisory"
         )
-    return root, promide, ai_root, promisory
+    return root, promide, ai_root, promisory, xs_root
 
 
 def find_game_root(game_root=None, *, environ=None, home=None) -> Path:
@@ -299,23 +300,59 @@ def _verify_game_baseline(promisory: Path, modules: dict[str, bytes], targets: l
             raise GameInstallError("Installed loader references a module missing from this build: " + name)
 
 
+def _choose_name_goal(modules: dict[str, bytes]) -> int:
+    text = "\n".join(data.decode("utf-8", errors="ignore") for data in modules.values())
+    for goal in range(16000, 15899, -1):
+        if not re.search(r"(?<!\\d)" + str(goal) + r"(?!\\d)", text):
+            return goal
+    raise GameInstallError("Could not reserve a safe AI goal for the scoreboard-name compatibility shim")
+
+
+def _name_shim(script_name: str, modules: dict[str, bytes]) -> tuple[str, str, int, bytes]:
+    goal = _choose_name_goal(modules)
+    suffix = _sha256(script_name.encode("ascii"))[:12]
+    xs_name = "aoe2_ai_name_" + suffix + ".xs"
+    function_name = "aoe2_set_player_name_" + suffix
+    xs = (
+        "void " + function_name + "()\n"
+        "{\n"
+        "    int playerId = xsGetGoal(" + str(goal) + ");\n"
+        "    xsSetPlayerName(playerId, \"" + script_name + "\");\n"
+        "}\n"
+    ).encode("utf-8")
+    return xs_name, function_name, goal, xs
+
+
 def _write_layout(root: Path, script_name: str, modules: dict[str, bytes], loader_text: str, targets: list[str]):
     root.mkdir(parents=True, exist_ok=True)
     module_root = root / script_name
     module_root.mkdir()
     baseline = _casefold_per_files(OFFICIAL_BASELINE)
     for key, data in modules.items():
-        # Preserve the canonical repository filename when available.
         name = baseline[key].name if key in baseline else key
         (module_root / name).write_bytes(data)
 
+    xs_name, function_name, goal, xs = _name_shim(script_name, modules)
     rewritten = LOAD.sub(lambda match: match.group(1) + script_name + "\\" + match.group("target") + match.group(3), loader_text)
+    rewritten = rewritten.rstrip() + (
+        "\n\n; AOE2-AI scoreboard-name compatibility shim for DE Update 185872+\n"
+        "(defconst aoe2-ai-installed-name-goal " + str(goal) + ")\n"
+        "(include \"" + xs_name + "\")\n"
+        "(defrule\n"
+        "    (true)\n"
+        "=>\n"
+        "    (set-goal aoe2-ai-installed-name-goal my-player-number)\n"
+        "    (xs-script-call \"" + function_name + "\")\n"
+        "    (disable-self)\n"
+        ")\n"
+    )
     (root / (script_name + ".per")).write_text(rewritten, encoding="utf-8")
     (root / (script_name + ".ai")).write_bytes(b"")
-    _verify_layout(root, script_name, modules, targets)
+    (root / xs_name).write_bytes(xs)
+    _verify_layout(root, script_name, modules, targets, root / xs_name)
 
 
-def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targets: list[str]):
+def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targets: list[str], xs_file: Path):
     marker = root / (script_name + ".ai")
     entry = root / (script_name + ".per")
     module_root = root / script_name
@@ -327,7 +364,7 @@ def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targ
     generated = entry.read_text(encoding="utf-8")
     if "Promisory\\" in generated or "Promisory/" in generated:
         raise GameInstallError("Custom AI entrypoint still points to the official Promisory directory")
-    found = re.findall(r'\(load\s+"' + re.escape(script_name) + r'[\\/]([^"]+)"\)', generated, re.IGNORECASE)
+    found = re.findall(r'\\(load\\s+"' + re.escape(script_name) + r'[\\\\/]([^"]+)"\\)', generated, re.IGNORECASE)
     if len(found) != len(targets):
         raise GameInstallError("Custom AI entrypoint did not rewrite every official load")
     files = _casefold_per_files(module_root)
@@ -340,9 +377,18 @@ def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targ
         if _module_name(target).casefold() not in files:
             raise GameInstallError("Custom AI entrypoint points to a missing module: " + target)
 
+    if not xs_file.is_file():
+        raise GameInstallError("Scoreboard-name XS compatibility shim is missing")
+    xs_text = xs_file.read_text(encoding="utf-8")
+    if "xsSetPlayerName" not in xs_text or ('"' + script_name + '"') not in xs_text:
+        raise GameInstallError("Scoreboard-name XS compatibility shim is invalid")
+    include = re.search(r'\\(include\\s+"([^"]+\\.xs)"\\)', generated, re.IGNORECASE)
+    if not include or include.group(1) != xs_file.name or "xs-script-call" not in generated:
+        raise GameInstallError("Custom AI entrypoint does not call the scoreboard-name compatibility shim")
 
-def _backup_existing(ai_root: Path, project: Path, script_name: str):
-    targets = [ai_root / (script_name + ".ai"), ai_root / (script_name + ".per"), ai_root / script_name]
+def _backup_existing(ai_root: Path, xs_root: Path, project: Path, script_name: str, xs_name: str):
+    targets = [ai_root / (script_name + ".ai"), ai_root / (script_name + ".per"), ai_root / script_name,
+               xs_root / xs_name]
     existing = [path for path in targets if path.exists() or path.is_symlink()]
     if not existing:
         return None
@@ -351,7 +397,11 @@ def _backup_existing(ai_root: Path, project: Path, script_name: str):
     backup = project / "install-backups" / (time.strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8])
     backup.mkdir(parents=True)
     for path in existing:
-        target = backup / path.name
+        if path.parent == xs_root:
+            target = backup / "xs" / path.name
+            target.parent.mkdir(exist_ok=True)
+        else:
+            target = backup / path.name
         if path.is_dir():
             shutil.copytree(path, target)
         elif path.is_file():
@@ -361,8 +411,9 @@ def _backup_existing(ai_root: Path, project: Path, script_name: str):
     return backup
 
 
-def _restore_backup(ai_root: Path, backup: Path | None, script_name: str):
-    for path in (ai_root / (script_name + ".ai"), ai_root / (script_name + ".per"), ai_root / script_name):
+def _restore_backup(ai_root: Path, xs_root: Path, backup: Path | None, script_name: str, xs_name: str):
+    for path in (ai_root / (script_name + ".ai"), ai_root / (script_name + ".per"), ai_root / script_name,
+                 xs_root / xs_name):
         if path.is_dir() and not path.is_symlink():
             shutil.rmtree(path, ignore_errors=True)
         else:
@@ -373,33 +424,40 @@ def _restore_backup(ai_root: Path, backup: Path | None, script_name: str):
     if backup is None or not backup.is_dir():
         return
     for source in backup.iterdir():
+        if source.name == "xs" and source.is_dir():
+            xs_root.mkdir(parents=True, exist_ok=True)
+            for xs_source in source.iterdir():
+                shutil.copy2(xs_source, xs_root / xs_source.name)
+            continue
         target = ai_root / source.name
         if source.is_dir():
             shutil.copytree(source, target)
         else:
             shutil.copy2(source, target)
 
-
 def install_project(project: Path, *, game_root=None, environ=None, home=None) -> dict:
     project = Path(project).resolve()
     script_name, modules, output_mode = _read_modules(project)
     game_root = find_game_root(game_root, environ=environ, home=home)
-    game_root, promide, ai_root, promisory = _game_paths(game_root)
+    game_root, promide, ai_root, promisory, xs_root = _game_paths(game_root)
 
     raw_loader = promide.read_bytes()
     loader_text, targets = _parse_promide(raw_loader)
     _verify_game_baseline(promisory, modules, targets)
 
+    xs_name, _, _, _ = _name_shim(script_name, modules)
     staging = Path(tempfile.mkdtemp(prefix=".aoe2-ai-stage-", dir=ai_root))
     backup = None
     modified = False
     try:
         _write_layout(staging, script_name, modules, loader_text, targets)
-        backup = _backup_existing(ai_root, project, script_name)
+        backup = _backup_existing(ai_root, xs_root, project, script_name, xs_name)
 
         target_dir = ai_root / script_name
         target_entry = ai_root / (script_name + ".per")
         target_marker = ai_root / (script_name + ".ai")
+        target_xs = xs_root / xs_name
+        xs_root.mkdir(parents=True, exist_ok=True)
         modified = True
         if target_dir.is_dir() and not target_dir.is_symlink():
             shutil.rmtree(target_dir)
@@ -408,11 +466,12 @@ def install_project(project: Path, *, game_root=None, environ=None, home=None) -
         os.replace(staging / script_name, target_dir)
         os.replace(staging / (script_name + ".per"), target_entry)
         os.replace(staging / (script_name + ".ai"), target_marker)
-        _verify_layout(ai_root, script_name, modules, targets)
+        os.replace(staging / xs_name, target_xs)
+        _verify_layout(ai_root, script_name, modules, targets, target_xs)
     except (OSError, GameInstallError) as exc:
         if modified:
             try:
-                _restore_backup(ai_root, backup, script_name)
+                _restore_backup(ai_root, xs_root, backup, script_name, xs_name)
             except OSError:
                 pass
         if isinstance(exc, GameInstallError):
@@ -435,6 +494,9 @@ def install_project(project: Path, *, game_root=None, environ=None, home=None) -
         "entrypoint": str(ai_root / (script_name + ".per")),
         "module_directory": str(ai_root / script_name),
         "module_files": 36,
+        "scoreboard_name": script_name,
+        "scoreboard_name_method": "xsSetPlayerName",
+        "scoreboard_name_xs": str(xs_root / xs_name),
         "official_files_modified": False,
         "backup": str(backup) if backup is not None else None,
     }
