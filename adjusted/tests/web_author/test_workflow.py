@@ -80,8 +80,7 @@ class WorkflowTests(unittest.TestCase):
         return {"expected_revision": self.app.state()["revision"], "project_id": self.app.data["project_id"], **extra}
     def start(self, output_mode="raw_scripts"):
         return self.app.start(self.payload(mode="ffa8", civilization="Synthetic",
-                             script_name="SYNTHETIC", output_mode=output_mode,
-                             preferences={age: 50 for age in ("dark", "feudal", "castle", "imperial")}))
+                             script_name="SYNTHETIC", output_mode=output_mode))
     def fill(self, value=2):
         for path in (self.project / "answers").glob("*.json"):
             data = json.loads(path.read_bytes())
@@ -279,8 +278,7 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(request("POST", "/api/usage/authorize", auth,
                 {"Origin": f"http://127.0.0.1:{server.server_port}"})[0], 200)
             task = self.payload(mode="1v1", civilization="Synthetic", script_name="Fixture", agent="codex",
-                                usage_authorized=True,
-                                preferences={age: 50 for age in ("dark", "feudal", "castle", "imperial")})
+                                usage_authorized=True)
             self.assertEqual(request("POST", "/api/start", task)[0], 403)
             self.assertEqual(request("POST", "/api/start", task, {"Origin": f"http://127.0.0.1:{server.server_port}"})[0], 200)
             report_status, report_raw = request("POST", "/api/report/generate",
