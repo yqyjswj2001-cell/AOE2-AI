@@ -63,12 +63,12 @@
 <label class="mode-card output-card"><input type="radio" name="output_mode" value="share_package" required><span class="mode-copy"><strong>分享脚本包</strong><small>.zip，可直接发送</small></span><span class="choice-check" aria-hidden="true">✓</span></label>
 </div></fieldset>
 <fieldset class="preferences-section card"><legend>时代攻防偏好</legend>
-<div class="output-grid preference-mode-grid">
-<label class="mode-card output-card"><input type="radio" name="preference_mode" value="auto" required><span class="mode-copy"><strong>AI 选择</strong><small>根据文明、模式与整体策略自行决定各时代倾向</small></span><span class="choice-check" aria-hidden="true">✓</span></label>
-<label class="mode-card output-card"><input type="radio" name="preference_mode" value="manual" required checked><span class="mode-copy"><strong>手动设置</strong><small>自己调整四个时代的攻防倾向</small></span><span class="choice-check" aria-hidden="true">✓</span></label>
-</div>
-<p id="preferenceHelp" class="field-help preference-help">0 防守，50 均衡，100 进攻。此值是偏好，不是 PER 参数。</p>
-<div id="manualPreferences"><div id="ageSliders" class="age-sliders">
+<label class="preference-toggle" for="preferencesEnabled">
+<span class="preference-toggle-copy"><strong>启用攻防偏好</strong><small>默认关闭。关闭时由 AI 自行决定打法，不受四时代攻防偏好约束。</small></span>
+<input id="preferencesEnabled" name="preferences_enabled" type="checkbox" value="true"><span class="switch-control" aria-hidden="true"></span>
+</label>
+<p id="preferenceHelp" class="field-help preference-help">当前未启用，AI 将自由设计整体策略。</p>
+<div id="manualPreferences" hidden><div id="ageSliders" class="age-sliders">
 <div class="age-row"><div class="age-heading"><label for="dark"><span class="age-numeral">I</span>黑暗时代</label><output id="darkValue" for="dark">50 · 均衡</output></div><input id="dark" name="dark" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>防守</span><span>进攻</span></div></div>
 <div class="age-row"><div class="age-heading"><label for="feudal"><span class="age-numeral">II</span>封建时代</label><output id="feudalValue" for="feudal">50 · 均衡</output></div><input id="feudal" name="feudal" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>防守</span><span>进攻</span></div></div>
 <div class="age-row"><div class="age-heading"><label for="castle"><span class="age-numeral">III</span>城堡时代</label><output id="castleValue" for="castle">50 · 均衡</output></div><input id="castle" name="castle" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>防守</span><span>进攻</span></div></div>
