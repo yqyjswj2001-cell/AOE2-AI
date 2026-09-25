@@ -141,7 +141,11 @@ python -X utf8 -B adjusted/web-author/web_session.py install --project <名称> 
 
 如果同名 AI 已存在，安装器先备份到本项目 `install-backups/` 再覆盖。游戏版本与仓库冻结官方基线不一致时停止安装，不能强行混用。安装失败不影响已经完成的创作和 build。
 
-**不得把“文件复制过了”直接报告为安装成功。** 只有命令返回 `installed=true` 且 `verification=PASS` 才能报告已经安装。安装后预计在游戏大厅的 AI 类型列表中以本轮脚本名出现。若游戏内名称或行为异常，先核对大厅实际选中的 AI 类型、上述三个安装路径和游戏日志；不要先把异常解释成“文明自动分配的领袖名”。除非用户另外明确要求，不自动启动游戏或代替用户操作大厅。
+**不得把“文件复制过了”直接报告为安装成功。** 只有命令返回 `installed=true` 且 `verification=PASS` 才能报告已经安装。安装后预计在游戏大厅的 AI 类型列表中以本轮脚本名出现。
+
+AoE2 DE Update 185872（2026-09-22）之后，游戏可能在进入对局时把 AI 玩家名重新显示成文明领袖名，即使自定义 AI 本身已经正确加载。直接安装器因此还会在 `resources/_common/xs` 生成一个仅用于显示名称的 XS 兼容文件，并在自定义主 `.per` 开局调用 `xsSetPlayerName`，目标名字就是本轮脚本名；这不改变策略参数或官方 AI 文件。安装回执中的 `scoreboard_name`、`scoreboard_name_method`、`scoreboard_name_xs` 用于复核这一层。
+
+若游戏内仍显示文明领袖名，先确认安装回执包含 `scoreboard_name_method=xsSetPlayerName`，再核对大厅实际选中的 AI 类型、同名 `.ai/.per`、36 模块、XS 文件和游戏日志。不要先解释成“脚本其实没加载”或“领袖名是正常现象”。**静态安装校验不能代替真实游戏记分板实测。** 除非用户另外明确要求，不自动启动游戏或代替用户操作大厅。
 
 ## 用量与结束
 
