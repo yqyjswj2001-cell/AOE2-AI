@@ -292,12 +292,10 @@ def _write_layout(root: Path, script_name: str, modules: dict[str, bytes], loade
     root.mkdir(parents=True, exist_ok=True)
     module_root = root / script_name
     module_root.mkdir()
-    names = {}
+    baseline = _casefold_per_files(OFFICIAL_BASELINE)
     for key, data in modules.items():
         # Preserve the canonical repository filename when available.
-        baseline = _casefold_per_files(OFFICIAL_BASELINE)
         name = baseline[key].name if key in baseline else key
-        names[key] = name
         (module_root / name).write_bytes(data)
 
     rewritten = LOAD.sub(lambda match: match.group(1) + script_name + "\\" + match.group("target") + match.group(3), loader_text)
@@ -383,6 +381,7 @@ def install_project(project: Path, *, game_root=None, environ=None, home=None) -
 
     staging = Path(tempfile.mkdtemp(prefix=".aoe2-ai-stage-", dir=ai_root))
     backup = None
+    modified = False
     try:
         _write_layout(staging, script_name, modules, loader_text, targets)
         backup = _backup_existing(ai_root, project, script_name)
@@ -390,17 +389,21 @@ def install_project(project: Path, *, game_root=None, environ=None, home=None) -
         target_dir = ai_root / script_name
         target_entry = ai_root / (script_name + ".per")
         target_marker = ai_root / (script_name + ".ai")
-        if target_dir.exists():
+        modified = True
+        if target_dir.is_dir() and not target_dir.is_symlink():
             shutil.rmtree(target_dir)
+        elif target_dir.exists() or target_dir.is_symlink():
+            target_dir.unlink()
         os.replace(staging / script_name, target_dir)
         os.replace(staging / (script_name + ".per"), target_entry)
         os.replace(staging / (script_name + ".ai"), target_marker)
         _verify_layout(ai_root, script_name, modules, targets)
     except (OSError, GameInstallError) as exc:
-        try:
-            _restore_backup(ai_root, backup, script_name)
-        except OSError:
-            pass
+        if modified:
+            try:
+                _restore_backup(ai_root, backup, script_name)
+            except OSError:
+                pass
         if isinstance(exc, GameInstallError):
             raise
         raise GameInstallError(
