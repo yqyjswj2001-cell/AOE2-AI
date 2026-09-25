@@ -62,12 +62,18 @@
 <label class="mode-card output-card"><input type="radio" name="output_mode" value="raw_scripts" required><span class="mode-copy"><strong>原生脚本</strong><small>36 个 .per 文件</small></span><span class="choice-check" aria-hidden="true">✓</span></label>
 <label class="mode-card output-card"><input type="radio" name="output_mode" value="share_package" required><span class="mode-copy"><strong>分享脚本包</strong><small>.zip，可直接发送</small></span><span class="choice-check" aria-hidden="true">✓</span></label>
 </div></fieldset>
-<fieldset class="preferences-section card"><legend>时代攻防偏好</legend><p class="field-help preference-help">0 防守，50 均衡，100 进攻。此值是偏好，不是 PER 参数。</p><div id="ageSliders" class="age-sliders">
+<fieldset class="preferences-section card"><legend>时代攻防偏好</legend>
+<div class="output-grid preference-mode-grid">
+<label class="mode-card output-card"><input type="radio" name="preference_mode" value="auto" required><span class="mode-copy"><strong>AI 选择</strong><small>根据文明、模式与整体策略自行决定各时代倾向</small></span><span class="choice-check" aria-hidden="true">✓</span></label>
+<label class="mode-card output-card"><input type="radio" name="preference_mode" value="manual" required checked><span class="mode-copy"><strong>手动设置</strong><small>自己调整四个时代的攻防倾向</small></span><span class="choice-check" aria-hidden="true">✓</span></label>
+</div>
+<p id="preferenceHelp" class="field-help preference-help">0 防守，50 均衡，100 进攻。此值是偏好，不是 PER 参数。</p>
+<div id="manualPreferences"><div id="ageSliders" class="age-sliders">
 <div class="age-row"><div class="age-heading"><label for="dark"><span class="age-numeral">I</span>黑暗时代</label><output id="darkValue" for="dark">50 · 均衡</output></div><input id="dark" name="dark" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>防守</span><span>进攻</span></div></div>
 <div class="age-row"><div class="age-heading"><label for="feudal"><span class="age-numeral">II</span>封建时代</label><output id="feudalValue" for="feudal">50 · 均衡</output></div><input id="feudal" name="feudal" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>防守</span><span>进攻</span></div></div>
 <div class="age-row"><div class="age-heading"><label for="castle"><span class="age-numeral">III</span>城堡时代</label><output id="castleValue" for="castle">50 · 均衡</output></div><input id="castle" name="castle" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>防守</span><span>进攻</span></div></div>
 <div class="age-row"><div class="age-heading"><label for="imperial"><span class="age-numeral">IV</span>帝王时代</label><output id="imperialValue" for="imperial">50 · 均衡</output></div><input id="imperial" name="imperial" type="range" min="0" max="100" step="1" value="50" aria-valuetext="50，均衡"><div class="ruler" aria-hidden="true"><span>防守</span><span>进攻</span></div></div>
-</div><button id="resetPreferences" class="text-button" type="button">重置为 50</button></fieldset>
+</div><button id="resetPreferences" class="text-button" type="button">重置为 50</button></div></fieldset>
 </div>
 <div id="reviewBeforeStart" class="selection-review card"><p class="eyebrow">本轮设置</p><dl id="selectionSummary" class="selection-summary"></dl><p id="startHint" class="field-help">生成后不可修改本轮设置。</p></div>
 </div>
