@@ -45,7 +45,7 @@ class GameInstallTests(unittest.TestCase):
             (self.promisory / name).write_bytes(official)
 
         self.promide.write_text(
-            "".join(f'(load "Promisory\\\\module{index}")\n' for index in range(10))
+            "".join(f'(load "Promisory\\module{index}")\n' for index in range(10))
             + "; synthetic official loader\n",
             encoding="utf-8",
         )
