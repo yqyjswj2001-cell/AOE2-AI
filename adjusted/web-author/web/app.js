@@ -5,8 +5,7 @@
   const AGES = ['dark', 'feudal', 'castle', 'imperial'];
   const MODES = ['1v1', '2v2', '3v3', '4v4', 'ffa4', 'ffa8'];
   const OUTPUT_MODES = ['raw_scripts', 'share_package'];
-  const PREFERENCE_MODES = ['auto', 'manual'];
-  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v5';
+  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v6';
   const STATUS = {
     configuring: ['待配置', ''],
     selecting: ['选择文明', '正在选择文明。'],
@@ -70,16 +69,16 @@
       $(age).setAttribute('aria-valuetext', value + '，' + stance(value));
     });
   }
-  function preferenceMode() {
-    return document.querySelector('input[name="preference_mode"]:checked')?.value || '';
+  function preferencesEnabled() {
+    return $('preferencesEnabled').checked;
   }
-  function syncPreferenceMode() {
-    const auto = preferenceMode() === 'auto';
-    $('manualPreferences').hidden = auto;
-    $('resetPreferences').disabled = auto;
-    text('preferenceHelp', auto
-      ? '由 AI 根据文明、游戏模式与整体策略自行决定四个时代的攻防倾向，不默认按 50/50 处理。'
-      : '0 防守，50 均衡，100 进攻。此值是偏好，不是 PER 参数。');
+  function syncPreferenceToggle() {
+    const enabled = preferencesEnabled();
+    $('manualPreferences').hidden = !enabled;
+    $('resetPreferences').disabled = !enabled;
+    text('preferenceHelp', enabled
+      ? '已启用：0 防守，50 均衡，100 进攻。它只作为打法偏好，具体对局仍可动态应对。'
+      : '当前未启用，AI 将自由设计整体策略。');
   }
   function usageConsent() {
     return document.querySelector('input[name="usage_auth"]:checked')?.value || '';
@@ -101,7 +100,7 @@
     renderAgentHelp();
   }
   function selection() {
-    const preference_mode = preferenceMode();
+    const preferences_enabled = preferencesEnabled();
     return {
       mode: document.querySelector('input[name="mode"]:checked')?.value || '',
       civilization: $('civilization').value,
@@ -109,8 +108,8 @@
       usage_authorized: usageConsent() === 'allow',
       script_name: $('scriptName').value,
       output_mode: document.querySelector('input[name="output_mode"]:checked')?.value || '',
-      preference_mode,
-      preferences: preference_mode === 'auto' ? null : Object.fromEntries(AGES.map(age => [age, Number($(age).value)]))
+      preferences_enabled,
+      preferences: preferences_enabled ? Object.fromEntries(AGES.map(age => [age, Number($(age).value)])) : null
     };
   }
   function applySelection(value) {
@@ -125,12 +124,9 @@
     document.querySelectorAll('input[name="output_mode"]').forEach(input => {
       input.checked = input.value === value.output_mode;
     });
-    const preference_mode = PREFERENCE_MODES.includes(value.preference_mode) ? value.preference_mode : 'manual';
-    document.querySelectorAll('input[name="preference_mode"]').forEach(input => {
-      input.checked = input.value === preference_mode;
-    });
+    $('preferencesEnabled').checked = value.preferences_enabled === true;
     AGES.forEach(age => { $(age).value = integer(value.preferences?.[age]) && value.preferences[age] <= 100 ? value.preferences[age] : 50; });
-    updateSliders(); syncPreferenceMode();
+    updateSliders(); syncPreferenceToggle();
     updateCivilizationSelection(); showCivilization($('civilization').value || state?.civilizations[0]?.id); renderAgentHelp();
   }
   function editable() { return online && !busy && !stopped && state?.status === 'configuring'; }
@@ -138,11 +134,11 @@
     return p && Object.keys(p).length === AGES.length && AGES.every(age => integer(p[age]) && p[age] <= 100);
   }
   function validSelection(value) {
-    const preferencesReady = value.preference_mode === 'auto' ? value.preferences === null : validPreferences(value.preferences);
+    const preferencesReady = value.preferences_enabled ? validPreferences(value.preferences) : value.preferences === null;
     return authorizationReady() && authorizationConfirmed() && MODES.includes(value.mode) && (state?.civilizations || []).length > 0 &&
       (value.civilization === 'auto' || state.civilizations.some(c => c.id === value.civilization)) &&
       /^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(value.script_name) && OUTPUT_MODES.includes(value.output_mode) &&
-      PREFERENCE_MODES.includes(value.preference_mode) && preferencesReady;
+      typeof value.preferences_enabled === 'boolean' && preferencesReady;
   }
   function draftKey() { return 'aoe2.web-author.draft.' + project; }
   function storageFailure() {
@@ -172,9 +168,9 @@
       const draft = JSON.parse(raw), value = draft?.value;
       const allowedCiv = value?.civilization === '' || value?.civilization === 'auto' ||
         (state.civilizations || []).some(c => c.id === value?.civilization);
-      const draftPreferenceMode = PREFERENCE_MODES.includes(value?.preference_mode) ? value.preference_mode : 'manual';
-      const allowedPreferences = draftPreferenceMode === 'auto' ? value?.preferences === null : validPreferences(value?.preferences);
-      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v4', 'aoe2-parameter-web-draft-v3', 'aoe2-parameter-web-draft-v2', 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
+      const enabled = value?.preferences_enabled === true;
+      const allowedPreferences = !enabled || validPreferences(value?.preferences);
+      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v5', 'aoe2-parameter-web-draft-v4', 'aoe2-parameter-web-draft-v3', 'aoe2-parameter-web-draft-v2', 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
           (value.mode !== '' && !MODES.includes(value.mode)) || !allowedCiv ||
           typeof value.script_name !== 'string' || value.script_name.length > 48 || !allowedPreferences) {
         notice('draftNotice', '这份浏览器草稿与当前资料不匹配，未恢复。请重新设置。');
@@ -228,14 +224,14 @@
     const value = state?.status === 'configuring' ? selection() : state?.request || selection();
     const civ = civData(value.civilization);
     const agent = agents.find(a => a.id === value.agent);
-    const preferenceSummary = value.preference_mode === 'auto' ? '由 AI 选择' :
-      validPreferences(value.preferences) ? AGES.map(age => value.preferences[age]).join(' / ') : '尚未设置';
     const lines = [
       ['对局', MODE_NAMES[value.mode] || '尚未选择'],
-      ['文明', value.civilization === 'auto' ? '由 AI 选择' : civ?.name || value.civilization || '尚未选择'],
-      ['攻防偏好', preferenceSummary],
-      ['输出', value.output_mode === 'share_package' ? '分享脚本包' : value.output_mode === 'raw_scripts' ? '原生脚本' : '尚未选择']
+      ['文明', value.civilization === 'auto' ? '由 AI 选择' : civ?.name || value.civilization || '尚未选择']
     ];
+    if (value.preferences_enabled === true) {
+      lines.push(['攻防偏好', validPreferences(value.preferences) ? AGES.map(age => value.preferences[age]).join(' / ') : '尚未设置']);
+    }
+    lines.push(['输出', value.output_mode === 'share_package' ? '分享脚本包' : value.output_mode === 'raw_scripts' ? '原生脚本' : '尚未选择']);
     $('selectionSummary').replaceChildren();
     lines.forEach(([name, value]) => {
       const dt = document.createElement('dt'), dd = document.createElement('dd');
@@ -780,7 +776,7 @@
     $('scriptName').setAttribute('aria-invalid', String(invalid));
     text('nameHelp', invalid ? '名称无效：字母开头；仅限字母、数字、_、-，最多 48 字符。' : '字母开头；仅限字母、数字、_、-，最多 48 字符。');
   });
-  $('authorForm').addEventListener('input', () => { updateSliders(); syncPreferenceMode(); saveDraft(); syncActions(); });
+  $('authorForm').addEventListener('input', () => { updateSliders(); syncPreferenceToggle(); saveDraft(); syncActions(); });
   $('authorForm').addEventListener('change', () => { renderAgentHelp(); saveDraft(); syncActions(); });
   $('resetPreferences').addEventListener('click', () => {
     if (!editable()) return;
@@ -845,7 +841,7 @@
     if (dirty && !storageAvailable && state?.status === 'configuring') { event.preventDefault(); event.returnValue = ''; }
   });
   updateSliders();
-  syncPreferenceMode();
+  syncPreferenceToggle();
   refresh();
   setInterval(() => { if (!busy) refresh(); }, 3000);
 })();

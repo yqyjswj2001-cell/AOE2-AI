@@ -149,12 +149,13 @@ def main():
             page.locator('#scriptName').fill('Bad Name')
             assert page.locator('#startButton').is_disabled()
             page.locator('#scriptName').fill('Studio_Test')
-            assert page.locator('input[name=preference_mode][value="manual"]').is_checked()
-            page.locator('input[name=preference_mode][value="auto"]').check()
+            assert not page.locator('#preferencesEnabled').is_checked()
             assert not page.locator('#manualPreferences').is_visible()
-            page.locator('input[name=preference_mode][value="manual"]').check()
+            page.locator('#preferencesEnabled').check()
             assert page.locator('#manualPreferences').is_visible()
             page.locator('#imperial').fill('83')
+            page.locator('#preferencesEnabled').uncheck()
+            assert not page.locator('#manualPreferences').is_visible()
             assert page.locator('#startButton').is_disabled()
             page.locator('input[name=output_mode][value="share_package"]').check()
             assert page.locator('#startButton').is_enabled()
@@ -169,11 +170,13 @@ def main():
             assert page.locator('#wizardPanel3').is_visible()
             assert page.locator('#scriptName').input_value() == 'Studio_Test'
             assert page.locator('input[name=output_mode][value="share_package"]').is_checked()
+            assert not page.locator('#preferencesEnabled').is_checked()
+            assert not page.locator('#manualPreferences').is_visible()
             assert page.locator('#startButton').is_enabled()
             page.locator('#startButton').click()
             page.wait_for_function("document.querySelector('#generationDashboard').hidden === false")
-            assert len(posts) == 1 and posts[0]['preferences']['imperial'] == 83
-            assert posts[0]['preference_mode'] == 'manual'
+            assert len(posts) == 1 and posts[0]['preferences'] is None
+            assert posts[0]['preferences_enabled'] is False
             assert posts[0]['output_mode'] == 'share_package'
             assert not page.locator('#authorForm').is_visible()
             assert page.locator('#progressPanel').is_visible()
