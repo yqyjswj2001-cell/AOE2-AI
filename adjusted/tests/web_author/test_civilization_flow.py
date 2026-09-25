@@ -46,8 +46,7 @@ class CivilizationFlowTests(unittest.TestCase):
         return {"project_id": state["project_id"], "expected_revision": state["revision"], **extra}
 
     def start(self, civilization="auto"):
-        return self.app.start(self.payload(mode="ffa8", civilization=civilization, script_name="Fixture",
-                              preferences={age: 50 for age in ("dark", "feudal", "castle", "imperial")}))
+        return self.app.start(self.payload(mode="ffa8", civilization=civilization, script_name="Fixture"))
 
     def choose(self, civilization="Mongols"):
         return self.app.choose_civilization(self.payload(civilization=civilization,

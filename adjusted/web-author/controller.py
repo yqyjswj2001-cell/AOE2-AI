@@ -29,7 +29,6 @@ TOOLS = ROOT / "adjusted/tools"
 NAME = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,47}\Z")
 MODES = {"1v1", "2v2", "3v3", "4v4", "ffa4", "ffa8"}
 OUTPUT_MODES = {"raw_scripts", "share_package"}
-AGES = {"dark", "feudal", "castle", "imperial"}
 SCHEMA = "aoe2-web-author-project-v1"
 
 
@@ -489,8 +488,6 @@ class Controller:
                     "Read only this task, the isolated input, the local writer, and your own submissions/answers.",
                     "Do not read fixed PER, templates, classification, official answers or other projects.",
                     "When civilization is auto, choose first; all answers must remain null until host freezes the choice.",
-                    "When request.preferences_enabled is false, do not use, infer, summarize, or constrain the strategy with an age offense/defense preference concept. Design the strategy freely from the frozen mode, civilization, game facts, and dynamic adaptation.",
-                    "When request.preferences_enabled is true, request.preferences is optional strategic guidance rather than direct PER values: 0 means defensive, 50 balanced, 100 offensive. Honor it as a soft preference, but situational defensive or offensive responses may override it.",
                     "Query strategy cards by group, decide values, write a small patch under submissions and run the local writer.",
                     "Patch: {module: module_name, answers: {KEY: integer}}. Do not rewrite whole sheets or input files.",
                     "To revise an existing value, read --status MODULE and include its sha256 as expected_sha256.",
@@ -628,21 +625,12 @@ class Controller:
                 raise WorkflowError("This project's task is frozen; create a new project for another script")
             mode = payload.get("mode")
             civ = payload.get("civilization")
-            preferences_enabled = payload.get("preferences_enabled", False)
-            preferences = payload.get("preferences")
             name = payload.get("script_name")
             output_mode = payload.get("output_mode", "raw_scripts")
             if not isinstance(mode, str) or not isinstance(civ, str) or mode not in MODES or civ not in {"auto", *(row["id"] for row in self.civilizations)}:
                 raise WorkflowError("Select a supported mode and civilization")
             if not isinstance(name, str) or not NAME.fullmatch(name):
                 raise WorkflowError("Script name must start with a letter and contain 1-48 ASCII letters, digits, underscore or hyphen")
-            if type(preferences_enabled) is not bool:
-                raise WorkflowError("preferences_enabled must be a JSON boolean")
-            if preferences_enabled:
-                if not isinstance(preferences, dict) or set(preferences) != AGES or any(type(v) is not int or not 0 <= v <= 100 for v in preferences.values()):
-                    raise WorkflowError("All four enabled age preferences must be integers within 0..100")
-            else:
-                preferences = None
             if not isinstance(output_mode, str) or output_mode not in OUTPUT_MODES:
                 raise WorkflowError("Select raw scripts or a share package")
             agent = normalize_agent(payload.get("agent", "auto"))
@@ -655,8 +643,7 @@ class Controller:
                     or authorization.get("agent") != agent
                     or authorization.get("authorized") is not usage_authorized):
                 raise WorkflowError("Confirm usage authorization before starting generation")
-            request = {"mode": mode, "civilization": civ, "preferences_enabled": preferences_enabled,
-                       "preferences": preferences, "script_name": name, "output_mode": output_mode,
+            request = {"mode": mode, "civilization": civ, "script_name": name, "output_mode": output_mode,
                        "agent": agent, "usage_authorized": usage_authorized}
             selection = selection_context(self.civilizations, self.data["project_id"]) if civ == "auto" else {}
             choice = None if civ == "auto" else {
@@ -687,8 +674,7 @@ class Controller:
             self.meter.phase("researching" if civ == "auto" else "authoring")
             self._dev_event("workflow", "project_started", "info", "创作已开始。",
                             {"mode": mode, "civilization": civ, "script_name": name, "output_mode": output_mode,
-                             "agent": agent, "usage_authorized": usage_authorized,
-                             "preferences_enabled": preferences_enabled, "preferences": preferences})
+                             "agent": agent, "usage_authorized": usage_authorized})
             self._sync()
             self._write_handoff()
             return self.state()
