@@ -117,6 +117,16 @@ class GameInstallTests(unittest.TestCase):
         entry = (self.ai_root / "GROK_FFA8.per").read_text(encoding="utf-8")
         self.assertIn('(load "GROK_FFA8\\module0")', entry)
         self.assertNotIn("Promisory", entry)
+        self.assertIn("(include \"", entry)
+        self.assertIn("xs-script-call", entry)
+        xs = Path(result["scoreboard_name_xs"])
+        self.assertTrue(xs.is_file())
+        self.assertEqual(xs.parent, (self.game / "resources/_common/xs").resolve())
+        xs_text = xs.read_text(encoding="utf-8")
+        self.assertIn("xsSetPlayerName", xs_text)
+        self.assertIn('\"GROK_FFA8\"', xs_text)
+        self.assertEqual(result["scoreboard_name"], "GROK_FFA8")
+        self.assertEqual(result["scoreboard_name_method"], "xsSetPlayerName")
         modules = list((self.ai_root / "GROK_FFA8").glob("*.per"))
         self.assertEqual(len(modules), 36)
         self.assertEqual((self.ai_root / "GROK_FFA8/module35.per").read_text(), "; GENERATED 35\n")
@@ -130,6 +140,7 @@ class GameInstallTests(unittest.TestCase):
         self.assertEqual(len(list((self.ai_root / "SHARE_AI").glob("*.per"))), 36)
         self.assertTrue((self.ai_root / "SHARE_AI.ai").is_file())
         self.assertTrue((self.ai_root / "SHARE_AI.per").is_file())
+        self.assertTrue(Path(result["scoreboard_name_xs"]).is_file())
 
     def test_existing_same_name_is_backed_up_before_replacement(self):
         self.raw_build("SYNTHETIC")
@@ -179,7 +190,8 @@ class GameInstallTests(unittest.TestCase):
         self.assertIn("<AoE2DE>/resources/_common/ai", skill)
         self.assertIn("installed=true", skill)
         self.assertIn("verification=PASS", skill)
-        self.assertIn("不要先把异常解释成", skill)
+        self.assertIn("scoreboard_name_method=xsSetPlayerName", skill)
+        self.assertIn("静态安装校验不能代替真实游戏记分板实测", skill)
 
 
 if __name__ == "__main__":
