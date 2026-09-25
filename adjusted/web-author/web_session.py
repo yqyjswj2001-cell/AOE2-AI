@@ -272,7 +272,7 @@ def main(argv=None):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "phase", "feedback", "report", "finish", "usage"):
+    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "install", "phase", "feedback", "report", "finish", "usage"):
         sub = commands.add_parser(name)
         sub.add_argument("--project", required=True)
         sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
@@ -282,6 +282,10 @@ def main(argv=None):
             sub.add_argument("--session-id", help="Proven current host session ID; never a guessed recent session")
         if name == "launch":
             sub.add_argument("--no-browser", action="store_true")
+        if name == "install":
+            sub.add_argument("--game-root", type=Path, help="AoE2DE installation root; auto-detected when omitted")
+            sub.add_argument("--confirm-install", action="store_true",
+                             help="Required acknowledgement that the user explicitly requested writing to the game directory")
         if name in {"launch", "wait"}:
             sub.add_argument("--timeout", type=float, default=0 if name == "launch" else 20)
         if name == "watch":
@@ -318,7 +322,12 @@ def main(argv=None):
         if args.command == "serve":
             serve(project, args.port)
             return 0
-        if args.command == "launch":
+        if args.command == "install":
+            if not args.confirm_install:
+                raise SessionError("Direct game install requires --confirm-install after an explicit user request")
+            from game_install import install_project
+            result = install_project(project, game_root=args.game_root)
+        elif args.command == "launch":
             if not math.isfinite(args.timeout) or not 0 <= args.timeout <= 20:
                 raise SessionError("Wait must be between 0 and 20 seconds")
             meta, opened = launch(project, args.port, open_browser=not args.no_browser, test_project=args.test_project)
