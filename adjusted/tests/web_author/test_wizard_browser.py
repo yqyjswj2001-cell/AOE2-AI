@@ -149,6 +149,11 @@ def main():
             page.locator('#scriptName').fill('Bad Name')
             assert page.locator('#startButton').is_disabled()
             page.locator('#scriptName').fill('Studio_Test')
+            assert page.locator('input[name=preference_mode][value="manual"]').is_checked()
+            page.locator('input[name=preference_mode][value="auto"]').check()
+            assert not page.locator('#manualPreferences').is_visible()
+            page.locator('input[name=preference_mode][value="manual"]').check()
+            assert page.locator('#manualPreferences').is_visible()
             page.locator('#imperial').fill('83')
             assert page.locator('#startButton').is_disabled()
             page.locator('input[name=output_mode][value="share_package"]').check()
@@ -168,6 +173,7 @@ def main():
             page.locator('#startButton').click()
             page.wait_for_function("document.querySelector('#generationDashboard').hidden === false")
             assert len(posts) == 1 and posts[0]['preferences']['imperial'] == 83
+            assert posts[0]['preference_mode'] == 'manual'
             assert posts[0]['output_mode'] == 'share_package'
             assert not page.locator('#authorForm').is_visible()
             assert page.locator('#progressPanel').is_visible()

@@ -221,7 +221,7 @@ class HostUsageTests(unittest.TestCase):
         active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
             'project':str(self.project),'agent':'auto','usage_authorized':True}),encoding='utf-8')
         root=self.workspace.resolve()
-        cursor_root='/' + root.drive + root.as_posix().split(':',1)[1]
+        cursor_root='/' + root.drive + root.as_posix().split(':',1)[1] if root.drive else root.as_posix()
         common={'conversation_id':'cursor-conv-1','generation_id':'gen-1',
             'workspace_roots':[cursor_root],'model':'fixture-model','text':'PRIVATE_RESPONSE',
             'input_tokens':13,'output_tokens':5,'cache_read_tokens':2,'cache_write_tokens':1}

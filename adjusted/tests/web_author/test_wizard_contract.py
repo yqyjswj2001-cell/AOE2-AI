@@ -31,6 +31,19 @@ class WizardContractTests(unittest.TestCase):
  def test_usage_authorization_requires_boolean(self):
   with self.assertRaises(ValueError):self.app.start(self.payload(agent='codex',usage_authorized='yes'))
   self.assertFalse((self.project/'author-input').exists())
+ def test_age_preferences_can_be_delegated_to_ai_without_fake_manual_values(self):
+  task=self.payload(preference_mode='auto');task['preferences']=None
+  state=self.app.start(task)
+  self.assertEqual(state['request']['preference_mode'],'auto')
+  self.assertIsNone(state['request']['preferences'])
+  handoff=json.loads((self.project/'author-session/task.json').read_text(encoding='utf-8'))
+  self.assertEqual(handoff['request']['preference_mode'],'auto')
+  self.assertIsNone(handoff['request']['preferences'])
+  self.assertTrue(any('do not default to 50' in line for line in handoff['instructions']))
+ def test_ai_preference_mode_rejects_manual_values(self):
+  with self.assertRaisesRegex(ValueError,'must not include manual values'):
+   self.app.start(self.payload(preference_mode='auto'))
+  self.assertFalse((self.project/'author-input').exists())
  def test_unknown_agent_rejected_before_export(self):
   with self.assertRaises(ValueError):self.app.start(self.payload(agent='made-up-host'))
   self.assertFalse((self.project/'author-input').exists())
@@ -92,6 +105,16 @@ class WizardContractTests(unittest.TestCase):
   self.assertIn("const OUTPUT_MODES = ['raw_scripts', 'share_package']",js)
   self.assertIn('分享包不是游戏安装包',skill)
   self.assertNotIn('installable_package',html+js)
+
+ def test_age_preference_ui_has_real_ai_and_manual_modes(self):
+  html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
+  js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
+  self.assertIn('name="preference_mode" value="auto" required',html)
+  self.assertIn('name="preference_mode" value="manual" required checked',html)
+  self.assertIn('id="manualPreferences"',html)
+  self.assertIn("const PREFERENCE_MODES = ['auto', 'manual']",js)
+  self.assertIn("preferences: preference_mode === 'auto' ? null",js)
+  self.assertIn("$('manualPreferences').hidden = auto",js)
 
  def test_civilization_actions_are_grid_shields(self):
   html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
