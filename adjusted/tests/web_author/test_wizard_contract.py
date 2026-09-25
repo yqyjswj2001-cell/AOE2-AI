@@ -12,7 +12,7 @@ class WizardContractTests(unittest.TestCase):
   self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
   self.project=Path(self.temp.name)/'project';self.app=Controller(self.project,engine=FakeEngine(),meter_factory=FakeMeter)
  def payload(self,**extra):
-  s=self.app.state();return dict(project_id=s['project_id'],expected_revision=s['revision'],mode='ffa8',civilization=self.app.civilizations[0]['id'],script_name='Fixture',preferences_enabled=False,preferences=None,**extra)
+  s=self.app.state();base=dict(project_id=s['project_id'],expected_revision=s['revision'],mode='ffa8',civilization=self.app.civilizations[0]['id'],script_name='Fixture',preferences_enabled=False,preferences=None);return {**base,**extra}
  def test_agent_and_usage_authorization_are_frozen_and_passed_to_meter(self):
   auth=self.app.authorize_usage(self.payload(agent='cursor',usage_authorized=True))
   self.assertEqual(auth['usage_authorization']['agent'],'cursor')
