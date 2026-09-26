@@ -8,34 +8,39 @@
 <a class="skip-link" href="#main">跳到当前步骤</a>
 <header class="topbar">
 <a class="brand" href="/" aria-label="AOE2-AI 首页"><i class="brand-mark" aria-hidden="true"></i>AOE2-AI<span>脚本生成工具</span></a>
-<div class="topbar-status"><span id="meterStatus" class="meter-indicator" role="status">用量待授权</span><button id="revokeUsage" class="text-button hidden" type="button">停止采集</button><span id="connection" class="connection" role="status">正在连接</span></div>
+<div class="topbar-status"><span id="meterStatus" class="meter-indicator hidden" role="status">Token 测试计量关闭</span><button id="revokeUsage" class="text-button hidden" type="button">停止采集</button><span id="connection" class="connection" role="status">正在连接</span></div>
 </header>
 <div class="studio-layout">
 <aside class="sidebar" aria-label="生成步骤"><h1>生成脚本</h1>
 <nav class="wizard-nav" aria-label="生成步骤"><ol>
-<li><button id="wizardNav0" type="button" data-step="0" aria-current="step"><span>01</span><span class="step-copy">授权</span></button></li>
+<li><button id="wizardNav0" type="button" data-step="0" aria-current="step"><span>01</span><span class="step-copy">测试</span></button></li>
 <li><button id="wizardNav1" type="button" data-step="1" disabled><span>02</span><span class="step-copy">对局</span></button></li>
 <li><button id="wizardNav2" type="button" data-step="2" disabled><span>03</span><span class="step-copy">文明</span></button></li>
 <li><button id="wizardNav3" type="button" data-step="3" disabled><span>04</span><span class="step-copy">参数</span></button></li>
 <li><button id="wizardNav4" type="button" data-step="4" disabled><span>05</span><span class="step-copy">结果</span></button></li>
 </ol></nav></aside>
 <main id="main" class="shell">
-<div class="panel-head page-head"><div><p id="stepEyebrow" class="eyebrow">步骤 1 / 5</p><h2 id="configTitle" tabindex="-1">Token 采集</h2></div><span id="statusBadge" class="badge">正在读取</span></div>
+<div class="panel-head page-head"><div><p id="stepEyebrow" class="eyebrow">步骤 1 / 5</p><h2 id="configTitle" tabindex="-1">测试功能</h2></div><span id="statusBadge" class="badge">正在读取</span></div>
 <p id="statusBanner" class="status-banner" role="status" aria-live="polite">正在读取当前项目…</p>
 <p id="draftNotice" class="notice hidden" role="status"></p><p id="errorNotice" class="notice error hidden" role="alert"></p>
 <div id="workspace" class="workspace"><section class="config-panel" aria-label="生成配置">
 <form id="authorForm" novalidate><fieldset id="configFields" disabled>
 
 <section id="wizardPanel0" class="wizard-panel" aria-labelledby="configTitle">
+<div class="card optional-test-card">
+<label class="optional-test-toggle" for="usageMeterEnabled"><span><strong>启用 Token 测试计量</strong><small>默认关闭。仅用于开发测试；关闭时不会读取宿主 usage 数据。</small></span><input id="usageMeterEnabled" type="checkbox"><i class="switch-control" aria-hidden="true"></i></label>
+<div id="usageTestDetails" hidden>
 <div class="connection-choice">
-<div class="field card agent-card"><div id="agentOptions"><p class="field-help">读取 Agent…</p></div><p id="agentHelp" class="field-help">自动识别当前 Agent 和会话。</p><p id="authorizationStatus" class="authorization-note">未授权</p></div>
-<div class="permission-scope card"><h3>采集权限</h3><dl>
+<div class="field agent-card"><div id="agentOptions"><p class="field-help">读取 Agent…</p></div><p id="agentHelp" class="field-help">选择要测试的实际 Agent。</p><p id="authorizationStatus" class="authorization-note">等待授权</p></div>
+<div class="permission-scope"><h3>测试计量范围</h3><dl>
 <dt>字段</dt><dd>Token、模型、时间、会话 ID</dd>
-<dt>范围</dt><dd>仅本项目，授权后开始，可随时停止</dd>
-<dt>限制</dt><dd>依赖宿主 usage 权限；无数据时保留缺口</dd>
+<dt>范围</dt><dd>仅本项目，开启后开始，可随时停止</dd>
+<dt>限制</dt><dd>多数宿主无法提供完整 usage；无数据时保留缺口</dd>
 </dl><p class="privacy-note">不保存聊天正文或密钥，不发起模型调用。</p></div>
 </div>
-<div class="consent-fields" hidden><input type="radio" name="usage_auth" value="allow" checked><input type="radio" name="usage_auth" value="decline"></div>
+</div>
+</div>
+<div class="consent-fields" hidden><input type="radio" name="usage_auth" value="allow"><input type="radio" name="usage_auth" value="decline" checked></div>
 </section>
 
 <section id="wizardPanel1" class="wizard-panel" aria-labelledby="configTitle" hidden><div class="mode-grid">
@@ -69,11 +74,11 @@
 </section>
 <section id="wizardPanel4" class="wizard-panel" hidden aria-label="生成结果"></section>
 </fieldset>
-<div id="wizardActions" class="wizard-actions"><button id="previousStep" class="button secondary hidden" type="button">上一步</button><span id="navigationHint" class="field-help"></span><div class="primary-actions"><button id="skipMetering" class="text-button" type="button">本轮不计量</button><button id="nextStep" class="button primary" type="button" disabled>授权并继续</button><button id="startButton" class="button primary hidden" type="submit" disabled>开始生成</button></div></div>
+<div id="wizardActions" class="wizard-actions"><button id="previousStep" class="button secondary hidden" type="button">上一步</button><span id="navigationHint" class="field-help"></span><div class="primary-actions"><button id="nextStep" class="button primary" type="button" disabled>授权并继续</button><button id="startButton" class="button primary hidden" type="submit" disabled>开始生成</button></div></div>
 </form>
 
 <div id="generationDashboard" class="generation-dashboard" hidden>
-<nav class="result-tabs" aria-label="生成结果"><button type="button" data-result="progress" aria-pressed="true">生成进度</button><button type="button" data-result="usage" aria-pressed="false">Token 用量</button><button type="button" data-result="report" aria-pressed="false">开发报告</button></nav>
+<nav class="result-tabs" aria-label="生成结果"><button type="button" data-result="progress" aria-pressed="true">生成进度</button><button id="usageResultTab" class="hidden" type="button" data-result="usage" aria-pressed="false">Token 用量</button><button type="button" data-result="report" aria-pressed="false">开发报告</button></nav>
 
 <section id="progressPanel" class="final-section progress-section" aria-labelledby="progressTitle"><div class="panel-head"><h3 id="progressTitle">参数进度</h3><button id="refreshButton" class="text-button" type="button">刷新状态</button></div>
 <ol class="workflow"><li id="stepConfig"><span class="workflow-dot"></span><span>设置就绪</span></li><li id="stepSelect"><span class="workflow-dot"></span><span>文明确定</span></li><li id="stepAuthor"><span class="workflow-dot"></span><span>填写参数</span></li><li id="stepValidate"><span class="workflow-dot"></span><span>检查修正</span></li><li id="stepBuild"><span class="workflow-dot"></span><span>生成脚本</span></li></ol>
