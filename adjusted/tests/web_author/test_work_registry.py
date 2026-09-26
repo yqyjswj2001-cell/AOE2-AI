@@ -175,6 +175,20 @@ class WorkRegistryTests(unittest.TestCase):
         mocked.assert_called_once()
         self.assertEqual(mocked.call_args.args[0], self.root / "missing.zip")
 
+    def test_web_session_exposes_view_and_game_record_entries(self):
+        record_file = self.root / "match.json"
+        record_file.write_text(json.dumps({"outcome": "win", "placement": 1, "players": 8}), encoding="utf-8")
+        with patch.object(work_registry, "show_work", return_value={"ok": True, "work": {"script_name": "OLD_AI"}}) as show:
+            code = web_session_main(["registry-show", "--name", "OLD_AI"])
+        self.assertEqual(code, 0)
+        show.assert_called_once_with(name="OLD_AI", work_id=None)
+        with patch.object(work_registry, "record_game", return_value={"ok": True, "registered": True}) as game:
+            code = web_session_main(["record-game", "--name", "OLD_AI", "--record", str(record_file)])
+        self.assertEqual(code, 0)
+        game.assert_called_once()
+        self.assertEqual(game.call_args.kwargs, {"name": "OLD_AI", "work_id": None})
+        self.assertEqual(game.call_args.args[0]["placement"], 1)
+
     def test_skill_documents_existing_package_entry(self):
         skill = (Path(__file__).resolve().parents[2] / "skills/aoe2-web-author/SKILL.md").read_text(encoding="utf-8")
         self.assertIn("register-existing", skill)
