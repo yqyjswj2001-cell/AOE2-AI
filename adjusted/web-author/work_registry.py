@@ -15,6 +15,7 @@ import sqlite3
 import sys
 from datetime import datetime, timezone
 import zipfile
+import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY_ROOT = ROOT / "adjusted/.local/ai-registry"
@@ -27,6 +28,13 @@ MAX_ZIP_TOTAL = 64 * 1024 * 1024
 ALLOWED_METADATA = {
     "agent", "model", "mode", "civilization", "created_at", "notes",
 }
+
+ALLOWED_MATCH_FIELDS = {
+    "played_at", "mode", "map", "civilization", "outcome", "result",
+    "placement", "players", "duration_seconds", "score", "notes",
+    "issues", "evidence", "opponents", "allies",
+}
+MATCH_OUTCOMES = {"win", "loss", "draw", "unknown"}
 
 
 class RegistryError(ValueError):
@@ -358,6 +366,27 @@ def _connect(db_path: Path = REGISTRY_DB):
           registered_at TEXT NOT NULL,
           UNIQUE(work_id, artifact_path)
         );
+        CREATE TABLE IF NOT EXISTS matches(
+          match_id TEXT PRIMARY KEY,
+          work_id TEXT NOT NULL REFERENCES works(work_id) ON DELETE CASCADE,
+          recorded_at TEXT NOT NULL,
+          played_at TEXT,
+          mode TEXT,
+          map_name TEXT,
+          civilization TEXT,
+          outcome TEXT,
+          result_text TEXT,
+          placement INTEGER,
+          players INTEGER,
+          duration_seconds INTEGER,
+          score INTEGER,
+          notes TEXT,
+          issues_json TEXT NOT NULL,
+          evidence_json TEXT NOT NULL,
+          record_hash TEXT NOT NULL,
+          record_json TEXT NOT NULL,
+          UNIQUE(work_id, record_hash)
+        );
         """
     )
     return con
@@ -470,6 +499,163 @@ def register_completed_project(project: str | Path, state: dict, *, db_path: Pat
     )
 
 
+
+def _resolve_work(con, *, name=None, work_id=None):
+    con.row_factory = sqlite3.Row
+    if work_id:
+        row = con.execute("SELECT * FROM works WHERE work_id=?", (work_id,)).fetchone()
+        if row is None:
+            raise RegistryError("No registered work matches work_id " + work_id)
+        return row
+    if not isinstance(name, str) or not name.strip():
+        raise RegistryError("Provide a script name or work_id")
+    rows = con.execute(
+        "SELECT * FROM works WHERE lower(script_name)=lower(?) ORDER BY first_registered_at DESC",
+        (name.strip(),),
+    ).fetchall()
+    if not rows:
+        raise RegistryError("No registered work matches script name " + name.strip())
+    if len(rows) > 1:
+        ids = ", ".join(row["work_id"] for row in rows[:8])
+        raise RegistryError("Multiple registered versions use this script name; choose a work_id: " + ids)
+    return rows[0]
+
+
+def _clean_match_record(value: dict) -> dict:
+    if not isinstance(value, dict) or not value:
+        raise RegistryError("Game record must be a non-empty JSON object")
+    unknown = set(value) - ALLOWED_MATCH_FIELDS
+    if unknown:
+        raise RegistryError("Game record contains unsupported fields: " + ", ".join(sorted(unknown)))
+    clean = {}
+    for key in ("played_at", "mode", "map", "civilization", "result"):
+        item = value.get(key)
+        if item is None:
+            continue
+        if not isinstance(item, str) or not item.strip() or len(item.strip()) > 200:
+            raise RegistryError(key + " must be a short string")
+        clean[key] = item.strip()
+    outcome = value.get("outcome")
+    if outcome is not None:
+        if outcome not in MATCH_OUTCOMES:
+            raise RegistryError("outcome must be win, loss, draw, or unknown")
+        clean["outcome"] = outcome
+    for key in ("placement", "players", "duration_seconds", "score"):
+        item = value.get(key)
+        if item is None:
+            continue
+        if type(item) is not int or item < 0:
+            raise RegistryError(key + " must be a non-negative integer")
+        clean[key] = item
+    if clean.get("placement") == 0:
+        raise RegistryError("placement must start at 1")
+    if clean.get("players") == 0:
+        raise RegistryError("players must be at least 1")
+    if clean.get("placement") and clean.get("players") and clean["placement"] > clean["players"]:
+        raise RegistryError("placement cannot exceed players")
+    notes = value.get("notes")
+    if notes is not None:
+        if not isinstance(notes, str) or len(notes.strip()) > 4000:
+            raise RegistryError("notes must be text of at most 4000 characters")
+        if notes.strip():
+            clean["notes"] = notes.strip()
+    for key in ("issues", "evidence", "opponents", "allies"):
+        items = value.get(key)
+        if items is None:
+            continue
+        if not isinstance(items, list) or len(items) > 32:
+            raise RegistryError(key + " must be an array of at most 32 strings")
+        normalized = []
+        for item in items:
+            if not isinstance(item, str) or not item.strip() or len(item.strip()) > 1000:
+                raise RegistryError(key + " entries must be short strings")
+            normalized.append(item.strip())
+        if normalized:
+            clean[key] = normalized
+    return clean
+
+
+def record_game(record: dict, *, name=None, work_id=None, db_path: Path = REGISTRY_DB) -> dict:
+    clean = _clean_match_record(record)
+    now = utc_now()
+    record_hash = sha256(canonical(clean))
+    with _connect(db_path) as con:
+        work = _resolve_work(con, name=name, work_id=work_id)
+        existing = con.execute(
+            "SELECT match_id FROM matches WHERE work_id=? AND record_hash=?",
+            (work["work_id"], record_hash),
+        ).fetchone()
+        if existing:
+            return {
+                "ok": True, "registered": True, "duplicate": True,
+                "match_id": existing[0], "work_id": work["work_id"],
+                "script_name": work["script_name"],
+            }
+        match_id = "match-" + uuid.uuid4().hex[:16]
+        con.execute(
+            """INSERT INTO matches(
+               match_id,work_id,recorded_at,played_at,mode,map_name,civilization,outcome,
+               result_text,placement,players,duration_seconds,score,notes,issues_json,
+               evidence_json,record_hash,record_json
+            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (
+                match_id, work["work_id"], now, clean.get("played_at"), clean.get("mode"),
+                clean.get("map"), clean.get("civilization"), clean.get("outcome"),
+                clean.get("result"), clean.get("placement"), clean.get("players"),
+                clean.get("duration_seconds"), clean.get("score"), clean.get("notes"),
+                json.dumps(clean.get("issues", []), ensure_ascii=False),
+                json.dumps(clean.get("evidence", []), ensure_ascii=False),
+                record_hash, json.dumps(clean, ensure_ascii=False, sort_keys=True),
+            ),
+        )
+        total = con.execute("SELECT COUNT(*) FROM matches WHERE work_id=?", (work["work_id"],)).fetchone()[0]
+    return {
+        "ok": True, "registered": True, "duplicate": False,
+        "match_id": match_id, "work_id": work["work_id"], "script_name": work["script_name"],
+        "match_count": total, "record": clean,
+    }
+
+
+def show_work(*, name=None, work_id=None, db_path: Path = REGISTRY_DB) -> dict:
+    if not Path(db_path).exists():
+        raise RegistryError("Work registry does not exist yet")
+    with _connect(db_path) as con:
+        work = _resolve_work(con, name=name, work_id=work_id)
+        con.row_factory = sqlite3.Row
+        artifacts = [dict(row) for row in con.execute(
+            """SELECT artifact_kind,artifact_path,package_sha256,manifest_schema,
+                      manifest_present,registered_at
+               FROM artifacts WHERE work_id=? ORDER BY registered_at DESC""",
+            (work["work_id"],),
+        ).fetchall()]
+        matches = [dict(row) for row in con.execute(
+            """SELECT match_id,recorded_at,played_at,mode,map_name,civilization,outcome,
+                      result_text,placement,players,duration_seconds,score,notes,
+                      issues_json,evidence_json,record_json
+               FROM matches WHERE work_id=? ORDER BY recorded_at DESC LIMIT 50""",
+            (work["work_id"],),
+        ).fetchall()]
+        total = con.execute("SELECT COUNT(*) FROM matches WHERE work_id=?", (work["work_id"],)).fetchone()[0]
+        wins = con.execute("SELECT COUNT(*) FROM matches WHERE work_id=? AND outcome='win'", (work["work_id"],)).fetchone()[0]
+        losses = con.execute("SELECT COUNT(*) FROM matches WHERE work_id=? AND outcome='loss'", (work["work_id"],)).fetchone()[0]
+        draws = con.execute("SELECT COUNT(*) FROM matches WHERE work_id=? AND outcome='draw'", (work["work_id"],)).fetchone()[0]
+    clean_matches = []
+    for row in matches:
+        item = dict(row)
+        item["issues"] = json.loads(item.pop("issues_json"))
+        item["evidence"] = json.loads(item.pop("evidence_json"))
+        item["record"] = json.loads(item.pop("record_json"))
+        clean_matches.append(item)
+    return {
+        "ok": True,
+        "work": dict(work),
+        "artifacts": artifacts,
+        "match_summary": {"total": total, "wins": wins, "losses": losses, "draws": draws},
+        "matches": clean_matches,
+        "registry_db": str(Path(db_path).resolve()),
+    }
+
+
 def list_works(*, db_path: Path = REGISTRY_DB) -> list[dict]:
     if not Path(db_path).exists():
         return []
@@ -501,12 +687,25 @@ def main(argv=None) -> int:
     recognize = sub.add_parser("recognize")
     recognize.add_argument("--artifact", type=Path, required=True)
     sub.add_parser("list")
+    show = sub.add_parser("show")
+    show_group = show.add_mutually_exclusive_group(required=True)
+    show_group.add_argument("--name")
+    show_group.add_argument("--work-id")
+    game = sub.add_parser("record-game")
+    game_group = game.add_mutually_exclusive_group(required=True)
+    game_group.add_argument("--name")
+    game_group.add_argument("--work-id")
+    game.add_argument("--record", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "register-existing":
             result = register_artifact(args.artifact, metadata=_load_metadata(args.metadata))
         elif args.command == "recognize":
             result = {"ok": True, **recognize_artifact(args.artifact)}
+        elif args.command == "show":
+            result = show_work(name=args.name, work_id=args.work_id)
+        elif args.command == "record-game":
+            result = record_game(_load_metadata(args.record), name=args.name, work_id=args.work_id)
         else:
             result = {"ok": True, "works": list_works(), "registry_db": str(REGISTRY_DB)}
         print(json.dumps(result, ensure_ascii=False, indent=2))
