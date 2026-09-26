@@ -18,7 +18,7 @@ from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
 from development_report import DevelopmentJournal, DevelopmentReportError, generate_reports, report_file
 from cursor_admin_usage import active_project_path
-from work_registry import RegistryError, register_completed_project
+from work_registry import REGISTRY_DB, RegistryError, register_completed_project
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -142,6 +142,7 @@ class Controller:
         self.project.mkdir(parents=True, exist_ok=True)
         self.lock = threading.RLock()
         self.engine = engine or RealEngine()
+        self.registry_db = REGISTRY_DB if engine is None else self.project / "tmp/test-work-registry.sqlite3"
         self._preflight_result = None
         self.civilizations = self.engine.civilizations()
         self.state_file = self.project / "project.json"
@@ -927,7 +928,7 @@ class Controller:
                 }
                 self.data.update(build=build, status="completed")
                 try:
-                    registry = register_completed_project(self.project, self.data)
+                    registry = register_completed_project(self.project, self.data, db_path=self.registry_db)
                     self.data["registry"] = registry
                     self._dev_event("workflow", "work_registered", "info", "作品已自动登记。",
                                     {"work_id": registry["work_id"], "script_name": registry["script_name"],
