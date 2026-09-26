@@ -272,10 +272,14 @@ def main(argv=None):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "install", "phase", "feedback", "report", "finish", "usage"):
+    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "install", "register-existing", "registry-list", "phase", "feedback", "report", "finish", "usage"):
         sub = commands.add_parser(name)
-        sub.add_argument("--project", required=True)
-        sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
+        if name not in {"register-existing", "registry-list"}:
+            sub.add_argument("--project", required=True)
+            sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
+        if name == "register-existing":
+            sub.add_argument("--artifact", type=Path, required=True, help="Existing AOE2-AI ZIP or script directory")
+            sub.add_argument("--metadata", type=Path, help="Optional JSON with directly known historical facts")
         if name in {"launch", "serve"}:
             sub.add_argument("--port", type=int, default=0)
             sub.add_argument("--agent", help="Actual host ID; records identity, never grants consent")
@@ -307,6 +311,16 @@ def main(argv=None):
             sub.add_argument("--payload", type=Path)
     args = parser.parse_args(argv)
     try:
+        if args.command in {"register-existing", "registry-list"}:
+            from work_registry import register_artifact, list_works
+            if args.command == "register-existing":
+                metadata = parse_json(args.metadata.read_bytes()) if args.metadata else None
+                result = register_artifact(args.artifact, metadata=metadata)
+            else:
+                result = {"ok": True, "works": list_works()}
+            print(json.dumps(result, ensure_ascii=False, indent=2), flush=True)
+            return 0
+
         project = project_path(args.project, args.test_project)
         if args.command in {"launch", "serve"}:
             from agent_catalog import normalize_agent

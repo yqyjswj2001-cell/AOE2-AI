@@ -14,6 +14,7 @@ sys.path.insert(0, str(HERE))
 from controller import Controller, WorkflowError, digest, json_bytes, project_path
 from server import make_server
 from web_session import ActiveLock, SESSION_SCHEMA, SessionError, wait_for_agent
+from work_registry import list_works
 
 
 class FakeMeter:
@@ -121,6 +122,12 @@ class WorkflowTests(unittest.TestCase):
         script_root = Path(result["build"]["script_root"])
         self.assertEqual(len(list(script_root.glob("*.per"))), 36)
         self.assertFalse(any(path.suffix == ".ai" for path in Path(result["build"]["path"]).rglob("*")))
+        self.assertTrue(self.app.data["registry"]["registered"])
+        self.assertEqual(self.app.data["registry"]["script_name"], "SYNTHETIC")
+        registered = list_works(db_path=self.app.registry_db)
+        self.assertEqual(len(registered), 1)
+        self.assertEqual(registered[0]["build_id"], result["build"]["build_id"])
+        self.assertEqual(registered[0]["mode"], "ffa8")
         self.assertFalse(self.app.meter.closed, "Build must leave time for usage backfill")
         old_path = Path(result["build"]["path"])
         self.fill(3)

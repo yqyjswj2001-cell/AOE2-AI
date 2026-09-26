@@ -27,6 +27,18 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 
 作者输入由现有 build_strategy_input.py 生成；只含动态卡片、空答卷和冻结基础事实。官方原件、固定代码、模板及参考值不通过网页发送。交付采用现有 renderer，不改变固定/动态分类。
 
+## 作品登记
+
+完整 `build` 成功后，作品会自动登记到 `adjusted/.local/ai-registry/works.sqlite3`。登记使用 36 个 PER 的内容指纹去重，因此同一作品重新打包不会重复新增。
+
+以前已经做完、现在只剩 ZIP 或脚本目录的作品使用：
+
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifact "<ZIP或目录>"
+```
+
+它支持当前分享包、旧式无 manifest 的 36-PER ZIP、旧式 `resources/_common/ai` 安装 ZIP，以及原生 36-PER 目录。包内无法证明的历史字段保持未知；可直接证明的历史信息可通过 `--metadata <JSON>` 补充。用 `web_session.py registry-list` 查看已登记作品。
+
 ## 输出边界
 
 创作不依赖本机游戏。完整参数校验通过后，原生模式写出 36 个 `.per`；分享模式生成一个 `.zip`，内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`。普通 build 不读取 `PromiDE.per2`，不生成 `.ai`、主入口或游戏安装目录，也不会自动安装或启动游戏。
