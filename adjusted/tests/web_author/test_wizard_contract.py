@@ -89,6 +89,15 @@ class WizardContractTests(unittest.TestCase):
   self.assertIn('record_hook_payload',hook_py)
   self.assertNotIn('prompt',hook_py.lower())
   self.assertNotIn('response text',hook_py.lower())
+ def test_agent_temp_files_are_kept_out_of_repository_root(self):
+  root_skill=(ROOT/'SKILL.md').read_text(encoding='utf-8')
+  detail=(ROOT/'adjusted/skills/aoe2-web-author/SKILL.md').read_text(encoding='utf-8')
+  ignore=(ROOT/'.gitignore').read_text(encoding='utf-8')
+  self.assertIn('/tmp_*.py',ignore)
+  self.assertIn('adjusted/.local/tmp/',root_skill)
+  self.assertIn('禁止在仓库根目录或 Skill 目录创建',detail)
+  self.assertIn('adjusted/.local/tmp/',detail)
+
  def test_output_mode_is_required_in_ui_and_share_package_is_not_installable(self):
   html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
   js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
