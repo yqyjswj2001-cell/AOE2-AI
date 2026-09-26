@@ -177,7 +177,9 @@ class Controller:
             if not self.data.get("usage_source_sha256"):
                 self.data["usage_source_sha256"] = self.data.get("input_sha256") or self.engine.source_digest()
             self._save()
-        if self.data.get("request") or self.data.get("usage_source_sha256"):
+        saved_request = self.data.get("request") or {}
+        saved_auth = self.data.get("usage_authorization") or {}
+        if self.data.get("usage_source_sha256") or saved_request.get("usage_authorized") is True or saved_auth.get("authorized") is True:
             self._open_meter()
             self._sync()
 
@@ -672,8 +674,9 @@ class Controller:
                              progress={"filled": 0, "total": 1715, "errors": []})
             self.data["revision"] += 1
             self._save()
-            self._open_meter()
-            self.meter.phase("researching" if civ == "auto" else "authoring")
+            if usage_authorized:
+                self._open_meter()
+                self.meter.phase("researching" if civ == "auto" else "authoring")
             self._dev_event("workflow", "project_started", "info", "创作已开始。",
                             {"mode": mode, "civilization": civ, "script_name": name, "output_mode": output_mode,
                              "agent": agent, "usage_authorized": usage_authorized})
@@ -699,8 +702,9 @@ class Controller:
                 raise WorkflowError("Give a short tactical reason of 5-500 characters, not an authoring brief")
             choice = {"civilization": civilization, "reason": reason.strip(),
                       "selected_by": "ai", "selected_at": time.time()}
-            self._update_meter_civilization(civilization)
-            self.meter.phase("authoring")
+            if self.meter:
+                self._update_meter_civilization(civilization)
+                self.meter.phase("authoring")
             self.data.update(request={**self.data["request"], "civilization": civilization},
                              civilization_choice=choice, status="authoring")
             self.data["revision"] += 1
@@ -841,7 +845,8 @@ class Controller:
             validation = self.data.get("validation")
             if not validation or validation["answers_sha256"] != self.data.get("answers_sha256"):
                 raise WorkflowError("Validate the current answers before building")
-            self.meter.phase("packaging")
+            if self.meter:
+                self.meter.phase("packaging")
             self.data["status"] = "rendering"
             self._save()
             work = None
@@ -960,11 +965,9 @@ class Controller:
         with self.lock:
             self._sync()
             self._expected(payload)
-            if not self.meter:
-                raise WorkflowError("Start the project before changing its phase")
             if self._selection_pending() and payload.get("value") != "researching":
                 raise WorkflowError("Only the research phase is allowed before choosing a civilization")
-            result = self.meter.phase(payload["value"])
+            result = self.meter.phase(payload["value"]) if self.meter else self.usage()
             self._dev_event("workflow", "phase_changed", "info", "创作阶段切换：" + payload["value"],
                             {"phase": payload["value"]})
             return result
