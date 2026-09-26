@@ -8,6 +8,7 @@ import math
 import os
 from pathlib import Path
 import subprocess
+import shutil
 import sys
 import time
 import urllib.error
@@ -122,6 +123,20 @@ def connected(project):
             SESSION_SCHEMA, data.get("instance_id"), data.get("project_id")):
         raise SessionError("Session identity changed; refusing to reuse the old connection")
     return data
+
+
+def cleanup_root_temp_scripts():
+    candidates = sorted(path for path in ROOT.glob("tmp_*.py") if path.is_file() and not path.is_symlink())
+    if not candidates:
+        return {"ok": True, "moved": 0, "destination": None, "files": []}
+    destination = ROOT / "adjusted/.local/tmp" / ("recovered-" + time.strftime("%Y%m%d-%H%M%S"))
+    destination.mkdir(parents=True, exist_ok=False)
+    moved = []
+    for source in candidates:
+        target = destination / source.name
+        shutil.move(str(source), str(target))
+        moved.append(source.name)
+    return {"ok": True, "moved": len(moved), "destination": str(destination), "files": moved}
 
 
 def public_meta(meta):
@@ -272,9 +287,9 @@ def main(argv=None):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "install", "register-existing", "registry-list", "phase", "feedback", "report", "finish", "usage"):
+    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "install", "register-existing", "registry-list", "cleanup-temp", "phase", "feedback", "report", "finish", "usage"):
         sub = commands.add_parser(name)
-        if name not in {"register-existing", "registry-list"}:
+        if name not in {"register-existing", "registry-list", "cleanup-temp"}:
             sub.add_argument("--project", required=True)
             sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
         if name == "register-existing":
@@ -311,7 +326,11 @@ def main(argv=None):
             sub.add_argument("--payload", type=Path)
     args = parser.parse_args(argv)
     try:
-        if args.command in {"register-existing", "registry-list"}:
+        if args.command in {"register-existing", "registry-list", "cleanup-temp"}:
+            if args.command == "cleanup-temp":
+                result = cleanup_root_temp_scripts()
+                print(json.dumps(result, ensure_ascii=False, indent=2), flush=True)
+                return 0
             from work_registry import register_artifact, list_works
             if args.command == "register-existing":
                 metadata = parse_json(args.metadata.read_bytes()) if args.metadata else None

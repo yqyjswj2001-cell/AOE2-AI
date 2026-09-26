@@ -13,6 +13,7 @@ HERE = Path(__file__).resolve().parents[2] / "web-author"
 sys.path.insert(0, str(HERE))
 from controller import Controller, WorkflowError, digest, json_bytes, project_path
 from server import make_server
+import web_session
 from web_session import ActiveLock, SESSION_SCHEMA, SessionError, wait_for_agent
 from work_registry import list_works
 
@@ -128,7 +129,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(len(registered), 1)
         self.assertEqual(registered[0]["build_id"], result["build"]["build_id"])
         self.assertEqual(registered[0]["mode"], "ffa8")
-        self.assertFalse(self.app.meter.closed, "Build must leave time for usage backfill")
+        self.assertIsNone(self.app.meter, "Default production flow must not start token metering")
         old_path = Path(result["build"]["path"])
         self.fill(3)
         state = self.app.state()
@@ -241,6 +242,23 @@ class WorkflowTests(unittest.TestCase):
         extra_build = self.app.build(self.payload())["build"]
         (Path(extra_build["path"]) / "unexpected.txt").write_text("extra", encoding="utf-8")
         self.assertEqual(self.app.state()["status"], "invalid")
+
+    def test_cleanup_temp_moves_root_python_scratch_without_deleting(self):
+        scratch_root = Path(self.temp.name) / "repo"
+        scratch_root.mkdir()
+        (scratch_root / "tmp_one.py").write_text("print(1)\n", encoding="utf-8")
+        (scratch_root / "keep.py").write_text("print(2)\n", encoding="utf-8")
+        old_root = web_session.ROOT
+        try:
+            web_session.ROOT = scratch_root
+            result = web_session.cleanup_root_temp_scripts()
+        finally:
+            web_session.ROOT = old_root
+        self.assertEqual(result["moved"], 1)
+        self.assertFalse((scratch_root / "tmp_one.py").exists())
+        self.assertTrue((scratch_root / "keep.py").exists())
+        destination = Path(result["destination"])
+        self.assertEqual((destination / "tmp_one.py").read_text(encoding="utf-8"), "print(1)\n")
 
     def test_persisted_identity_and_project_boundary(self):
         self.start()

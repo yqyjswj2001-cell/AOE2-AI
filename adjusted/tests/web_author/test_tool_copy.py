@@ -35,7 +35,7 @@ class ToolCopyTests(unittest.TestCase):
             self.assertNotIn(selector, self.html + self.css)
 
     def test_titles_name_functions(self):
-        self.assertIn("const STEP_NAMES = ['Token 采集', '游戏模式', '文明选择', '参数设置', '生成结果'];", self.js)
+        self.assertIn("const STEP_NAMES = ['测试功能', '游戏模式', '文明选择', '参数设置', '生成结果'];", self.js)
         for label in ('脚本名', 'Token 用量', '开发报告'):
             self.assertIn(label, self.html)
         self.assertIn("label.textContent = 'Agent'", self.js)
@@ -43,8 +43,8 @@ class ToolCopyTests(unittest.TestCase):
 
     def test_consent_scope_and_failure_information_remain(self):
         for text in ('Token、模型、时间、会话 ID', '仅本项目', '可随时停止',
-                     'usage 权限', '不保存聊天正文或密钥', '不发起模型调用',
-                     '授权并继续', '本轮不计量', '停止采集'):
+                     '多数宿主无法提供完整 usage', '不保存聊天正文或密钥', '不发起模型调用',
+                     '启用 Token 测试计量', '默认关闭', '停止采集'):
             self.assertIn(text, self.html)
         for element_id in ('errorNotice', 'usageGaps', 'usageCoverage', 'authorizationStatus'):
             self.assertTrue(any(attrs.get('id') == element_id for _, attrs in self.elements))

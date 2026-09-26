@@ -31,6 +31,10 @@ class WizardContractTests(unittest.TestCase):
  def test_usage_authorization_requires_boolean(self):
   with self.assertRaises(ValueError):self.app.start(self.payload(agent='codex',usage_authorized='yes'))
   self.assertFalse((self.project/'author-input').exists())
+ def test_default_start_does_not_create_meter(self):
+  state=self.app.start(self.payload())
+  self.assertFalse(state['request']['usage_authorized'])
+  self.assertIsNone(self.app.meter)
  def test_unknown_agent_rejected_before_export(self):
   with self.assertRaises(ValueError):self.app.start(self.payload(agent='made-up-host'))
   self.assertFalse((self.project/'author-input').exists())
@@ -41,7 +45,7 @@ class WizardContractTests(unittest.TestCase):
   again=Controller(self.project,engine=FakeEngine(),meter_factory=FakeMeter)
   self.assertEqual(again.data['task_sha256'],old)
   self.assertNotIn('agent',again.data['request'])
-  self.assertEqual(again.meter.identity['agent'],'auto')
+  self.assertIsNone(again.meter)
  def test_skill_keeps_browser_interaction_user_owned(self):
   root=(ROOT/'SKILL.md').read_text(encoding='utf-8')
   detail=(ROOT/'adjusted/skills/aoe2-web-author/SKILL.md').read_text(encoding='utf-8')
@@ -64,25 +68,36 @@ class WizardContractTests(unittest.TestCase):
   self.assertNotIn('progressColumn',html+js)
   self.assertIn("$('authorForm').classList.toggle('hidden', !!finalRunning)",js)
   self.assertIn("$('generationDashboard').hidden = !finalRunning",js)
- def test_usage_authorization_is_first_and_session_selection_is_not_user_ui(self):
+ def test_token_metering_is_optional_and_off_by_default(self):
   html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
   js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')
   hooks=json.loads((ROOT/'.cursor/hooks.json').read_text(encoding='utf-8'))
   hook_py=(ROOT/'.cursor/hooks/aoe2-usage.py').read_text(encoding='utf-8')
-  self.assertIn('<span>01</span><span class="step-copy">授权',html)
-  self.assertIn('name="usage_auth"',html)
-  self.assertIn('授权并继续',html)
+  self.assertIn('id="usageMeterEnabled" type="checkbox"',html)
+  self.assertNotIn('id="usageMeterEnabled" type="checkbox" checked',html)
+  self.assertIn('默认关闭',html)
+  self.assertIn("function usageMeterEnabled()",js)
+  self.assertIn("if (value.usage_meter_enabled)",js)
+  self.assertIn("if (!usageMeterEnabled() || authorizationConfirmed()) goStep(1)",js)
+  self.assertNotIn('skipMetering',html+js)
   self.assertNotIn('sessionBinding',html+js)
   self.assertNotIn('usageSession',html+js)
   self.assertNotIn('bindSessionButton',html+js)
-  self.assertNotIn('/api/usage/bind-session',js)
-  self.assertIn("usage_authorized: usageConsent() === 'allow'",js)
   self.assertEqual(hooks['version'],1)
   self.assertIn('beforeSubmitPrompt',hooks['hooks'])
   self.assertIn('afterAgentResponse',hooks['hooks'])
   self.assertIn('record_hook_payload',hook_py)
   self.assertNotIn('prompt',hook_py.lower())
   self.assertNotIn('response text',hook_py.lower())
+ def test_agent_temp_files_are_kept_out_of_repository_root(self):
+  root_skill=(ROOT/'SKILL.md').read_text(encoding='utf-8')
+  detail=(ROOT/'adjusted/skills/aoe2-web-author/SKILL.md').read_text(encoding='utf-8')
+  ignore=(ROOT/'.gitignore').read_text(encoding='utf-8')
+  self.assertIn('/tmp_*.py',ignore)
+  self.assertIn('adjusted/.local/tmp/',root_skill)
+  self.assertIn('禁止在仓库根目录或 Skill 目录创建',detail)
+  self.assertIn('adjusted/.local/tmp/',detail)
+
  def test_output_mode_is_required_in_ui_and_share_package_is_not_installable(self):
   html=(ROOT/'adjusted/web-author/web/index.html').read_text(encoding='utf-8')
   js=(ROOT/'adjusted/web-author/web/app.js').read_text(encoding='utf-8')

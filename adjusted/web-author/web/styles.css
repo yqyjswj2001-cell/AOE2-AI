@@ -78,6 +78,19 @@ input[aria-invalid=true] { border-color: var(--red); box-shadow: 0 0 0 3px var(-
   padding: 22px 24px;
 }
 
+.optional-test-card { max-width: 760px; }
+.optional-test-toggle { display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; }
+.optional-test-toggle > span { min-width: 0; }
+.optional-test-toggle strong { display: block; font-size: 14px; font-weight: 650; }
+.optional-test-toggle small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.optional-test-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch-control { position: relative; flex: 0 0 42px; width: 42px; height: 24px; border-radius: 999px; background: var(--line-strong); transition: background .15s; }
+.switch-control::after { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: var(--text); transition: transform .15s; }
+.optional-test-toggle:has(input:checked) .switch-control { background: var(--gold); }
+.optional-test-toggle:has(input:checked) .switch-control::after { transform: translateX(18px); background: #211b10; }
+.optional-test-toggle:focus-within { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 8px; }
+#usageTestDetails { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+
 /* Top bar */
 .topbar {
   position: sticky;

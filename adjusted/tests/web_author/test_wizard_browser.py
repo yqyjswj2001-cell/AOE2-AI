@@ -83,25 +83,21 @@ def main():
             page.on('download',lambda download: downloads.append(download))
             page.goto('http://127.0.0.1:9999/',wait_until='networkidle')
             assert page.locator('#wizardPanel0').is_visible()
-            assert page.locator('#agent').input_value() == 'auto'
+            assert not page.locator('#usageMeterEnabled').is_checked()
+            assert not page.locator('#usageTestDetails').is_visible()
+            assert not page.locator('#meterStatus').is_visible()
             assert page.locator('#nextStep').is_enabled()
             assert not consents and not posts
-            assert not page.locator('#usagePanel').is_visible()
-            page.locator('#agent').focus(); page.keyboard.press('Enter')
-            assert not consents and not posts
-            assert not page.locator('#preflightNotice').count()
-            assert not consents and not posts
-            no_overflow(page,'authorization')
-            page.screenshot(path=str(OUT/'01-authorization-desktop.png'),full_page=True)
+            no_overflow(page,'optional-testing')
+            page.screenshot(path=str(OUT/'01-optional-testing-desktop.png'),full_page=True)
             page.set_viewport_size({'width':390,'height':844})
-            page.screenshot(path=str(OUT/'01-authorization-mobile.png'),full_page=True)
+            page.screenshot(path=str(OUT/'01-optional-testing-mobile.png'),full_page=True)
             page.set_viewport_size({'width':1440,'height':1000})
             page.locator('#nextStep').click()
             page.locator('#wizardPanel1').wait_for(state='visible')
             assert page.locator('#wizardPanel1').is_visible()
-            assert len(consents) == 1 and consents[0]['usage_authorized'] is True
-            assert page.locator('#meterStatus').inner_text() == 'Agent 正在接入'
-            assert page.locator('#revokeUsage').is_visible()
+            assert not consents
+            assert not page.locator('#meterStatus').is_visible()
             assert not page.locator('input[name=mode]:checked').count()
             assert not posts
             no_overflow(page,'modes')
@@ -137,7 +133,7 @@ def main():
             page.reload(wait_until='networkidle')
             assert page.locator('#wizardPanel2').is_visible()
             assert page.locator('#civilization').input_value() == first['id']
-            assert len(consents) == 1
+            assert not consents
             page.locator('#nextStep').click()
             assert page.locator('#wizardPanel3').is_visible()
             assert page.locator('#scriptName').input_value()
@@ -180,25 +176,7 @@ def main():
             page.wait_for_function("document.querySelector('#progressPercent').textContent === '60%'")
             no_overflow(page,'progress')
             page.screenshot(path=str(OUT/'05-progress-desktop.png'),full_page=True)
-            page.locator('[data-result=usage]').click()
-            assert page.locator('#usageTokens').inner_text() == '未采集'
-            assert page.locator('#inputTokens').inner_text() == '未提供'
-            assert not page.locator('#progressPanel').is_visible()
-            # The screenshots below use explicitly synthetic data, never claimed as actual token usage.
-            usage.update(coverage='PARTIAL',tokens={'total_tokens':42680,'input_tokens':38200,'output_tokens':4480,
-                'cached_input_tokens':21000,'reasoning_tokens':1200,'usage_interval_records':9,'request_records':3,
-                'turn_records':0,'unknown_outcome_records':2,'missing_usage_records':1,'retry_records':0,'retry_tokens':0},
-                time={'elapsed_seconds':383,'workflow_seconds':341,'unobserved_seconds':None},
-                capture_gaps=[{'message':'合成测试：一个子代理来源未覆盖；此数字仅用于界面测试。'}],
-                by_model=[{'model':'synthetic-model','total_tokens':42680}],
-                stages=[{'label':'设置与授权','total_tokens':1200,'elapsed_seconds':42,'action_attempts':1,'action_failures':0},
-                        {'label':'策略创作','total_tokens':41480,'elapsed_seconds':341,'action_attempts':8,'action_failures':1}])
-            state['usage_connection']={'status':'RECORDING','can_revoke':True,'reason':'合成界面测试数据，不代表实际调用。'}
-            page.reload(wait_until='networkidle'); page.locator('[data-result=usage]').click()
-            no_overflow(page,'usage')
-            assert page.locator('#usageTokens').inner_text() == '42,680'
-            assert page.locator('#cacheWriteTokens').inner_text() == '未提供'
-            page.screenshot(path=str(OUT/'06-usage-desktop-synthetic.png'),full_page=True)
+            assert page.locator('#usageResultTab').is_hidden()
             page.locator('[data-result=report]').click()
             page.locator('#reportFeedback').fill('Synthetic UI observation')
             page.locator('#generateReportButton').click()
@@ -206,28 +184,24 @@ def main():
             assert page.locator('#reportOutput').input_value().startswith('# Synthetic')
             assert not downloads, 'Generating a report must not force a download'
             no_overflow(page,'report')
-            page.locator('#revokeUsage').click()
-            page.wait_for_function("document.querySelector('#meterStatus').textContent === '计量已停止'")
-            assert page.locator('#meterStatus').inner_text() == '计量已停止'
-            assert not page.locator('#revokeUsage').is_visible()
-            page.locator('[data-result=usage]').click()
-            assert page.locator('#usageTokens').inner_text() == '42,680', 'Keep previously recorded totals after revocation'
-            with page.expect_download(): page.locator('.export-links a').first.click()
-            # Fresh project: one opt-out click, no source selection, no accidental grant.
+            # Fresh project: metering remains available only after manual opt-in.
             state.update(project_id='synthetic-studio-b',status='configuring',revision=0,request=None,
                 usage_authorization=None,usage_connection={'status':'NOT_AUTHORIZED','can_revoke':False})
             usage['tokens']={'total_tokens':None}
             page.reload(wait_until='networkidle')
             assert page.locator('#wizardPanel0').is_visible()
-            assert not page.locator('input[name=mode]:checked').count()
-            page.locator('#skipMetering').click()
+            assert not page.locator('#usageMeterEnabled').is_checked()
+            page.locator('#usageMeterEnabled').check()
+            assert page.locator('#usageTestDetails').is_visible()
+            assert page.locator('#agent').input_value() == 'auto'
+            page.locator('#nextStep').click()
             page.locator('#wizardPanel1').wait_for(state='visible')
             assert page.locator('#wizardPanel1').is_visible()
-            assert consents[-1]['usage_authorized'] is False
-            assert page.locator('#meterStatus').inner_text() == '本轮不计量'
+            assert len(consents) == 1 and consents[-1]['usage_authorized'] is True
+            assert page.locator('#meterStatus').inner_text() == 'Agent 正在接入'
             assert len(posts) == 1
             assert not errors, errors
-            checks = ['explicit one-click authorization and opt-out; no consent via Enter',
+            checks = ['token test metering is off by default and only authorizes after manual opt-in',
                 'no default game mode; AI/random special shields plus 42 real shields; search, hover and keyboard selection',
                 'project-scoped draft and offline recovery; required raw/share output choice; direct start exactly once',
                 'progress, usage, report are separate flat views; disabled past steps',
@@ -235,7 +209,7 @@ def main():
                 'report preview does not auto-download; explicit download works',
                 'no horizontal overflow in every view at 320/390/768/1280/1440px']
             report={'status':'PASS','checks':checks,'page_errors':errors,'synthetic_start_requests':len(posts),
-                    'real_projects_accessed':False,'screenshots_use_synthetic_usage':True}
+                    'real_projects_accessed':False,'screenshots_use_synthetic_usage':False}
             (OUT/'browser-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
             print(json.dumps(report,ensure_ascii=False))
         finally: browser.close()
