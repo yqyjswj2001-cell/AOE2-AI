@@ -128,7 +128,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(len(registered), 1)
         self.assertEqual(registered[0]["build_id"], result["build"]["build_id"])
         self.assertEqual(registered[0]["mode"], "ffa8")
-        self.assertFalse(self.app.meter.closed, "Build must leave time for usage backfill")
+        self.assertIsNone(self.app.meter, "Default production flow must not start token metering")
         old_path = Path(result["build"]["path"])
         self.fill(3)
         state = self.app.state()
