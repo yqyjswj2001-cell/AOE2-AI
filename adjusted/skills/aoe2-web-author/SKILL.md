@@ -1,6 +1,6 @@
 ---
 name: aoe2-web-author
-description: 在 AOE2-AI 中启动本地网页，先等待用户选择实际 Agent 并授权本轮自动计量，再完成模式、文明和输出设置；随后由新上下文作者填写动态参数并由主代理校验、机械渲染。用于“打开网页创作 AI”“使用网页创作 skill”等请求。
+description: 在 AOE2-AI 中启动本地网页完成模式、文明和输出设置；Token 计量仅作为默认关闭的可选测试开关。随后由新上下文作者填写动态参数并由主代理校验、机械渲染。用于“打开网页创作 AI”“使用网页创作 skill”等请求。
 ---
 
 # 网页参数创作
@@ -31,9 +31,9 @@ python -X utf8 -B adjusted/web-author/web_session.py next --project <名称> --c
 
 网页由用户依次完成可选测试功能 → 对局 → 文明 → 设置，设置页直接点击“开始生成”进入作品页，不再增加确认页。Token 计量是开发测试功能，**默认关闭**。关闭时直接进入后续设置，不读取宿主 usage、不创建自动计量连接，结果页也不显示 Token 标签。只有用户手动打开“启用 Token 测试计量”后，才选择实际 Agent 并授权本项目读取真实 usage、会话 ID、模型、时间等计量元数据；不授权搜集、上传聊天正文或账号凭据。文明页完整展示42个标准版盾徽，悬停或键盘焦点只预览右侧资料，点击即固定选择，无额外文明确认；也可选择让 AI 决定。设置只保留脚本名和输出方式；**脚本名是本轮唯一名称来源，创作名、游戏大厅 AI 类型名和进入对局后的显示名必须保持完全一致，不得另起显示名或安装名。** 输出方式必须由用户选择：原生脚本或分享脚本包。Agent 选择不会自动启动或切换另一工具。开始后自主模式先选文明，手动模式直接填参数。没有简报、方案发布、permit 或二次审批。未点击前由同一个 watch 进程等待；超时不是授权，也不是任务结束。网页不能唤醒已退出的宿主代理，执行期间保持本会话工作。用户明确暂停或取消时尊重指令并结束会话。
 
-## 授权后立即接入，不等开始生成
+## 开启 Token 测试计量后才接入
 
-已知当前宿主时，在 `launch` 增加 `--agent codex`（或实际支持的 Agent ID）；掌握确切当前会话 ID 时可再传 `--session-id <真实ID>`。只传能够证明的身份，不凭目录名、时间接近或历史会话猜测。启动参数不是用户授权，点击前不得读取自动计量来源；网页选择也不会启动另一种工具。
+**本节仅在用户手动开启“启用 Token 测试计量”时执行；默认关闭时整节跳过。** 已知当前宿主时，在 `launch` 增加 `--agent codex`（或实际支持的 Agent ID）；掌握确切当前会话 ID 时可再传 `--session-id <真实ID>`。只传能够证明的身份，不凭目录名、时间接近或历史会话猜测。启动参数不是用户授权，开关未开启前不得读取自动计量来源。
 
 用户授权后服务立即创建账本、记录配置阶段并启动独立采集循环。`watch`（兼容旧 `wait`）会提前返回 `web_event=USAGE_CONNECTION_REQUIRED`，`next.usage_task` 给出本轮 `authorization_id` 和 `run_id`。**先处理此任务，再继续等待游戏设置；不要因为 status 仍是 configuring 就忽略计量，也不要因此提前创作。**
 
@@ -187,11 +187,11 @@ AoE2 DE Update 185872（2026-09-22）之后，游戏可能在进入对局时把 
 
 ## 用量与结束
 
-先查看 next.usage_task、next.usage_connection 和最新授权回执（以 usage_connection.authorized 为准，撤回后不能沿用冻结 request 的旧值）。**不要让用户选择或绑定用量会话。** 用户在第一步授权后，后台自动识别唯一的本轮活跃主会话；主代理如果掌握当前宿主或子代理的精确 session ID，可自行通过 usage bind 登记，不在聊天里询问用户。存在多个无法证明归属的候选时保持计量缺口并继续创作，不按“最近会话”猜测，也不把检测到安装目录当作已采集。用户选择“本轮不计量”时不得读取自动 usage 来源。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 用项目 Hook 归属当前 conversation，并把 stop 事件里的父代理 token 入账：input_tokens 已含缓存读写，同一 generation_id 只记 stop，不与 afterAgentResponse 相加，也不读取 bubble.tokenCount 或按上下文占用估算。默认“当前 Agent”且已授权时同样记录。子代理 token 不在 stop 里，覆盖保持部分。已有 Hook 合计的 conversation 不再叠加 Team Admin Usage Events。用户选择 Agent 不构成自动计量成功。
+**只有本轮手动开启 Token 测试计量时**，才查看 next.usage_task、next.usage_connection 和最新授权回执（以 usage_connection.authorized 为准，撤回后不能沿用冻结 request 的旧值）。**不要让用户选择或绑定用量会话。** 用户在第一步授权后，后台自动识别唯一的本轮活跃主会话；主代理如果掌握当前宿主或子代理的精确 session ID，可自行通过 usage bind 登记，不在聊天里询问用户。存在多个无法证明归属的候选时保持计量缺口并继续创作，不按“最近会话”猜测，也不把检测到安装目录当作已采集。用户选择“本轮不计量”时不得读取自动 usage 来源。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 用项目 Hook 归属当前 conversation，并把 stop 事件里的父代理 token 入账：input_tokens 已含缓存读写，同一 generation_id 只记 stop，不与 afterAgentResponse 相加，也不读取 bubble.tokenCount 或按上下文占用估算。默认“当前 Agent”且已授权时同样记录。子代理 token 不在 stop 里，覆盖保持部分。已有 Hook 合计的 conversation 不再叠加 Team Admin Usage Events。用户选择 Agent 不构成自动计量成功。
 
 用量来自已绑定本项目的宿主实际 usage 或显式上报。上下文/工作流版本号不是模型 token。没有数据显示未采集；不按字数估算、不补零、不把并行无关任务算进来。子代理必须有可验证的会话或 usage 来源绑定；未能覆盖全部作者/审查调用时保持 PARTIAL。见计量说明登记来源、补报和封账。
 
-完成交付后仅按真实覆盖情况封账；没有证据不声明 all_sources_declared。不可为补计量而重放付费模型调用。实际交付完成后，先补齐已有 usage，再执行下列 complete（默认只声明部分覆盖），最后 finish。需要声明全部来源已采集时，按计量说明封账并提供明确声明；不能默认认为子代理已覆盖。
+开启计量时，完成交付后仅按真实覆盖情况封账；没有证据不声明 all_sources_declared。不可为补计量而重放付费模型调用。实际交付完成后先补齐已有 usage，再执行 complete。**默认关闭计量时不要执行任何 usage connect / bind / complete 命令，直接 finish。**
 
 ```powershell
 python -X utf8 -B adjusted/web-author/web_session.py usage --project <名称> --action complete
