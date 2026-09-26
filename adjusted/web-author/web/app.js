@@ -4,7 +4,7 @@
   const $ = id => document.getElementById(id);
   const MODES = ['1v1', '2v2', '3v3', '4v4', 'ffa4', 'ffa8'];
   const OUTPUT_MODES = ['raw_scripts', 'share_package'];
-  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v7';
+  const DRAFT_SCHEMA = 'aoe2-parameter-web-draft-v8';
   const STATUS = {
     configuring: ['待配置', ''],
     selecting: ['选择文明', '正在选择文明。'],
@@ -19,7 +19,7 @@
   let lastRequestSignature = null, civilizationSignature = null, agentSignature = null;
   let wizardStep = 0, previewCivilization = null, catalog = [], agents = [], catalogReady = false, agentsReady = false;
   let lastUsage = null, reportBusy = false, resultView = 'progress';
-  const STEP_NAMES = ['Token 采集', '游戏模式', '文明选择', '参数设置', '生成结果'];
+  const STEP_NAMES = ['测试功能', '游戏模式', '文明选择', '参数设置', '生成结果'];
   const MODE_NAMES = {'1v1':'1v1 单挑','2v2':'2v2 团队战','3v3':'3v3 团队战','4v4':'4v4 团队战',ffa4:'4 人混战',ffa8:'8 人混战'};
   const finite = value => typeof value === 'number' && Number.isFinite(value);
   const integer = value => Number.isInteger(value) && value >= 0;
@@ -60,43 +60,52 @@
     $(id).classList.toggle('hidden', !message);
     if (id === 'draftNotice') $(id).classList.toggle('routine-notice', !!message && (message.includes('已保存') || message.includes('已恢复')));
   }
-  function usageConsent() {
-    return document.querySelector('input[name="usage_auth"]:checked')?.value || '';
+  function usageMeterEnabled() { return $('usageMeterEnabled')?.checked === true; }
+  function usageConsent() { return usageMeterEnabled() ? 'allow' : 'decline'; }
+  function syncUsageToggle() {
+    const enabled = usageMeterEnabled();
+    document.querySelectorAll('input[name="usage_auth"]').forEach(input => {
+      input.checked = input.value === (enabled ? 'allow' : 'decline');
+    });
+    $('usageTestDetails').hidden = !enabled;
   }
   function authorizationReady() {
-    return agents.some(agent => agent.id === ($('agent')?.value || '')) && ['allow','decline'].includes(usageConsent());
+    return !usageMeterEnabled() || agents.some(agent => agent.id === ($('agent')?.value || ''));
   }
   function authorizationConfirmed() {
+    if (!usageMeterEnabled()) return true;
     const auth = state?.usage_authorization;
-    return !!auth && auth.agent === ($('agent')?.value || '') &&
-      auth.authorized === (usageConsent() === 'allow');
+    return !!auth && auth.agent === ($('agent')?.value || '') && auth.authorized === true;
   }
   function applyUsageAuthorization(auth) {
-    if (!auth || typeof auth.agent !== 'string' || typeof auth.authorized !== 'boolean') return;
+    if (!auth || typeof auth.agent !== 'string' || typeof auth.authorized !== 'boolean') {
+      syncUsageToggle(); return;
+    }
     if ($('agent') && agents.some(agent => agent.id === auth.agent)) $('agent').value = auth.agent;
-    document.querySelectorAll('input[name="usage_auth"]').forEach(input => {
-      input.checked = input.value === (auth.authorized ? 'allow' : 'decline');
-    });
+    $('usageMeterEnabled').checked = auth.authorized === true && !auth.revoked_at;
+    syncUsageToggle();
     renderAgentHelp();
   }
   function selection() {
-    return {
+    const value = {
       mode: document.querySelector('input[name="mode"]:checked')?.value || '',
       civilization: $('civilization').value,
-      agent: $('agent')?.value || '',
-      usage_authorized: usageConsent() === 'allow',
+      usage_meter_enabled: usageMeterEnabled(),
       script_name: $('scriptName').value,
       output_mode: document.querySelector('input[name="output_mode"]:checked')?.value || ''
     };
+    if (value.usage_meter_enabled) {
+      value.agent = $('agent')?.value || '';
+      value.usage_authorized = true;
+    }
+    return value;
   }
   function applySelection(value) {
     document.querySelectorAll('input[name="mode"]').forEach(input => { input.checked = input.value === value.mode; });
     $('civilization').value = typeof value.civilization === 'string' ? value.civilization : '';
     if ($('agent')) $('agent').value = typeof value.agent === 'string' ? value.agent : '';
-    document.querySelectorAll('input[name="usage_auth"]').forEach(input => {
-      input.checked = typeof value.usage_authorized === 'boolean' &&
-        input.value === (value.usage_authorized ? 'allow' : 'decline');
-    });
+    $('usageMeterEnabled').checked = value.usage_meter_enabled === true || value.usage_authorized === true;
+    syncUsageToggle();
     $('scriptName').value = typeof value.script_name === 'string' ? value.script_name : '';
     document.querySelectorAll('input[name="output_mode"]').forEach(input => {
       input.checked = input.value === value.output_mode;
@@ -137,7 +146,7 @@
       const draft = JSON.parse(raw), value = draft?.value;
       const allowedCiv = value?.civilization === '' || value?.civilization === 'auto' ||
         (state.civilizations || []).some(c => c.id === value?.civilization);
-      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v6', 'aoe2-parameter-web-draft-v5', 'aoe2-parameter-web-draft-v4', 'aoe2-parameter-web-draft-v3', 'aoe2-parameter-web-draft-v2', 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
+      if (![DRAFT_SCHEMA, 'aoe2-parameter-web-draft-v7', 'aoe2-parameter-web-draft-v6', 'aoe2-parameter-web-draft-v5', 'aoe2-parameter-web-draft-v4', 'aoe2-parameter-web-draft-v3', 'aoe2-parameter-web-draft-v2', 'aoe2-parameter-web-draft-v1'].includes(draft.schema) || draft.project_id !== project || !value ||
           (value.mode !== '' && !MODES.includes(value.mode)) || !allowedCiv ||
           typeof value.script_name !== 'string' || value.script_name.length > 48) {
         notice('draftNotice', '这份浏览器草稿与当前资料不匹配，未恢复。请重新设置。');
@@ -169,7 +178,7 @@
     if (state && state.status !== 'configuring') return step === 4;
     const value = selection();
     if (step === 0) return true;
-    if (!authorizationReady() || !authorizationConfirmed()) return false;
+    if (usageMeterEnabled() && (!authorizationReady() || !authorizationConfirmed())) return false;
     if (step === 1) return true;
     if (!MODES.includes(value.mode)) return false;
     if (step === 2) return true;
@@ -207,7 +216,8 @@
     document.body.classList.toggle('civilization-step', wizardStep === 2);
     document.body.classList.toggle('is-configuring', state?.status === 'configuring');
     $('configFields').disabled = !editable();
-    if ($('agent')) $('agent').disabled = !editable() || state?.usage_authorization?.authorized === true || !!state?.usage_authorization?.revoked_at;
+    if ($('agent')) $('agent').disabled = !editable() || !usageMeterEnabled() || state?.usage_authorization?.authorized === true || !!state?.usage_authorization?.revoked_at;
+    $('usageMeterEnabled').disabled = !editable() || !!state?.usage_authorization;
     $('startButton').disabled = !editable() || wizardStep !== 3 || !validSelection(selection());
     $('startButton').classList.toggle('hidden', wizardStep !== 3 || !!locked);
     text('startButton', busy ? '正在提交…' : '开始生成');
@@ -233,11 +243,13 @@
     $('previousStep').disabled = busy || !online;
     $('nextStep').classList.toggle('hidden', wizardStep >= 3);
     $('nextStep').disabled = !editable() || (wizardStep === 0 ? !authorizationReady() : !canVisit(wizardStep + 1));
-    text('nextStep', [authorizationConfirmed() ? '下一步' : '授权并继续', '下一步', '下一步', '', ''][wizardStep]);
-    $('skipMetering').classList.toggle('hidden', wizardStep !== 0 || authorizationConfirmed());
-    $('skipMetering').disabled = !editable() || !agentsReady;
+    text('nextStep', [usageMeterEnabled() && !authorizationConfirmed() ? '授权并继续' : '下一步', '下一步', '下一步', '', ''][wizardStep]);
     text('navigationHint', wizardStep === 1 && !MODES.includes(selection().mode) ? '请选择游戏模式' :
       wizardStep === 2 && !selectedCivValid() ? '请选择文明、AI 选择或随机文明' : '');
+    const meteringVisible = usageMeterEnabled() || state?.request?.usage_authorized === true ||
+      state?.usage_authorization?.authorized === true || !!state?.usage_authorization?.revoked_at;
+    $('usageResultTab').classList.toggle('hidden', !meteringVisible);
+    if (!meteringVisible && resultView === 'usage') resultView = 'progress';
     document.querySelectorAll('[data-result]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.result === resultView)));
     ['progress', 'usage', 'report'].forEach(view => { $(view + 'Panel').hidden = resultView !== view; });
     renderMeterStatus(); renderSummary(); updateCivilizationSelection();
@@ -248,7 +260,10 @@
   function renderMeterStatus() {
     const connection = state?.usage_connection || {};
     const labels = {NOT_AUTHORIZED:'等待授权', DISABLED:'本轮不计量', REVOKED:'计量已停止', RECORDING:'正在记录用量', LIMITED:'计量存在缺口', AWAITING_USAGE:'等待用量记录', CONNECTING:'Agent 正在接入'};
-    text('meterStatus', labels[connection.status] || (state?.usage_authorization?.authorized ? 'Agent 正在接入' : '等待授权'));
+    const visible = usageMeterEnabled() || state?.request?.usage_authorized === true ||
+      state?.usage_authorization?.authorized === true || !!state?.usage_authorization?.revoked_at;
+    $('meterStatus').classList.toggle('hidden', !visible);
+    text('meterStatus', labels[connection.status] || 'Token 测试计量关闭');
     $('meterStatus').dataset.status = connection.status || 'NOT_AUTHORIZED';
     $('meterStatus').title = connection.reason || 'Token 采集状态';
     $('revokeUsage').classList.toggle('hidden', connection.can_revoke !== true);
@@ -715,10 +730,9 @@
   }
   $('nextStep').addEventListener('click', () => {
     if (wizardStep !== 0) { goStep(wizardStep + 1); return; }
-    if (authorizationConfirmed()) goStep(1);
+    if (!usageMeterEnabled() || authorizationConfirmed()) goStep(1);
     else authorize(true);
   });
-  $('skipMetering').addEventListener('click', () => authorize(false));
   $('revokeUsage').addEventListener('click', () => authorize(false, false));
   $('suggestName').addEventListener('click', () => { suggestName(); syncActions(); });
   $('civilizationSearch').addEventListener('input', filterCivilizations);
@@ -741,7 +755,7 @@
     text('nameHelp', invalid ? '名称无效：字母开头；仅限字母、数字、_、-，最多 48 字符。' : '字母开头；仅限字母、数字、_、-，最多 48 字符。');
   });
   $('authorForm').addEventListener('input', () => { saveDraft(); syncActions(); });
-  $('authorForm').addEventListener('change', () => { renderAgentHelp(); saveDraft(); syncActions(); });
+  $('authorForm').addEventListener('change', () => { syncUsageToggle(); renderAgentHelp(); saveDraft(); syncActions(); });
   $('generateReportButton').addEventListener('click', async () => {
     if (reportBusy || !online || !state || !project || stopped) return;
     reportBusy = true; syncActions(); text('reportState', '正在生成…');
