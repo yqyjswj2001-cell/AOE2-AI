@@ -121,7 +121,7 @@ python -X utf8 -B adjusted/web-author/web_session.py build --project <名称>
 
 ## 已有作品登记
 
-用户要求“登记以前做好的脚本包”“把这个旧 AI 登记到作品库”或同等意图时，**不要重新启动创作，也不要要求原来的 author project 仍然存在**。直接使用独立入口：
+用户要求“登记以前做好的脚本包”“把这个旧 AI 登记到作品库”或同等意图时，**不重新创作，也不要要求原来的 author project 仍然存在**。直接使用独立入口：
 
 ```powershell
 python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifact "<旧 ZIP 或脚本目录>"
