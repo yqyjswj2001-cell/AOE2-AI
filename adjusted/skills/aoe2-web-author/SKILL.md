@@ -119,6 +119,40 @@ python -X utf8 -B adjusted/web-author/web_session.py build --project <名称>
 
 `build` 不需要本机安装 AoE2DE，也不读取或检查 `PromiDE.per2`。用户选择 `raw_scripts` 时输出 36 个 `.per`；选择 `share_package` 时输出一个 `.zip`，ZIP 内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`，用于直接发送给别人。分享包不是游戏安装包。不要生成 `.ai`、`resources/_common/ai` 安装结构、主入口或安装模板，也不要因为本机没有游戏而阻止 launch、授权、文明选择、参数创作、validate 或 build。
 
+## 已有作品登记
+
+用户要求“登记以前做好的脚本包”“把这个旧 AI 登记到作品库”或同等意图时，**不要重新启动创作，也不要要求原来的 author project 仍然存在**。直接使用独立入口：
+
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifact "<旧 ZIP 或脚本目录>"
+```
+
+该入口会自己识别：
+- 当前分享包：根目录有 `manifest.json`，内部为 `<脚本名>/` + 36 个 PER；
+- 旧式脚本 ZIP：没有 manifest，但存在唯一的 36-PER 脚本目录；
+- 旧式可安装 ZIP：`resources/_common/ai/<脚本名>.ai/.per/<脚本名>/`；
+- 原生脚本目录：目录内正好 36 个 PER。
+
+识别依据是**36 个 PER 的文件名和 SHA-256 内容指纹**，不是 ZIP 文件名。相同脚本被重新压缩、移动或再次登记时更新同一条作品记录，不重复造一条。
+
+旧包自身无法证明的历史信息（模型、Agent、模式、文明、创作日期等）保持“未知”，不得根据文件名、聊天习惯或当前模型猜测。只有当前 Agent 能从原创作会话中直接证明某些信息时，才可额外写一个 JSON，例如：
+
+```json
+{"agent":"grok","model":"<当时实际模型>","mode":"ffa8","civilization":"Magyars","created_at":"<可证明时间>"}
+```
+
+然后：
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifact "<路径>" --metadata "<metadata.json>"
+```
+
+查看作品库：
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py registry-list
+```
+
+统一作品库位于 `adjusted/.local/ai-registry/works.sqlite3`。这是本地运行数据，不提交到 Git。以后通过本 Skill 新生成的作品在 `build` 成功后自动登记到同一个库；旧作品才需要使用这个迁移入口。
+
 ## 直接安装到本机游戏（仅用户明确要求）
 
 普通创作和 `build` 永远不自动安装，也不要求本机有游戏。**只有用户明确说“直接装进游戏”“安装到我的 AoE2DE”或同等明确授权时**，才允许在成功 `build` 之后执行外部游戏目录写入：
