@@ -441,7 +441,7 @@ def register_artifact(value: str | Path, *, metadata=None, source_kind="legacy_a
         "manifest_present": found["manifest_present"],
         "registry_db": str(Path(db_path).resolve()),
         "unknown_fields": [key for key in ("mode", "civilization", "agent", "model", "created_at")
-                           if not meta.get(key) and not (key == "mode" and project_id)],
+                           if not meta.get(key)],
     }
 
 
