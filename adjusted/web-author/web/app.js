@@ -451,9 +451,9 @@
       : ' Team Usage API 未配置；需其他真实 usage 来源。';
     text('agentHelp', agent ? help : '正在读取可用的 Agent…');
     const auth = state?.usage_authorization;
-    text('authorizationStatus', auth?.revoked_at ? '已撤回授权，保留已有记录。' :
-      authorizationConfirmed() ? auth.authorized ? '已授权，采集状态见顶部。' : '本轮不计量。' :
-      '未授权');
+    text('authorizationStatus', !usageMeterEnabled() ? 'Token 测试计量关闭。' :
+      auth?.revoked_at ? '已撤回授权，保留已有记录。' :
+      authorizationConfirmed() ? '已授权，采集状态见顶部。' : '等待授权');
   }
 
   function renderCivilizationDecision() {
