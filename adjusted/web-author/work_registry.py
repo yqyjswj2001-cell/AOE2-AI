@@ -138,6 +138,47 @@ def _recognize_share_zip(path: Path) -> dict | None:
         raise RegistryError("Artifact is not a valid ZIP package") from exc
 
 
+def _recognize_installable_zip(path: Path) -> dict | None:
+    try:
+        with zipfile.ZipFile(path) as archive:
+            infos = _safe_zip_infos(archive)
+            names = {info.filename for info in infos if not info.is_dir()}
+            markers = [name for name in names
+                       if name.startswith("resources/_common/ai/") and name.lower().endswith(".ai")
+                       and "/" not in name.removeprefix("resources/_common/ai/")]
+            candidates = []
+            for marker in markers:
+                script_name = PurePosixPath(marker).stem
+                if not SCRIPT_NAME.fullmatch(script_name):
+                    continue
+                entry = "resources/_common/ai/" + script_name + ".per"
+                prefix = "resources/_common/ai/" + script_name + "/"
+                per_infos = [info for info in infos if not info.is_dir()
+                             and info.filename.startswith(prefix) and info.filename.lower().endswith(".per")]
+                if entry in names and len(per_infos) == 36:
+                    candidates.append((script_name, per_infos))
+            if len(candidates) != 1:
+                return None
+            script_name, per_infos = candidates[0]
+            modules = {}
+            for info in per_infos:
+                name = PurePosixPath(info.filename).name
+                modules[name] = archive.read(info)
+            fingerprint, hashes = _module_fingerprint(modules)
+            return {
+                "script_name": script_name,
+                "artifact_kind": "installable_zip",
+                "module_fingerprint": fingerprint,
+                "module_hashes": hashes,
+                "module_files": 36,
+                "manifest_schema": None,
+                "manifest_present": False,
+                "package_sha256": sha256(path.read_bytes()),
+            }
+    except zipfile.BadZipFile as exc:
+        raise RegistryError("Artifact is not a valid ZIP package") from exc
+
+
 def _recognize_plain_zip(path: Path) -> dict | None:
     try:
         with zipfile.ZipFile(path) as archive:
@@ -255,7 +296,7 @@ def recognize_artifact(value: str | Path) -> dict:
     if path.is_file():
         if path.suffix.lower() != ".zip":
             raise RegistryError("Existing-work registration accepts a ZIP package or script directory")
-        result = _recognize_share_zip(path) or _recognize_plain_zip(path)
+        result = _recognize_share_zip(path) or _recognize_installable_zip(path) or _recognize_plain_zip(path)
     elif path.is_dir():
         result = _recognize_directory(path)
     else:
