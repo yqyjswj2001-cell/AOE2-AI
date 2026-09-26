@@ -133,7 +133,7 @@ def main():
             page.reload(wait_until='networkidle')
             assert page.locator('#wizardPanel2').is_visible()
             assert page.locator('#civilization').input_value() == first['id']
-            assert len(consents) == 1
+            assert not consents
             page.locator('#nextStep').click()
             assert page.locator('#wizardPanel3').is_visible()
             assert page.locator('#scriptName').input_value()
