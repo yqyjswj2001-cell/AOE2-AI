@@ -209,7 +209,7 @@ def main():
                 'report preview does not auto-download; explicit download works',
                 'no horizontal overflow in every view at 320/390/768/1280/1440px']
             report={'status':'PASS','checks':checks,'page_errors':errors,'synthetic_start_requests':len(posts),
-                    'real_projects_accessed':False,'screenshots_use_synthetic_usage':True}
+                    'real_projects_accessed':False,'screenshots_use_synthetic_usage':False}
             (OUT/'browser-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
             print(json.dumps(report,ensure_ascii=False))
         finally: browser.close()
