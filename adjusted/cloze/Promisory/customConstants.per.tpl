@@ -6,6 +6,9 @@
 (defconst force-old-micro 0);if set to 1, disables the grouped micro approach introduced in 2023 March CU.
 ;================================= PAPHOS =================================
 
+
+(defconst ri-heavy-rocket-cart 980)
+
 (defconst immortal-line -222)
 (defconst immortal 2101)
 (defconst elite-immortal 2102)
@@ -387,6 +390,7 @@
 (defconst rattan-archer-line -248)
 (defconst ballista-elephant-line -249)
 
+
 (defconst organ-gun 106)
 (defconst elite-organ-gun 114)
 (defconst caravel 861)
@@ -528,7 +532,7 @@
 (defconst ri-flemish-revolution 755)
 (defconst ri-first-crusade 756)
 (defconst ri-scutage 757)
-
+(defconst ri-heavy-rocket-cart 980)
 (defconst coustillier-line -240)
 (defconst serjeant-line -239)
 (defconst donjon-serjeant-line -238)
@@ -884,6 +888,47 @@
 
 #end-if
 
+#load-if-defined CHINESE-CIV
+(defconst cutting-unit rocket-cart-line)
+(defconst cutting-tech 980);ri-heavy-rocket-cart, writing ri-heavy-rocket-cart throws an AI error for some reason
+#end-if
+#load-if-defined JURCHENS-CIV
+(defconst cutting-unit rocket-cart-line)
+(defconst cutting-tech 980)
+#end-if
+#load-if-defined KOREAN-CIV
+(defconst cutting-unit rocket-cart-line)
+(defconst cutting-tech 980)
+#end-if
+#load-if-defined KHITANS-CIV
+(defconst cutting-unit rocket-cart-line)
+(defconst cutting-tech 980)
+#end-if
+#load-if-defined HUN-CIV
+(defconst cutting-unit trebuchet)
+(defconst cutting-tech imperial-age)
+#end-if
+#load-if-defined TURKISH-CIV
+(defconst cutting-unit trebuchet)
+(defconst cutting-tech imperial-age)
+#end-if
+
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined JURCHENS-CIV
+#load-if-not-defined KHITANS-CIV
+(defconst cutting-unit mangonel-line)
+(defconst cutting-tech ri-onager)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+
 (defconst yes 1)
 (defconst no 0)
 (defconst new 1)
@@ -1058,6 +1103,7 @@
 (defconst monk-with-relic 286)
 (defconst monk-with-relic-class 943)
 (defconst controlled-animal-class 961)
+(defconst trade-cart-class 919)
 (defconst ri-yeomen 3)
 (defconst ri-furor-celtica 5)
 (defconst ri-drill 6)
@@ -1658,6 +1704,7 @@
 (defconst fishing-ship-garrisoned 735)
 (defconst fishing-ship-ever-garrisoned 736)
 (defconst fishing-ship-disable-ungarrison-timer 737)
+
 (defconst water-fd-value 2850)
 (defconst galley-group 11)
 (defconst water-melee-group 12)
@@ -1705,10 +1752,86 @@
 
 (defconst lock-settlement-placement 1526)
 (defconst trainhulk 1527)
-
+(defconst peformance-skip 1528)
+(defconst end-of-units-per 1529)
+(defconst end-of-researches-per 1530)
+(defconst end-of-buildings-per 1531)
+(defconst end-of-gatherers-per 1532)
 (defconst pivot-point-x 2086)
 (defconst pivot-point-y 2087)
 
+
+(defconst closest-edge-x 2996)
+(defconst closest-edge-y 2997)
+(defconst closest-corner-x 2998)
+(defconst closest-corner-y 2999)
+
+(defconst cutting-stage 3001)
+(defconst second-closest-corner-x 3002)
+(defconst second-closest-corner-y 3003)
+(defconst xs-array-start 3004)
+(defconst xs-array-end 3005)
+
+(defconst temporary-goal12 3006)
+(defconst temporary-goal13 3007)
+(defconst temporary-goal14 3008)
+(defconst temporary-goal15 3009)
+(defconst temporary-goal16 3010)
+(defconst temporary-goal17 3011)
+(defconst temporary-goal18 3012)
+(defconst temporary-goal19 3013)
+
+(defconst previous-mangonel-point-x 3014)
+(defconst previous-mangonel-point-y 3015)
+
+(defconst point5-x 3016)
+(defconst point5-y 3017)
+
+(defconst pause-cutting-rule-timer 3018)
+(defconst cutter-id 3019)
+(defconst backup-direction 3020)
+
+(defconst island-resources-low 3021)
+(defconst market-placement 3022)
+(defconst transport-exclude-id 3023)
+(defconst gold-id 3024)
+(defconst gold-x 3025)
+(defconst gold-y 3026)
+
+(defconst point-variance 3027)
+(defconst external-gatherers-stage 3028)
+(defconst fwd-villager-id 3029)
+
+
+(defconst bw-starting-point-x 4101)
+(defconst bw-starting-point-y 4102)
+(defconst bw-small-wall-endpoint-x 4103)
+(defconst bw-small-wall-endpoint-y 4104)
+(defconst building-stage 4105)
+(defconst bw2-starting-point-x 4106)
+(defconst bw2-small-wall-endpoint-x 4108)
+(defconst bw-small-wall-camp-id 4010)
+
+(defconst building-point-array-start 4050)
+(defconst building-point-array-index 4049)
+(defconst building-point-array-end 4099)
+
+
+(defconst boar-1-id 4201)
+(defconst boar-2-id 4202)
+(defconst boar-3-id 4203)
+(defconst boar-4-id 4204)
+(defconst boar-5-id 4205)
+(defconst next-boar-ptr 4206)
+(defconst restore-building 4207)
+
+(defconst boar-hunting-stage 4212)
+(defconst minimum-boar-target-time 4213)
+(defconst current-boar-id 4214)
+(defconst current-boar-id-ptr 4215)
+
+
+(defconst building-exclusion-group 15)
 ;Scout actions
 
 (defconst scout-move 2)
@@ -1720,6 +1843,11 @@
 (defconst scout-building-attack 8)
 
 
+(defconst stage1 3)
+(defconst stage2 4)
+(defconst stage3 5)
+(defconst stage4 6)
+(defconst market-complete 7)
 ; Strategic numbers
 (defconst hoplites 7999)
 (defconst husks 53)
@@ -1800,8 +1928,11 @@
 (defconst melee-group1 5)
 (defconst melee-group 5)
 
+(defconst external-wood-gatherers 13)
+(defconst external-gold-gatherers 14)
 (defconst temporary-group 17)
 
+(defconst cutting-group 18)
 ; Timers
 (defconst rebuild-camp 1)
 (defconst TSA-timer 2)
@@ -1852,7 +1983,13 @@
 (defconst reset-stance 47)
 (defconst pick-melee-action 48)
 (defconst patrol-timer 49)
+(defconst block-lumbercamp-timer 50)
 
+(defconst thirtysec 51)
+(defconst pause-trading 52)
+(defconst ten-mins 53)
+
+(defconst boar-reset-timer2 54)
 ; Flags
 
 ;Actions
@@ -2141,37 +2278,55 @@
 #end-if
 #load-if-defined ARENA-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 5)
+(defconst cut-start 0)
 #end-if
 #load-if-defined AMAZON-TUNNEL-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 7)
+(defconst cut-start 1)
 #end-if
 #load-if-defined BLACK-FOREST-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 5)
+(defconst cut-start 0)
 #end-if
 #load-if-defined WOLF-HILL-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 3)
+(defconst cut-start 1)
 #end-if
 #load-if-defined AFRICAN-CLEARING-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 3)
+(defconst cut-start 1)
 #end-if
 #load-if-defined CRATER-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 3)
+(defconst cut-start 0)
 #end-if
 #load-if-defined MANGROVE-JUNGLE-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 5)
+(defconst cut-start 1)
 #end-if
 #load-if-defined HABOOB-MAP
 (defconst TRADE-CUT 1)
+(defconst cut-stop 3)
+(defconst cut-start 1)
 #end-if
 #load-if-not-defined ARENA-MAP
 #load-if-not-defined AMAZON-TUNNEL-MAP
 #load-if-not-defined BLACK-FOREST-MAP
-#load-if-not-defined WOLF-HILL-MAP
+#load-if-not-defined WOLF-HILL-MAPf
 #load-if-not-defined AFRICAN-CLEARING-MAP
 #load-if-not-defined CRATER-MAP
 #load-if-not-defined MANGROVE-JUNGLE-MAP
 #load-if-not-defined HABOOB-MAP
 (defconst TRADE-CUT 0)
+(defconst cut-stop 1)
+(defconst cut-start 0)
 #end-if
 #end-if
 #end-if
@@ -2180,6 +2335,7 @@
 #end-if
 #end-if
 #end-if
+
 
 #load-if-defined ACHAEMENIDS-CIV
 (defconst text-civ "I'm playing as the achaemenids.")
@@ -2502,6 +2658,24 @@
 (defconst fgrush-affinity 2)
 (defconst trush-affinity 2)
 (defconst fi-affinity 2)
+#end-if
+
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined MAPUCHE-CIV
+#load-if-not-defined TUPI-CIV
+#load-if-not-defined MUISCA-CIV
+#load-if-not-defined ARMENIANS-CIV
+#load-if-not-defined GEORGIANS-CIV
+
+(defconst wood-building lumber-camp)
+(defconst gold-building mining-camp)
+(defconst food-building mill)
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
 #end-if
 
 #load-if-defined PAPHOS6-CIV
@@ -3630,10 +3804,10 @@
 (defconst fgrush-affinity 2)
 (defconst trush-affinity 2)
 (defconst fi-affinity 1)
-(defconst scout-unit champi-runner)
-(defconst lumber-camp settlement)
-(defconst mill settlement)
-(defconst mining-camp settlement)
+(defconst scout-unit champi-line)
+(defconst wood-building settlement)
+(defconst food-building settlement)
+(defconst gold-building settlement)
 #end-if
 #load-if-defined INDIAN-CIV
 (defconst text-civ "I'm playing as the indians.")
@@ -5229,7 +5403,9 @@
 (defconst trush-affinity 1)
 (defconst fi-affinity 1)
 
-(defconst lumber-camp mule-cart)
+(defconst wood-building mule-cart)
+(defconst gold-building mule-cart)
+(defconst food-building mill)
 #end-if
 
 #load-if-defined GEORGIANS-CIV
@@ -5285,7 +5461,9 @@
 (defconst trush-affinity 2)
 (defconst fi-affinity 1)
 
-(defconst lumber-camp mule-cart)
+(defconst wood-building mule-cart)
+(defconst gold-building mule-cart)
+(defconst food-building mill)
 #end-if
 #load-if-defined MAGYAR-CIV
 (defconst s-buffer 118)
@@ -5465,7 +5643,7 @@
 (defconst ri-lamellar-armor 1006)
 (defconst ri-ordo-cavalry 1007)
 (defconst ri-elite-fire-lancer 982)
-(defconst ri-heavy-rocket-cart 980)
+
 
 (defconst ri-fortified-bastions 996)
 
@@ -5776,9 +5954,9 @@
 (defconst fi-affinity 2)
 (defconst t-garrison-c 10)
 (defconst scout-unit champi-runner)
-(defconst lumber-camp settlement)
-(defconst mill settlement)
-(defconst mining-camp settlement)
+(defconst wood-building settlement)
+(defconst food-building settlement)
+(defconst gold-building settlement)
 
 (defconst siege-ship catapult-galleon)
 #end-if
@@ -5837,9 +6015,9 @@
 (defconst fi-affinity 2)
 (defconst t-garrison-c 10)
 (defconst scout-unit champi-runner)
-(defconst lumber-camp settlement)
-(defconst mill settlement)
-(defconst mining-camp settlement)
+(defconst wood-building settlement)
+(defconst food-building settlement)
+(defconst gold-building settlement)
 
 (defconst siege-ship catapult-galleon)
 #end-if
@@ -5899,9 +6077,9 @@
 (defconst fi-affinity 2)
 (defconst t-garrison-c 10)
 (defconst scout-unit champi-runner)
-(defconst lumber-camp settlement)
-(defconst mill settlement)
-(defconst mining-camp settlement)
+(defconst wood-building settlement)
+(defconst food-building settlement)
+(defconst gold-building settlement)
 (defconst siege-ship catapult-galleon)
 #end-if
 #load-if-defined GOTHIC-CIV
@@ -5967,6 +6145,206 @@
 #end-if
 #end-if
 #end-if
+
+
+(defconst mounted-crossbowman 2700)
+(defconst heavy-mounted-crossbowman 2701)
+(defconst varangian-guard 2703)
+(defconst elite-varangian-guard 2704)
+(defconst hearth-troop 2705)
+(defconst elite-hearth-troop 2706)
+(defconst jarl 2708)
+(defconst elite-jarl 2709)
+(defconst jomsviking 2711)
+(defconst elite-jomsviking 2712)
+(defconst seaxman 2714)
+(defconst elite-seaxman 2715)
+
+(defconst ri-heavy-mounted-crossbowman 1451)
+(defconst ri-cranequins 1452)
+(defconst ri-elite-varangian-guard 1454)
+(defconst ri-elite-hearth-troop 1462)
+(defconst ri-weregild 1463)
+(defconst ri-shield-wall 1464)
+(defconst ri-elite-jarl 1472)
+(defconst ri-vendel-legacy 1473)
+(defconst ri-gothikon 1474)
+(defconst ri-elite-jomsviking 1482)
+(defconst ri-northmens-fury 1483)
+(defconst ri-hamask 1484)
+(defconst ri-elite-seaxman 1490)
+(defconst ri-clerical-recruitment 1491)
+(defconst ri-ordonnance-companies 1496)
+
+#load-if-defined DANES-CIV
+(defconst text-civ "I'm playing as the Danes.")
+(defconst unique-unit-wood 0)
+(defconst unique-unit-food 115)
+(defconst uu-w-dtc 0)
+(defconst number-barracks 9)
+(defconst number-stables 4)
+(defconst number-archery-ranges 4)
+(defconst dm-building stable); for now
+(defconst dm-unit knight-line)
+(defconst dmw-unit galley-line)
+(defconst default-unit trainmangonel)
+(defconst infinite-rax trainchamp)
+(defconst infinite-range trainarcher)
+(defconst infinite-stable trainknight)
+(defconst pala-available 0)
+(defconst champ-available 1)
+(defconst hc-available 0)
+(defconst ig-food 37); 38
+(defconst ig-wood 37)
+(defconst ig-gold 21); 20
+(defconst ig-stone 5)
+(defconst uu-food 1100)
+(defconst uu-gold 800)
+(defconst uu-food2 825)
+(defconst uu-gold2 825)
+(defconst uu-wood 300)
+(defconst uu-wood2 0)
+(defconst ur-wood 975)
+(defconst ur-food 0)
+(defconst ur-gold 750)
+(defconst ur-stone 0)
+(defconst LN-TC-builders 2)
+(defconst uu-type infantry-uu)
+(defconst sling-number 100)
+(defconst sling-affinity 1)
+#load-if-defined DE-AVAILABLE
+(defconst drush-affinity 2)
+#else
+(defconst drush-affinity 3)
+#end-if
+(defconst r-flush-affinity 2)
+(defconst sk-var-affinity 2)
+(defconst maa-var-affinity 2)
+(defconst krush-affinity 1)
+(defconst s-flush-affinity 1)
+(defconst castledrop-affinity 2);changed from 1 because of balance
+(defconst stonewall-affinity 0)
+(defconst a-rush-affinity 1)
+(defconst ca-rush-affinity 1)
+(defconst klew-affinity 0)
+(defconst grush-affinity 2)
+(defconst fgrush-affinity 1)
+(defconst trush-affinity 2)
+(defconst fi-affinity 1)
+(defconst cavalry-archer mounted-crossbowman)
+(defconst heavy-cavalry-archer heavy-mounted-crossbowman);trying not defconsting the line as it will affect counters
+#end-if
+
+
+#load-if-defined SAXONS-CIV
+(defconst text-civ "I'm playing as the Saxons.")
+(defconst unique-unit-wood 0)
+(defconst unique-unit-food 115)
+(defconst uu-w-dtc 0)
+(defconst number-barracks 7)
+(defconst number-stables 3)
+(defconst number-archery-ranges 7)
+(defconst dm-building barracks); for now
+(defconst dm-unit militiaman-line)
+(defconst dmw-unit longboat-line)
+(defconst default-unit trainunique)
+(defconst infinite-rax trainchamp)
+(defconst infinite-range trainarcher)
+(defconst infinite-stable trainknight)
+(defconst pala-available 0)
+(defconst champ-available 1)
+(defconst hc-available 0)
+(defconst ig-food 43)
+(defconst ig-wood 32)
+(defconst ig-gold 20)
+(defconst ig-stone 5)
+(defconst uu-food 1400)
+(defconst uu-gold 550)
+(defconst uu-food2 1300)
+(defconst uu-gold2 750)
+(defconst uu-wood 300)
+(defconst uu-wood2 0)
+(defconst ur-wood 0)
+(defconst ur-food 850)
+(defconst ur-gold 400)
+(defconst ur-stone 0)
+(defconst LN-TC-builders 2)
+(defconst uu-type infantry-uu)
+(defconst sling-number 100); 99
+(defconst sling-affinity 3)
+(defconst drush-affinity 1)
+(defconst r-flush-affinity 2)
+(defconst sk-var-affinity 2)
+(defconst maa-var-affinity 3)
+(defconst krush-affinity 2)
+(defconst s-flush-affinity 1)
+(defconst castledrop-affinity 0)
+(defconst stonewall-affinity 0)
+(defconst a-rush-affinity 2)
+(defconst ca-rush-affinity 2)
+(defconst klew-affinity 0)
+(defconst grush-affinity 3)
+(defconst fgrush-affinity 0)
+(defconst trush-affinity 2)
+(defconst fi-affinity 1)
+
+(defconst cavalry-archer mounted-crossbowman)
+(defconst heavy-cavalry-archer heavy-mounted-crossbowman);trying not defconsting the line as it will affect counters
+#end-if
+
+#load-if-defined VARANGIANS-CIV
+(defconst text-civ "I'm playing as the Varangians.")
+(defconst unique-unit-wood 0)
+(defconst unique-unit-food 125)
+(defconst uu-w-dtc 0)
+(defconst number-barracks 6)
+(defconst number-stables 6)
+(defconst number-archery-ranges 6)
+(defconst dm-building stable); for now
+(defconst dm-unit knight-line)
+(defconst dmw-unit galley-line)
+(defconst default-unit trainunique)
+(defconst infinite-rax trainchamp)
+(defconst infinite-range traincavarcher)
+(defconst infinite-stable trainknight)
+(defconst pala-available 1)
+(defconst champ-available 1)
+(defconst hc-available 0)
+(defconst ig-food 43)
+(defconst ig-wood 33)
+(defconst ig-gold 19)
+(defconst ig-stone 5)
+(defconst uu-food 825)
+(defconst uu-gold 625)
+(defconst uu-food2 800)
+(defconst uu-gold2 800)
+(defconst uu-wood 300)
+(defconst uu-wood2 0)
+(defconst ur-wood 0)
+(defconst ur-food 475)
+(defconst ur-gold 400)
+(defconst ur-stone 0)
+(defconst LN-TC-builders 2)
+(defconst uu-type cavalry-uu)
+(defconst sling-number 100)
+(defconst sling-affinity 1)
+(defconst drush-affinity 1)
+(defconst r-flush-affinity 2)
+(defconst sk-var-affinity 1)
+(defconst maa-var-affinity 2)
+(defconst krush-affinity 3)
+(defconst s-flush-affinity 3)
+(defconst castledrop-affinity 2)
+(defconst stonewall-affinity 0)
+(defconst a-rush-affinity 2)
+(defconst ca-rush-affinity 1)
+(defconst klew-affinity 0)
+(defconst grush-affinity 1)
+(defconst fgrush-affinity 1)
+(defconst trush-affinity 2)
+(defconst fi-affinity 1)
+#end-if
+
 
 #load-if-defined MALAY-CIV
 (defconst dark-vill-buffer 130); 100
@@ -8061,4 +8439,16 @@
 
 #load-if-defined PILGRIMS-MAP
 (defconst center-lerp-percentage 30)
+#end-if
+
+(defconst expected-boars 4202);if CUST
+
+#load-if-defined CUSTOM-MAP
+(defconst expected-boars 4205)
+#end-if
+#load-if-defined YUCATAN-MAP
+(defconst expected-boars 4205)
+#end-if
+#load-if-defined SCANDANAVIA-MAP
+(defconst expected-boars 4203)
 #end-if

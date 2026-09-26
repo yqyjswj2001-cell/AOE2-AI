@@ -50,7 +50,7 @@
 
 #load-if-defined DARK-AGE-END
 (defrule
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total gold-building >= 1)
 (or	(population >= max-civ-pop)
 (or	(up-compare-goal custom-civ-pop >= up-max-civ)
 (or	(civilian-population >= up-max-civ)
@@ -101,7 +101,7 @@
 (or	(and	(up-pending-objects c: villager-class <= 0)
 		(up-compare-goal total-food-amount < vill-cost))
 	(and	(up-compare-goal food-villagers < 7)
-		(unit-type-count villager-forager >= 2))))); mill >= 1
+		(unit-type-count villager-forager >= 2))))); food-building >= 1
 	(up-compare-goal food-villagers < {{DAWN_GATHERER_TARGET_010}}); 8
 =>
 	(up-modify-goal food-villagers c:+ 1)
@@ -345,7 +345,7 @@
 	(up-compare-goal strategy-type >= castle-war)
 	(up-compare-goal gold-villagers < {{DAWN_GATHERER_TARGET_067}}); 3
 	(up-compare-goal food-villagers >= {{DAWN_GATHERER_TARGET_068}}); 15
-(or	(building-type-count-total mining-camp >= 1)
+(or	(building-type-count-total gold-building >= 1)
 	(up-compare-goal total-wood-amount >= camp-cost))
 	(up-compare-goal total-food-amount >= feudal-food)
 	(up-compare-goal total-gold-amount < castleloom-gold)

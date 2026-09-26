@@ -2,6 +2,12 @@
 ; Paphos
 ;=============================================================
 
+(defrule
+	(goal peformance-skip yes)
+	(strategic-number sn-turn-count > 10)
+=>
+	(up-jump-direct g: end-of-researches-per)
+)
 
 ;=============================================================
 ;
@@ -821,12 +827,17 @@
 =>
 	(set-goal researchplan yes)
 	(disable-self))
+#load-if-defined FRANKISH-CIV
 (defrule
-(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
-	(unit-type-count-total my-unique-unit-line >= 5))
-	(can-research ri-bearded-axe)
+	(can-research ri-ordonnance-companies)
+	(or(and(up-research-status c: ri-paladin >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending))
+	(or(goal trainarcher yes);to faciliate a tech switch
+	(or(unit-type-count-total mounted-crossbowman-line > 4)
+	(goal traincavarcher yes))))
 =>
-	(research ri-bearded-axe))
+	(research ri-ordonnance-companies))
+#end-if
 (defrule
 (or	(up-compare-const dm-game == 1)
 (or	(up-compare-const inf-game == 1)
@@ -2313,7 +2324,7 @@
 (or	(and	(up-compare-goal excessFood < 100)
 		(up-pending-objects c: villager <= 1))
 	(and	(up-compare-goal excessWood < 150)
-		(and	(building-type-count-total mill <= 0)
+		(and	(building-type-count-total food-building <= 0)
 			(up-research-status c: feudal-age <= research-available))))
 =>
 	(up-jump-rule 2))
@@ -2402,7 +2413,7 @@
 (or	(and	(up-compare-goal excessFood < 75)
 		(up-pending-objects c: villager <= 1))
 	(and	(up-compare-goal excessWood < 175)
-		(building-type-count-total lumber-camp <= 0))))
+		(building-type-count-total wood-building <= 0))))
 =>
 	(up-jump-rule 7))
 (defrule
@@ -3402,12 +3413,16 @@
 )
 
 (defrule
-    (unit-type-count-total champi-runner > 3)
+    (unit-type-count-total champi-runner > 2)
+	 (can-research ri-champi-warrior)
 =>
     (research ri-champi-warrior)
 )
 (defrule
-	(unit-type-count-total champi-warrior > 3)
+	(or(unit-type-count-total champi-line > 3)
+	(and(unit-type-count-total champi-line > 1)
+	(goal trainchamp yes)))
+	(can-research ri-champi-runner)
 =>
 	(research ri-champi-runner)
 )
@@ -3653,6 +3668,18 @@
 	(can-research ri-siege-onager)
 =>
 	(research ri-siege-onager))
+
+(defrule
+	(or(goal temporary-goal10 76543)
+	(up-compare-const TRADE-CUT == 1))
+	(up-compare-const diff-fp == 1)
+	(current-age == imperial-age)
+	(current-age-time > 300)
+	(unit-type-count trade-cart > 5)
+	(can-research-with-escrow cutting-tech)
+=>
+	(research cutting-tech)
+)
 #load-if-not-defined BERBERS-CIV
 #load-if-not-defined BOHEMIANS-CIV
 #load-if-not-defined BRITON-CIV
@@ -4394,6 +4421,19 @@
 	(can-research ri-parthian-tactics)
 =>
 	(research ri-parthian-tactics))
+
+(defrule
+	(can-research ri-cranequins)
+	(or(and(gold-amount > 2000)
+	(food-amount > 2000))
+	(unit-type-count-total mounted-crossbowman-line > 4))
+	(can-research ri-cranequins)
+	(or(up-research-status c: ri-bracer != research-available)
+	(and(food-amount > 700)
+	(gold-amount > 500)))
+=>
+	(research ri-cranequins)
+	)
 ;=============================================================
 (defrule
 (nor	(goal underattack yes)
@@ -5426,6 +5466,121 @@
 	(research ri-block-printing))
 #end-if
 ;=============================================================
+
+
+#load-if-defined DANES-CIV
+(defrule
+   (or(unit-type-count-total infantry-class > 6)
+   (gold-amount > 1500))
+   (can-research ri-hamask)
+=>
+   (research ri-hamask)
+)
+
+(defrule
+   (or(unit-type-count-total cannon-galleon-line > 3)
+   (or(and(unit-type-count-total mangonel-line > 3)
+   (research-completed ri-onager))
+   (and(unit-type-count-total siege-weapon-class > 10)
+   (gold-amount > 700))))
+   (research-completed ri-siege-engineers)
+=>
+   (research ri-northmens-fury)
+   )
+
+(defrule
+   (unit-type-count-total monk > 1)
+   (current-age == imperial-age)
+   (players-unit-type-count any-enemy bombard-cannon > 1)
+   (can-research ri-redemption)
+   (current-age-time > 180)
+=>
+   (research ri-redemption)
+)
+
+(defrule
+   (unit-type-count-total monk > 1)
+   (current-age == imperial-age)
+   (players-unit-type-count any-enemy bombard-cannon > 1)
+   (can-research ri-block-printing)
+   (research-completed ri-redemption)
+=>
+   (research ri-block-printing)
+)
+
+(defrule
+   (unit-type-count-total monk > 3)
+   (current-age == imperial-age)
+   (players-unit-type-count any-enemy bombard-cannon > 1)
+   (can-research ri-theocracy)
+   (research-completed ri-block-printing)
+=>
+   (research ri-theocracy)
+)
+#end-if
+#load-if-defined SAXONS-CIV
+
+(defrule
+   (research-completed ri-sanctity)
+   (unit-type-count-total monk > 2)
+   (can-research ri-clerical-recruitment)
+=>
+   (research ri-clerical-recruitment)
+)
+
+
+(defrule
+   (research-completed ri-clerical-recruitment)
+   (unit-type-count-total monk > 2)
+   (can-research ri-block-printing)
+=>
+   (research ri-block-printing)
+)
+(defrule
+   (can-research ri-shield-wall)
+   (unit-type-count-total infantry-class > 6)
+=>
+   (research ri-shield-wall)
+)
+#end-if
+
+#load-if-defined VARANGIANS-CIV
+
+(defrule
+   (can-research ri-vendel-legacy)
+   (unit-type-count-total knight-line > 4)
+=>
+   (research ri-vendel-legacy)
+)
+
+(defrule
+   (or(unit-type-count-total scout-cavalry-line > 2)
+   (unit-type-count-total knight-line > 1))
+   (can-research ri-bloodlines)
+=>
+   (research ri-bloodlines)
+)
+(defrule
+   (can-research ri-gothikon)
+   (research-completed my-unique-unit-upgrade)
+   (unit-type-count-total my-unique-unit-line > 4)
+=>
+   (research ri-gothikon)
+)
+
+#end-if
+
+(defrule
+   (unit-type-count-total varangian-guard > 4)
+=>
+   (research ri-elite-varangian-guard)
+)
+
+(defrule
+   (unit-type-count-total mounted-crossbowman-line > 4)
+=>
+   (research ri-heavy-mounted-crossbowman)
+)
 (defrule
 	(up-compare-goal strategy != stonewall)
 	(unit-type-count-total monastery-class >= 9)
@@ -7020,4 +7175,10 @@
 =>
 	(research ri-doctrine-mercenaries-1)
 	(up-jump-rule -1)
+)
+
+(defrule
+	(true)
+=>
+	(up-get-rule-id end-of-researches-per)
 )

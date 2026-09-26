@@ -19,4 +19,6 @@ description: 使用完整 AOE2-AI 仓库启动网页创作 AI，或登记以前�
 
 **临时文件规则：Agent 不得在仓库根目录创建或遗留 `tmp_*.py` 等分析草稿。需要临时 Python/JSON/文本时统一写入 `adjusted/.local/tmp/`，任务结束后清理；这些临时文件不是 Skill 正式内容。**
 
-运行产物仅放 adjusted/.local/author-projects/。实际创作数量由本轮 manifest 决定；保留未知 token 和未覆盖来源。`build` 的“原生脚本”输出 36 个 `.per`；“分享脚本包”输出一个 `.zip`，内含同一套 36 个 `.per`、清单和说明。普通 build 不生成 `.ai`、游戏安装目录或入口文件。只有用户明确要求“直接安装到本机游戏”时，才按详细流程执行 `web_session.py install --confirm-install`；该命令必须写入真实 `<AoE2DE>/resources/_common/ai`，生成同名 `.ai`、主 `.per` 和 36 模块并验证后，才能报告安装成功。
+运行产物仅放 adjusted/.local/author-projects/。每轮一个目录，finish 后按详细流程留在原地并写入同级 CATALOG.md，不改名、不入库、不把分享 ZIP 当成整包。实际创作数量由本轮 manifest 决定；保留未知 token 和未覆盖来源。`build` 的“原生脚本”输出当前冻结官方基线的全部 `.per`；“分享脚本包”输出一个 `.zip`，内含同一套 `.per`、清单和说明。普通 build 不生成 `.ai`、游戏安装目录或入口文件。只有用户明确要求“直接安装到本机游戏”时，才按详细流程执行 `web_session.py install --confirm-install`；该命令必须写入真实 `<AoE2DE>/resources/_common/ai`，生成同名 `.ai`、主 `.per` 和同一套模块并验证后，才能报告安装成功。
+
+当前冻结基线是 `official/raw/Promisory` 的 38 个 `.per`，`adjusted/Promisory/` 必须与之逐字节一致。`extremebuildings3.per` 和 `extremebuildings4.per` 整文件固定、不挖空。模块数量按该目录清点，不要在流程里写死 36。`adjusted/cloze/migration/requires-answer.json` 里的 10 个落点别名参数必须单独作答；缺答不能 build，也不能把官方整数或旧答案填进去。其余 1705 个动态参数不因这次基线升级重写。

@@ -1,0 +1,270 @@
+
+(defrule
+   (or(up-group-size c: building-exclusion-group > 1)
+   (or(current-age > feudal-age)
+   (building-type-count-total stone-wall > 10)))
+=>
+   (up-jump-rule 17)
+)
+
+
+
+(defrule
+   (building-type-count wood-building > 0)
+=>
+   (set-goal building-point-array-index 4050)
+   (disable-self)
+)
+(defrule
+   (timer-triggered fifteensec)
+   (building-type-count wood-building > 0)
+=>
+   (up-full-reset-search)
+   ;(up-find-local c: wood-building c: 2)
+   ;(up-find-local c: food-building c: 1)
+   ;(up-find-local c: gold-building c: 1)
+   (up-find-local c: wood-building c: 10)
+   (up-find-local c: food-building c: 10)
+   (up-find-local c: gold-building c: 10)
+   (up-clean-search search-local -1 search-order-none)
+   (up-clean-search search-local object-data-id search-order-asc)
+   (up-remove-objects search-local object-data-group-flag == building-exclusion-group)
+   (set-goal temporary-goal3 15)
+)
+
+(defrule
+   (timer-triggered fifteensec)
+   (building-type-count wood-building > 0)
+   (up-set-target-object search-local c: 0)
+=>
+   (up-get-point position-object point-x)
+   (up-get-point position-flank point2-x)
+   (up-lerp-tiles point-x point2-x c: 1)
+   (up-lerp-tiles point-x position-self-x c: -1)
+   (up-bound-point input-point-x point-x)
+   (up-bound-point input-origin-x position-self-x)
+   (set-goal input-angleRad 900);1100
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point point3-x input-point-x)
+   (up-bound-point input-point-x point-x)
+   (set-goal input-angleRad -900)
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point point4-x input-point-x)
+   (set-goal temporary-goal 93243)
+   (up-get-point-distance point3-x point2-x temporary-goal2)
+   (up-get-point-distance point4-x point2-x temporary-goal3)
+   ;(up-send-flare point3-x)
+   ;(up-send-flare point4-x)
+   (up-get-object-data object-data-id temporary-goal10)
+)
+
+(defrule
+   (timer-triggered fifteensec)
+   (goal temporary-goal 93243)
+   (up-compare-goal temporary-goal2 g:<= temporary-goal3)
+   ;(up-point-distance point-x point3-x > 2)
+=>
+   (up-bound-point bw-starting-point-x point3-x)
+   ;(up-chat-data-to-player my-player-number "Positive rotation selected point: %d" g: bw-starting-point-x)
+)
+
+(defrule
+   (timer-triggered fifteensec)
+   (goal temporary-goal 93243)
+   (up-compare-goal temporary-goal2 g:> temporary-goal3)
+   ;(up-point-distance point-x point4-x > 2)
+=>
+   (up-bound-point bw-starting-point-x point4-x)
+   ;(up-chat-data-to-player my-player-number "Negative rotation selected point: %d" g: bw-starting-point-x)
+)
+
+ 
+;Refine starting point by selecting a forest
+(defrule
+   (timer-triggered fifteensec)
+   (goal temporary-goal 93243)
+=>
+   (set-goal remote-total 0)
+   (up-reset-group c: temporary-group)
+   (up-create-group 0 0 c: temporary-group)
+   (up-full-reset-search)
+   (up-set-target-point bw-starting-point-x)
+   ;(up-send-flare bw-starting-point-x)
+   (up-filter-distance c: -1 c: 4)
+   (up-find-local c: lumber-camp c: 1)
+   (up-find-local c: mining-camp c: 1)
+   (up-find-local c: mill c: 1)
+   (up-reset-filters)
+   (up-filter-distance c: -1 c: 7);6
+   (up-find-resource c: wood c: 30)
+   (up-set-target-point position-self-x)
+   (up-get-search-state local-total)
+   (up-clean-search search-remote object-data-distance search-order-asc)
+   (up-bound-point bw-small-wall-endpoint-x position-self-x)
+   (up-lerp-tiles bw-small-wall-endpoint-x bw-starting-point-x c: 6)
+)
+
+(defrule
+   (timer-triggered fifteensec)
+   (goal temporary-goal 93243)
+   (or(up-compare-goal local-total > 0)
+   (up-compare-goal remote-total <= 5))
+   (up-compare-goal temporary-goal3 > 0)
+   (up-group-size c: temporary-group > 1)
+=>
+   (up-modify-goal temporary-goal3 c:- 1)
+   (up-full-reset-search)
+   (up-set-group search-local c: temporary-group)
+   (up-remove-objects search-local -1 == 0)
+   (set-goal temporary-goal 0)
+   (set-goal temporary-goal2 0)
+   (set-goal bw-starting-point-x -1)
+   (set-goal bw-small-wall-endpoint-x -1)
+   (up-jump-rule -5)
+)
+
+(defrule
+   (up-compare-goal temporary-goal3 == 0)
+=>
+   (up-jump-rule 1)
+)
+
+(defrule
+   (timer-triggered fifteensec)
+   (goal temporary-goal 93243)
+   (up-compare-goal remote-total > 5)
+   (up-compare-goal local-total < 1)
+   (up-set-target-object search-remote c: 1);Avoid selecting a straggler
+=>
+   (up-get-point position-object bw-starting-point-x)
+   (up-bound-point bw-small-wall-endpoint-x position-self-x)
+   (up-lerp-tiles bw-small-wall-endpoint-x bw-starting-point-x c: 6)
+   (set-goal building-stage 2)
+)
+
+(defrule
+   (goal building-stage 2)
+   (up-can-build 0 g: increase-ts)
+   (up-compare-goal increase-ts > 0)
+=>
+   (up-bound-point point-x bw-starting-point-x)
+   (set-goal temporary-goal3 20)
+   (up-get-point-distance bw-small-wall-endpoint-x position-self-x temporary-goal2)
+   (up-modify-goal temporary-goal2 c:- 2)
+)
+
+(defrule
+   (goal building-stage 2)
+   (up-can-build 0 g: increase-ts)
+   (up-compare-goal increase-ts > 0)
+   (up-can-build-line 0 point-x g: increase-ts)
+=>
+   (up-build-line point-x point-x g: increase-ts)
+   (set-goal increase-ts 0)
+   (set-goal temporary-goal4 98764)
+)
+
+(defrule
+   (goal building-stage 2)
+   (up-compare-goal increase-ts > 0)
+   (up-can-build 0 g: increase-ts)
+   (up-point-distance point-x position-self-x g:> temporary-goal2)
+   (up-compare-goal temporary-goal3 > 0)
+   (up-point-distance point-x bw-small-wall-endpoint-x > 0)
+=>
+   (up-modify-goal temporary-goal3 c:- 1)
+   (up-lerp-tiles point-x bw-small-wall-endpoint-x c: 1)
+   (up-jump-rule -2)
+)
+
+(defrule
+   (goal building-stage 2)
+   (timer-triggered fifteensec)
+=>
+   (up-bound-point point3-x bw-small-wall-endpoint-x)
+   (up-bound-point point2-x bw-small-wall-endpoint-x)
+   (up-lerp-percent point3-x bw-starting-point-x c: 25)
+   (up-lerp-percent point2-x bw-starting-point-x c: 50)
+)
+
+(defrule
+   (game-time > 360)
+   ;(building-type-count-total barracks > 0)
+   ;(timer-triggered fifteensec)
+   (goal building-stage 2)
+   (or(up-point-contains bw-small-wall-endpoint-x c: wall-class)
+   (or(up-point-contains bw-small-wall-endpoint-x c: farm-class)
+   (or(up-point-contains bw-small-wall-endpoint-x c: tree-class)
+   (or(up-point-contains bw-small-wall-endpoint-x c: building-class)
+   ;(and(or(up-point-contains point-x c: building-class)
+   ;(up-point-contains point2-x c: building-class))
+   (and(goal temporary-goal4 98764)
+   (up-point-distance point-x bw-small-wall-endpoint-x < 2))))));1
+   ;(wood-amount > 10)
+=>
+   ;(up-build-line bw-starting-point-x bw-small-wall-endpoint-x c: palisade-wall)
+   ;(set-goal building-stage 3)
+   ;(up-full-reset-search)
+   ;(up-filter-distance c: -1 c: 5)
+   (up-full-reset-search)
+   (up-set-target-point bw-starting-point-x)
+   (up-set-group search-local c: building-exclusion-group)
+   (up-add-object-by-id search-local g: temporary-goal10)
+   (up-filter-distance c: -1 c: 6)
+   (up-find-local c: wood-building c: 3)
+   (up-find-local c: gold-building c: 3)
+   (up-find-local c: food-building c: 3)
+   (up-clean-search search-local -1 search-order-asc);search-order-none does not remove all duplicates
+   (up-modify-group-flag 0 c: building-exclusion-group)
+   (up-reset-group c: building-exclusion-group)
+   (up-create-group 0 0 c: building-exclusion-group)
+   (up-modify-group-flag 1 c: building-exclusion-group)
+   (set-goal building-stage 3)
+   (set-goal temporary-goal 9456)
+)
+
+(defrule
+   (goal temporary-goal 9456)
+=>
+   (up-set-indirect-goal g: building-point-array-index g: bw-starting-point-x)
+   (up-modify-goal building-point-array-index c:+ 1)
+   (up-set-indirect-goal g: building-point-array-index g: bw-starting-point-y)
+   (up-modify-goal building-point-array-index c:+ 1)
+   (up-set-indirect-goal g: building-point-array-index g: bw-small-wall-endpoint-x)
+   (up-modify-goal building-point-array-index c:+ 1)
+   (up-set-indirect-goal g: building-point-array-index g: bw-small-wall-endpoint-y)
+   (up-modify-goal building-point-array-index c:+ 1)
+)
+
+(defrule
+   (goal temporary-goal 9456)
+   (goal building-stage 3)
+   (or(up-can-build-line 0 bw-starting-point-x c: palisade-wall)
+   (or(up-can-build-line 0 bw-small-wall-endpoint-x c: palisade-wall)
+   (or(up-can-build-line 0 point3-x c: palisade-wall)
+   (up-can-build-line 0 point2-x c: palisade-wall))))
+   (wood-amount >= 3)
+=>
+   ;(up-build-line bw-small-wall-endpoint-x bw-starting-point-x c: palisade-wall)
+   (set-goal temporary-goal3 15)
+   (set-goal temporary-goal5 9457)
+)
+
+(defrule
+   (goal temporary-goal5 9457)
+   (up-can-build-line 0 bw-starting-point-x c: palisade-wall)
+=>
+   (up-build-line bw-starting-point-x bw-starting-point-x c: palisade-wall)
+)
+
+(defrule
+   (goal temporary-goal5 9457)
+   (up-point-distance bw-starting-point-x bw-small-wall-endpoint-x > 1)
+   (up-compare-goal temporary-goal3 > 0)
+=>
+   (up-modify-goal temporary-goal3 c:- 1)
+   (up-lerp-tiles bw-starting-point-x bw-small-wall-endpoint-x c: 1)
+   (up-jump-rule -2)
+)
+
+

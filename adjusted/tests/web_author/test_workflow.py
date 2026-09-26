@@ -11,6 +11,8 @@ import zipfile
 
 HERE = Path(__file__).resolve().parents[2] / "web-author"
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+from official_baseline import official_module_count
 from controller import Controller, WorkflowError, digest, json_bytes, project_path
 from server import make_server
 import web_session
@@ -63,7 +65,7 @@ class FakeEngine:
         for path in answers.glob("*.json"):
             if any(type(value) is not int or value < 1 for value in json.loads(path.read_bytes()).values()):
                 raise WorkflowError("Synthetic constraint: positive integers")
-        for index in range(36):
+        for index in range(official_module_count()):
             (out / f"module{index}.per").write_text("; SYNTHETIC FIXTURE ONLY\n", encoding="utf-8")
     def package(self, modules, script_name, output):
         raise AssertionError("Script-only workflow must never call an install packager")
@@ -117,11 +119,11 @@ class WorkflowTests(unittest.TestCase):
         self.app.validate(self.payload())
         result = self.app.build(self.payload())
         self.assertEqual(result["status"], "completed")
-        self.assertEqual(result["build"]["modules"], 36)
+        self.assertEqual(result["build"]["modules"], official_module_count())
         self.assertEqual(result["build"]["artifact_kind"], "aoe2_per_scripts")
-        self.assertEqual(result["build"]["script_files"], 36)
+        self.assertEqual(result["build"]["script_files"], official_module_count())
         script_root = Path(result["build"]["script_root"])
-        self.assertEqual(len(list(script_root.glob("*.per"))), 36)
+        self.assertEqual(len(list(script_root.glob("*.per"))), official_module_count())
         self.assertFalse(any(path.suffix == ".ai" for path in Path(result["build"]["path"]).rglob("*")))
         self.assertTrue(self.app.data["registry"]["registered"])
         self.assertEqual(self.app.data["registry"]["script_name"], "SYNTHETIC")
@@ -153,12 +155,12 @@ class WorkflowTests(unittest.TestCase):
         with zipfile.ZipFile(package) as archive:
             names = archive.namelist()
             per_names = [name for name in names if name.endswith(".per")]
-            self.assertEqual(len(per_names), 36)
+            self.assertEqual(len(per_names), official_module_count())
             self.assertTrue(all(name.startswith("SYNTHETIC/") for name in per_names))
             self.assertIn("README.txt", names)
             self.assertIn("manifest.json", names)
             manifest = json.loads(archive.read("manifest.json"))
-            self.assertEqual(manifest["script_files"], 36)
+            self.assertEqual(manifest["script_files"], official_module_count())
             self.assertFalse(manifest["installable"])
             self.assertEqual(set(manifest["files_sha256"]), {Path(name).name for name in per_names})
         self.assertEqual(self.app.delivery_file(), package)

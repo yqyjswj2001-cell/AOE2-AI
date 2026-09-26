@@ -30,7 +30,7 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 
 ## 作品登记
 
-完整 `build` 成功后，作品会自动登记到 `adjusted/.local/ai-registry/works.sqlite3`。登记使用 36 个 PER 的内容指纹去重，因此同一作品重新打包不会重复新增。
+完整 `build` 成功后，作品会自动登记到 `adjusted/.local/ai-registry/works.sqlite3`。登记使用该套 PER 的内容指纹去重，因此同一作品重新打包不会重复新增。
 
 以前已经做完、现在只剩 ZIP 或脚本目录的作品使用：
 
@@ -38,7 +38,7 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifact "<ZIP或目录>"
 ```
 
-它支持当前分享包、旧式无 manifest 的 36-PER ZIP、旧式 `resources/_common/ai` 安装 ZIP，以及原生 36-PER 目录。包内无法证明的历史字段保持未知；可直接证明的历史信息可通过 `--metadata <JSON>` 补充。用 `web_session.py registry-list` 查看已登记作品。
+它支持当前 38 模块分享包、旧式无 manifest 的 36 模块 ZIP、旧式 `resources/_common/ai` 安装 ZIP，以及对应数量的原生脚本目录。其他模块数量不会被当成已完成作品。包内无法证明的历史字段保持未知；可直接证明的历史信息可通过 `--metadata <JSON>` 补充。用 `web_session.py registry-list` 查看已登记作品。
 
 临时查看单个作品：
 ```powershell
@@ -54,9 +54,9 @@ python -X utf8 -B adjusted/web-author/web_session.py record-game --name "GROK_FF
 
 ## 输出边界
 
-创作不依赖本机游戏。完整参数校验通过后，原生模式写出 36 个 `.per`；分享模式生成一个 `.zip`，内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`。普通 build 不读取 `PromiDE.per2`，不生成 `.ai`、主入口或游戏安装目录，也不会自动安装或启动游戏。
+创作不依赖本机游戏。完整参数校验通过后，原生模式写出当前冻结官方基线的全部 `.per`；分享模式生成一个 `.zip`，内含同一套 `.per`、`manifest.json` 和 `README.txt`。普通 build 不读取 `PromiDE.per2`，不生成 `.ai`、主入口或游戏安装目录，也不会自动安装或启动游戏。
 
-用户明确要求直接安装到本机游戏时，可在 build 完成后执行 `web_session.py install --project <名称> --confirm-install`。该独立步骤才会定位真实 AoE2DE 根目录，只读游戏自带 `PromiDE.per2` 和 `Promisory`，生成同名 `.ai`、主 `.per` 与 36 模块并写入 `resources/_common/ai`。它不会修改官方 AI；同名旧安装先备份到项目 `install-backups/`。只有返回 `installed=true` 与 `verification=PASS` 才表示安装完成。
+用户明确要求直接安装到本机游戏时，可在 build 完成后执行 `web_session.py install --project <名称> --confirm-install`。该独立步骤才会定位真实 AoE2DE 根目录，只读游戏自带 `PromiDE.per2` 和 `Promisory`，生成同名 `.ai`、主 `.per` 与同一套模块并写入 `resources/_common/ai`。它不会修改官方 AI；同名旧安装先备份到项目 `install-backups/`。只有返回 `installed=true` 与 `verification=PASS` 才表示安装完成。
 
 针对 2026-09-22 的 AoE2 DE Update 185872 后进入对局可能重新显示文明领袖名的情况，直接安装还会生成一个名字兼容 XS 到 `resources/_common/xs`，主 AI 入口在开局通过 `xsSetPlayerName` 把当前 AI 玩家名设回脚本名。该文件只负责显示名称，不参与策略决策。
 

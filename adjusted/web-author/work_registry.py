@@ -1,12 +1,14 @@
 """Persistent local registry for completed AOE2-AI works.
 
 The registry accepts either verified current builds or older script packages.
-Recognition is content-based: filenames + SHA-256 of exactly 36 PER modules.
+Recognition is content-based: filenames + SHA-256 of a known baseline,
+either the previous 36-module packages or the current frozen official set.
 Unknown historical metadata stays unknown instead of being guessed.
 """
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -18,7 +20,13 @@ import zipfile
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
+TOOLS = ROOT / "adjusted/tools"
+if str(TOOLS) not in sys.path:
+    sys.path.insert(0, str(TOOLS))
+from official_baseline import official_module_count
+
 REGISTRY_ROOT = ROOT / "adjusted/.local/ai-registry"
+LEGACY_MODULE_COUNTS = frozenset({36})
 REGISTRY_DB = REGISTRY_ROOT / "works.sqlite3"
 PROJECTS = ROOT / "adjusted/.local/author-projects"
 SCRIPT_NAME = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,47}\Z")
@@ -49,6 +57,10 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _accepted_module_counts() -> set[int]:
+    return set(LEGACY_MODULE_COUNTS) | {official_module_count()}
+
+
 def canonical(value) -> bytes:
     return (json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
 
@@ -60,8 +72,8 @@ def _validate_script_name(value: str) -> str:
 
 
 def _module_fingerprint(modules: dict[str, bytes]) -> tuple[str, dict[str, str]]:
-    if len(modules) != 36:
-        raise RegistryError("A completed AOE2-AI work must contain exactly 36 PER modules")
+    if len(modules) not in _accepted_module_counts():
+        raise RegistryError("A completed AOE2-AI work must use a known baseline module count")
     hashes = {}
     for name, data in modules.items():
         if not isinstance(name, str) or "/" in name or "\\" in name or not name.lower().endswith(".per"):
@@ -111,7 +123,7 @@ def _recognize_share_zip(path: Path) -> dict | None:
             script_name = manifest.get("script_name")
             if not isinstance(script_name, str) or not SCRIPT_NAME.fullmatch(script_name):
                 return None
-            if manifest.get("script_files") != 36:
+            if manifest.get("script_files") not in _accepted_module_counts():
                 return None
             prefix = script_name + "/"
             modules = {}
@@ -137,7 +149,7 @@ def _recognize_share_zip(path: Path) -> dict | None:
                 "artifact_kind": "share_package",
                 "module_fingerprint": fingerprint,
                 "module_hashes": hashes,
-                "module_files": 36,
+                "module_files": len(modules),
                 "manifest_schema": manifest.get("schema"),
                 "manifest_present": True,
                 "package_sha256": sha256(path.read_bytes()),
@@ -163,7 +175,7 @@ def _recognize_installable_zip(path: Path) -> dict | None:
                 prefix = "resources/_common/ai/" + script_name + "/"
                 per_infos = [info for info in infos if not info.is_dir()
                              and info.filename.startswith(prefix) and info.filename.lower().endswith(".per")]
-                if entry in names and len(per_infos) == 36:
+                if entry in names and len(per_infos) in _accepted_module_counts():
                     candidates.append((script_name, per_infos))
             if len(candidates) != 1:
                 return None
@@ -178,7 +190,7 @@ def _recognize_installable_zip(path: Path) -> dict | None:
                 "artifact_kind": "installable_zip",
                 "module_fingerprint": fingerprint,
                 "module_hashes": hashes,
-                "module_files": 36,
+                "module_files": len(modules),
                 "manifest_schema": None,
                 "manifest_present": False,
                 "package_sha256": sha256(path.read_bytes()),
@@ -192,7 +204,7 @@ def _recognize_plain_zip(path: Path) -> dict | None:
         with zipfile.ZipFile(path) as archive:
             infos = _safe_zip_infos(archive)
             per_infos = [i for i in infos if not i.is_dir() and i.filename.lower().endswith(".per")]
-            if len(per_infos) != 36:
+            if len(per_infos) not in _accepted_module_counts():
                 return None
             parents = {str(PurePosixPath(i.filename).parent) for i in per_infos}
             if len(parents) != 1:
@@ -214,7 +226,7 @@ def _recognize_plain_zip(path: Path) -> dict | None:
                 "artifact_kind": "legacy_zip",
                 "module_fingerprint": fingerprint,
                 "module_hashes": hashes,
-                "module_files": 36,
+                "module_files": len(modules),
                 "manifest_schema": None,
                 "manifest_present": False,
                 "package_sha256": sha256(path.read_bytes()),
@@ -227,7 +239,7 @@ def _read_dir_modules(root: Path):
     if root.is_symlink():
         raise RegistryError("Symlinked script directories are not accepted")
     files = [p for p in root.iterdir() if p.is_file() and p.suffix.lower() == ".per"]
-    if len(files) != 36:
+    if len(files) not in _accepted_module_counts():
         return None
     if any(p.is_symlink() for p in files):
         raise RegistryError("Symlinked PER files are not accepted")
@@ -244,7 +256,7 @@ def _recognize_directory(path: Path) -> dict | None:
             "artifact_kind": "raw_scripts",
             "module_fingerprint": fingerprint,
             "module_hashes": hashes,
-            "module_files": 36,
+            "module_files": len(direct),
             "manifest_schema": None,
             "manifest_present": False,
             "package_sha256": None,
@@ -264,7 +276,7 @@ def _recognize_directory(path: Path) -> dict | None:
             "artifact_kind": "raw_scripts_parent",
             "module_fingerprint": fingerprint,
             "module_hashes": hashes,
-            "module_files": 36,
+            "module_files": len(modules),
             "manifest_schema": None,
             "manifest_present": False,
             "package_sha256": None,
@@ -287,7 +299,7 @@ def _recognize_directory(path: Path) -> dict | None:
                 "artifact_kind": "installable_layout",
                 "module_fingerprint": fingerprint,
                 "module_hashes": hashes,
-                "module_files": 36,
+                "module_files": len(modules),
                 "manifest_schema": None,
                 "manifest_present": False,
                 "package_sha256": None,
@@ -310,7 +322,7 @@ def recognize_artifact(value: str | Path) -> dict:
     else:
         result = None
     if not result:
-        raise RegistryError("Could not recognize a completed 36-module AOE2-AI work")
+        raise RegistryError("Could not recognize a completed AOE2-AI work")
     return {**result, "artifact_path": str(path)}
 
 
@@ -330,12 +342,14 @@ def _metadata(value: dict | None) -> dict:
     return out
 
 
+@contextmanager
 def _connect(db_path: Path = REGISTRY_DB):
     db_path.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(db_path, timeout=10)
-    con.execute("PRAGMA journal_mode=WAL")
-    con.execute("PRAGMA foreign_keys=ON")
-    con.executescript(
+    try:
+        con.execute("PRAGMA journal_mode=WAL")
+        con.execute("PRAGMA foreign_keys=ON")
+        con.executescript(
         """
         CREATE TABLE IF NOT EXISTS works(
           work_id TEXT PRIMARY KEY,
@@ -388,8 +402,14 @@ def _connect(db_path: Path = REGISTRY_DB):
           UNIQUE(work_id, record_hash)
         );
         """
-    )
-    return con
+        )
+        yield con
+        con.commit()
+    except Exception:
+        con.rollback()
+        raise
+    finally:
+        con.close()
 
 
 def _work_id(fingerprint: str) -> str:
@@ -429,7 +449,7 @@ def register_artifact(value: str | Path, *, metadata=None, source_kind="legacy_a
                 ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (work_id, found["module_fingerprint"], canonical_name, now, now, source_kind,
                  project_id, build_id, values["mode"], values["civilization"], values["agent"],
-                 values["model"], values["created_at"], values["notes"], 36,
+                 values["model"], values["created_at"], values["notes"], found["module_files"],
                  json.dumps(meta, ensure_ascii=False, sort_keys=True)),
             )
         else:
@@ -463,7 +483,7 @@ def register_artifact(value: str | Path, *, metadata=None, source_kind="legacy_a
         "script_name": canonical_name,
         "detected_script_name": found["script_name"],
         "module_fingerprint": found["module_fingerprint"],
-        "module_files": 36,
+        "module_files": found["module_files"],
         "artifact_kind": found["artifact_kind"],
         "artifact_path": found["artifact_path"],
         "artifact_count": artifact_count,

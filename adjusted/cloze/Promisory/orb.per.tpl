@@ -14,7 +14,7 @@
 	(wood-amount >= 139)
 	(up-pending-objects c: dock < 1)
 	(up-pending-objects c: port < 1)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(building-type-count-total dock < 1)
 	(not(civ-selected georgians))
 	(goal map water)
@@ -136,6 +136,7 @@
 	(up-remove-objects search-local object-data-base-attack < 4);
 	(up-remove-objects search-local object-data-status != 2)
 	(up-remove-objects search-local object-data-index >= 40)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-get-search-state local-total))
 (defrule
 	(up-compare-goal local-total >= 1)
@@ -199,6 +200,7 @@
 	(set-goal temporary-goal2 0)
 	(set-goal temporary-goal3 0)
 	(up-full-reset-search)
+	(up-find-remote c: settlement c: 1)
 	(up-find-remote c: mining-camp c: 1)
 	(up-find-remote c: lumber-camp c: 1)
 	(up-find-remote c: mill c: 1)
@@ -250,7 +252,7 @@
 (not	(up-set-target-object search-remote c: 0))
 	(up-compare-goal drushtarget != 0)
 =>
-	(up-chat-data-to-self "Updating drushtarget: %d" g: drushtarget)
+	;(up-chat-data-to-self "Updating drushtarget: %d" g: drushtarget)
 	(set-goal selectdrushwaypoint 0)
 	(up-full-reset-search)
 	(up-set-group search-local c: 8)
@@ -675,7 +677,7 @@
 	(up-compare-goal local-total g:<= remote-total); <
 	(up-compare-goal temporary-goal2 g:>= temporary-goal)
 =>
-	(up-chat-data-to-self "Retreating from enemy attacks: %d." g: temporary-goal3)
+	;(up-chat-data-to-self "Retreating from enemy attacks: %d." g: temporary-goal3)
 	(up-lerp-tiles saved-point-x position-self-x c: 6); 5
 	(up-set-target-point saved-point-x)
 ;	(up-set-target-point drushretreatpoint-x); with reset timer
@@ -789,7 +791,7 @@
 	(up-clean-search search-remote object-data-distance search-order-asc)
 	(up-remove-objects search-remote object-data-index >= 1)
 	(up-get-object-data object-data-type temporary-goal8)
-	(up-chat-data-to-self "Enemy unit: %d" g: temporary-goal8)
+	;(up-chat-data-to-self "Enemy unit: %d" g: temporary-goal8)
 	(up-target-objects 1 action-default -1 -1)); end jump
 
 (defrule
@@ -866,6 +868,7 @@
 	(up-filter-include cmdid-military -1 -1 -1);
 	(up-filter-exclude -1 -1 orderid-explore -1);
 	(up-find-local c: all-units-class c: 240);
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point position-self-x);	(up-set-target-point drushretreatpoint-x)
 	(chat-local-to-self "Retreating, it's getting dangerous.0")
 	(up-target-point 0 action-move formation-box stance-no-attack)
@@ -898,6 +901,8 @@
 	(up-filter-include cmdid-military -1 -1 -1);
 	(up-filter-exclude -1 -1 orderid-explore -1);
 	(up-find-local c: all-units-class c: 240);
+
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point position-self-x);	(up-set-target-point drushretreatpoint-x)
 	(chat-local-to-self "Retreating, it's getting dangerous.1")
 	(up-target-point 0 action-move formation-box stance-no-attack)
@@ -1000,6 +1005,7 @@
 	(enable-timer orb-cd 1)
 	(up-full-reset-search)
 	(up-set-group search-local c: 3)
+	(up-remove-objects search-local object-data-base-type == mangonel)
 	(up-remove-objects search-local object-data-attack-stance == stance-aggressive)
 	(up-target-point 0 action-none -1 stance-aggressive)
 	(up-modify-group-flag 0 c: 3)
@@ -1089,6 +1095,8 @@
 	(up-remove-objects search-local object-data-speed < 89)
 	(up-remove-objects search-local object-data-distance g:> temporary-goal)
 	(up-remove-objects search-local object-data-index >= 40)
+
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-clean-search search-local object-data-speed search-order-desc)
 	(up-get-search-state local-total)
 	(up-modify-goal temporary-goal7 g:= local-total)
@@ -1512,12 +1520,14 @@
 =>
 	(up-jump-rule 34))
 (defrule
+(or	(and	(up-compare-const TRADE-CUT == 1)
+		(unit-type-count cutting-unit > 0))
 (or	(and	(unit-type-count mangonel-line <= 0)
 		(and	(unit-type-count 699 <= 0)
 			(unit-type-count 701 <= 0)))
 (or	(military-population >= 66); 33
 (or	(players-military-population focus-player >= 66); 33
-	(game-time >= 3300))))
+	(game-time >= 3300)))))
 =>
 	(up-jump-rule 11))
 (defrule
@@ -1602,6 +1612,7 @@
 	(up-find-local c: 701 c: 10)
 	(up-clean-search search-local object-data-distance search-order-asc)
 	(up-remove-objects search-local object-data-index >= 1)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-target-id g:== temporary-goal3))
 (defrule
 	(goal remote-total 1)
@@ -1710,6 +1721,7 @@
 	(up-modify-goal temporary-goal9 s:+ sn-military-superiority)
 	(up-modify-goal temporary-goal9 c:max 8)
 	(up-find-local c: all-units-class g: temporary-goal10)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 ;;;	(up-remove-objects search-local object-data-group-flag >= 0)
 	(up-remove-objects search-local object-data-range <= 2)
 	(up-modify-sn sn-focus-player-number g:= my-flank))
@@ -1948,12 +1960,12 @@
 	(unit-type-count spearman-line >= 2)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: lumber-camp c: 1)
+	(up-find-remote c: wood-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -1965,7 +1977,7 @@
 	(unit-type-count spearman-line >= 2)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 =>
 	(up-full-reset-search)
 	(up-find-local c: spearman-line c: 6)
@@ -1981,12 +1993,12 @@
 	(unit-type-count spearman-line >= 3)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total mining-camp > 0)
+	(building-type-count-total gold-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: mining-camp c: 1)
+	(up-find-remote c: gold-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -1998,7 +2010,7 @@
 	(unit-type-count spearman-line >= 3)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total mining-camp > 0)
+	(building-type-count-total gold-building > 0)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -2014,12 +2026,12 @@
 	(unit-type-count spearman-line >= 4)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: mill c: 1)
+	(up-find-remote c: food-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -2031,7 +2043,7 @@
 	(unit-type-count spearman-line >= 4)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -2046,12 +2058,12 @@
 	(unit-type-count spearman-line >= 5)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total wood-building > 1)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: lumber-camp c: 2)
+	(up-find-remote c: wood-building c: 2)
 	(up-set-target-object search-remote c: 1)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -2063,7 +2075,7 @@
 	(unit-type-count spearman-line >= 5)
 	(goal attacking no)
 	(timer-triggered one-min)
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total wood-building > 1)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -2131,12 +2143,12 @@
 	(unit-type-count spearman-line >= 2)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: lumber-camp c: 1)
+	(up-find-remote c: wood-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -2148,7 +2160,7 @@
 	(unit-type-count spearman-line >= 2)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 =>
 	(up-full-reset-search)
 	(up-find-local c: spearman-line c: 6)
@@ -2164,12 +2176,12 @@
 	(unit-type-count spearman-line >= 3)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total mining-camp > 0)
+	(building-type-count-total gold-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: mining-camp c: 1)
+	(up-find-remote c: gold-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -2181,7 +2193,7 @@
 	(unit-type-count spearman-line >= 3)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total mining-camp > 0)
+	(building-type-count-total gold-building > 0)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -2197,12 +2209,12 @@
 	(unit-type-count spearman-line >= 4)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: mill c: 1)
+	(up-find-remote c: food-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -2214,7 +2226,7 @@
 	(unit-type-count spearman-line >= 4)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -2229,12 +2241,12 @@
 	(unit-type-count spearman-line >= 5)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total wood-building > 1)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: lumber-camp c: 2)
+	(up-find-remote c: wood-building c: 2)
 	(up-set-target-object search-remote c: 1)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -2246,7 +2258,7 @@
 	(unit-type-count spearman-line >= 5)
 	(goal attacking no)
 	(timer-triggered threesec)
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total wood-building > 1)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -2857,11 +2869,14 @@
 	(up-lerp-tiles temporary-point-x position-self-x c: -5)
 ;	(up-send-flare temporary-point-x)
 	(up-find-local c: mangonel-line c: 5)
+	
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-clean-search search-local object-data-distance search-order-asc)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object point-x)
 	;(up-send-flare point-x)
 	(up-get-path-distance temporary-point-x 1 temporary-goal4)
+
 	(up-modify-goal temporary-goal4 c:+ 1000)
 ;	(up-chat-data-to-player 1 "The path distance is %d" g: temporary-goal4)
 )
@@ -2883,21 +2898,14 @@
 	(up-clean-search search-remote -1 search-order-asc)
 	(up-clean-search search-remote object-data-distance search-order-asc)
 	(up-find-local c: mangonel-line c: 3)
+	
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-remote -1 > 0)
 	(up-target-objects 0 action-ground -1 stance-defensive)
 	(enable-timer 46 2)
 )
 ;End jump (2)
-(defrule
-	(timer-triggered 46)
-	(or(strategic-number sn-corner-cut-state < 2)
-	(or(strategic-number sn-corner-cut-state == 5)
-	(strategic-number sn-corner-cut-state == 8)))
-=>
-	(disable-timer 46)
-	(up-reset-unit c: mangonel-line)
-	(up-set-attack-stance mangonel-line c: stance-aggressive)
-)
+
 #load-if-defined MARKETPLACE-MAP
 
 (defrule
@@ -2990,6 +2998,7 @@
 	(unit-type-count-total scout-unit >= 1)
 	(unit-type-count scout-unit < 3)
 	(players-unit-type-count target-player monk > 0)
+	(strategic-number sn-two-turns == 1)
 =>
 	(up-full-reset-search)
 	(up-find-local c: scout-unit c: 1)
@@ -3012,9 +3021,10 @@
 	(players-unit-type-count target-player monk > 0)
 	(up-set-target-object search-remote c: 0);Use as fact in case it is invalid
 	(not(up-find-remote c: spearman-line c: 1))
+	(strategic-number sn-two-turns == 1)
 =>
 	(up-target-objects 1 action-default -1 -1)
-;	(chat-to-player my-player-number "Debug: Sniping target player's monk") ;we have a focus player leak, change after next line
+	;(chat-to-player my-player-number "Debug: Sniping target player's monk") ;we have a focus player leak, change after next line
 )
 
 (defrule
@@ -3024,6 +3034,7 @@
 	(unit-type-count-total scout-unit >= 1)
 	(unit-type-count scout-unit < 3)
 	(players-unit-type-count any-enemy monk > 0)
+	(strategic-number sn-two-turns == 0)
 =>
 	(up-full-reset-search)
 	(up-find-local c: scout-unit c: 1)
@@ -3047,8 +3058,9 @@
 	(players-unit-type-count any-enemy monk > 0)
 	(up-set-target-object search-remote c: 0);Use as fact in case it is invalid
 	(not(up-find-remote c: spearman-line c: 1))
+	(strategic-number sn-two-turns == 0)
 =>
-	(up-target-objects 1 action-default -1 -1)
+	(up-target-objects 0 action-default -1 -1)
 ;	(chat-to-player my-player-number "Debug: Sniping random enemy's monk")
 )
 
@@ -3385,6 +3397,7 @@
 	(cc-players-building-type-count 0 dock > 0)
 	(players-building-type-count every-ally dock < 1)
 	(goal fishing-ship-garrisoned no)
+	
 	(up-compare-goal fishing-ship-disable-ungarrison-timer < 1)
 	(goal temporary-goal4 54321)
 =>
@@ -3511,8 +3524,9 @@
 
 (defrule
 	(players-building-count every-enemy < 1)
-	(unit-type-count militiaman-line == 3)
-	(timer-triggered fifteensec)
+	(or(unit-type-count militiaman-line == 3)
+	(unit-type-count champi-line > 3))
+	(timer-triggered threesec)
 	(game-time < 570)
 	(players-building-type-count target-player lumber-camp < 1)
 	(players-building-type-count target-player mill < 1)
@@ -3529,7 +3543,8 @@
 
 (defrule
 	(up-point-distance point2-x point-x > 15)
-	(unit-type-count militiaman-line == 3)
+	(or(unit-type-count militiaman-line == 3)
+	(unit-type-count-total champi-line > 3))
 	(timer-triggered fifteensec)
 	(game-time < 570)
 	(players-building-type-count target-player lumber-camp < 1)
@@ -4127,6 +4142,7 @@
 	(up-full-reset-search)
 	(up-filter-include 4 -1 -1 -1)
 	(up-find-local c: all-units-class c: 10)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-type == traction-trebuchet)
 	(up-set-target-object search-local c: 0)
 	(up-full-reset-search)
@@ -4263,7 +4279,6 @@
 
 ;Garrison fishing ship
 
-
 (defrule
 	(or(timer-triggered fifteensec);Since there is no non DUC way to do this we do it on lower difficulties
 	(up-compare-const diff-fp == 1));But make the AI's reaction very delayed
@@ -4314,9 +4329,9 @@
 	(up-set-target-object search-local c: 0)
 	(up-compare-goal remote-total < 1)
 =>
+	(set-strategic-number sn-focus-player-number 1)
 	(up-remove-objects search-local -1 == 0)
 	(up-modify-goal temporary-goal5 c:- 1)
-	(set-strategic-number sn-focus-player-number 1)
 	(up-jump-rule -3)
 )
 
@@ -4337,29 +4352,6 @@
 	(up-clean-search search-remote object-data-distance search-order-asc)
 	(up-remove-objects search-remote -1 > 0)
 	(up-target-objects 0 action-garrison -1 -1)
-	(set-goal fishing-ship-disable-ungarrison-timer 20)
-)
-
-(defrule
-	(up-compare-goal fishing-ship-disable-ungarrison-timer > 1)
-	(goal fishing-ship-ever-garrisoned no)
-=>
-	(up-full-reset-search)
-	(up-find-local c: dock c: 5)
-	(set-goal temporary-goal 0)
-)
-
-(defrule
-	(up-compare-goal fishing-ship-disable-ungarrison-timer > 0)
-	(goal fishing-ship-ever-garrisoned no)
-	(up-set-target-object search-local c: 0)
-=>
-	(up-reset-group c: temporary-group)
-	(up-create-group temporary-goal temporary-goal c: temporary-group)
-	(up-set-group search-remote c: temporary-group)
-	(up-target-objects 1 action-gather -1 -1);0
-	(up-remove-objects search-local -1 == 0)
-	(up-jump-rule -1)
 )
 
 (defrule
@@ -4387,7 +4379,6 @@
 (defrule
 	(timer-triggered fifteensec)
 	(up-compare-goal gl-threat-time >= 10000)
-	(up-compare-goal fishing-ship-disable-ungarrison-timer < 1)
 =>
 	(up-full-reset-search)
 	(fe-filter-garrisoned c: 2)
@@ -4398,27 +4389,6 @@
 	;(chat-to-player my-player-number "Ungarrisoning fishing ship")
 )
 
-(defrule
-	(timer-triggered one-min)
-	(up-compare-goal gl-threat-time >= 5000)
-	(goal fishing-ship-ever-garrisoned yes)
-	(or(up-compare-sn sn-military-superiority > 0)
-	(warboat-count > 25))
-	(warboat-count > 5)
-=>
-	(up-full-reset-search)
-	(fe-filter-garrisoned c: 2)
-	(up-find-local c: fishing-ship-class c: 15)
-	(up-find-local c: galley-line c: 15)
-	(up-find-local c: fire-ship-line c: 15)
-	(up-find-local c: hulk-line c: 15)
-	(up-find-local c: trade-cog c: 15)
-	(up-find-local c: transport-ship-class c: 15)
-	(up-find-local c: siege-ship c: 15)
-	(up-target-point position-self-x action-ungarrison -1 -1)
-	(up-full-reset-search)
-	(up-find-local c: dock c: 10)
-)
 (defrule
 	(timer-triggered two-mins)
 	(up-compare-goal gl-threat-time >= 10000)
@@ -4431,8 +4401,6 @@
 	(up-find-local c: fire-ship-line c: 15)
 	(up-find-local c: hulk-line c: 15)
 	(up-find-local c: trade-cog c: 15)
-	(up-find-local c: transport-ship-class c: 15)
-	(up-find-local c: siege-ship c: 15)
 	(up-target-point position-self-x action-ungarrison -1 -1)
 	(up-full-reset-search)
 	(up-find-local c: dock c: 10)
@@ -4511,5 +4479,67 @@
 	(up-compare-goal gl-threat-time < 500)
 =>
 	(up-modify-sn sn-focus-player-number g:= temporary-goal7)
+)
+#end-if
+
+#load-if-defined DEATH-MATCH
+
+(defrule
+	(timer-triggered threesec)
+	(game-time < 330)
+	(building-type-count target-player > 0)
+	(or(unit-type-count cavalry-class > 0)
+	(unit-type-count scout-cavalry-class > 0))
+=>
+	(up-full-reset-search)
+	(up-find-local c: knight-line c: 10)
+	(up-find-local c: steppe-lancer-line c: 10)
+	(up-find-local c: scout-cavalry-line c: 10)
+	(up-find-local c: camel-line c: 10)
+	(up-set-target-point enemy-x)
+	(up-clean-search search-local object-data-distance search-order-asc)
+	(up-set-target-object search-local c: 0)
+	(up-remove-objects search-local -1 > 1)
+	(up-reset-filters)
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 c: 7)
+	(up-find-remote c: villager-class c: 10)
+	(up-remove-objects search-remote object-data-action != actionid-build)
+	(up-remove-objects search-remote -1 > 0)
+	(up-target-objects 0 action-default -1 stance-defensive)
+	;(chat-to-player my-player-number "Snipe builder")
+)
+
+(defrule
+	(strategic-number sn-military-superiority > 1)
+	(players-building-count target-player < 1)
+	(game-time < 480)
+	(game-time > 150)
+	(players-military-population my-player-number > 4)
+	(timer-triggered fifteensec)
+=>
+	(up-full-reset-search)
+	(up-filter-include 4 -1 -1 -1)
+	(up-filter-exclude -1 actionid-attack orderid-attack -1)
+	(up-find-local c: all-units-class c: 10)
+	(up-remove-objects search-local object-data-order == orderid-explore)
+	(up-clean-search search-local object-data-speed search-order-desc)
+	(up-remove-objects search-local -1 > 2)
+	(up-modify-group-flag 0 c: temporary-group)
+	(up-reset-group c: temporary-group)
+	(up-create-group 0 0 c: temporary-group)
+	(up-remove-objects search-local -1 > 1)
+	(up-get-point position-flank input-point-x)
+	(up-get-point position-center input-origin-x)
+	(set-goal input-angleRad -1000)
+	(xs-script-call "RotateByAngleNoConvert")
+	(up-bound-point input-point-x input-point-x)
+	(up-target-point input-point-x action-default -1 -1)
+	(set-goal input-angleRad 2000)
+	(xs-script-call "RotateByAngleNoConvert")
+	(up-bound-point input-point-x input-point-x)
+	(up-remove-objects search-local -1 == 0)
+	(up-target-point input-point-x action-default -1 -1)
 )
 #end-if

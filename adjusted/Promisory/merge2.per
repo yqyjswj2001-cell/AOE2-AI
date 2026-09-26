@@ -1,0 +1,201 @@
+#load-if-defined SAXONS-CIV
+#load-if-not-defined UP-POCKET-POSITION
+(defrule
+   (players-unit-type-count target-player knight-line > 1)
+   (current-age == castle-age)
+   (unit-type-count-total villager-gold > 3)
+   (unit-type-count-total monk < 12)
+=> 
+   (set-goal trainmonk yes)
+)
+#end-if
+(defrule
+   (or(gold-amount > 1000)
+   (and(research-completed ri-clerical-recruitment)
+   (current-age == castle-age)))
+   (unit-type-count-total monk < 10)
+=>
+   (set-goal trainmonk yes)
+)
+
+(defrule
+   (players-unit-type-count any-enemy bombard-cannon > 1);these 9+4 monks should be really powerful against non-turk ones
+   (not(players-civ any-enemy turkish))
+   (unit-type-count-total monk < 8)
+=>
+   (set-goal trainmonk yes)
+)
+
+(defrule
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (strategic-number archers < 8)
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+=>
+   (set-goal trainchamp yes)
+)
+
+(defrule
+   (or(strategic-number archers > 3)
+   (unit-type-count-total my-unique-unit-line < 1))
+   (or(strategic-number infantry < 5)
+   (unit-type-count-total my-unique-unit-line < 10))
+=>
+   (set-goal trainunique yes)
+)
+
+
+(defrule
+   (goal milunits yes)
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (strategic-number archers < 8)
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+=>
+   (set-goal trainchamp yes)
+)
+
+(defrule
+   (unit-type-count-total knight-line < 1)
+   (current-age-time > 15)
+   (strategic-number cavalry > 3)
+   (unit-type-count-total varangian-guard-line < 5)
+   (or(current-age == castle-age)
+   (current-age-time < 500))
+=>
+   (set-goal trainadditionalinf yes)
+)
+
+(defrule
+   (strategic-number infantry > 20)
+   (strategic-number skirms < 30)
+   (or(unit-type-count-total villager-gold > 5)
+   (unit-type-count-total trade-cart > 15))
+=>
+   (set-goal traincavarcher yes)
+)
+
+
+#end-if
+
+#load-if-defined VARANGIANS-CIV
+
+(defrule
+   (or(not(goal position-goal pocket))
+   (current-age == imperial-age))
+   (building-type-count-total archery-range > 0)
+   (or(and(players-unit-type-count target-player knight-line > 3)
+   (unit-type-count-total knight-line < 2))
+   (strategic-number spears > 5))
+=>
+   (set-goal traincavarcher yes)
+   )
+
+(defrule
+   (strategic-number spears > 10)
+   (nand(current-age == castle-age)
+   (goal position-goal pocket))
+   (unit-type-count-total scorpion-line < 10)
+=>
+   (set-goal trainscorpion yes)
+)
+
+(defrule
+   (unit-type-count-total knight-line < 1)
+   (current-age-time > 15)
+   (strategic-number cavalry > 3)
+   (unit-type-count-total varangian-guard-line < 5)
+   (or(current-age == castle-age)
+   (current-age-time < 500))
+=>
+   (set-goal trainadditionalinf yes)
+)
+
+(defrule
+   (goal milunits yes)
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (strategic-number archers < 8)
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+   (or(unit-type-count-total varangian-guard < 10)
+   (research-completed ri-elite-varangian-guard))
+=>
+   (set-goal trainadditionalinf yes)
+)
+
+(defrule
+   (goal milunits yes)
+   (current-age == imperial-age)
+   (gold-amount > 375)
+   (or(strategic-number spears < 25)
+   (gold-amount > 950))
+   (building-type-count castle < 2)
+=>
+   (set-goal trainknight yes)
+)
+
+(defrule
+   (strategic-number spears < 10)
+   (current-age == imperial-age)
+   (gold-amount < 300)
+   (food-amount > 880)
+   (unit-type-count-total scout-cavalry-line < 20)
+=>
+   (set-goal trainhussar yes)
+)
+
+(defrule
+   (goal milunits yes)
+   (or(strategic-number spears < 20)
+   (gold-amount > 850))
+   (gold-amount > 300)
+=>
+   (set-goal trainunique yes)
+)
+
+#end-if
+
+#load-if-defined DANES-CIV
+
+(defrule
+   (current-age == imperial-age)
+=>
+   (set-goal trainknight no)
+)
+
+(defrule
+   (goal milunits yes)
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (or(strategic-number archers < 8)
+   (and(food-amount > 900)
+   (gold-amount > 900)))
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+=>
+   (set-goal trainchamp yes)
+)
+#load-if-defined SAXONS-CIV
+(defrule
+   (unit-type-count-total knight-line < 1)
+   (current-age-time > 15)
+   (strategic-number cavalry > 3)
+   (unit-type-count-total varangian-guard-line < 5)
+   (or(current-age == castle-age)
+   (current-age-time < 500))
+   (building-type-count-total castle < 2)
+=>
+   (set-goal trainadditionalinf yes)
+)
+

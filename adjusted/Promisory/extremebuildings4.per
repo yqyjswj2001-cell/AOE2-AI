@@ -1,0 +1,448 @@
+(defrule
+   (game-time < 60)
+=>
+   (set-goal temporary-goal8 8);max distance
+   (set-goal temporary-goal9 3);max houses
+)
+
+(defrule
+   (game-time > 60)
+   (game-time < 180)
+=>
+   (set-goal temporary-goal8 12);max distance
+   (set-goal temporary-goal9 5);max houses
+)
+
+(defrule
+   (game-time > 300)
+=>
+   (set-goal temporary-goal8 16);max distance
+   (set-goal temporary-goal9 6);max houses
+)
+
+(defrule
+   (up-compare-goal increase-ts < 1)
+   (game-time > 100)
+   (up-pending-objects c: house < 3)
+   (building-available house)
+   (building-type-count-total house < 25)
+   (game-time < 350)
+=>
+   (set-goal increase-ts house)
+)
+
+(defrule
+   (up-compare-goal increase-ts < 1)
+   (game-time > 120)
+   (building-type-count-total siege-workshop < 1)
+   (up-pending-objects c: siege-workshop < 1)
+   (wood-amount > 500)
+   (strategic-number sn-military-superiority > 0)
+=>
+   (set-goal increase-ts siege-workshop)
+)
+
+(defrule
+   (up-compare-goal increase-ts < 1)
+   (or(up-pending-objects c: house > 0)
+   (game-time < 90))
+   (up-pending-objects c: house > 1)
+   (building-available stable)
+   (building-type-count-total stable < 6)
+   (game-time < 300)
+=>
+   (set-goal increase-ts stable)
+)
+
+(defrule
+   (up-compare-goal increase-ts < 1)
+   (or(up-pending-objects c: house > 0)
+   (game-time < 90))
+   (up-pending-objects c: house > 1)
+   (building-available barracks)
+   (building-type-count-total barracks < 6)
+   (game-time < 300)
+=>
+   (set-goal increase-ts barracks)
+)
+(defrule
+   (up-compare-goal increase-ts < 1)
+   (or(up-pending-objects c: house > 0)
+   (game-time < 90))
+   (up-pending-objects c: house > 1)
+   (building-available archery-range)
+   (building-type-count-total archery-range < 6)
+   (game-time < 300)
+=>
+   (set-goal increase-ts archery-range)
+)
+
+
+
+;Prefer selecting a villager that isn't building anything, otherwise prefer villagers with oldest command
+(defrule
+   (game-time < 350)
+   (up-compare-goal increase-ts > 0)
+   (or(up-can-build 0 g: increase-ts)
+   (and(wood-amount > 500)
+   (stone-amount > 700)))
+   (up-get-fact temporary-goal4 unit-type-count villager-class)
+   (up-modify-goal temporary-goal4 c:* 3);2
+   (up-pending-objects c: building-class g:< temporary-goal4)
+=>
+   (up-full-reset-search)
+   (up-set-target-point position-self-x)
+   (up-filter-distance c: -1 g: temporary-goal8)
+   (up-filter-exclude -1 orderid-build actionid-build -1)
+   (up-find-local c: villager-class c: 40)
+   ;(up-remove-objects search-local object-data-progress-value < 90)
+   (set-goal temporary-goal 98342)
+   (up-get-search-state local-total)
+)
+
+(defrule
+   (goal temporary-goal 98342)
+   (up-compare-goal local-total > 0)
+   (up-set-target-object search-local c: 0)
+=>
+   (up-get-point position-object point-x)
+   (up-cross-tiles point-x position-self-x c: 1)
+   (up-bound-point point2-x point-x)
+   (set-goal temporary-goal 98343)
+   (set-goal temporary-goal3 6)
+   (up-get-object-data object-data-id temporary-goal5)
+   (set-goal local-total 0)
+)
+
+(defrule
+   (goal temporary-goal 98343)
+   ;(up-compare-goal local-total > 1)
+   (up-set-target-object search-local c: 1)
+=>
+   (up-get-point position-object point3-x)
+   (up-cross-tiles point3-x position-self-x c: -1)
+   (set-goal temporary-goal6 97222)
+)
+
+(defrule
+   (goal temporary-goal 98343)
+   ;(up-compare-goal local-total > 2)
+   (up-set-target-object search-local c: 2)
+=>
+   (up-get-point position-object point4-x)
+   (up-cross-tiles point4-x position-self-x c: -1)
+   (set-goal temporary-goal7 97333)
+)
+
+(defrule
+   (goal temporary-goal 98343)
+=>
+   (up-full-reset-search)
+   (up-set-target-point point-x)
+   (up-filter-distance c: -1 c: 3)
+   (up-filter-include -1 actionid-build -1 -1)
+   (up-find-local c: villager-class c: 2)
+   (up-remove-objects search-local object-data-id g:== temporary-goal5)
+   (up-get-search-state local-total)
+)
+
+(defrule
+   (goal temporary-goal 98343)
+   (up-can-build-line point-x point-x g: increase-ts)
+   (up-compare-goal local-total < 1)
+=>
+   (up-build-line point-x point-x g: increase-ts)
+   (up-jump-rule 1)
+)
+
+(defrule
+   (goal temporary-goal 98343)
+   (up-compare-goal temporary-goal3 > 0)
+=>
+   (up-modify-goal temporary-goal3 c:- 1)
+   (up-bound-point input-point-x point2-x)
+   (set-goal point-variance 2)
+   (xs-script-call "ApplyRandomnessToPoint")
+   (up-bound-point point-x input-point-x)
+   (up-jump-rule -3)
+)
+
+(defrule
+   (goal temporary-goal6 97222)
+   (building-type-count-total dm-building < 10)
+=>
+   (set-goal increase-ts dm-building)
+   (up-bound-point point-x point3-x)
+   (set-goal temporary-goal6 97221)
+   (set-goal temporary-goal3 12)
+   (up-jump-rule -4)
+)
+#load-if-not-defined HUN-CIV
+#load-if-not-defined INCAN-CIV
+(defrule
+   (goal temporary-goal7 97333)
+   (building-type-count-total house < 40)
+   (or(housing-headroom < 35)
+   (and(up-pending-objects c: castle > 0)
+   (up-pending-objects c: house < 3)))
+   (up-pending-objects c: house g:< temporary-goal9)
+   (or(up-pending-objects c: stable > 1)
+   (or(up-pending-objects c: barracks > 1)
+   (up-pending-objects c: archery-range > 1)))
+=>
+   (set-goal increase-ts house)
+   (up-bound-point point-x point4-x)
+   (set-goal temporary-goal7 97332)
+   (set-goal temporary-goal3 5)
+   (up-jump-rule -5)
+)
+
+#end-if
+#end-if
+
+(defrule
+   (game-time < 150)
+=>
+   (up-full-reset-search)
+   (up-set-target-point position-self-x)
+   (up-modify-goal temporary-goal8 c:+ 1)
+   (up-filter-distance g: temporary-goal8 c: -1)
+   (up-filter-status c: status-pending c: list-active)
+   (up-find-status-local c: building-class c: 20)
+   (up-remove-objects search-local object-data-hitpoints > 20)
+   (up-modify-goal temporary-goal7 g:= sn-focus-player-number)
+   (up-reset-filters)
+   (up-find-remote c: villager-class c: 1)
+   (up-target-objects 0 action-delete -1 -1)
+   (up-modify-sn sn-focus-player-number g:= temporary-goal7)
+   (disable-self)
+ )
+
+; (defrule
+;    (timer-triggered two-mins)
+;    (game-time > 180)
+; =>
+;    (up-full-reset-search)
+;    (up-set-target-point position-self-x)
+;    (up-filter-distance c: 4 c: 11)
+;    (up-filter-include 4 -1 -1 -1)
+;    (up-find-local c: all-units-class c: 40)
+;    (up-clean-search search-local object-data-action-time search-order-asc)
+;    (up-bound-point point-x position-corner)
+;    ;(up-modify-goal point-x c: -3)
+; )
+
+; (defrule
+;    (timer-triggered two-mins)
+;    (game-time > 180)
+;    (up-set-target-object search-local c: 0)
+;    (not(up-point-contains position-self-x c: building-class))
+;    (up-path-distance point-x 0 > 100)
+;    (players-building-count target-player > 0)
+; =>
+;    (up-get-path-distance point-x 0 temporary-goal)
+;    (up-chat-data-to-player my-player-number "Deleting because Path distance: %d" g: temporary-goal)
+;    (up-send-flare point-x)
+;    (up-get-point position-object point-x)
+;    (up-full-reset-search)
+;    (up-set-target-point point-x)
+;    (up-filter-distance c: -1 c: 4)
+;    (up-find-local c: building-class c: 5)
+;    (up-remove-objects search-local object-data-type == castle)
+;    (up-remove-objects search-local object-data-type == town-center)
+;    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+;    (up-reset-filters)
+;    (up-find-remote c: building-class c: 1)
+;    (up-target-objects 0 action-delete -1 -1)
+;    (chat-to-player my-player-number "Stuck units: Deleting building")
+; )
+
+(defrule
+   (game-time < 360)
+=>
+   (up-full-reset-search)
+   (up-filter-status c: status-pending c: list-active)
+   (up-find-status-local c: building-class c: 40)
+   (up-remove-objects search-local object-data-tasks-count > 0)
+)
+
+(defrule
+   (game-time < 360)
+   (up-set-target-object search-local c: 0)
+=>
+   (up-get-point position-object point-x)
+   (up-get-object-data object-data-id temporary-goal)
+   (up-full-reset-search)
+   (up-set-target-point point-x)
+   ;(up-filter-exclude -1 actionid-build orderid-build -1)
+   (up-filter-distance c: -1 c: 4)
+   (up-find-local c: villager-class c: 1)
+   (up-add-object-by-id search-remote g: temporary-goal)
+   (set-goal temporary-goal2 83333)
+)
+
+(defrule
+   (goal temporary-goal2 83333)
+   (up-set-target-object search-local c: 0)
+   (up-object-target-data object-data-hitpoints < 100)
+=> 
+   (up-target-objects 0 action-default -1 -1)
+)
+
+(defrule
+   (players-military-population my-player-number < 3)
+   (game-time < 180)
+=>
+   (up-full-reset-search)
+   (up-find-local c: villager-class c: 7)
+   (up-remove-objects search-local object-data-order != orderid-build)
+   (up-remove-objects search-local object-data-action == actionid-move)
+   (set-goal remote-total 0)
+)
+
+
+(defrule
+   (game-time < 180)
+   (up-set-target-object search-local c: 0)
+   (up-compare-goal remote-total < 1)
+=>
+   (up-get-point position-object point-x)
+   (up-set-target-point point-x)
+   (up-filter-distance c: -1 c: 5)
+   (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+   (up-find-remote c: scout-cavalry-class c: 1)
+   (up-find-remote c: knight-line c: 1)
+   (up-find-remote c: eagle-warrior-line c: 1)
+   (up-find-remote c: camel-line c: 1)
+   (up-find-remote c: champi-line c: 1)
+   (up-remove-objects search-local -1 == 0)
+   ;(up-bound-point point2-x point-x)
+   ;(up-lerp-tiles point2-x position-self-x c: -1)
+   (up-get-object-target-data object-data-point-x point2-x)
+   (up-get-object-target-data object-data-point-y point2-y)
+   (up-get-search-state local-total)
+   (set-goal temporary-goal8 73333)
+   (up-jump-rule -1)
+)
+
+(defrule
+   (goal temporary-goal8 73333)
+   (up-compare-goal remote-total > 0)
+   (up-pending-objects c: stone-wall < 6);3
+   ;(up-point-contains point2-x == building-class)
+   (up-point-distance point-x point2-x < 3)
+=>
+   (up-bound-point point2-x point-x)
+   (up-bound-point point3-x point-x)
+   (up-bound-point point4-x point-x)
+   (up-bound-point point5-x point-x)
+   ;(up-lerp-tiles point2-x position-self-x c: 1)
+   ;(up-lerp-tiles point5-x position-self-x c: -1)
+   ;(up-cross-tiles point3-x position-self-x c: 1)
+   ;(up-cross-tiles point4-x position-self-x c: -1)
+   (up-modify-goal point2-x c:+ 1)
+   (up-modify-goal point4-x c:- 1)
+   (up-modify-goal point3-y c:+ 1)
+   (up-modify-goal point5-y c:- 1)
+   (up-build-line point2-x point2-x c: stone-wall)
+   (up-build-line point3-x point3-x c: stone-wall)
+   (up-build-line point4-x point4-x c: stone-wall)
+   (up-build-line point5-x point5-x c: stone-wall)
+   (up-assign-builders c: stone-wall c: -1)
+)
+
+(defrule
+   (up-pending-objects c: stone-wall > 0)
+   (game-time < 180)
+=>
+   (up-full-reset-search)
+   (up-get-point point4-x enemy-x)
+   (up-set-target-point position-self-x)
+   (up-filter-distance c: -1 c: 11)
+   (up-filter-include 4 -1 -1 -1)
+   (up-find-remote c: all-units-class c: 1)
+)
+
+(defrule
+   (up-pending-objects c: stone-wall > 0)
+   (game-time < 180)
+   (up-set-target-object search-remote c: 0)
+=>
+   (up-get-point position-object point4-x)
+)
+(defrule
+   (up-pending-objects c: stone-wall > 0)
+   (game-time < 180)
+=>
+   (up-full-reset-search)
+   (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+   (set-strategic-number sn-focus-player-number my-player-number)
+   (up-filter-status c: status-pending c: list-active)
+   (up-find-status-remote c: stone-wall c: 5)
+   (set-goal temporary-goal6 94211)
+   (up-modify-sn sn-focus-player-number g:= temporary-goal7)  
+)
+
+(defrule
+   (goal temporary-goal6 94211)
+   (up-set-target-object search-remote c: 0)
+=>
+   (up-get-point position-object point2-x)
+   (up-set-target-point point2-x)
+   (up-remove-objects search-remote object-data-hitpoints > 50)
+   (up-filter-distance c: -1 c: 2)
+   (up-find-status-remote c: building-class c: 1)
+   (up-remove-objects search-remote object-data-hitpoints > 125)
+   (up-set-target-point point4-x)
+   (up-clean-search search-remote object-data-distance search-order-asc)
+   (up-remove-objects search-remote -1 > 0)
+   (up-get-search-state local-total)
+)
+
+(defrule
+   (goal temporary-goal6 94211)
+   (up-set-target-object search-remote c: 0)
+=>
+   (up-get-point position-object point-x)
+   (up-set-target-point point-x)
+   (up-filter-distance c: -1 c: 3)
+   (up-find-local c: villager-class c: 1)
+   (up-target-objects 0 action-default -1 -1)
+)
+
+(defrule
+   (or(game-time > 200)
+   (or(and(game-time > 110)
+   (and(building-type-count dm-building < 1)
+   (building-type-count stable < 1)))
+   (players-military-population my-player-number > 2)))
+=>
+   (up-full-reset-search)
+   (up-find-remote c: -1 c: 1)
+   (up-set-target-point position-self-x)
+   (up-filter-distance c: -1 c: 12)
+   (up-filter-status c: status-pending c: list-active)
+   (up-find-status-local c: stone-wall c: 10)
+   (up-reset-filters)
+   (up-filter-distance c: -1 c: 12)
+   (up-find-local c: stone-wall c: 10)
+   (up-target-objects 0 action-delete -1 -1)
+)
+;Too unreliable
+
+; (defrule
+;    (game-time > 600)
+;    (strategic-number sn-military-superiority > 1)
+;    (stone-amount > 500)
+;    (building-available stone-wall)
+; =>
+;    (up-bound-point input-point-x center-x)
+;    (up-lerp-percent input-point-x position-self-x c: 10)
+;    (up-bound-point point2-x input-point-x)
+;    (xs-script-call "FindClosestEdge")
+;    (up-bound-point point-x input-point-x)
+;    (set-goal input-angleRad 3141)
+;    (xs-script-call "RotateByAngleNoConvert")
+;    (up-build-line point-x input-point-x c: stone-wall)
+;    (up-build-line point2-x point2-x c: gate-ascending)
+; )

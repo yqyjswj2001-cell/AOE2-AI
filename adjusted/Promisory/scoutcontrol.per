@@ -14,6 +14,7 @@
    (up-compare-const diff-fp == 1)
    (up-group-size c: ranged-group1 < 5)
    (unit-type-count knight-line < 1)
+   (current-age < imperial-age)
 =>
    (set-goal modern-scout-micro yes)
 )
@@ -436,12 +437,6 @@
 )
 
 
-(defrule
-   (taunt-detected 1 209)
-=>
-   (fe-break-point 1 c:== 1 -1)
-   (disable-self)
-)
 ;Calculate waypoints
 
 (defrule
@@ -633,12 +628,7 @@
    (up-bound-point previous-scout-group-x scout-group-x)
 )
 
-(defrule
-   (taunt-detected 1 207)
-=>
-   (fe-break-point 1 c:== 1 -1)
-   (disable-self)
-)
+
 
 (defrule
    (research-completed ri-bloodlines)
@@ -767,13 +757,7 @@
 )
 
 ;Decide action
-(defrule
-   (not(goal scout-action scout-retreat))
-   (taunt-detected 1 206)
-=>
-   (acknowledge-taunt 1 206)
-   (fe-break-point 1 c:== 1 -1)
-)
+
 
 
 ;Default is move unless something else is detected

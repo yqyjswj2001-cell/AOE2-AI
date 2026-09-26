@@ -1,0 +1,107 @@
+{
+  "schema": "aoe2-migration-requires-answer-v1",
+  "count": 10,
+  "note": "只补这 10 个参数。其余 1705 个旧动态参数不需要重写。不要猜测这些值，也不要自动沿用旧答案。official_value 只是新版官方源码里仍写着的整数，不是作者答案。",
+  "parameters": [
+    {
+      "key": "BUILDINGS_LUMBER_CAMP_013",
+      "module": "buildings.per",
+      "official_value": 3,
+      "author_answer": null,
+      "source_line": 2663,
+      "counted_object_before": "lumber-camp",
+      "counted_object_after": "wood-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_LUMBER_CAMP_014",
+      "module": "buildings.per",
+      "official_value": 3,
+      "author_answer": null,
+      "source_line": 2685,
+      "counted_object_before": "lumber-camp",
+      "counted_object_after": "wood-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_LUMBER_CAMP_015",
+      "module": "buildings.per",
+      "official_value": 4,
+      "author_answer": null,
+      "source_line": 2687,
+      "counted_object_before": "lumber-camp",
+      "counted_object_after": "wood-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_MINING_CAMP_017",
+      "module": "buildings.per",
+      "official_value": 2,
+      "author_answer": null,
+      "source_line": 3170,
+      "counted_object_before": "mining-camp",
+      "counted_object_after": "gold-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_MINING_CAMP_019",
+      "module": "buildings.per",
+      "official_value": 5,
+      "author_answer": null,
+      "source_line": 3477,
+      "counted_object_before": "mining-camp",
+      "counted_object_after": "gold-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_MILL_022",
+      "module": "buildings.per",
+      "official_value": 2,
+      "author_answer": null,
+      "source_line": 3710,
+      "counted_object_before": "mill",
+      "counted_object_after": "food-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_MILL_025",
+      "module": "buildings.per",
+      "official_value": 2,
+      "author_answer": null,
+      "source_line": 3774,
+      "counted_object_before": "mill",
+      "counted_object_after": "food-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_MILL_028",
+      "module": "buildings.per",
+      "official_value": 2,
+      "author_answer": null,
+      "source_line": 4084,
+      "counted_object_before": "mill",
+      "counted_object_after": "food-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_MILL_030",
+      "module": "buildings.per",
+      "official_value": 8,
+      "author_answer": null,
+      "source_line": 4116,
+      "counted_object_before": "mill",
+      "counted_object_after": "food-building",
+      "migration_requires_answer": true
+    },
+    {
+      "key": "BUILDINGS_MILL_032",
+      "module": "buildings.per",
+      "official_value": 8,
+      "author_answer": null,
+      "source_line": 4144,
+      "counted_object_before": "mill",
+      "counted_object_after": "food-building",
+      "migration_requires_answer": true
+    }
+  ]
+}

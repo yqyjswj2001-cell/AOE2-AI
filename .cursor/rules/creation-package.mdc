@@ -1,0 +1,16 @@
+---
+description: 一轮网页创作结束后如何保存和整理创作包
+alwaysApply: true
+---
+
+# 创作包
+
+一轮创作包只是 `adjusted/.local/author-projects/<名称>/`。分享脚本 ZIP 不是整包。
+
+- 目录名在 launch 时确定，之后不改名、不合并、不复用。
+- finish 后才算保存。留在原地，保留 project.json、answers、author-input、author-session、submissions、delivery、development/reports 和 authoring/metrics。
+- finish 后用 project.json 的真实字段更新同级 `CATALOG.md` 一行。缺字段就空着。
+- 创作包和 CATALOG.md 都不提交。不要把包或 `tmp_*.py` 放到仓库根目录。
+- 只有用户点名的那一轮才删除。不要动 `.active.lock`、`ui-token-revision`、hook 数据库或其他创作包。
+
+细则在 `adjusted/skills/aoe2-web-author/SKILL.md` 的「创作包保存与整理」。

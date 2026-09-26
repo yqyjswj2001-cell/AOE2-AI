@@ -55,6 +55,19 @@ def render_one(template: Path, answers_path: Path, defaults_path: Path) -> str:
         raise ClozeError(f"{template.name}: official defaults do not match placeholders")
 
     values = {}
+    pending = []
+    catalog = load_catalog()
+    flagged = {
+        row["key"]
+        for profile in catalog["modules"].values()
+        for row in profile["parameters"]
+        if row.get("migration_requires_answer") is True
+    }
+    for key in sorted(expected):
+        if answers[key] is None and key in flagged:
+            pending.append(key)
+    if pending:
+        raise ClozeError("migration_requires_answer missing: " + ", ".join(pending))
     for key in sorted(expected):
         if answers[key] is None:
             raise ClozeError(f"{template.name}: unanswered blank {key}")
@@ -63,7 +76,6 @@ def render_one(template: Path, answers_path: Path, defaults_path: Path) -> str:
     module = template.name.removesuffix(".tpl")
     try:
         validate_no_noncode_placeholders(module, source)
-        catalog = load_catalog()
         official = (ROOT / "official/raw/Promisory" / module).read_bytes().decode("utf-8")
         validate_classified_template(module, official, source, catalog)
         validate_classified_answers(module, answers, catalog)

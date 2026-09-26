@@ -27,6 +27,9 @@ TEST_ROOT = ROOT / "adjusted/.local/web-author-migration/tmp"
 CIVILIZATION_TEST_ROOT = ROOT / "adjusted/.local/civilization-selection/tmp"
 UI_TEST_ROOT = ROOT / "adjusted/.local/ui-token-revision/tmp"
 TOOLS = ROOT / "adjusted/tools"
+if str(TOOLS) not in sys.path:
+    sys.path.insert(0, str(TOOLS))
+from official_baseline import official_module_count
 NAME = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,47}\Z")
 MODES = {"1v1", "2v2", "3v3", "4v4", "ffa4", "ffa8"}
 OUTPUT_MODES = {"raw_scripts", "share_package"}
@@ -120,8 +123,8 @@ class RealEngine:
         files = [safe_path(path) for directory, pattern in groups for path in sorted(directory.glob(pattern))]
         files += [ROOT / "adjusted/cloze/classification/parameters.json", HERE / "standard-edition.json", HERE / "civilizations.py"]
         files += [TOOLS / name for name in ("render_per_cloze.py", "strategy_catalog.py", "cloze_boundary.py", "build_strategy_input.py")]
-        if len(list((ROOT / "official/raw/Promisory").glob("*.per"))) != 36:
-            raise WorkflowError("Expected 36 fixed source modules")
+        if len(list((ROOT / "official/raw/Promisory").glob("*.per"))) != official_module_count():
+            raise WorkflowError("Fixed source module count does not match the frozen official baseline")
         return digest(json_bytes({str(path.relative_to(ROOT)): digest(safe_path(path).read_bytes()) for path in files}))
 
     def render(self, answer_snapshot, out):
@@ -132,8 +135,8 @@ class RealEngine:
         for source in (ROOT / "official/raw/Promisory").glob("*.per"):
             if source.name not in rendered:
                 (out / source.name).write_bytes(safe_path(source).read_bytes())
-        if len(list(out.glob("*.per"))) != 36:
-            raise WorkflowError("Delivery must contain all 36 modules")
+        if len(list(out.glob("*.per"))) != official_module_count():
+            raise WorkflowError("Delivery must contain every frozen official module")
 
 
 class Controller:
@@ -856,8 +859,9 @@ class Controller:
             try:
                 work, modules, signature = self._render_snapshot()
                 rendered = sorted(path for path in modules.glob("*.per") if path.is_file())
-                if len(rendered) != 36 or len({path.name.casefold() for path in rendered}) != 36:
-                    raise WorkflowError("Script delivery requires exactly 36 rendered PER files")
+                expected = official_module_count()
+                if len(rendered) != expected or len({path.name.casefold() for path in rendered}) != expected:
+                    raise WorkflowError("Script delivery does not match the frozen official module count")
                 build_id = "build-" + uuid.uuid4().hex[:12]
                 output = safe_path(self.project / "delivery" / build_id)
                 output.mkdir(parents=True)
@@ -874,8 +878,8 @@ class Controller:
                         (script_root / source.name).write_bytes(source.read_bytes())
                     files = {path.relative_to(output).as_posix(): digest(path.read_bytes())
                              for path in output.rglob("*") if path.is_file()}
-                    if len(files) != 36 or any(not name.lower().endswith(".per") for name in files):
-                        raise WorkflowError("Raw script delivery must contain only the 36 rendered PER files")
+                    if len(files) != expected or any(not name.lower().endswith(".per") for name in files):
+                        raise WorkflowError("Raw script delivery must contain only the frozen official PER modules")
                     artifact_kind = "aoe2_per_scripts"
                     package_sha256 = digest(json_bytes(files))
                     build_extra["script_root"] = str(script_root)
@@ -884,7 +888,7 @@ class Controller:
                     manifest = {
                         "schema": "aoe2-share-script-package-v1",
                         "script_name": script_name,
-                        "script_files": 36,
+                        "script_files": expected,
                         "files_sha256": per_hashes,
                         "installable": False,
                         "description": "Portable AOE2-AI PER script bundle; no game installation files included.",
@@ -899,7 +903,7 @@ class Controller:
                             archive.writestr(info, source.read_bytes())
                         readme = (
                             "AOE2-AI 分享脚本包\n"
-                            "包含 36 个 .per 脚本文件。\n"
+                            "包含当前冻结官方基线的全部 .per 脚本文件。\n"
                             "这是便于发送和保存的脚本归档，不是游戏安装包。\n"
                         ).encode("utf-8")
                         for name, data in (("README.txt", readme), ("manifest.json", json_bytes(manifest))):
@@ -925,8 +929,8 @@ class Controller:
                     "fixed_sha256": self.data["fixed_sha256"],
                     "input_sha256": self.data["input_sha256"],
                     "artifact_kind": artifact_kind,
-                    "modules": 36,
-                    "script_files": 36,
+                    "modules": expected,
+                    "script_files": expected,
                     "static_validation": "PASS",
                     "path": str(output),
                     "artifact_hashes": artifact_hashes,
@@ -948,7 +952,7 @@ class Controller:
                 self._save()
                 self._dev_event("workflow", "build_completed", "info", "脚本生成完成。",
                                 {"build_id": build_id, "package_sha256": build["package_sha256"],
-                                 "script_files": 36, "output_mode": output_mode})
+                                 "script_files": expected, "output_mode": output_mode})
                 return self.next()
             except (OSError, ValueError, zipfile.BadZipFile) as exc:
                 if output is not None and output.exists():

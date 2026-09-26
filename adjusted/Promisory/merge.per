@@ -1,1 +1,170 @@
 ;(load "Promisory\merge1b")
+
+
+;buildings.per
+
+;research.per
+
+; (defrule
+;    (or(unit-type-count-total warship-class > 6)
+;    (wood-amount > 1500))
+;    (building-type-count dock > 0)
+; =>
+;    (research ri-clinker-construction)
+;    (research ri-carvel-hull)
+; )
+#load-if-defined DANES-CIV
+(defrule
+   (or(unit-type-count-total infantry-class > 6)
+   (gold-amount > 1500))
+   (can-research ri-hamask)
+=>
+   (research ri-hamask)
+)
+
+(defrule
+   (or(unit-type-count-total cannon-galleon-line > 3)
+   (or(and(unit-type-count-total mangonel-line > 3)
+   (research-completed ri-onager))
+   (and(unit-type-count-total siege-weapon-class > 10)
+   (gold-amount > 700))))
+   (research-completed ri-siege-engineers)
+=>
+   (research ri-northmens-fury)
+   )
+
+(defrule
+   (unit-type-count-total monk > 1)
+   (current-age == imperial-age)
+   (players-unit-type-count any-enemy bombard-cannon > 1)
+   (can-research ri-redemption)
+   (current-age-time > 180)
+=>
+   (research ri-redemption)
+)
+
+(defrule
+   (unit-type-count-total monk > 1)
+   (current-age == imperial-age)
+   (players-unit-type-count any-enemy bombard-cannon > 1)
+   (can-research ri-block-printing)
+   (research-completed ri-redemption)
+=>
+   (research ri-block-printing)
+)
+
+(defrule
+   (unit-type-count-total monk > 3)
+   (current-age == imperial-age)
+   (players-unit-type-count any-enemy bombard-cannon > 1)
+   (can-research ri-theocracy)
+   (research-completed ri-block-printing)
+=>
+   (research ri-theocracy)
+)
+#end-if
+#load-if-defined SAXONS-CIV
+
+(defrule
+   (research-completed ri-sanctity)
+   (unit-type-count-total monk > 2)
+   (can-research ri-clerical-recruitment)
+=>
+   (research ri-clerical-recruitment)
+)
+
+
+(defrule
+   (research-completed ri-clerical-recruitment)
+   (unit-type-count-total monk > 2)
+   (can-research ri-block-printing)
+=>
+   (research ri-block-printing)
+)
+(defrule
+   (can-research ri-shield-wall)
+   (unit-type-count-total infantry-class > 6)
+=>
+   (research ri-shield-wall)
+)
+#end-if
+
+#load-if-defined VARANGIANS-CIV
+
+(defrule
+   (can-research ri-vendel-legacy)
+   (unit-type-count-total knight-line > 4)
+=>
+   (research ri-vendel-legacy)
+)
+
+(defrule
+   (or(unit-type-count-total scout-cavalry-line > 2)
+   (unit-type-count-total knight-line > 1))
+   (can-research ri-bloodlines)
+=>
+   (research ri-bloodlines)
+)
+(defrule
+   (can-research ri-gothikon)
+   (research-completed my-unique-unit-upgrade)
+   (unit-type-count-total my-unique-unit-line > 4)
+=>
+   (research ri-gothikon)
+)
+
+#end-if
+
+(defrule
+   (unit-type-count-total varangian-guard > 4)
+=>
+   (research ri-elite-varangian-guard)
+)
+
+(defrule
+   (unit-type-count-total mounted-crossbowman-line > 4)
+=>
+   (research ri-heavy-mounted-crossbowman)
+)
+
+;tsa.per
+
+(defrule
+   (up-compare-const diff-fp == 1)
+   (unit-type-count-total monk > 0)
+   (research-completed ri-redemption)
+   (research-completed ri-block-printing)
+   (timer-triggered threesec)
+=>
+   (up-full-reset-search)
+   (up-filter-exclude -1 actionid-convert orderid-convert -1)
+   (up-find-local c: monk c: 10)
+   (up-remove-objects search-remote object-data-carry < 95);monk faith
+   (set-goal temporary-goal 4686)
+   (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+   (set-strategic-number sn-focus-player-number 1)
+   (set-goal remote-total 0)
+)
+
+(defrule
+   (goal temporary-goal 4686)
+   (up-set-target-object search-local c: 0)
+   (players-stance focus-player enemy)
+=>
+   (up-reset-filters)
+   (up-get-point position-object point-x)
+   (up-set-target-point point-x)
+   (up-filter-distance c: -1 c: 14)
+   (up-find-remote c: bombard-cannon c: 1)
+   (up-get-search-state local-total)
+   (up-target-objects 0 action-default -1 -1)
+)
+
+(defrule
+   (up-compare-goal remote-total < 1)
+   (player-valid focus-player)
+   (strategic-number sn-focus-player-number < max-players)
+=>
+   (up-modify-sn sn-focus-player-number c:+ 1)
+   (up-jump-rule -2)
+)

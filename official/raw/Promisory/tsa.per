@@ -1,5 +1,50 @@
 ;Select attacking system
 
+(defrule
+    (strategic-number sn-ten-turns == 2)
+    (players-building-type-count target-player town-center > 0)
+=>
+;    (fe-break-point 1 c:== 1 -1)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (up-full-reset-search)
+    (up-find-remote c: town-center c: 1)
+)
+
+(defrule
+	(strategic-number sn-ten-turns == 2)
+	(players-building-type-count target-player town-center > 0)
+   (up-set-target-object search-remote c: 0)
+=>
+   (up-get-point position-object enemy-x)
+)
+
+(defrule
+    (strategic-number sn-ten-turns == 2)
+    (players-building-type-count target-player town-center < 1)
+    (players-building-count target-player > 0)
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (up-full-reset-search)
+    (up-find-remote c: building-class c: 1)
+)
+
+(defrule
+    (strategic-number sn-ten-turns == 2)
+    (up-set-target-object search-remote c: 0)
+    (players-building-type-count target-player town-center < 1)
+    (players-building-count target-player > 0)
+=>
+    (up-get-point position-object enemy-x)
+)
+
+(defrule
+    (current-age == feudal-age)
+    (up-compare-goal enemy-x < 1)
+=>
+    (up-get-point position-flank enemy-x)
+    (disable-self)
+)
+
 
 (defrule
 	(true)
@@ -470,6 +515,7 @@
 	(up-full-reset-search)
 	(up-filter-include cmdid-military -1 -1 -1) ;
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point position-self-x)
 	(up-target-point 0 action-move -1 stance-no-attack)
 	(enable-timer resetnow 16)
@@ -809,6 +855,7 @@
 	(up-full-reset-search)
 	(up-filter-include cmdid-military -1 -1 -1) ;
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point position-self-x)
 	(up-target-point 0 action-move -1 stance-no-attack)
 	(enable-timer resetnow 16)
@@ -1006,6 +1053,7 @@
 	(up-full-reset-search)
 	(up-filter-include cmdid-military -1 -1 -1) ;
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point position-self-x)
 	(up-target-point 0 action-move -1 stance-no-attack)
 	(enable-timer resetnow 16)
@@ -1257,6 +1305,7 @@
 	(up-filter-distance s: sn-maximum-town-size c: -1)
 	(up-filter-include cmdid-military -1 -1 -1) ;
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point position-self-x)
 	(up-target-point 0 action-move -1 stance-no-attack)
 	(enable-timer resetnow 24)); 20
@@ -1900,6 +1949,54 @@
 ;	(up-target-point 0 action-move -1 stance-no-attack)
 ;	(enable-timer resetnow 12))
 
+
+
+(defrule
+   (up-compare-const diff-fp == 1)
+   (unit-type-count-total monk > 0)
+   (research-completed ri-redemption)
+   (research-completed ri-block-printing)
+   (timer-triggered threesec)
+=>
+   (up-full-reset-search)
+   (up-filter-exclude -1 actionid-convert orderid-convert -1)
+   (up-find-local c: monk c: 10)
+   (up-remove-objects search-remote object-data-carry < 95);monk faith
+   (set-goal temporary-goal 4686)
+   (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+   (set-strategic-number sn-focus-player-number 1)
+   (set-goal remote-total 0)
+)
+
+(defrule
+   (goal temporary-goal 4686)
+   (up-set-target-object search-local c: 0)
+   (players-stance focus-player enemy)
+=>
+   (up-reset-filters)
+   (up-get-point position-object point-x)
+   (up-set-target-point point-x)
+   (up-filter-distance c: -1 c: 14)
+   (up-find-remote c: bombard-cannon c: 1)
+   (up-get-search-state local-total)
+   (up-target-objects 0 action-default -1 -1)
+)
+
+(defrule
+	(goal temporary-goal 4686)
+   (up-compare-goal remote-total < 1)
+   (player-valid focus-player)
+   (strategic-number sn-focus-player-number < max-players)
+=>
+   (up-modify-sn sn-focus-player-number c:+ 1)
+   (up-jump-rule -2)
+)
+
+(defrule
+	(goal temporary-goal 4686)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7)
+)
 (defrule
 (or	(game-time >= 1800)
 (or	(players-building-type-count target-player town-center <= 0)
@@ -1941,6 +2038,7 @@
 	(up-filter-include cmdid-military -1 -1 -1); -1 -1 -1) - stance; actionid-explore orderid-explore -1) - send scout etc
 	(up-filter-distance c: -1 g: temporary-goal7)
 	(up-find-local c: all-units-class c: 1)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-group-flag == 8))
 (defrule
 	(up-set-target-object search-remote c: 0)
@@ -1950,6 +2048,7 @@
 	(up-set-target-point point-x)
 	(up-filter-distance c: -1 c: 3)
 	(up-find-local c: all-units-class c: 24)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-pierce-armor >= 5)
 	(up-remove-objects search-local object-data-hitpoints >= 151)
 	(set-goal temporary-goal8 -8)
@@ -2218,12 +2317,13 @@
 	(up-find-local c: all-units-class c: 240)
 	(up-filter-include cmdid-monk -1 -1 -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point temporary-point-x))
 (defrule
 	(goal temporary-goal5 1622846)
 	(up-set-target-object search-local c: 0)
 =>
-	(up-chat-data-to-self "siege-retreat: %d" g: retreat-flag)
+	;(up-chat-data-to-self "siege-retreat: %d" g: retreat-flag)
 ;	(chat-local-to-self text-siege-retreat)
 	(up-modify-flag retreat-flag g:- temporary-goal3)
 	(up-target-point 0 action-move -1 stance-no-attack)
@@ -2379,6 +2479,7 @@
 	(up-find-local c: all-units-class c: 240)
 	(up-filter-include cmdid-monk -1 -1 -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(set-goal attacking no)
 	(up-target-point 0 action-move -1 stance-no-attack)
 	(chat-local-to-self "Retreating, it's getting dangerous!")
@@ -3529,7 +3630,6 @@
 	(up-gather-inside c: barracks c: 1)
 	(up-gather-inside c: archery-range c: 1)
 	(up-gather-inside c: stable c: 1))
-
 (defrule
 	(goal paphosciv no)
 	(current-age >= feudal-age)
@@ -3602,7 +3702,6 @@
 	(up-ungarrison c: port)
 	(up-gather-inside c: port c: 1)
 	(disable-self))
-
 (defrule 
 	(goal paphosciv yes)
 	(current-age < feudal-age)
@@ -3872,6 +3971,7 @@
 
 (defrule
 	(strategic-number sn-focus-player-number < max-players)
+	(strategic-number sn-focus-player-number > 0)
 =>
 	(up-modify-sn sn-focus-player-number c:+ 1)
 	(up-jump-rule -2)
@@ -3929,6 +4029,7 @@
 	(up-full-reset-search)
 	(up-filter-garrison c: 1 c: -1)
 	(up-find-local c: dock c: 40))
+
 (defrule
 	(timer-triggered threesec)
 	(goal paphosciv no)
@@ -3967,6 +4068,7 @@
 	(up-add-object-by-id search-local g: temporary-goal)
 	(up-remove-objects search-local object-data-garrison-count <= 0);
 	(up-target-point 0 action-unload -1 -1)); end jump
+
 
 (defrule ;paphos
 	(goal paphosciv yes)
@@ -4227,9 +4329,9 @@
 	(and	(strategic-number sn-maximum-town-size >= 33)
 		(up-compare-goal strategy-type <= feudal-war)))
 	(up-building-type-in-town c: town-center <= 0)
-	(up-building-type-in-town c: mill <= 0);
-	(up-building-type-in-town c: lumber-camp <= 0)
-	(up-building-type-in-town c: mining-camp <= 0)
+	(up-building-type-in-town c: food-building <= 0);
+	(up-building-type-in-town c: wood-building <= 0)
+	(up-building-type-in-town c: gold-building <= 0)
 =>
 	(up-modify-sn sn-maximum-town-size c:+ 2)
 	(up-modify-sn sn-maximum-town-size g:min map-size)); end jump
@@ -4670,7 +4772,9 @@
 	(up-full-reset-search)
 	(up-filter-exclude -1 actionid-explore orderid-explore -1)
 	(up-filter-include cmdid-military -1 -1 -1)
-	(up-find-local c: all-units-class c: 1))
+	(up-find-local c: all-units-class c: 1)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
+)
 (defrule
 	(goal duc-dfu -1)
 	(up-set-target-object search-local c: 0)
@@ -4680,10 +4784,10 @@
 	(players-building-type-count target-player mill >= 1)
 	(players-building-type-count target-player mining-camp <= 0)
 	(players-building-type-count target-player lumber-camp <= 0)
-	(up-compare-goal drushtarget != mill)
+	(up-compare-goal drushtarget != food-building)
 =>
-	(set-goal drushtarget mill)
-;	(chat-local-to-self "Target: Mill.")
+	(set-goal drushtarget food-building)
+;	(chat-local-to-self "Target: food-building.")
 	(set-goal temporary-goal 0)
 	(set-goal temporary-goal2 0)
 	(set-goal temporary-goal3 0)
@@ -4691,20 +4795,20 @@
 (defrule
 	(players-building-type-count target-player lumber-camp >= 1)
 	(players-building-type-count target-player mining-camp <= 0)
-	(up-compare-goal drushtarget != lumber-camp)
+	(up-compare-goal drushtarget != wood-building)
 =>
-	(set-goal drushtarget lumber-camp)
-;	(chat-local-to-self "Target: Lumber-camp.")
+	(set-goal drushtarget wood-building)
+;	(chat-local-to-self "Target: wood-building.")
 	(set-goal temporary-goal 0)
 	(set-goal temporary-goal2 0)
 	(set-goal temporary-goal3 0)
 	(set-goal selectdrushwaypoint 0))
 (defrule
 	(players-building-type-count target-player mining-camp >= 1)
-	(up-compare-goal drushtarget != mining-camp)
+	(up-compare-goal drushtarget != gold-building)
 =>
-	(set-goal drushtarget mining-camp)
-;	(chat-local-to-self "Target: Mining-camp.")
+	(set-goal drushtarget gold-building)
+;	(chat-local-to-self "Target: gold-building.")
 	(set-goal temporary-goal 0)
 	(set-goal temporary-goal2 0)
 	(set-goal temporary-goal3 0)
@@ -4803,6 +4907,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 actionid-explore orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point drushwaypoint-x)
 	(up-target-point 0 action-patrol -1 stance-defensive);aggressive); action-move
 	(enable-timer stance-timer 67); 33
@@ -4842,6 +4947,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 actionid-explore orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point drushwaypoint-x)
 	(up-target-point 0 action-patrol -1 stance-defensive);aggressive); action-move
 	(enable-timer stance-timer 67); 33
@@ -4871,6 +4977,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 actionid-explore orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-reset-filters)
 	(up-find-remote g: drushtarget c: 1)
 	(up-set-target-object search-remote c: 0)
@@ -4953,6 +5060,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 actionid-explore orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point drushretreatpoint-x)
 	(up-target-point 0 action-move -1 stance-no-attack)
 ;	(chat-local-to-self "Retreating from TC range for a few meters.")
@@ -4969,6 +5077,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 actionid-explore orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-set-target-point drushretreatpoint-x)
 	(up-target-point 0 action-move -1 stance-no-attack)
 ;	(chat-local-to-self "Retreating from arrow fire for a few meters.")
@@ -5146,6 +5255,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland)
 	(up-filter-exclude -1 actionid-explore orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 40)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-action == actionid-move)
 	(up-remove-objects search-local object-data-order == orderid-move)
 	(up-remove-objects search-local object-data-group-flag >= 0))
@@ -5168,7 +5278,7 @@
 	(goal temporary-goal2 123102)
 =>
 ;	(up-send-flare saved-point-x)
-	(up-chat-data-to-self "Moving forward with %d soldiers." g: local-total)
+	;(up-chat-data-to-self "Moving forward with %d soldiers." g: local-total)
 ;	(up-chat-data-to-all "Moving forward with %d soldiers." g: local-total)
 ;	(up-chat-data-to-all "Moving %d tiles." g: temporary-goal)
 	(up-target-point 0 action-move -1 stance-defensive);-aggressive
@@ -5201,6 +5311,7 @@
 	(up-filter-include cmdid-military -1 orderid-explore on-mainland)
 	(up-filter-exclude -1 actionid-attack orderid-attack warship-class)
 	(up-find-local c: all-units-class c: 40)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-hitpoints >= 42)
 	(up-remove-objects search-local object-data-action == actionid-move)
 	(up-remove-objects search-local object-data-tasks-count <= 0)
@@ -5268,6 +5379,7 @@
 	(up-filter-include cmdid-military -1 orderid-explore on-mainland)
 	(up-filter-exclude -1 actionid-attack orderid-attack warship-class)
 	(up-find-local c: all-units-class c: 40)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-hitpoints < 12)
 	(up-clean-search search-local object-data-base-attack search-order-desc)
 	(up-remove-objects search-local object-data-index >= 1))
@@ -5535,7 +5647,7 @@
 	(up-jump-rule 13))
 (defrule
 	(building-type-count town-center <= 0)
-	(building-type-count lumber-camp <= 0)
+	(building-type-count wood-building <= 0)
 =>
 	(up-jump-rule 12))
 (defrule
@@ -5563,7 +5675,7 @@
 	(up-get-point position-object saved-point-x)
 	(up-full-reset-search)
 	(up-find-local c: town-center c: 40)
-	(up-find-local c: lumber-camp c: 40)
+	(up-find-local c: wood-building c: 40)
 	(up-remove-objects search-local -1 > 13);for peformance reasons, triggers threshold at 1000 with 40, 600 with 20 and 500 with 15
 	;could we set this threshold dependent on system specs somehow?
 )
@@ -5752,6 +5864,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 actionid-explore orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 ;	(up-copy-point point-x position-self-x)
 ;	(up-lerp-tiles point-x temporary-point-x c: 6)
 ;	(up-set-target-point point-x)
@@ -5827,6 +5940,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland)
 	(up-filter-exclude -1 actionid-explore orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-group-flag >= 0)
 	(up-remove-objects search-local object-data-under-attack <= 0)
 	(up-remove-objects search-local object-data-action == actionid-move)
@@ -5851,6 +5965,7 @@
 =>
 	(up-reset-search 1 1 1 1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-group-flag >= 0)
 	(up-remove-objects search-local object-data-action == actionid-move)
 	(up-remove-objects search-local object-data-order == orderid-move)
@@ -6056,6 +6171,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland) ;
 	(up-filter-exclude -1 actionid-explore orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-action == actionid-attack);
 	(up-remove-objects search-local object-data-order == orderid-attack);
 	(up-remove-objects search-local object-data-group-flag >= 0)
@@ -6073,6 +6189,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland) ;
 	(up-filter-exclude -1 actionid-explore orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-group-flag >= 0)
 	(chat-local-to-self "Trying not to get lured out of town.")
 ;	(up-send-flare position-self-x)
@@ -6145,6 +6262,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland) ;
 	(up-filter-exclude -1 actionid-explore orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-action == actionid-attack);
 	(up-remove-objects search-local object-data-order == orderid-attack);
 	(up-remove-objects search-local object-data-group-flag >= 0)
@@ -6183,6 +6301,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland) ;
 	(up-filter-exclude -1 actionid-explore orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-group-flag >= 0)
 	(chat-local-to-self "Trying not to get lured out of town.")
 ;	(up-send-flare point3-x)
@@ -6236,6 +6355,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland)
 	(up-filter-exclude -1 actionid-explore orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-group-flag >= 0)
 	(up-remove-objects search-local object-data-under-attack <= 0)
 	(up-remove-objects search-local object-data-action == actionid-move)
@@ -6247,6 +6367,7 @@
 =>
 	(up-reset-search 1 1 1 1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-group-flag >= 0)
 	(up-remove-objects search-local object-data-action == actionid-move)
 	(up-remove-objects search-local object-data-order == orderid-move)
@@ -6567,6 +6688,7 @@
 	(up-find-local c: all-units-class c: 240)
 	(up-filter-include cmdid-monk -1 -1 -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-attack-stance != stance-aggressive)
 	(up-remove-objects search-local object-data-group-flag >= 0)
 	(up-set-target-point position-self-x)
@@ -7357,6 +7479,7 @@
     (up-full-reset-search)
     (up-filter-include 4 -1 -1 -1)
     (up-find-local c: all-units-class c: 60)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
     (up-target-objects 0 action-none -1 stance-aggressive)
 )
 
@@ -7420,7 +7543,7 @@
 =>
 	(up-full-reset-search)
 	(up-set-group search-local c: ranged-group1)
-	(up-clean-search search-local object-data-reload-time search-order-desc)
+	(up-clean-search search-local object-data-reload-time search-order-asc);desc
 	(up-set-target-object search-local c: 0)
 	(up-get-object-data object-data-reload-time temporary-goal)
 	(up-clean-search search-local object-data-attack-delay search-order-desc)
@@ -7467,8 +7590,8 @@
 	(up-set-target-object search-local g: local-total)
 	(up-get-search-state local-total)
 	(up-get-object-data object-data-next-attack temporary-goal)
-	; (up-chat-data-to-player 1 "Remaining reload time %d" g: temporary-goal)
-	; (up-chat-data-to-player 1 "Critical value %d" s: fd-critical-value)
+	;(up-chat-data-to-player my-player-number "Remaining reload time: %d" g: temporary-goal)
+	;(up-chat-data-to-player my-player-number "Critical value: %d" s: fd-critical-value)
 )
 
 (defrule
@@ -7948,10 +8071,10 @@
 =>
 	(up-full-reset-search)
 	(up-set-target-point enemy-x)
-	(up-find-local c: lumber-camp c: 5)
-	(up-find-local c: mining-camp c: 5)
+	(up-find-local c: wood-building c: 5)
+	(up-find-local c: gold-building c: 5)
 	(up-find-local c: town-center c: 5)
-	(up-find-local c: mill c: 5)
+	(up-find-local c: food-building c: 5)
 	(up-get-search-state local-total)
 	(up-set-target-point enemy-x)
 	(up-clean-search search-local object-data-distance search-order-asc)
@@ -8209,38 +8332,6 @@
 )
 
 ;might eventually need some kind of mechanism to adjust enemy distance - maybe milsup?
-
-(defrule
-    (players-building-type-count target-player town-center > 0)
-    (strategic-number sn-ten-turns == 2)
-=>
-;    (fe-break-point 1 c:== 1 -1)
-    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-    (up-full-reset-search)
-    (up-find-remote c: town-center c: 1)
-    (up-set-target-object search-remote c: 0)
-    (up-get-point position-object enemy-x)
-)
-
-(defrule
-    (players-building-type-count target-player town-center < 1)
-    (players-building-count target-player > 0)
-    (strategic-number sn-ten-turns == 2)
-=>
-    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-    (up-full-reset-search)
-    (up-find-remote c: building-class c: 1)
-    (up-set-target-object search-remote c: 0)
-    (up-get-point position-object enemy-x)
-)
-
-(defrule
-    (current-age == feudal-age)
-    (up-compare-goal enemy-x < 1)
-=>
-    (up-get-point position-flank enemy-x)
-    (disable-self)
-)
 
 ; (defrule
 ;     (strategic-number sn-ten-turns == 2)
@@ -10453,6 +10544,8 @@
     (up-reset-filters)
 	(up-filter-exclude -1 actionid-attack orderid-attack -1)
     (up-find-local c: mangonel-line c: 5)
+	
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	 (up-find-local c: war-chariot-line c: 5)
 	 (up-find-local c: war-chariot-barrage c: 5)
 	(up-find-local c: battering-ram-line c: 5)
@@ -10531,7 +10624,7 @@
 ;     (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
 ;     (up-find-remote c: town-center c: 1)
 ;     (up-find-remote c: dock c: 1)
-;     (up-find-remote c: lumber-camp c: 1)
+;     (up-find-remote c: wood-building c: 1)
 ;     (up-set-target-object search-remote c: 0)
 ;     (up-get-point position-object point-x)
 ;     (up-set-target-point point-x)
@@ -11176,6 +11269,7 @@
     (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
     (up-find-remote c: lumber-camp c: 10)
     (up-find-remote c: mill c: 10)
+	 (up-find-remote c: settlement c: 10)
     (up-find-remote c: town-center c: 10)
     (up-get-search-state local-total)
     (up-modify-goal temporary-goal g:mod remote-total)
@@ -11999,13 +12093,7 @@
 
 ;REMEMBER TO REMOVE
 
-(defrule
-	(taunt-detected 1 198)
-	(timer-triggered fifteensec)
-=>
-	(acknowledge-taunt 1 198)
-	(fe-break-point 1 c:== 1 -1)
-)
+
 (defrule
 	(or(up-compare-const diff-fp != 1)
 	(or(players-unit-type-count every-enemy scout-cavalry-line < 2)
@@ -12082,12 +12170,12 @@
 	(unit-type-count spearman-line >= 2)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: lumber-camp c: 1)
+	(up-find-remote c: wood-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -12099,7 +12187,7 @@
 	(unit-type-count spearman-line >= 2)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 =>
 	(up-full-reset-search)
 	(up-find-local c: spearman-line c: 6)
@@ -12124,12 +12212,12 @@
 	(unit-type-count spearman-line >= 3)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total mining-camp > 0)
+	(building-type-count-total gold-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: mining-camp c: 1)
+	(up-find-remote c: gold-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -12141,7 +12229,7 @@
 	(unit-type-count spearman-line >= 3)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total mining-camp > 0)
+	(building-type-count-total gold-building > 0)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -12166,12 +12254,12 @@
 	(unit-type-count spearman-line >= 4)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: mill c: 1)
+	(up-find-remote c: food-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -12183,7 +12271,7 @@
 	(unit-type-count spearman-line >= 4)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -12207,12 +12295,12 @@
 	(unit-type-count spearman-line >= 5)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total wood-building > 1)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
-	(up-find-remote c: lumber-camp c: 2)
+	(up-find-remote c: wood-building c: 2)
 	(up-set-target-object search-remote c: 1)
 	(up-get-point position-object point-x)
 	(up-get-point position-target point2-x)
@@ -12224,7 +12312,7 @@
 	(unit-type-count spearman-line >= 5)
 	(goal attacking no)
 	(timer-triggered fifteensec)
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total wood-building > 1)
 =>
 	(up-full-reset-search)
 	(up-set-target-point point-x)
@@ -12449,7 +12537,7 @@
 	(up-jump-rule 13))
 (defrule
 	(building-type-count town-center <= 0)
-	(building-type-count lumber-camp <= 0)
+	(building-type-count wood-building <= 0)
 =>
 	(up-jump-rule 12))
 (defrule
@@ -12477,7 +12565,7 @@
 	(up-get-point position-object saved-point-x)
 	(up-full-reset-search)
 	(up-find-local c: town-center c: 40)
-	(up-find-local c: lumber-camp c: 40)
+	(up-find-local c: wood-building c: 40)
 	(up-remove-objects search-local -1 > 13);for peformance reasons, triggers threshold at 1000 with 40, 600 with 20 and 500 with 15
 	;could we set this threshold dependent on system specs somehow?
 )
@@ -12654,6 +12742,7 @@
 	(up-get-point position-object point-x)
 	(up-set-target-point point-x)
 	(up-find-local c: mangonel-line c: 10)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-clean-search search-local object-data-distance search-order-asc)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object point-x)
@@ -12675,6 +12764,8 @@
 	(set-goal temporary-goal2 24687)
 	(up-reset-filters)
 	(up-find-local c: mangonel-line c: 2)
+
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 )
 
 (defrule

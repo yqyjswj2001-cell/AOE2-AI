@@ -1,9 +1,51 @@
 
+
+(defrule
+	(true)
+=>
+	(set-goal peformance-skip no)
+)
+
+(defrule
+	(population < max-civ-pop)
+	(population < 185)
+	(housing-headroom > 15)
+	(food-amount > 1000)
+	(wood-amount > 1000)
+	(gold-amount > 800)
+=>
+	(up-jump-rule 1)
+)
+(defrule
+	(population > 80)
+	(game-time > 400)
+	(or(population > 160)
+	(or(goal trainvillager no)
+	(or(up-compare-goal local-total < 1)
+	(not(can-train villager)))))
+	; (or(strategic-number sn-five-turns == 1)
+	; (or(strategic-number sn-five-turns == 2)
+	; (or(strategic-number sn-five-turns == 3)
+	; (strategic-number sn-five-turns == 4))))
+	(strategic-number sn-ten-turns != 7)
+	(not(timer-triggered threesec))
+	(not(timer-triggered thirtysec))
+	(not(timer-triggered fifteensec))
+	(not(timer-triggered one-min))
+	(not(timer-triggered two-mins))
+	(not(timer-triggered fivesec))
+	(not(timer-triggered ten-mins));ten-mins
+=>
+	(set-goal peformance-skip yes)
+)
+
 (defrule
 	(up-compare-const enable-resign == 0)
 =>
 	(set-goal resign no)
 )
+
+
 
 
 (defrule
@@ -565,11 +607,13 @@
 	(military-population >= 1)
 (or	(goal attacking yes)
 ;(or
-	(up-timer-status resetnow != timer-running)
+	(up-timer-status resetnow != timer-running))
+	(or(up-compare-const TRADE-CUT != 1)
+	(or(unit-type-count-total cutting-unit < 1)
+	(up-compare-goal cutting-stage < 1)))
 ;(and;(or
 ;	(up-projectile-detected projectile-fortification >= 5000)
 ;	(up-compare-goal gl-threat-time >= 5000)))
-)
 =>
 	(up-set-attack-stance -1 c: stance-aggressive)
 	(enable-timer stance-timer 30))
@@ -604,6 +648,11 @@
 	(disable-timer twentysec)
 	(enable-timer twentysec 20))
 (defrule
+	(up-timer-status thirtysec != timer-running)
+=>
+	(disable-timer thirtysec)
+	(enable-timer thirtysec 31));deliberate, so it doesn't run cocurrently with one-min and 15s
+(defrule
 	(up-timer-status MSuperiority != timer-running)
 =>
 	(disable-timer MSuperiority)
@@ -618,6 +667,14 @@
 =>
 	(disable-timer two-mins)
 	(enable-timer two-mins 120))
+
+(defrule
+	(up-timer-status ten-mins != timer-running)
+=>
+	(disable-timer ten-mins)
+	(enable-timer ten-mins 597);so it doesn't occur with other times
+)
+
 (defrule
 	(up-timer-status market-flare-timer == timer-triggered)
 =>
@@ -839,15 +896,27 @@
 (defrule
     (true)
 =>
-    (set-strategic-number sn-turn-count 0)
+    (set-strategic-number sn-turn-count my-player-number)
     (set-strategic-number sn-ten-turns 0)
     (disable-self)
 )
 
 (defrule
+	(goal trainvillager yes)
+=>
+	(up-get-fact building-type-count town-center temporary-goal)
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 10)
+	(up-remove-objects search-local object-data-order == orderid-train)
+	(up-remove-objects search-local object-data-order == orderid-research)
+	(up-get-search-state local-total)
+)
+
+
+(defrule
     (true)
 =>
-	(up-modify-goal fishing-ship-disable-ungarrison-timer c:- 1)
+	 (up-modify-goal fishing-ship-disable-ungarrison-timer c:- 1)
     (up-modify-sn sn-turn-count c:+ 1)
     (up-modify-sn sn-ten-turns s:= sn-turn-count)
     (up-modify-sn sn-ten-turns c:mod 10)

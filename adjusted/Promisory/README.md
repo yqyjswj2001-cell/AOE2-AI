@@ -2,8 +2,8 @@
 
 This directory mirrors the official Promisory baseline.
 
-All 36 `.per` files here are required to be byte-for-byte identical to
-`official/raw/Promisory/`.
+All `.per` files here are required to be byte-for-byte identical to
+`official/raw/Promisory/`. The module count is the frozen official baseline.
 
 Strategy changes are not handwritten into these baseline files. Dynamic values
 are exposed separately by official-derived templates under

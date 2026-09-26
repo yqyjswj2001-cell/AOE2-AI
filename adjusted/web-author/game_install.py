@@ -28,11 +28,19 @@ LOAD = re.compile(r'(\(load\s+")Promisory[\\/](?P<target>[^"]+)("\))', re.IGNORE
 LOAD_LINE = re.compile(r'^\s*\(load\s+"Promisory[\\/][A-Za-z0-9_-]+(?:\.per)?"\)\s*(?:;.*)?$', re.IGNORECASE)
 CONDITION = re.compile(r'^\s*#(?:load-if-defined|load-if-not-defined)\s+[A-Za-z0-9_-]+\s*(?:;.*)?$', re.IGNORECASE)
 CONTROL = re.compile(r'^\s*#(?:else|end-if)\s*(?:;.*)?$', re.IGNORECASE)
+INCLUDE_LINE = re.compile(
+    r'^\s*\(include\s+"(?P<path>(?:[A-Za-z0-9_-]+[\\/])*[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)?)"\)\s*(?:;.*)?$',
+    re.IGNORECASE,
+)
 TARGET = re.compile(r"[A-Za-z0-9_-]+(?:\.per)?\Z", re.IGNORECASE)
 
 
 class GameInstallError(ValueError):
     pass
+
+
+def _baseline_count() -> int:
+    return len(_casefold_per_files(OFFICIAL_BASELINE))
 
 
 def _sha256(data: bytes) -> str:
@@ -86,8 +94,9 @@ def _read_modules(project: Path) -> tuple[str, dict[str, bytes], str]:
     if output_mode == "raw_scripts":
         root = _inside(Path(build.get("script_root", "")), output, "Raw script directory")
         entries = list(root.iterdir())
-        if len(entries) != 36 or any(not path.is_file() or path.suffix.lower() != ".per" for path in entries):
-            raise GameInstallError("Raw build must contain exactly 36 PER files")
+        expected = _baseline_count()
+        if len(entries) != expected or any(not path.is_file() or path.suffix.lower() != ".per" for path in entries):
+            raise GameInstallError("Raw build does not match the frozen official module count")
         for path in entries:
             key = path.name.casefold()
             if key in modules:
@@ -101,7 +110,7 @@ def _read_modules(project: Path) -> tuple[str, dict[str, bytes], str]:
                     manifest = json.loads(archive.read("manifest.json"))
                 except (KeyError, ValueError) as exc:
                     raise GameInstallError("Share package manifest is missing or invalid") from exc
-                if manifest.get("script_name") != script_name or manifest.get("script_files") != 36:
+                if manifest.get("script_name") != script_name or manifest.get("script_files") != _baseline_count():
                     raise GameInstallError("Share package metadata does not match the completed build")
                 prefix = script_name + "/"
                 candidates = []
@@ -114,8 +123,8 @@ def _read_modules(project: Path) -> tuple[str, dict[str, bytes], str]:
                     if not relative or "/" in relative or "\\" in relative:
                         raise GameInstallError("Share package contains an invalid module path")
                     candidates.append((relative, info))
-                if len(candidates) != 36:
-                    raise GameInstallError("Share package must contain exactly 36 PER files")
+                if len(candidates) != _baseline_count():
+                    raise GameInstallError("Share package does not match the frozen official module count")
                 for name, info in candidates:
                     key = name.casefold()
                     if key in modules:
@@ -126,8 +135,8 @@ def _read_modules(project: Path) -> tuple[str, dict[str, bytes], str]:
     else:
         raise GameInstallError("Completed build has an unsupported output mode")
 
-    if len(modules) != 36:
-        raise GameInstallError("Install requires exactly 36 rendered modules")
+    if len(modules) != _baseline_count():
+        raise GameInstallError("Install does not match the frozen official module count")
     return script_name, modules, output_mode
 
 
@@ -254,6 +263,11 @@ def _parse_promide(raw: bytes) -> tuple[str, list[str]]:
             continue
         if CONDITION.fullmatch(line) or CONTROL.fullmatch(line):
             continue
+        if INCLUDE_LINE.fullmatch(line):
+            include_path = INCLUDE_LINE.fullmatch(line).group("path")
+            if ".." in include_path.replace("\\", "/").split("/"):
+                raise GameInstallError(f"PromiDE.per2 line {number} has an unsafe include path")
+            continue
         raise GameInstallError(f"PromiDE.per2 line {number} is not a supported load/control line")
     if len(loads) < 10:
         raise GameInstallError("Installed PromiDE.per2 contains too few Promisory loads")
@@ -277,8 +291,8 @@ def _casefold_per_files(root: Path):
 def _verify_game_baseline(promisory: Path, modules: dict[str, bytes], targets: list[str]):
     baseline = _casefold_per_files(OFFICIAL_BASELINE)
     game = _casefold_per_files(promisory)
-    if len(baseline) != 36 or set(modules) != set(baseline):
-        raise GameInstallError("Completed build does not match the repository's 36-module AI baseline")
+    if len(baseline) != _baseline_count() or set(modules) != set(baseline):
+        raise GameInstallError("Completed build does not match the repository's frozen official AI baseline")
 
     mismatches = []
     for key, baseline_path in baseline.items():
@@ -368,7 +382,7 @@ def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targ
     if len(found) != len(targets):
         raise GameInstallError("Custom AI entrypoint did not rewrite every official load")
     files = _casefold_per_files(module_root)
-    if len(files) != 36 or set(files) != set(modules):
+    if len(files) != _baseline_count() or set(files) != set(modules):
         raise GameInstallError("Installed custom AI module set is incomplete")
     for key, data in modules.items():
         if files[key].read_bytes() != data:
@@ -382,9 +396,11 @@ def _verify_layout(root: Path, script_name: str, modules: dict[str, bytes], targ
     xs_text = xs_file.read_text(encoding="utf-8")
     if "xsSetPlayerName" not in xs_text or ('"' + script_name + '"') not in xs_text:
         raise GameInstallError("Scoreboard-name XS compatibility shim is invalid")
-    include = re.search(r'\(include\s+"([^"]+\.xs)"\)', generated, re.IGNORECASE)
-    if not include or include.group(1) != xs_file.name or "xs-script-call" not in generated:
+    includes = re.findall(r'\(include\s+"([^"]+)"\)', generated, re.IGNORECASE)
+    if xs_file.name not in includes or "xs-script-call" not in generated:
         raise GameInstallError("Custom AI entrypoint does not call the scoreboard-name compatibility shim")
+    if any(".." in item.replace("\\", "/").split("/") for item in includes):
+        raise GameInstallError("Custom AI entrypoint contains an unsafe include path")
 
 def _backup_existing(ai_root: Path, xs_root: Path, project: Path, script_name: str, xs_name: str):
     targets = [ai_root / (script_name + ".ai"), ai_root / (script_name + ".per"), ai_root / script_name,
@@ -493,7 +509,7 @@ def install_project(project: Path, *, game_root=None, environ=None, home=None) -
         "marker": str(ai_root / (script_name + ".ai")),
         "entrypoint": str(ai_root / (script_name + ".per")),
         "module_directory": str(ai_root / script_name),
-        "module_files": 36,
+        "module_files": _baseline_count(),
         "scoreboard_name": script_name,
         "scoreboard_name_method": "xsSetPlayerName",
         "scoreboard_name_xs": str(xs_root / xs_name),

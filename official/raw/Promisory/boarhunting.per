@@ -4,6 +4,473 @@
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number 0))
 
+(defrule
+	(or(timer-triggered two-mins)
+	(timer-triggered threesec))
+	(taunt-detected 1 230)
+=>
+	(acknowledge-taunt 1 230)
+	(fe-break-point 1 c:== 1 -1)
+)
+
+
+(defrule
+	(or(game-time < 30)
+	(or(current-age == feudal-age)
+	(or(game-time > 900)
+	(or(up-compare-const diff-fp == 0)
+	(up-compare-goal expected-boars > 0)))))
+=>
+	(up-jump-rule 6)
+	(set-strategic-number sn-enable-boar-hunting 1)
+)
+(defrule
+   (timer-triggered threesec)
+=>
+   (up-full-reset-search)
+   (up-set-target-point position-self-x)
+   (up-filter-distance c: -1 c: 30)
+   (up-find-resource c: boar-class c: 5)
+	(up-remove-objects search-remote object-data-id g:== boar-1-id)
+	(up-remove-objects search-remote object-data-id g:== boar-2-id)
+	(up-remove-objects search-remote object-data-id g:== boar-3-id)
+	(up-remove-objects search-remote object-data-id g:== boar-4-id)
+	(up-remove-objects search-remote object-data-id g:== boar-5-id)
+   (up-get-search-state local-total)
+	(up-modify-goal temporary-goal4 g:= remote-total)
+   (up-modify-goal remote-total c:+ 4200)
+   (up-get-indirect-goal g: remote-total temporary-goal2)
+	(set-strategic-number sn-disable-villager-garrison 1)
+)
+
+(defrule
+   (timer-triggered two-mins)
+   ;(and(timer-triggered threesec)
+	;up-compare-goal temporary-goal4 > 0)))
+   ;(up-compare-goal temporary-goal2 < 1))))
+=>
+   (set-goal temporary-goal4 40004)
+)
+
+(defrule
+	(timer-triggered threesec)
+	(up-compare-goal temporary-goal4 > 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	;(fe-break-point 1 c:== 1 -1)
+	(up-get-object-data object-data-id temporary-goal11)
+	(up-set-indirect-goal g: next-boar-ptr g: temporary-goal11)
+	(up-remove-objects search-remote -1 == 0)
+	(up-modify-goal next-boar-ptr c:+ 1)
+	(up-jump-rule -1)
+)
+(defrule
+   (goal temporary-goal4 40004)
+=>
+   (set-goal temporary-goal 1)
+   (up-set-target-point position-self-x)
+   (set-strategic-number sn-disable-villager-garrison 1)
+	(up-full-reset-search)
+)
+
+(defrule
+	(goal temporary-goal4 40004)
+	(up-set-target-object search-remote c: 0)
+   (up-object-data object-data-class == boar-class)
+   (up-object-data object-data-distance < 35)
+   (up-object-data object-data-carry > 10)
+   (up-object-data object-data-id g:!= boar-1-id)
+   (up-object-data object-data-id g:!= boar-2-id)
+   (up-object-data object-data-id g:!= boar-3-id)
+   (up-object-data object-data-id g:!= boar-4-id)
+   (up-object-data object-data-id g:!= boar-5-id)
+   (up-compare-goal next-boar-ptr < 4206)
+=>
+	(up-get-object-data object-data-id temporary-goal)
+   (up-set-indirect-goal g: next-boar-ptr g: temporary-goal)
+   (up-modify-goal next-boar-ptr c:+ 1)
+)
+
+(defrule
+	(goal temporary-goal4 40004)
+	(up-set-target-object search-remote c: 1);
+=>
+	(up-remove-objects search-remote -1 == 0)
+	(up-jump-rule -2)
+)
+
+
+(defrule
+   (goal temporary-goal4 40004)
+   (up-set-target-by-id g: temporary-goal)
+   (up-object-data object-data-class == boar-class)
+   (up-object-data object-data-distance < 35)
+   (up-get-object-data object-data-point-x point-x)
+   (up-get-object-data object-data-point-y point-y)
+   (or(up-point-explored point-x != explored-no)
+   (player-in-game any-human))
+   (up-object-data object-data-carry > 10)
+   (up-object-data object-data-id g:!= boar-1-id)
+   (up-object-data object-data-id g:!= boar-2-id)
+   (up-object-data object-data-id g:!= boar-3-id)
+   (up-object-data object-data-id g:!= boar-4-id)
+   (up-object-data object-data-id g:!= boar-5-id)
+   (up-compare-goal next-boar-ptr < 4206)
+=>
+   (up-set-indirect-goal g: next-boar-ptr g: temporary-goal)
+   (up-modify-goal next-boar-ptr c:+ 1)
+)
+
+(defrule
+   (goal temporary-goal4 40004)
+   ;(up-set-target-by-id g: temporary-goal)
+   (up-compare-goal temporary-goal < 32567)
+	(up-compare-goal expected-boars < 1)
+=>
+   (up-modify-goal temporary-goal c:+ 1)
+   (up-jump-rule -2)
+)
+
+(defrule 
+   (up-compare-goal boar-1-id > 0)
+=>
+   (up-modify-goal current-boar-id g:= boar-1-id)
+   (disable-self)
+)
+
+(defrule
+   (up-compare-goal boar-hunting-stage < 2)
+   (up-compare-goal current-boar-id > 0)
+   (up-set-target-by-id g: current-boar-id)
+	(or(up-compare-goal mysheep < 1)
+	(unit-type-count villager > 9))
+	(game-time > 60)
+	(building-type-count town-center > 0)
+=>
+   (up-full-reset-search)
+   (up-add-object-by-id search-remote g: current-boar-id)
+   (up-find-local c: villager-class c: 10)
+   (up-remove-objects search-local object-data-target == tree-class)
+   (up-remove-objects search-local object-data-target == gold-mine-class)
+   (up-remove-objects search-local object-data-target == stone-mine-class)
+   (up-remove-objects search-local object-data-order == orderid-build)
+   (up-remove-objects search-local object-data-hitpoints < 24)
+   (up-clean-search search-local object-data-distance search-order-asc)
+   (up-find-local c: villager-class c: 1);backup in case no such suitable villager exists
+   (up-remove-objects search-local -1 > 0)
+   (up-target-objects 0 action-default -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 1 ID: %d" g: temporary-goal12)
+   (set-goal boar-hunting-stage 2)
+	(disable-timer boar-reset-timer2)
+   (enable-timer boar-reset-timer2 50)
+)
+
+(defrule
+   (goal boar-hunting-stage 2)
+   (up-set-target-by-id g: current-boar-id)
+   (up-object-data object-data-hitpoints < 73)
+   (up-object-data object-data-target == villager-class)
+   (up-object-data object-data-target-time g:> minimum-boar-target-time)
+=>
+   (up-full-reset-search)
+   (up-get-object-target-data object-data-id temporary-goal)
+   (up-add-object-by-id search-local g: temporary-goal)
+   (up-target-point position-self-x action-move -1 -1)
+   (set-goal boar-hunting-stage 3)
+	(disable-timer boar-reset-timer2)
+   (enable-timer boar-reset-timer2 50)
+)
+
+
+
+
+
+(defrule
+   (goal boar-hunting-stage 3)
+   ;(unit-type-count villager-hunter > 0)
+   (up-pending-objects c: building-class > 0)
+=>
+   (up-full-reset-search)
+   ;(fe-break-point 1 c:== 1 -1)
+   (up-find-local c: villager-class c: 40)
+   (up-remove-objects 0 object-data-attacker-count < 1)
+   ;(up-remove-objects search-local object-data-language-id != 5124);hunter language id
+   (up-remove-objects search-local object-data-order == orderid-build)
+)
+
+(defrule
+   (goal boar-hunting-stage 3)
+   ;(unit-type-count villager-hunter > 0)
+   (up-set-target-object search-local c: 0)
+	(up-object-target-data object-data-class == building-class)
+=>
+   (up-get-object-target-data object-data-type temporary-goal)
+   (up-assign-builders g: temporary-goal c: -1)
+	(up-modify-goal restore-building g:= temporary-goal)
+	(disable-timer boar-reset-timer2)
+	(enable-timer boar-reset-timer2 25);this was set-goal?!
+   (up-target-point position-self-x action-move -1 -1)
+)
+
+(defrule
+   (goal boar-hunting-stage 3)
+   (unit-type-count villager-hunter > 0)
+=>
+   (up-full-reset-search)
+   (up-find-local c: villager-class c: 40)
+   (up-remove-objects search-local object-data-language-id != 5124);hunter language id
+   (up-set-target-point position-self-x)
+   (up-clean-search search-local object-data-distance search-order-desc)
+   (up-set-target-object search-local c: 0)
+   (up-get-point position-object point-x)
+   (up-set-target-point point-x)
+)
+(defrule
+   (goal boar-hunting-stage 3)
+   (up-set-target-by-id g: current-boar-id)
+   (or(up-object-target-data object-data-class != villager-class) 
+   (up-object-data object-data-distance > 6))
+=>
+   (set-goal boar-hunting-stage 1)
+   (disable-timer boar-reset-timer2)
+   (up-modify-goal minimum-boar-target-time c:+ 150)
+)
+
+
+(defrule
+   (goal boar-hunting-stage 3)
+   (up-set-target-by-id g: current-boar-id)
+   (up-get-object-data object-data-point-x point-x)
+   (up-get-object-data object-data-point-y point-y)
+   (up-modify-goal point2-x g:= position-self-x)
+   (up-modify-goal point2-y g:= position-self-y)
+   (up-modify-goal point2-x c:- 2)
+   (up-modify-goal point2-y c:+ 1)
+   (or(up-point-distance point-x point2-y < 3)
+   (or(up-point-distance point-x position-self-x < 2)
+   (up-object-target-data object-data-hitpoints < 5)))
+=>
+   (up-full-reset-search)
+   ;(up-send-flare point2-x)
+   (up-set-target-point position-self-x)
+   (up-filter-distance c: -1 c: 5)
+   (up-modify-goal temporary-goal s:= sn-focus-player-number)
+   (up-modify-sn sn-focus-player-number c:= my-player-number)
+   (up-find-remote c: town-center c: 1)
+   (up-find-local c: villager-class c: 15)
+   (up-remove-objects search-local object-data-order == orderid-build)
+   (up-remove-objects search-local object-data-order == orderid-move)
+   (up-clean-search search-local object-data-distance search-order-asc)
+   (up-remove-objects search-local -1 > 5)
+   (up-target-objects 0 action-garrison -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 2 ID: %d" g: temporary-goal12)
+   (set-goal boar-hunting-stage 4)
+   (up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+
+
+(defrule
+   (goal boar-hunting-stage 4)
+   (up-set-target-by-id g: current-boar-id)
+   (up-object-data object-data-hitpoints >= 18);15
+=>
+   (up-full-reset-search)
+   (up-find-local c: town-center c: 1)
+   (up-modify-goal temporary-goal2 s:= sn-focus-player-number)
+   (set-strategic-number sn-focus-player-number my-player-number)
+   (up-find-remote c: town-center c: 1)
+   (up-target-objects 0 action-gather -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule ID: %d" g: temporary-goal12)
+   (up-modify-sn sn-focus-player-number g:= temporary-goal2)
+   (up-full-reset-search)
+   (up-add-object-by-id search-remote g: current-boar-id)
+   (up-find-local c: town-center c: 5)
+   (up-target-objects 0 action-default -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 4 ID: %d" g: temporary-goal12)
+   (set-strategic-number sn-disable-villager-garrison 1)
+   (set-strategic-number sn-maximum-garrison-fill 6)
+   (set-strategic-number sn-number-garrison-units 6)
+)
+
+(defrule
+   (goal boar-hunting-stage 4)
+   (up-set-target-by-id g: current-boar-id)
+   (up-object-data object-data-hitpoints < 18);15
+=>
+   (up-full-reset-search)
+   (up-find-local c: town-center c: 1)
+	(up-add-object-by-id search-remote g: current-boar-id)
+   (up-target-objects 1 action-gather -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 6 ID: %d" g: temporary-goal12)
+   (up-target-objects 0 action-ungarrison -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule ID: %d" g: temporary-goal12)
+   (enable-timer boar-reset-timer2 150)
+)
+
+(defrule
+   ;(or(timer-triggered threesec)
+   ;(timer-triggered one-min))
+   (goal boar-hunting-stage 4)
+
+	(up-set-target-by-id g: current-boar-id)
+   (or(timer-triggered one-min)
+   (up-object-data object-data-hitpoints < 2))
+=>
+   (up-gather-inside c: town-center c: 0)
+   (up-set-target-point position-self-x)
+   (up-modify-goal temporary-goal2 g:= current-boar-id-ptr)
+   (up-modify-goal temporary-goal2 c:+ 1)
+   (up-get-indirect-goal g: temporary-goal2 temporary-goal5)
+)
+
+(defrule
+	(taunt-detected 1 232)
+	(timer-triggered threesec)
+=>
+	(acknowledge-taunt 1 232)
+	(fe-break-point 1 c:= 1 -1)
+)
+
+(defrule
+   (timer-triggered threesec)
+   (goal boar-hunting-stage 4)
+   (up-set-target-by-id g: current-boar-id)
+   (up-get-object-data object-data-carry temporary-goal3)
+   (up-modify-goal temporary-goal2 g:= current-boar-id-ptr)
+   (up-modify-goal temporary-goal2 c:+ 1)
+   (up-set-target-by-id g: temporary-goal5)
+   (up-object-data object-data-carry > 20)
+   (up-get-object-data object-data-point-x point-x)
+   (up-get-object-data object-data-point-y point-y)
+   (up-get-object-data object-data-distance temporary-goal4)
+   (up-modify-goal temporary-goal3 c:/ 10);adjust this with testing
+   (or(up-compare-goal temporary-goal4 g:> temporary-goal3)
+   (up-compare-goal temporary-goal3 < 6))
+=>
+   ;(fe-break-point 1 c:== 1 -1)
+   (up-modify-goal current-boar-id-ptr c:+ 1)
+   (up-set-indirect-goal c: current-boar-id g: current-boar-id-ptr)
+   (up-get-indirect-goal g: current-boar-id current-boar-id)
+   (set-goal boar-hunting-stage 1)
+)
+
+(defrule
+   (timer-triggered threesec)
+=>
+   (up-full-reset-search)
+   (up-set-target-point position-self-x)
+   (up-filter-distance c: -1 c: 5)
+   (up-find-resource c: boar-class c: 2)
+   (up-remove-objects search-remote object-data-hitpoints < 1)
+   (up-remove-objects search-remote object-data-hitpoints > 18);15
+   (up-find-local c: villager-class c: 2)
+)
+
+(defrule
+   (timer-triggered threesec)
+   (up-set-target-object search-remote c: 0)
+=>
+   (up-target-objects 0 action-default -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 7 ID: %d" g: temporary-goal12)
+   (chat-to-player my-player-number "Backup: Kill low HP boar near TC")
+)
+
+
+
+(defrule
+	(timer-triggered fifteensec)
+	(goal boar-hunting-stage 4)
+	(unit-type-count villager-hunter < 7)
+	(up-add-object-by-id search-remote g: current-boar-id)
+=>
+	(up-set-target-point position-self-x)
+)
+
+(defrule
+	(timer-triggered fifteensec)
+	(goal boar-hunting-stage 4)
+	(unit-type-count villager-hunter < 7)
+	(up-add-object-by-id search-remote g: current-boar-id)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-hitpoints < 4)
+	(up-object-data object-data-distance < 6)
+	(up-idle-unit-count idle-type-villager < 1)
+=>
+	(up-full-reset-search)
+	(up-add-object-by-id search-remote g: current-boar-id)
+	(up-filter-distance c: -1 c: 4)
+	(up-find-local c: town-center c: 1)
+	(up-target-objects 0 action-gather -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 8 ID: %d" g: temporary-goal12)
+	(up-reset-search 1 1 0 0)
+	(up-find-local c: villager-class c: 7)
+	(up-remove-objects search-local object-data-order == orderid-build)
+	;(up-remove-objects search-local object-data-dropsite != mill)
+	(up-remove-objects search-local object-data-target == boar-class)
+	(up-remove-objects search-local object-data-gather-type != food)
+	(up-target-objects 0 action-default -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 9 ID: %d" g: temporary-goal12)
+)
+
+
+(defrule
+   (true)
+=>
+   (set-goal temporary-goal4 0)
+	(up-full-reset-search)
+	(set-goal point-x 0)
+	(set-goal point-y 0)
+	(set-goal point2-x 0)
+	(set-goal point2-y 0)
+)
+
+(defrule
+   (timer-triggered boar-reset-timer2)
+=>
+   (disable-timer boar-reset-timer2)
+	(up-assign-builders g: restore-building c: 1)
+   (set-goal boar-hunting-stage 1)
+	(chat-to-player my-player-number "Resetting boar hunting.")
+)
+
+(defrule	
+	(timer-triggered fifteensec)
+=>
+	(up-full-reset-search)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: house c: 5)
+	(up-find-status-local c: farm c: 5)
+	(up-find-status-local c: building-class c: 5)
+	(up-remove-objects search-local object-data-tasks-count > 0)
+	(up-get-search-state local-total)
+)
+
+(defrule
+	(timer-triggered fifteensec)
+	(up-pending-objects c: building-class > 0)
+	;(unit-type-count villager-builder < 1)
+	(current-age <= castle-age)
+	(up-compare-goal local-total > 0)
+	(game-time > 50)
+=>
+	(up-assign-builders c: house c: 1)
+	(up-assign-builders c: wood-building c: 1)
+	(up-assign-builders c: gold-building c: 1)
+	(up-assign-builders c: food-building c: 1)
+	(up-assign-builders c: barracks c: 1)
+	(up-assign-builders c: farm c: 1)
+)
+
 
 #load-if-not-defined DEATH-MATCH
 (defrule
@@ -90,7 +557,7 @@
 (defrule
 	(game-time >= 105)
 (or	(and	(up-compare-goal totalsheep <= 2); 3
-		(building-type-count mill <= 0)); -total
+		(building-type-count food-building <= 0)); -total
 	(and	(up-compare-goal mysheep <= 1)
 		(and	(game-time >= earlyBoar)
 			(or	(up-compare-goal villagercounttotal >= 10)
@@ -134,7 +601,7 @@
 		(and	(game-time >= 155)
 			(or	(game-time >= 190)
 				(and	(civ-selected briton)
-					(building-type-count-total mill <= 0)))))
+					(building-type-count-total food-building <= 0)))))
 	(and	(or	(dropsite-min-distance live-boar g:<= loom-dist)
 				(up-research-status c: ri-loom >= research-pending))
 		(unit-type-count villager-shepherd >= 7)))
@@ -144,7 +611,7 @@
 (or	(dropsite-min-distance food >= 10)
 	(and	(goal nomaden no)
 		(and	(and	(and	(goal buildmill no)
-					(building-type-count-total mill <= 0))
+					(building-type-count-total food-building <= 0))
 				(goal buildlumber yes))
 			(up-compare-goal totalsheep <= 4))))
 	(game-time >= 100)
@@ -262,7 +729,7 @@
 (defrule
 	(strategic-number sn-enable-boar-hunting != 1)
 	(dropsite-min-distance live-boar >= 35)
-	(building-type-count-total mill >= 1)
+	(building-type-count-total food-building >= 1)
 (or	(and	(or	(dropsite-min-distance food <= -1)
 			(dropsite-min-distance food s:> sn-maximum-food-drop-distance))
 		(dropsite-min-distance deer-hunting <= 16))
@@ -278,6 +745,7 @@
 (defrule
 ;(or	(strategic-number sn-minimum-boar-hunt-group-size > 2)
 ;	(strategic-number sn-minimum-number-hunters > 2))
+(up-compare-goal boar-hunting-stage < 1)
 (or	(strategic-number sn-minimum-boar-hunt-group-size != 2)
 	(strategic-number sn-minimum-number-hunters != 2))
 (or	(dropsite-min-distance live-boar <= -1)
@@ -307,6 +775,13 @@
 	(set-goal boar-distance -1)
 	(disable-timer boar-reset-timer))
 
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-enable-boar-hunting 0)
+	;(set-strategic-number sn-disable-all-boar-assistance 1)
+	(up-jump-rule 48);41
+)
 (defrule
 (or	(building-type-count town-center <= 0)
 (or	(dropsite-min-distance live-boar >= 35)
@@ -437,6 +912,11 @@
 	(set-goal boar-distance -1)
 	(disable-timer boar-reset-timer))
 
+(defrule
+	(true)
+=>
+	(up-jump-rule 29)
+)
 (defrule
 (or	(up-compare-goal myboars <= 0)
 (or	;(and
@@ -613,7 +1093,6 @@
 =>
 	(up-modify-goal last-boar g:= current-boar))
 
-
 (defrule
 	(goal found-boar 2)
 =>
@@ -689,6 +1168,8 @@
 ;	(up-get-search-state local-total))
 (defrule
 	(goal found-boar 2)
+	(not(goal boar-hunting-stage 4))
+	(up-compare-goal boar-hunting-stage < 2)
 	(goal search-action search-action-hunt-support)
 	(up-compare-goal local-total >= 1)
 	(up-set-target-by-id g: current-boar);	(up-compare-goal current-boar != -1)
@@ -697,19 +1178,24 @@
 	(up-set-target-by-id g: current-boar)
 	(up-gather-inside c: town-center c: -1)
 	(up-target-objects 1 action-default -1 -1) 
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 10 ID: %d" g: temporary-goal12)
 	(set-goal search-action -1)
 	(set-goal found-boar 3)
 	(up-jump-rule 1))
 (defrule
 	(goal found-boar 3)
 	(goal search-action search-action-hunt-support)
+	(up-compare-goal boar-hunting-stage < 2)
 	(up-compare-goal local-total >= 2); 5
 	(up-set-target-by-id g: current-boar);	(up-compare-goal current-boar != -1)
 =>
 ;	(chat-local-to-self "Capture boar.")
 	(up-set-target-by-id g: current-boar)
-	(up-gather-inside c: town-center c: -1)
+	;(up-gather-inside c: town-center c: -1)
 	(up-target-objects 1 action-default -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 11 ID: %d" g: temporary-goal12)
 	(up-modify-goal boar-captured c:+ 1)
 	(set-goal search-action -1)
 	(set-goal found-boar -1)
@@ -728,6 +1214,8 @@
 	(up-add-object-by-id search-local g: boar-lurer)
 	(up-add-object-by-id search-remote g: current-boar)
 	(up-target-objects 0 action-default -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 12 ID: %d" g: temporary-goal12)
 	(set-goal temporary-goal 30); 15
 	(up-modify-goal temporary-goal2 g:= boar-distance)
 	(up-modify-goal temporary-goal2 c:* 125)
@@ -808,6 +1296,8 @@
 	(up-remove-objects search-local object-data-order == orderid-enter)
 	(up-set-target-by-id g: position-self-id)
 	(up-target-objects 0 action-garrison -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 13 ID: %d" g: temporary-goal12)
 	(up-get-timer c: boar-reset-timer temporary-goal)
 ; tl	(up-modify-goal temporary-goal c:max 0)
 	(up-modify-goal temporary-goal c:/ 1000)
@@ -816,14 +1306,14 @@
 	(up-modify-goal temporary-goal c:max 8)
 	(up-set-timer c: boar-reset-timer g: temporary-goal)); end mini jumps; End big jump
 
-(defrule
-(or	(dropsite-min-distance live-boar >= 35)
-(or	(not	(up-set-target-by-id g: current-boar))
-	(and	(up-set-target-by-id g: current-boar)
-		(or	(up-object-data object-data-status != 2)
-			(up-object-data object-data-action != actionid-attack)))))
-=>
-	(up-gather-inside c: town-center c: 0))
+; (defrule
+; (or	(dropsite-min-distance live-boar >= 35)
+; (or	(not	(up-set-target-by-id g: current-boar))
+; 	(and	(up-set-target-by-id g: current-boar)
+; 		(or	(up-object-data object-data-status != 2)
+; 			(up-object-data object-data-action != actionid-attack)))))
+; =>
+; 	(up-gather-inside c: town-center c: 0))
 
 
 (defrule
@@ -909,7 +1399,7 @@
 (defrule
 (nor	(goal buildlumber no)
 (or	(game-time >= 600)
-	(and	(building-type-count lumber-camp >= 1)
+	(and	(building-type-count wood-building >= 1)
 		(and	(dropsite-min-distance wood <= 20)
 			(dropsite-min-distance wood s:<= sn-maximum-wood-drop-distance)))))
 =>
@@ -918,7 +1408,7 @@
 #load-if-defined CRATER-MAP
 (defrule
 	(game-time < 400)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building < 2)
 =>
 	(set-goal deer-luring 0)
 	(up-jump-rule 18)
@@ -955,7 +1445,7 @@
 
 (defrule
 	(game-time < 400)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building < 2)
 =>
 	(set-goal deer-luring 0)
 	(up-jump-rule 18)
@@ -1096,7 +1586,7 @@
 (or	(game-time >= 1200); 1800; 1500
 (or	(and	(up-compare-goal deer-distance s:> sn-maximum-hunt-drop-distance)
 		(game-time >= 1080)); 1500; 1200
-	(building-type-count-total mill >= 2)))
+	(building-type-count-total food-building >= 2)))
 (or	(game-time s:>= sn-home-exploration-time)
 	(up-timer-status scout != timer-disabled))
 =>
@@ -1207,6 +1697,8 @@
 	(up-clean-search search-local object-data-precise-distance search-order-asc)
 	(up-remove-objects search-local object-data-index g:>= temporary-goal)
 	(up-target-objects 1 action-default -1 -1)
+;(up-get-rule-id temporary-goal12))
+;(up-chat-data-to-player my-player-number "Rule 14 ID: %d" g: temporary-goal12)
 ;	(set-goal current-deer -1)
 	(set-goal deer-distance -1)
 	(enable-timer deer-reset-timer 9)); end jumps
@@ -1228,6 +1720,7 @@
 =>
 	(do-nothing)
 )
+
 
 
 (defrule

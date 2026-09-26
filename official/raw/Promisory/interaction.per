@@ -1020,6 +1020,7 @@
 	(goal temporary-goal9 125492)
 =>
 	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-find-local c: all-units-class c: 240)
 	(up-target-point 0 action-patrol -1 stance-aggressive);-defensive
 	(acknowledge-taunt every-ally tFlarePatrol))
@@ -1035,6 +1036,7 @@
 	(up-find-local c: all-units-class c: 240)
 	(up-filter-include cmdid-monk -1 -1 -1);
 	(up-find-local c: all-units-class c: 240);
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-target-point 0 action-patrol -1 stance-aggressive);-defensive
 	(chat-to-player my-player-number text-resending-units))
 (defrule

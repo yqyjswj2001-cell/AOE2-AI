@@ -24,26 +24,26 @@ class ScoutSpan(NamedTuple):
     meaning: str
 
 
-SCOUT_SOURCE_SHA256 = "0a472440942c66cf70160fde6679eb99fd1a6c465c5a13050099be567b002688"
+SCOUT_SOURCE_SHA256 = "1c4e2ab1e6cdc41319b7d2369834c5714affa0c7dca1554eb37d15342a959205"
 SCOUT_ALLOWED_SPANS = (
     ScoutSpan("SCOUT_001", 11, 16, "1800", "Scout tactic game-time window"),
     ScoutSpan("SCOUT_002", 13, 41, "2", "Scout count enabling the tactic"),
     ScoutSpan("SCOUT_003", 16, 34, "1", "Knight count ending the scout tactic"),
-    ScoutSpan("SCOUT_008", 119, 36, "2", "Scout count permitting regrouping"),
-    ScoutSpan("SCOUT_009", 126, 19, "15", "Regroup retreat duration"),
-    ScoutSpan("SCOUT_010", 132, 41, "1", "Count enabling group candidate search"),
-    ScoutSpan("SCOUT_012", 144, 41, "1", "Count enabling group creation from search"),
-    ScoutSpan("SCOUT_024", 375, 47, "1", "Count enabling direct reinforcement"),
-    ScoutSpan("SCOUT_026", 391, 47, "1", "Count enabling group-13 reinforcement"),
-    ScoutSpan("SCOUT_028", 407, 47, "1", "Count enabling reinforcement via pivot"),
-    ScoutSpan("SCOUT_033", 757, 19, "25", "Retreat duration for low superiority"),
-    ScoutSpan("SCOUT_035", 787, 19, "15", "Retreat duration near an enemy town center"),
-    ScoutSpan("SCOUT_037", 865, 19, "8", "Retreat duration while awaiting more scouts"),
-    ScoutSpan("SCOUT_038", 875, 19, "40", "Second low-superiority retreat duration"),
-    ScoutSpan("SCOUT_039", 955, 19, "11", "Small distant-group retreat duration"),
-    ScoutSpan("SCOUT_040", 967, 19, "10", "Near-enemy waypoint retreat duration"),
-    ScoutSpan("SCOUT_041", 980, 19, "30", "Far-enemy waypoint retreat duration"),
-    ScoutSpan("SCOUT_042", 1028, 19, "3", "Obstacle-response retreat duration"),
+    ScoutSpan("SCOUT_008", 120, 36, "2", "Scout count permitting regrouping"),
+    ScoutSpan("SCOUT_009", 127, 19, "15", "Regroup retreat duration"),
+    ScoutSpan("SCOUT_010", 133, 41, "1", "Count enabling group candidate search"),
+    ScoutSpan("SCOUT_012", 145, 41, "1", "Count enabling group creation from search"),
+    ScoutSpan("SCOUT_024", 376, 47, "1", "Count enabling direct reinforcement"),
+    ScoutSpan("SCOUT_026", 392, 47, "1", "Count enabling group-13 reinforcement"),
+    ScoutSpan("SCOUT_028", 408, 47, "1", "Count enabling reinforcement via pivot"),
+    ScoutSpan("SCOUT_033", 747, 19, "25", "Retreat duration for low superiority"),
+    ScoutSpan("SCOUT_035", 771, 19, "15", "Retreat duration near an enemy town center"),
+    ScoutSpan("SCOUT_037", 849, 19, "8", "Retreat duration while awaiting more scouts"),
+    ScoutSpan("SCOUT_038", 859, 19, "40", "Second low-superiority retreat duration"),
+    ScoutSpan("SCOUT_039", 939, 19, "11", "Small distant-group retreat duration"),
+    ScoutSpan("SCOUT_040", 951, 19, "10", "Near-enemy waypoint retreat duration"),
+    ScoutSpan("SCOUT_041", 964, 19, "30", "Far-enemy waypoint retreat duration"),
+    ScoutSpan("SCOUT_042", 1012, 19, "3", "Obstacle-response retreat duration"),
 )
 SCOUT_KEYS = frozenset(span.key for span in SCOUT_ALLOWED_SPANS)
 ORB_KEYS = frozenset(f"ORB_ATTACK_GROUP_{i:03d}" for i in range(1, 11))

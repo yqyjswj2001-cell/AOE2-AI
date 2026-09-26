@@ -97,7 +97,7 @@ def record_hook_payload(payload, repo_root, observed_at=None):
     """
     if not isinstance(payload, dict):
         return False
-    conversation = _safe_id(payload.get("conversation_id") or payload.get("session_id"))
+    conversation = _safe_id(payload.get("conversation_id") or payload.get("session_id") or payload.get("parent_conversation_id"))
     event = _safe_id(payload.get("hook_event_name"))
     roots = payload.get("workspace_roots")
     repo_root = Path(repo_root).resolve()
@@ -158,35 +158,51 @@ def record_hook_payload(payload, repo_root, observed_at=None):
              json.dumps(clean_roots, ensure_ascii=False), background, session_start, event,
              project_id, project_path))
         _store_hook_turn(db, payload, conversation, now)
+        _store_subagent_link(db, payload, conversation, now)
         db.commit()
     finally:
         db.close()
     return True
 
 
+_TOKEN_ALIASES = {
+    "input_tokens": ("input_tokens", "inputTokens"),
+    "output_tokens": ("output_tokens", "outputTokens"),
+    "cache_read_tokens": ("cache_read_tokens", "cacheReadTokens"),
+    "cache_write_tokens": ("cache_write_tokens", "cacheWriteTokens"),
+    "reasoning_tokens": ("reasoning_tokens", "reasoningTokens"),
+}
+
+
+def _token_sources(payload):
+    sources = [payload]
+    nested = payload.get("usage") if isinstance(payload.get("usage"), dict) else None
+    if nested is not None:
+        sources.append(nested)
+    return sources
+
+
 def _token_field(payload, name):
     """Absent stays unknown. A present non-integer is invalid, not zero."""
-    if name not in payload or payload.get(name) is None:
+    found = False
+    value = None
+    for source in _token_sources(payload):
+        for alias in _TOKEN_ALIASES[name]:
+            if alias not in source or source.get(alias) is None:
+                continue
+            found = True
+            value = source.get(alias)
+            break
+        if found:
+            break
+    if not found:
         return None
-    value = payload.get(name)
-    if type(value) is not int or not 0 <= value <= 10**12:
+    if type(value) is bool or type(value) is not int or not 0 <= value <= 10**12:
         return False
     return value
 
 
-def _store_hook_turn(db, payload, conversation, observed_at):
-    """Keep stop/afterAgentResponse counters only. Prompt and response text never land here."""
-    event = payload.get("hook_event_name")
-    generation = _safe_id(payload.get("generation_id"))
-    if event not in {"stop", "afterAgentResponse"} or generation is None:
-        return
-    parsed = {name: _token_field(payload, name) for name in
-              ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens")}
-    if any(value is False for value in parsed.values()):
-        return
-    if parsed["input_tokens"] is None or parsed["output_tokens"] is None:
-        return
-    model = _safe_text(payload.get("model") or payload.get("model_id"), 160)
+def _ensure_turn_columns(db):
     db.execute("""CREATE TABLE IF NOT EXISTS hook_turns(
         conversation_id TEXT NOT NULL,
         generation_id TEXT NOT NULL,
@@ -197,23 +213,93 @@ def _store_hook_turn(db, payload, conversation, observed_at):
         output_tokens INTEGER NOT NULL,
         cache_read_tokens INTEGER,
         cache_write_tokens INTEGER,
+        reasoning_tokens INTEGER,
         PRIMARY KEY (conversation_id, generation_id, event)
     )""")
+    cols = {row[1] for row in db.execute("PRAGMA table_info(hook_turns)")}
+    if "reasoning_tokens" not in cols:
+        db.execute("ALTER TABLE hook_turns ADD COLUMN reasoning_tokens INTEGER")
+
+
+def _store_subagent_link(db, payload, conversation, observed_at):
+    """Record only a proven parent id. Task text is never stored."""
+    event = payload.get("hook_event_name")
+    if event not in {"subagentStart", "subagentStop"}:
+        return
+    parent = _safe_id(payload.get("parent_conversation_id")) or conversation
+    child = _safe_id(payload.get("subagent_id"))
+    if parent is None or child is None:
+        return
+    db.execute("""CREATE TABLE IF NOT EXISTS subagent_links(
+        subagent_id TEXT PRIMARY KEY,
+        parent_conversation_id TEXT NOT NULL,
+        observed_at REAL NOT NULL
+    )""")
+    db.execute("""INSERT INTO subagent_links(subagent_id,parent_conversation_id,observed_at)
+        VALUES(?,?,?)
+        ON CONFLICT(subagent_id) DO UPDATE SET
+            parent_conversation_id=excluded.parent_conversation_id,
+            observed_at=excluded.observed_at
+        WHERE excluded.observed_at>=subagent_links.observed_at""",
+        (child, parent, observed_at))
+
+
+def _linked_parent(db, payload, conversation):
+    parent = _safe_id(payload.get("parent_conversation_id"))
+    if parent is not None:
+        return parent
+    child = _safe_id(payload.get("subagent_id"))
+    if child is None:
+        return None
+    try:
+        tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    except sqlite3.Error:
+        return None
+    if "subagent_links" not in tables:
+        return None
+    row = db.execute(
+        "SELECT parent_conversation_id FROM subagent_links WHERE subagent_id=?", (child,)).fetchone()
+    return row[0] if row else None
+
+
+def _store_hook_turn(db, payload, conversation, observed_at):
+    """Keep stop/afterAgentResponse/proven subagent counters. Prompt and response text never land here."""
+    event = payload.get("hook_event_name")
+    generation = _safe_id(payload.get("generation_id")) or _safe_id(payload.get("subagent_id"))
+    if event not in {"stop", "afterAgentResponse", "subagentStop"} or generation is None:
+        return
+    owner = conversation
+    if event == "subagentStop":
+        owner = _linked_parent(db, payload, conversation)
+        if owner is None:
+            return
+        generation = "subagent:" + generation
+    parsed = {name: _token_field(payload, name) for name in _TOKEN_ALIASES}
+    if any(value is False for value in parsed.values()):
+        return
+    if parsed["input_tokens"] is None or parsed["output_tokens"] is None:
+        return
+    reasoning = parsed["reasoning_tokens"]
+    if reasoning is not None and reasoning > parsed["output_tokens"]:
+        return
+    model = _safe_text(payload.get("model") or payload.get("model_id") or payload.get("subagent_model"), 160)
+    _ensure_turn_columns(db)
     db.execute("""INSERT INTO hook_turns(
             conversation_id,generation_id,event,observed_at,model,
-            input_tokens,output_tokens,cache_read_tokens,cache_write_tokens)
-        VALUES(?,?,?,?,?,?,?,?,?)
+            input_tokens,output_tokens,cache_read_tokens,cache_write_tokens,reasoning_tokens)
+        VALUES(?,?,?,?,?,?,?,?,?,?)
         ON CONFLICT(conversation_id,generation_id,event) DO UPDATE SET
             observed_at=excluded.observed_at,
             model=COALESCE(excluded.model,hook_turns.model),
             input_tokens=excluded.input_tokens,
             output_tokens=excluded.output_tokens,
             cache_read_tokens=excluded.cache_read_tokens,
-            cache_write_tokens=excluded.cache_write_tokens
+            cache_write_tokens=excluded.cache_write_tokens,
+            reasoning_tokens=excluded.reasoning_tokens
         WHERE excluded.observed_at>=hook_turns.observed_at""",
-        (conversation, generation, event, observed_at, model,
+        (owner, generation, event, observed_at, model,
          parsed["input_tokens"], parsed["output_tokens"],
-         parsed["cache_read_tokens"], parsed["cache_write_tokens"]))
+         parsed["cache_read_tokens"], parsed["cache_write_tokens"], reasoning))
 
 
 def _hook_rows(workspace, repo_root):
@@ -272,7 +358,8 @@ def collect_cursor_hook_usage(workspace, repo_root, conversation_ids, started_at
     """Account Cursor stop-hook turn totals. input_tokens already includes cache.
 
     afterAgentResponse carries the same generation total, so it is stored but not
-    added. Subagent tokens are not in this payload and stay uncounted.
+    added. A subagentStop turn is added only when its payload or an earlier
+    subagentStart proves parent_conversation_id. Same generation prefers stop.
     """
     ids = []
     for raw in conversation_ids:
@@ -293,17 +380,19 @@ def collect_cursor_hook_usage(workspace, repo_root, conversation_ids, started_at
                 rows = []
             else:
                 marks = ",".join("?" for _ in ids)
+                turn_cols = {row[1] for row in db.execute("PRAGMA table_info(hook_turns)")}
+                reasoning_sql = "reasoning_tokens" if "reasoning_tokens" in turn_cols else "NULL"
                 rows = db.execute(
                     "SELECT conversation_id,generation_id,event,observed_at,model,"
-                    "input_tokens,output_tokens,cache_read_tokens,cache_write_tokens "
-                    "FROM hook_turns WHERE conversation_id IN (" + marks + ")", ids).fetchall()
+                    "input_tokens,output_tokens,cache_read_tokens,cache_write_tokens," +
+                    reasoning_sql + " FROM hook_turns WHERE conversation_id IN (" + marks + ")", ids).fetchall()
         except sqlite3.Error:
             rows = []
     finally:
         db.close()
     start = float(started_at)
     grouped = defaultdict(dict)
-    for cid, gid, event, observed_at, model, inp, out, cache_read, cache_write in rows:
+    for cid, gid, event, observed_at, model, inp, out, cache_read, cache_write, reasoning in rows:
         if observed_at is None or float(observed_at) < start:
             continue
         current = grouped[(cid, gid)].get(event)
@@ -312,12 +401,13 @@ def collect_cursor_hook_usage(workspace, repo_root, conversation_ids, started_at
                 "observed_at": float(observed_at), "model": model,
                 "input_tokens": inp, "output_tokens": out,
                 "cache_read_tokens": cache_read, "cache_write_tokens": cache_write,
+                "reasoning_tokens": reasoning,
             }
     items = []
     gaps = []
     matched = set()
     for (cid, gid), events in sorted(grouped.items()):
-        chosen = events.get("stop")
+        chosen = events.get("stop") or events.get("subagentStop")
         if chosen is None:
             continue
         inp, out = chosen["input_tokens"], chosen["output_tokens"]
@@ -336,7 +426,7 @@ def collect_cursor_hook_usage(workspace, repo_root, conversation_ids, started_at
             "total_tokens": inp + out,
             "cached_input_tokens": cache_read,
             "cache_write_tokens": cache_write,
-            "reasoning_output_tokens": None,
+            "reasoning_output_tokens": chosen["reasoning_tokens"] if type(chosen.get("reasoning_tokens")) is int else None,
         }
         key = "cursor-hook:" + hashlib.sha256((cid + "\n" + gid).encode("utf-8")).hexdigest()[:24]
         items.append({

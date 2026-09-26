@@ -128,13 +128,7 @@
     (up-jump-direct g: water-end-rule-id)
 )
 
-(defrule
-    (taunt-detected 1 250)
-=>
-    (acknowledge-taunt 1 250)
-    (fe-break-point 1 c:== 1 -1)
-    (disable-self)
-)
+
 
 (defrule
     (up-group-size c: galley-group > 0)
@@ -418,7 +412,7 @@
     (up-lerp-percent point2-x water-retreat-x c: 75)
     (up-full-reset-search)
     (up-set-group search-local c: galley-group) 
-    ;(up-send-flare water-retreat-x)
+    ;;(up-send-flare water-retreat-x)
 )
 
 (defrule
@@ -567,12 +561,7 @@
 ;Attack if decent favourbility or better, target object can attack, retreat not on
 
 
-(defrule
-    (taunt-detected 1 206)
-=>
-    (fe-break-point 1 c:== 1 -1)
-    (disable-self)
-)
+
 
 ;We are trying a simplification here based on the assumption that the galley frame delay (100ms) will be always less than the fastest AI turn (333ms) minus our buffer (100ms)
 (defrule
@@ -783,16 +772,16 @@
     (set-goal water-action 2)
 )
 
-;Debug rule
-
 (defrule
     (goal water-action -1)
-    (up-group-size c: galley-group > 4)
+    (up-compare-goal water-enemy-target-id > 0)
 =>
-    (fe-break-point 1 c:== 1 -1)
-    (up-jump-rule -9)
-    (disable-self)
+    (set-goal water-action 7)
 )
+;Debug rule
+
+
+
 ;Action 2 - move
 
 (defrule
@@ -900,7 +889,7 @@
 
     (up-full-reset-search)
     (up-set-group search-local c: galley-group) 
-    ;(up-send-flare point3-x)
+    ;;(up-send-flare point3-x)
     (up-remove-objects search-local object-data-next-attack > water-fd-value)
     (up-target-point water-retreat-x action-move formation-line stance-no-attack)
     (up-jump-rule 1)
@@ -1053,3 +1042,729 @@
 =>
     (up-get-rule-id water-end-rule-id)
 )
+
+(defrule
+    (not(goal inseln yes))
+=>
+    (up-jump-rule 45)
+)
+
+(defrule
+    (goal market-placement stage1)
+    (unit-type-count transport-ship-class > 0)
+    (wood-amount > 300)
+    (building-type-count-total market < 6);3
+=>
+    (up-full-reset-search)
+    (up-filter-range -1 1 -1 -1)
+    (up-find-local c: transport-ship-class c: 1)
+    (up-get-search-state local-total)
+)
+
+(defrule
+    (goal market-placement stage1)
+    (unit-type-count transport-ship-class > 0)
+    (wood-amount > 300)
+    (unit-type-count villager > 15)
+    (building-type-count-total market < 6)
+    (up-compare-goal local-total > 0)
+    (up-set-target-object search-local c: 0)
+    (up-compare-goal transport-exclude-id < 1)
+=>
+    (up-get-object-data object-data-id transport-exclude-id)
+    (up-get-point position-object point-x)
+    (up-set-target-point point-x)
+    (up-full-reset-search)
+    (up-add-object-by-id search-remote g: transport-exclude-id)
+    (up-find-local c: villager-class c: 10)
+    (up-filter-exclude -1 actionid-build orderid-build -1)
+    (up-clean-search search-local object-data-distance search-order-asc)
+    (up-remove-objects search-local -1 > 0)
+    (up-target-objects 0 action-garrison -1 -1)
+)
+
+(defrule
+    (goal market-placement stage1)
+    (up-compare-goal transport-exclude-id > 0)
+    (up-set-target-by-id g: transport-exclude-id)
+    (up-object-data object-data-garrison-count > 0)
+    (up-object-data object-data-order != orderid-unload)
+=>
+ ;   (fe-break-point 1 c:== 1 -1)
+    (set-goal market-placement stage2)
+    (up-full-reset-search)
+    (up-add-object-by-id search-local g: transport-exclude-id)
+    (up-find-player ally find-closest temporary-goal)
+ ;   (up-chat-data-to-player 1 "Trying to transport to ally %d" g: temporary-goal)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal)
+    (up-find-remote c: town-center c: 1)
+    (up-set-target-object search-remote c: 0)
+    (up-get-point position-object point-x)
+    (up-lerp-tiles point-x position-self-x c: 10)
+    (up-target-point point-x action-unload -1 -1)
+;    ;(up-send-flare point-x)
+)
+
+(defrule
+    (goal market-placement stage2)
+    (up-set-target-by-id g: transport-exclude-id)
+    (up-object-data object-data-garrison-count < 1)
+=>
+    (set-goal market-placement stage3)
+    (up-full-reset-search)
+    (up-filter-include -1 -1 -1 0)
+    (up-find-local c: villager-class c: 1)
+)
+
+(defrule
+    (goal market-placement stage3)
+=>
+    (up-get-point-zone position-self-x temporary-goal8)
+    (up-full-reset-search)
+    (up-filter-include -1 -1 -1 0)
+    (up-find-local c: villager-class c: 1)
+)
+(defrule
+    (goal market-placement stage3)
+    (up-set-target-object search-local c: 0)
+    (up-pending-objects c: market < 2)
+    (building-type-count-total market < 6)
+=>
+    (up-get-point position-object point-x)
+    (up-modify-goal temporary-goal11 s:= sn-focus-player-number)
+    (up-find-player ally find-closest temporary-goal)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal)
+    (up-get-point position-focus point2-x)
+    (up-lerp-tiles point-x point2-x c: 5)
+    (set-goal temporary-goal2 2468)
+    (set-goal temporary-goal3 10)
+    (set-goal temporary-goal4 10)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal11)
+)
+
+
+(defrule
+    (goal market-placement stage3)
+    (goal temporary-goal2 2468)
+    (up-can-build-line point-x point-x c: market)
+    (up-point-zone point-x g:!= temporary-goal8)
+    (up-pending-objects c: market < 1)
+=>
+    (up-build-line point-x point-x c: market)
+    (up-jump-rule 1)
+)
+
+(defrule
+    (up-compare-goal temporary-goal4 > 0)
+    (goal temporary-goal2 2468)
+    (goal market-placement stage3)
+    (building-type-count-total market < 3)
+    (up-compare-goal temporary-goal3 > 0)
+=>
+    (generate-random-number 3)
+    (up-get-fact random-number 0 temporary-goal5)
+    (generate-random-number 3)
+    (up-get-fact random-number 0 temporary-goal6)
+    (up-modify-goal point-x c:- 2)
+    (up-modify-goal point-y c:- 2)
+    (up-modify-goal point-x g:+ temporary-goal5)
+    (up-modify-goal point-y g:+ temporary-goal6)
+    (up-modify-goal temporary-goal4 c:- 1)
+    (up-jump-rule -2)
+)
+(defrule
+    (goal market-placement stage3)
+    (goal temporary-goal2 2468)
+    (up-pending-objects c: market < 2)
+    (building-type-count-total market < 3)
+    (up-compare-goal temporary-goal3 > 0)
+=>
+    (up-lerp-tiles point-x position-self-x c: 1)
+    (up-modify-goal temporary-goal3 c:- 1)
+    (up-jump-rule -3)
+)
+
+(defrule
+    (goal market-placement stage3)
+    (up-pending-objects c: market < 1)
+=>
+    (up-full-reset-search)
+    (up-filter-include -1 -1 -1 0)
+    (up-find-local c: market c: 1)
+    (up-get-search-state local-total)
+)
+
+(defrule
+    (goal market-placement stage3)
+    (up-pending-objects c: market < 1)
+    (up-compare-goal local-total > 0)
+=>
+    (set-goal market-placement stage4)
+    (up-full-reset-search)
+    (up-add-object-by-id search-remote g: transport-exclude-id)
+    (up-filter-include -1 -1 -1 0)
+    (up-find-local c: villager-class c: 1)
+    (up-target-objects 0 action-garrison -1 -1)
+    (up-target-objects 0 action-delete -1 -1)
+    (set-goal transport-exclude-id -1)
+)
+
+; (defrule
+;     (goal market-placement stage4)
+;     (up-set-target-by-id g: transport-exclude-id)
+;     (up-object-data object-data-garrison-count > 0)
+; =>
+;     (up-full-reset-search)
+;     (set-goal market-placement market-complete)
+;     (up-get-point position-object point-x)
+;     (up-lerp-percent point-x position-self-x c: 80)
+;     (up-target-point point-x action-unload -1 -1)
+;     (set-goal transport-exclude-id -1)
+; )
+
+
+
+
+(defrule
+    (game-time > 240)
+    (timer-triggered threesec)
+    (or(population > 193)
+    (up-compare-sn sn-military-superiority > 1))
+    (unit-type-count-total transport-ship-class > 1)
+    (up-compare-goal external-gatherers-stage < 2)
+    (or(players-building-type-count every-ally market < 1)
+    (up-compare-goal market-placement >= stage4))
+=>
+    (set-goal external-gatherers-stage 2)
+    ;(chst-to-allies "EG: 2")
+)
+
+(defrule
+    (goal external-gatherers-stage 2)
+    (up-compare-goal transport-exclude-id < 0)
+    (up-group-size c: external-gold-gatherers < 1)
+=>
+    (up-full-reset-search)
+    (up-filter-include -1 -1 -1 0)
+    (up-set-target-point enemy-x)
+    (up-filter-distance c: 30 c: 200);35
+    (up-filter-status c: status-resource c: list-active)
+    (up-find-resource c: gold c: 15)
+    (up-set-target-point position-self-x)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-find-player ally find-closest temporary-goal5)
+    (up-modify-goal temporary-goal6 s:= sn-focus-player-number)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal5)
+    (up-get-point position-focus point2-x)
+    (up-get-point position-object point-x)
+    (up-get-point-zone point2-x temporary-goal8)
+    (up-set-target-point point2-x)
+    ;(up-send-flare point2-x)
+    (up-remove-objects search-remote object-data-distance < 32)
+    (up-remove-objects search-remote object-data-map-zone-id g:== temporary-goal8)
+    (up-get-search-state local-total)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal6)
+)
+
+(defrule
+    (goal external-gatherers-stage 2)
+    (up-compare-goal transport-exclude-id < 0)
+    (up-group-size c: external-gold-gatherers < 1)
+    (up-set-target-object search-remote c: 0)
+    (unit-type-count villager > 40)
+    (up-compare-goal remote-total > 0)
+    (unit-type-count transport-ship-class > 0)
+    (up-point-distance point-x center-x < 35);45
+=>
+    (up-get-point position-object gold-x)
+    (up-get-object-data object-data-id gold-id)
+    ;(up-send-flare gold-x)
+    (up-reset-filters)
+    (up-filter-exclude -1 actionid-build orderid-build -1)
+    (up-find-local c: villager-class c: 10);5
+    (up-create-group 0 0 c: external-gold-gatherers)
+    (up-modify-group-flag 1 c: external-gold-gatherers)
+    (up-modify-goal temporary-goal8 s:= sn-focus-player-number)
+    (up-reset-search 0 0 1 1)
+    (up-reset-filters)
+    (set-strategic-number sn-focus-player-number my-player-number)
+    (up-find-remote c: transport-ship-class c: 1)
+    (up-set-target-object search-remote c: 0)
+    (up-get-object-data object-data-id transport-exclude-id)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal8)
+    (set-goal external-gatherers-stage 3)
+    ;(chst-to-allies "EG: 3")
+)
+
+(defrule
+    (goal external-gatherers-stage 3)
+    (up-compare-goal transport-exclude-id > 0)
+=>
+    (up-full-reset-search)
+    (up-add-object-by-id search-remote g: transport-exclude-id)
+    (up-set-group search-local c: external-gold-gatherers)
+    (up-target-objects 0 action-garrison -1 -1)
+)
+
+(defrule
+    (goal external-gatherers-stage 3)
+    (up-compare-goal transport-exclude-id > 0)
+    (timer-triggered one-min)
+=>
+    (up-full-reset-search)
+    (up-add-object-by-id search-remote g: transport-exclude-id)
+    (up-filter-exclude -1 actionid-build orderid-enter -1)
+    (up-find-local c: villager-class c: 1)
+    (up-target-objects 0 action-garrison -1 -1)
+)
+(defrule
+    (or(goal external-gatherers-stage 3)
+    (goal external-gatherers-stage 4))
+    (up-set-target-by-id g: transport-exclude-id)
+    (up-object-data object-data-garrison-count > 9);4
+    (timer-triggered threesec)
+    (up-compare-goal transport-exclude-id > 0)
+=>
+    (up-full-reset-search)
+    (up-add-object-by-id search-local g: transport-exclude-id)
+    (up-target-point gold-x action-unload -1 -1)
+    ;(up-send-flare gold-x)
+    (set-goal external-gatherers-stage 4)
+    ;(chst-to-allies "EG: 4")
+)
+
+(defrule
+    (goal external-gatherers-stage 4)
+    (up-object-data object-data-garrison-count < 1)
+
+    (up-compare-goal transport-exclude-id > 0)
+=>
+    (set-goal external-gatherers-stage 5)
+    ;(chst-to-allies "EG: 5")
+)
+
+(defrule
+    (goal external-gatherers-stage 5)
+    (up-compare-goal transport-exclude-id > 0)
+=>
+    (set-goal temporary-goal3 8)
+    (up-bound-point input-point-x gold-x)
+)
+
+(defrule
+    (goal external-gatherers-stage 5)
+    (up-can-build-line 0 input-point-x c: gold-building)
+    (up-compare-goal transport-exclude-id > 0)
+=>
+    (up-build-line input-point-x input-point-x c: gold-building)
+    (up-assign-builders c: mining-camp c: 5)
+    (set-goal external-gatherers-stage 6)
+    ;(up-send-flare input-point-x)
+    ;(chst-to-allies "EG: 6")
+    (up-jump-rule 1)
+)
+
+(defrule
+    (goal external-gatherers-stage 5)
+    (can-afford-building mining-camp)
+    (up-compare-goal temporary-goal3 > 0)
+    (up-compare-goal transport-exclude-id > 0)
+=>
+    (up-modify-goal temporary-goal3 c:- 1)
+    (up-bound-point input-point-x gold-x)
+    (set-goal point-variance 8)
+    (up-modify-goal point-variance g:- temporary-goal3)
+    (xs-script-call "ApplyRandomnessToPoint")
+    (up-jump-rule -2)
+)
+
+(defrule
+    (goal external-gatherers-stage 6)
+    (timer-triggered fifteensec)
+    (up-group-size c: external-gold-gatherers > 0)
+=>
+    (up-full-reset-search)
+    (up-set-group search-local c: external-gold-gatherers)
+    (up-filter-status c: status-resource c: list-active)
+    (up-set-target-object search-local c: 0)
+    (up-get-point position-object point-x)
+    (up-set-target-point point-x)
+    (up-filter-distance c: -1 c: 20)
+    (up-remove-objects search-local object-data-target == gold-mine-class)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-find-resource c: gold c: 15)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-remove-objects search-remote -1 > 0)
+    (up-get-search-state local-total)
+    (up-target-objects 0 action-default -1 -1)
+)
+
+(defrule
+    (goal external-gatherers-stage 6)
+    (up-compare-goal remote-total < 1)
+    (up-group-size c: external-gold-gatherers > 0)
+    (timer-triggered fifteensec)
+    (can-build lumber-camp)
+=>
+    (up-reset-filters)
+    (up-reset-search 0 0 1 1)
+    (up-filter-distance c: -1 c: 20)
+    (up-filter-status c: status-ready c: list-active)
+    (up-find-resource c: wood c: 20)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (set-goal remote-total 0)
+    (up-get-search-state local-total)
+    (set-goal temporary-goal3 10)
+)
+
+
+(defrule
+    (goal external-gatherers-stage 6)
+    (up-compare-goal remote-total < 1)
+    (up-group-size c: external-gold-gatherers > 0)
+    (timer-triggered fifteensec)
+    (can-build lumber-camp)
+    (up-compare-goal remote-total > 0)
+    (up-set-target-object search-remote c: 0)
+=>
+    (set-goal external-gatherers-stage 7)
+    (up-get-point position-object input-point-x)
+    (up-get-point position-object gold-x)
+)
+
+(defrule
+    (goal external-gatherers-stage 7)
+    (timer-triggered fifteensec)
+=>
+    (set-goal temporary-goal3 8)
+    (up-bound-point input-point-x gold-x)
+)
+
+(defrule
+    (goal external-gatherers-stage 8)
+    (up-can-build-line 0 input-point-x c: wood-building)
+    (up-compare-goal transport-exclude-id > 0)
+    (timer-triggered fifteensec)
+=>
+    (up-build-line input-point-x input-point-x c: wood-building)
+    (up-assign-builders c: lumber-camp c: 5)
+    (set-goal external-gatherers-stage 9)
+    ;(up-send-flare input-point-x)
+    ;(chst-to-allies "EG: 9")
+    (up-jump-rule 1)
+)
+
+(defrule
+    (goal external-gatherers-stage 8)
+    (can-afford-building lumber-camp)
+    (up-compare-goal temporary-goal3 > 0)
+    (up-compare-goal transport-exclude-id > 0)
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal temporary-goal3 c:- 1)
+    (up-bound-point input-point-x gold-x)
+    (set-goal point-variance 8)
+    (up-modify-goal point-variance g:- temporary-goal3)
+    (xs-script-call "ApplyRandomnessToPoint")
+    (up-jump-rule -2)
+)
+
+(defrule
+    (goal external-gatherers-stage 9)
+    (timer-triggered fifteensec)
+    (up-group-size c: external-gold-gatherers > 0)
+=>
+    (up-full-reset-search)
+    (up-set-group search-local c: external-gold-gatherers)
+    (up-filter-status c: status-ready c: list-active)
+    (up-set-target-object search-local c: 0)
+    (up-get-point position-object point-x)
+    (up-set-target-point point-x)
+    (up-filter-distance c: -1 c: 20)
+    (up-remove-objects search-local object-data-target == tree-class)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-find-resource c: wood c: 15)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-remove-objects search-remote -1 > 0)
+    (up-get-search-state local-total)
+    (up-target-objects 0 action-default -1 -1)
+)
+
+(defrule
+    (timer-triggered threesec)
+    (goal inseln yes)
+    (current-age == imperial-age)
+    (or(and(population > max-civ-pop)
+    (wood-amount > 700))
+    (or(population > 195)
+    (strategic-number sn-military-superiority > 1)))
+    (nand(up-compare-goal gl-threat-time < 10000)
+    (goal attacking no))
+    (or(current-age-time > 300)
+    (or(players-building-type-count every-ally market < 1)
+    (up-compare-goal market-placement >= stage4)))
+=>
+    (up-full-reset-search)
+    (up-filter-include 4 -1 -1 1)
+    (up-find-local c: all-units-class c: 59)
+    (up-reset-filters)
+    (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+    (set-strategic-number sn-focus-player-number my-player-number)
+    (up-set-target-point position-self-x)
+    (up-filter-range -1 20 -1 100)
+    (up-find-remote c: transport-ship-class c: 5)
+    (up-remove-objects search-remote object-data-id g:== transport-exclude-id)
+    (up-target-objects 0 action-garrison -1 -1)
+    (set-goal temporary-goal2 98456)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal7)
+)
+
+(defrule
+    (timer-triggered two-mins)
+    (goal inseln yes)
+    (current-age == imperial-age)
+    (or(and(population > max-civ-pop)
+    (wood-amount > 700))
+    (or(population > 192)
+    (strategic-number sn-military-superiority > 1)))
+    (nand(up-compare-goal gl-threat-time < 10000)
+    (goal attacking no))
+=>
+    (up-full-reset-search)
+    (up-filter-include 4 -1 -1 -1)
+    (up-find-local c: all-units-class c: 59)
+    (up-remove-objects search-local object-data-class == transport-ship-class)
+    (up-reset-filters)
+    (up-get-point-zone enemy-x temporary-goal2)
+    ;(up-send-flare enemy-x)
+    ;(up-chat-data-to-player 1 "Exclude zone: %d" g: temporary-goal2)
+    (up-get-point-zone position-self-x temporary-goal3)
+    (up-remove-objects search-local object-data-map-zone-id g:== temporary-goal2)
+    (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+    (set-strategic-number sn-focus-player-number my-player-number)
+    (up-set-target-point position-self-x)
+    (up-filter-range -1 20 -1 -1)
+    (up-find-remote c: transport-ship-class c: 5)
+    (up-remove-objects search-remote object-data-id g:== transport-exclude-id)
+    (up-target-objects 0 action-garrison -1 -1)
+    (set-goal temporary-goal2 98456)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal7)
+)
+(defrule
+    (goal temporary-goal2 98456)
+    (not(up-set-target-by-id g: fwd-villager-id))
+    (unit-type-count villager > 30)
+=>
+    (up-full-reset-search)
+    (up-filter-include -1 -1 -1 1)
+    (up-filter-exclude -1 actionid-build orderid-build -1)
+    (up-find-local c: villager-class c: 1)
+    (up-remove-objects search-local object-data-group-flag == external-gold-gatherers)
+    (up-remove-objects search-local object-data-order == orderid-enter)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (not(up-set-target-by-id g: fwd-villager-id))
+    (unit-type-count villager > 30)
+    (up-set-target-object search-local c: 0)
+=>
+    (up-get-object-data object-data-id fwd-villager-id)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (up-set-target-by-id g: fwd-villager-id)
+=>
+    (up-full-reset-search)
+    (up-add-object-by-id search-local g: fwd-villager-id)
+    (up-remove-objects search-local object-data-on-mainland != 1)
+    (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+    (set-strategic-number sn-focus-player-number my-player-number)
+    (up-set-target-point position-self-x)
+    (up-filter-range -1 20 -1 100)
+    (up-find-remote c: transport-ship-class c: 3)
+    (up-remove-objects search-remote object-data-id g:== transport-exclude-id)
+    (up-clean-search search-remote object-data-garrison-count search-order-desc)
+    (up-remove-objects search-remote -1 > 0)
+    (up-target-objects 0 action-garrison -1 -1)
+    (set-goal temporary-goal2 98456)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal7)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (unit-type-count warship-class > 0)
+=>
+    (generate-random-number 4)
+    (up-full-reset-search)
+    (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+    (up-set-target-point enemy-x)
+    (up-find-local c: warship-class c: 10)
+    (up-find-local c: cannon-galleon c: 10)
+    (up-clean-search search-local object-data-distance search-order-asc)
+    (up-set-target-object search-local c: 0)
+    (up-get-point position-object point-x)
+    (up-set-target-point point-x)
+    (up-lerp-percent point-x enemy-x c: 60);40
+    (up-get-point position-target point2-x)
+    (up-get-point-zone point2-x temporary-goal5)
+    (up-set-target-point point-x)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (up-filter-distance c: -1 c: 15)
+    (up-find-remote c: castle c: 1)
+    (up-get-search-state local-total)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (unit-type-count-total warship-class > 0)
+    (up-point-zone point-x g:== temporary-goal5)
+    (or(up-compare-goal remote-total < 1)
+    (or(gold-amount > 1000)
+    (wood-amount > 2000)))
+=>
+    (up-full-reset-search)
+    (up-filter-range 20 -1 -1 -1)
+    (up-find-local c: transport-ship-class c: 5)
+    (up-target-point point-x action-unload -1 -1)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (up-set-target-by-id g: fwd-villager-id)
+    (wood-amount > 200)
+=>
+    (up-full-reset-search)
+    (up-add-object-by-id search-local g: fwd-villager-id)
+    (up-remove-objects search-local object-data-on-mainland == 1)
+    (up-get-search-state local-total)
+    (up-set-target-object search-local c: 0)
+    (up-get-point position-object point-x)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (up-set-target-by-id g: fwd-villager-id)
+    (wood-amount > 200)
+    (research-completed ri-plate-mail)
+    (up-compare-goal local-total > 0)
+    (up-can-build-line 0 point-x c: barracks)
+    (building-type-count-total barracks < 9)
+=>
+    (up-full-reset-search)
+    (up-bound-point point-x point-x)
+    (up-build-line point-x point-x c: barracks)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (up-set-target-by-id g: fwd-villager-id)
+    (wood-amount > 200)
+    (research-completed ri-bracer)
+    (up-compare-goal local-total > 0)
+    (up-can-build-line 0 point-x c: barracks)
+    (building-type-count-total archery-range < 9)
+=>
+    (up-full-reset-search)
+    (up-bound-point point-x point-x)
+    (up-build-line point-x point-x c: archery-range)
+)
+
+(defrule
+    (goal temporary-goal2 98456)
+    (up-set-target-by-id g: fwd-villager-id)
+    (wood-amount > 200)
+    (research-completed ri-plate-barding)
+    (up-compare-goal local-total > 0)
+    (up-can-build-line 0 point-x c: stable)
+    (building-type-count-total stable < 9)
+=>
+    (up-full-reset-search)
+    (up-bound-point point-x point-x)
+    (up-build-line point-x point-x c: stable)
+)
+
+
+(defrule
+    (goal temporary-goal2 98456)
+    (up-set-target-by-id g: fwd-villager-id)
+    (wood-amount > 200)
+    (research-completed ri-siege-ram)
+    (up-compare-goal local-total > 0)
+    (up-can-build-line 0 point-x c: siege-workshop)
+    (building-type-count-total siege-workshop < 5)
+=>
+    (up-full-reset-search)
+    (up-bound-point point-x point-x)
+    (up-build-line point-x point-x c: siege-workshop)
+)
+
+(defrule
+    (timer-triggered one-min)
+    (goal inseln yes)
+=>
+    (up-full-reset-search)
+    (up-set-target-point position-self-x)
+    (up-filter-distance c: -1 c: 50)
+    (up-filter-include -1 -1 -1 1)
+    (up-find-resource c: wood c: 20)
+    (up-filter-status c: status-resource c: list-active)
+    (up-find-resource c: gold c: 15)
+    (up-find-resource c: stone c: 5)
+    (up-get-search-state local-total)
+)
+
+(defrule
+    (timer-triggered one-min)
+    (goal inseln yes)
+    (up-compare-goal remote-total < 15)
+=>
+    (set-goal island-resources-low yes)
+)
+
+(defrule
+    (goal island-resources-low yes)
+    (population >= eighty-pop)
+    (up-idle-unit-count idle-type-villager >= 5)
+    (unit-type-count villager > 40)
+    (or(players-building-count target-player > 0)
+    (players-unit-count target-player > 0))
+=>
+    (up-full-reset-search)
+    (up-filter-include -1 -1 -1 1)
+    (up-find-local c: villager-class c: 20)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-action == actionid-gather);an orderid might be old
+    (up-remove-objects search-local object-data-order == orderid-attack)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (up-find-remote c: all-units-class c: 1)
+    (up-target-objects 0 action-delete -1 -1)
+)
+
+(defrule
+    (timer-triggered ten-mins)
+    (population > eighty-pop)
+    (unit-type-count transport-ship-class > 0)
+=>
+    (up-full-reset-search)
+    (up-filter-range 5 -1 -1 -1)
+    (up-find-local c: transport-ship-class c: 10)
+    (up-remove-objects search-local object-data-id g:== transport-exclude-id)
+    (up-target-point enemy-x action-unload -1 -1)
+)
+
+(defrule
+    (timer-triggered ten-mins)
+    (unit-type-count transport-ship > 0)
+    (population > eighty-pop)
+=>
+    (up-full-reset-search)
+    (up-set-target-point enemy-x)
+    (up-filter-include 4 -1 -1 0)
+    (up-filter-distance c: -1 c: 50)
+    (up-find-local c: all-units-class c: 60)
+    (up-target-point 0 action-attack-move -1 -1)
+)
+
+;end jump

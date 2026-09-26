@@ -134,6 +134,9 @@
 )
 
 
+
+
+
 (defrule
 (or	(game-time >= 4200)
 (or	(up-compare-goal feinde <= 2);	(up-timer-status fivesec == timer-running)
@@ -144,7 +147,7 @@
 	(set-goal ep-cpop 0)
 	(set-goal ep-mpop 0)
 	(set-goal ep-stables 0)
-	(up-jump-rule 10))
+	(up-jump-rule 7));10
 (defrule
 	(true)
 =>
@@ -153,8 +156,9 @@
 	(up-get-point position-focus temporary-point-x)
 	(up-set-target-point temporary-point-x)
 	(set-strategic-number sn-focus-player-number 1)
-	(set-goal temporary-goal3 20)
+	(set-goal temporary-goal3 140)
 	(set-goal temporary-goal4 0)
+	(up-full-reset-search)
 	(set-goal temporary-goal5 0))
 (defrule; end neg jump
 	(strategic-number sn-focus-player-number != my-player-number)
@@ -162,7 +166,7 @@
 (not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
 	(player-in-game focus-player)
 =>
-	(up-full-reset-search)
+	;(up-full-reset-search)
 	(up-filter-distance c: -1 g: temporary-goal3)
 	(up-find-remote c: building-class c: 1)
 	(up-find-remote c: farm-class c: 1)
@@ -170,43 +174,42 @@
 	(up-find-remote c: wall-class c: 1)
 	(up-find-remote c: gate-class c: 1)
 	(set-goal temporary-goal4 1))
+
 (defrule
-	(goal temporary-goal4 1)
-	(goal temporary-goal5 0)
-	(up-set-target-object search-remote c: 0)
-=>
-	(up-modify-goal enemy-pocket s:= sn-focus-player-number)
-	(up-jump-rule 4))
-(defrule
-	(goal temporary-goal4 1)
-	(goal temporary-goal5 1)
-	(players-building-count focus-player <= 0)
-=>
-	(up-modify-goal enemy-pocket s:= sn-focus-player-number)
-	(up-jump-rule 3))
-(defrule
-	(up-compare-goal temporary-goal3 >= 120)
-=>
-	(set-strategic-number sn-focus-player-number 1)
-	(set-goal temporary-goal5 1)
-	(set-goal temporary-goal3 20)
-	(set-goal temporary-goal4 0)
-	(up-jump-rule -4))
-(defrule
-	(strategic-number sn-focus-player-number < max-players)
+	(strategic-number sn-focus-player-number <= max-players)
 =>
 	(up-modify-sn sn-focus-player-number c:+ 1)
-	(set-goal temporary-goal4 0)
-	(up-jump-rule -5))
+	(up-jump-rule -2)
+)
+
 (defrule
-	(strategic-number sn-focus-player-number >= max-players)
-	(goal temporary-goal5 0)
-	(up-compare-goal temporary-goal3 < 120)
+	(up-set-target-object search-remote c: 0)
 =>
-	(set-strategic-number sn-focus-player-number 1)
-	(up-modify-goal temporary-goal3 c:+ 10)
-	(set-goal temporary-goal4 0)
-	(up-jump-rule -6))
+	(up-set-target-point position-self-x)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-player temporary-goal8)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal8)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(stance-toward focus-player enemy)
+=>
+	(up-modify-goal enemy-pocket g:= temporary-goal8)
+	(up-jump-rule 1)
+	;(up-chat-data-to-player my-player-number "Enemy pocket: %d" g: enemy-pocket)
+)
+
+(defrule
+	(players-building-count every-enemy > 0)
+=>
+	(up-find-player enemy find-closest temporary-goal8)
+	(up-find-next-player enemy find-closest temporary-goal8)
+	(up-modify-goal enemy-pocket g:= temporary-goal8)
+	;(up-chat-data-to-player my-player-number "Enemy pocket 2: %d" g: enemy-pocket)
+)
+
 (defrule
 (or	(players-building-count focus-player <= 0)
 (or	(strategic-number sn-focus-player-number == my-player-number)
@@ -379,6 +382,7 @@
 	(set-strategic-number siege 0)
 	(set-strategic-number moenche 0)
 	(set-strategic-number moenchesiege 0)
+	(set-strategic-number cavarchers 0);new
 	(up-get-rule-id current-rule-id))
 (defrule ; debug rule
 (or	(not	(player-in-game target-player))
@@ -461,6 +465,9 @@
 	(up-get-focus-fact unit-type-count shrivamsha-rider-line temporary-goal)
 	(up-modify-goal temporary-goal c:max 0)
 	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count kona-line temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavalry g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count armored-elephant-line temporary-goal)
 	(up-modify-goal temporary-goal c:/ 2) 
 	(up-modify-goal temporary-goal c:max 0)
@@ -533,6 +540,9 @@
 	(up-modify-goal temporary-goal g:+ temporary-goal8)
 	(up-modify-goal temporary-goal c:max 0)
 	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count jarl-line temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavalry g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count coustillier temporary-goal)
 	(up-get-focus-fact unit-type-count elite-coustillier temporary-goal8)
 	(up-modify-goal temporary-goal g:+ temporary-goal8)
@@ -585,7 +595,7 @@
 	(up-get-focus-fact unit-type-count rattan-archer temporary-goal)
 	(up-modify-goal temporary-goal c:max 0)
 	(up-modify-sn archers g:+ temporary-goal)
-	(up-get-focus-fact unit-type-count blackwood-archer temporary-goal)
+	(up-get-focus-fact unit-type-count blackwood-archer-line temporary-goal)
 	(up-modify-goal temporary-goal c:max 0)
 	(up-modify-sn archers g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count elite-rattan-archer temporary-goal)
@@ -627,6 +637,7 @@
 	(up-get-focus-fact unit-type-count mangudai-line temporary-goal)
 	(up-modify-sn cavarchers g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count elephant-archer temporary-goal)
+	(set-goal temporary-goal8 0)
 	(up-get-focus-fact unit-type-count elite-elephant-archer temporary-goal8)
 	(up-modify-goal temporary-goal g:+ temporary-goal8)
 	(up-modify-goal temporary-goal c:* 2)
@@ -648,6 +659,18 @@
 	(up-modify-goal temporary-goal c:max 0)
 	(up-modify-sn cavarchers g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count kipchak temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavarchers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count mounted-crossbowman-line temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavarchers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count ratha-count1 temporary-goal);only count ranged
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavarchers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count xanbei-raider temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavarchers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count bolas-rider temporary-goal)
 	(up-modify-goal temporary-goal c:max 0)
 	(up-modify-sn cavarchers g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count elite-kipchak temporary-goal)
@@ -687,6 +710,8 @@
 	(up-modify-sn spears g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count huskarl-line temporary-goal)
 	(up-modify-sn husks g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count hearth-troop-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count jian-swordsman temporary-goal)
 	(up-modify-sn husks g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count barracks-huskarl temporary-goal)
@@ -731,6 +756,14 @@
 	(up-get-focus-fact unit-type-count berserk-line temporary-goal)
 	(up-modify-sn infantry g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count white-feather-guard-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count varangian-guard-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count jomsviking-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count temple-guard-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count ibirapema-warrior-line temporary-goal)
 	(up-modify-sn infantry g:+ temporary-goal)
 	(up-get-focus-fact unit-type-count woad-raider-line temporary-goal)
 	(up-modify-sn infantry g:+ temporary-goal))
@@ -1697,22 +1730,22 @@
 =>
 	(up-modify-sn sn-military-superiority c:max 1))
 
-#load-if-not-defined UP-HUMAN-IN-GAME
-(defrule
-(or	(strategic-number sn-military-superiority != 0)
-(or	(military-population >= 2)
-(or	(players-military-population any-ally >= 2)
-	(players-military-population any-enemy >= 2))))
-	(timer-triggered MSuperiority)
-=>
-	(up-chat-data-to-self text-mil-sup-number g: temporary-goal2);	(up-chat-data-to-self text-mil-sup-number s: target-military-superiority)
-	(up-chat-data-to-self text-mil-sup-level s: sn-military-superiority)
-	(up-chat-data-to-self text-civ-sup-number s: target-civilian-superiority)
-;	(up-chat-data-to-self text-team-sup-number g: teamsuperiority-number)
-	(up-chat-data-to-self text-team-sup-level s: teamsuperiority)
-;	(up-chat-data-to-self text-mil-sup-player g: temporary-goal4)
-;	(up-chat-data-to-self text-assisting-ally g: assistance)
-)
+#load-if-not-defined UP-HUMAN-IN-GAME ;commenting because this can be a useful debug rule, but shouldn't run every test game
+; (defrule
+; (or	(strategic-number sn-military-superiority != 0)
+; (or	(military-population >= 2)
+; (or	(players-military-population any-ally >= 2)
+; 	(players-military-population any-enemy >= 2))))
+; 	(timer-triggered MSuperiority)
+; =>
+; 	(up-chat-data-to-self text-mil-sup-number g: temporary-goal2);	(up-chat-data-to-self text-mil-sup-number s: target-military-superiority)
+; 	(up-chat-data-to-self text-mil-sup-level s: sn-military-superiority)
+; 	(up-chat-data-to-self text-civ-sup-number s: target-civilian-superiority)
+; ;	(up-chat-data-to-self text-team-sup-number g: teamsuperiority-number)
+; 	(up-chat-data-to-self text-team-sup-level s: teamsuperiority)
+; ;	(up-chat-data-to-self text-mil-sup-player g: temporary-goal4)
+; ;	(up-chat-data-to-self text-assisting-ally g: assistance)
+; )
 #end-if
 (defrule
 	(true)

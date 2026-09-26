@@ -489,7 +489,7 @@
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 2); 3
 ; init	(up-assign-builders c: town-center-foundation c: 20)
-	(set-strategic-number sn-town-center-placement lumber-camp);	(set-strategic-number sn-town-center-placement 0)
+	(set-strategic-number sn-town-center-placement wood-building);	(set-strategic-number sn-town-center-placement 0)
 	(set-strategic-number sn-placement-zone-size 40)
 	(up-set-placement-data this-any-ally -1 c: -25)
 	(up-build place-control 0 c: town-center)
@@ -527,7 +527,7 @@
 ;	(up-send-flare building-point-x)
 	(set-strategic-number sn-placement-zone-size 20)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
-	(set-strategic-number sn-town-center-placement lumber-camp)
+	(set-strategic-number sn-town-center-placement wood-building)
 	(up-modify-goal temporary-goal g:= escrow-state)
 	(set-goal escrow-state with-escrow)
 	(up-build place-point escrow-state c: town-center)
@@ -622,12 +622,12 @@
 (defrule
 	(up-compare-flag escrow-flag2 == 16777216)
 	(up-compare-goal migration-state != 1)
-	(can-build-with-escrow lumber-camp)
+	(can-build-with-escrow wood-building)
 =>
 ;(up-chat-data-to-all "sn-placement-zone-size: %d" s: sn-placement-zone-size)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(up-set-placement-data my-player-number villager-class c: 0)
-	(up-build place-control 0 c: lumber-camp))
+	(up-build place-control 0 c: wood-building))
 ;=============================================================
 ;=============================================================
 (defrule
@@ -1112,7 +1112,7 @@
 (defrule
 ;(or	(and	(strategic-number sn-current-age <= dark)
 ;		(up-compare-goal strategy-type <= feudal-war))
-(or	(building-type-count lumber-camp <= 0)
+(or	(building-type-count wood-building <= 0)
 (or	(goal underattack yes)
 (or	(up-compare-goal custom-civ-pop >= up-max-civ)
 	(up-research-status c: ri-double-bit-axe != research-available))));)
@@ -1156,7 +1156,7 @@
 		(up-pending-objects c: villager < 2))
 (or	(unit-type-count-total villager < 24)
 (or	(goal underattack yes)
-(or	(building-type-count lumber-camp <= 0)
+(or	(building-type-count wood-building <= 0)
 	(up-research-status c: ri-bow-saw != research-available))))))
 =>
 	(up-jump-rule 2))
@@ -1184,7 +1184,7 @@
 	(up-modify-flag escrow-flag2 c:+ 2))
 ;=============================================================
 (defrule
-(or	(building-type-count mill <= 0)
+(or	(building-type-count food-building <= 0)
 (or	(and	(building-type-count-total farm g:> maxfarms)
 		(up-compare-goal custom-civ-pop < up-max-civ))
 	(and	(up-compare-goal strategy-type == feudal-war)
@@ -1324,7 +1324,7 @@
 (or	(unit-type-count-total villager < 27); 30
 (or	(up-research-status c: ri-bow-saw == research-available)
 (or	(goal underattack yes)
-(or	(building-type-count mill <= 0)
+(or	(building-type-count food-building <= 0)
 	(up-research-status c: ri-heavy-plow != research-available)))))
 =>
 	(up-jump-rule 4))
@@ -2743,7 +2743,7 @@
 		(and	(unit-type-count-total transport-ship <= 0)
 			(wood-amount < 400)))
 	(and	(building-type-count-total town-center <= 0)
-		(and	(building-type-count-total lumber-camp <= 0)
+		(and	(building-type-count-total wood-building <= 0)
 			(and	(wood-amount < 375)
 				(or	(wood-amount < 275)
 					(stone-amount < tc-stone))))))
@@ -2958,10 +2958,10 @@
 ;=============================================================
 (defrule
 	(goal landnomad 3)
-(not	(up-pending-placement c: lumber-camp))
+(not	(up-pending-placement c: wood-building))
 	(unit-type-count-total villager >= 1)
 	(building-type-count-total town-center <= 0)
-	(building-type-count-total lumber-camp <= 0)
+	(building-type-count-total wood-building <= 0)
 =>
 	(up-modify-sn sn-maximum-food-drop-distance c:max 16); 20
 	(set-strategic-number sn-maximum-wood-drop-distance 28); 30
@@ -2971,7 +2971,7 @@
 	(up-modify-sn sn-placement-zone-size g:+ 510)
 	(up-modify-goal 510 c:+ 10)
 	(up-modify-goal 510 c:min 215)
-;	(up-add-object-cost c: lumber-camp c: 1)
+;	(up-add-object-cost c: wood-building c: 1)
 ;	(up-modify-flag escrow-flag2 c:+ 16777216)
 )
 ;=============================================================

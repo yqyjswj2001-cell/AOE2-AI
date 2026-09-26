@@ -31,10 +31,13 @@ def git_blob_sha(data: bytes) -> str:
     return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 
+from official_baseline import official_module_count
+
 official_files = sorted(p.name for p in OFFICIAL.glob("*.per"))
 adjusted_files = sorted(p.name for p in ADJUSTED.glob("*.per"))
-if official_files != adjusted_files or len(official_files) != 36:
-    raise SystemExit("adjusted Promisory must mirror all 36 official filenames")
+expected = official_module_count()
+if official_files != adjusted_files or len(official_files) != expected:
+        raise SystemExit("adjusted Promisory must mirror every official filename")
 
 for name in official_files:
     a = (OFFICIAL / name).read_bytes()

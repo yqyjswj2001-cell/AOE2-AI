@@ -95,6 +95,19 @@ class WorkRegistryTests(unittest.TestCase):
         self.assertEqual(found["artifact_kind"], "installable_zip")
         self.assertEqual(found["module_files"], 36)
 
+    def test_current_official_count_is_recognized_and_other_counts_are_not(self):
+        tools = Path(__file__).resolve().parents[2] / "tools"
+        sys.path.insert(0, str(tools))
+        from official_baseline import official_module_count
+
+        count = official_module_count()
+        self.modules = {f"module{i}.per": f"; GENERATED {i}\n".encode() for i in range(count)}
+        found = recognize_artifact(self.plain_zip("CURRENT_AI"))
+        self.assertEqual(found["module_files"], count)
+        self.modules = {f"module{i}.per": f"; GENERATED {i}\n".encode() for i in range(37)}
+        with self.assertRaises(RegistryError):
+            recognize_artifact(self.plain_zip("ODD_AI"))
+
     def test_raw_script_directory_is_recognized(self):
         root = self.root / "RAW_AI"
         root.mkdir()

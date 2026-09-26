@@ -25,7 +25,7 @@ E:\AIproject\playgame\官方DE_AI_极难基线_禁止修改
 S:\SteamLibrary\steamapps\common\AoE2DE\resources\_common\ai\Promisory
 ```
 
-本目录的 `Promisory/` 包含 36 个官方 `.per` 模块，共 3,758,279 字节。复制后已逐文件比较 SHA-256，结果为 36/36 一致。`ai.txt` 也从同一官方 AI 根目录复制。
+本目录的 `Promisory/` 包含当前冻结的官方 `.per` 模块，共 38 个、3,887,191 字节。复制后已逐文件比较 SHA-256，结果为 38/38 一致。`ai.txt` 也从同一官方 AI 根目录复制。
 
 这些文件保留官方原貌，包含全部难度、地图、文明和模式的条件编译分支；本副本没有预处理成单独的极难版本，也不是已经验证可独立加载的单文件 AI。
 

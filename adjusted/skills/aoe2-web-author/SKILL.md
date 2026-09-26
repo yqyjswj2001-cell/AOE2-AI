@@ -127,7 +127,15 @@ python -X utf8 -B adjusted/web-author/web_session.py build --project <名称>
 
 校验缺项或类型错误时读取项目 tmp/answer-diagnostics.json，把其中具体文件和参数键交给同一作者修正；不要只转述“未填完整”。其他错误只反馈参数键、类型、范围或关联要求，不要反馈官方参考值或固定源码。用现有 renderer 机械代入，不编译另一套策略语言。不能把 null 填零或默默回退默认值。完成时返回真实交付目录、哈希回执和静态结果。
 
-`build` 不需要本机安装 AoE2DE，也不读取或检查 `PromiDE.per2`。用户选择 `raw_scripts` 时输出 36 个 `.per`；选择 `share_package` 时输出一个 `.zip`，ZIP 内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`，用于直接发送给别人。分享包不是游戏安装包。不要生成 `.ai`、`resources/_common/ai` 安装结构、主入口或安装模板，也不要因为本机没有游戏而阻止 launch、授权、文明选择、参数创作、validate 或 build。
+`build` 不需要本机安装 AoE2DE，也不读取或检查 `PromiDE.per2`。用户选择 `raw_scripts` 时输出当前冻结官方基线的全部 `.per`；选择 `share_package` 时输出一个 `.zip`，ZIP 内含同一套 `.per`、`manifest.json` 和 `README.txt`，用于直接发送给别人。分享包不是游戏安装包。不要生成 `.ai`、`resources/_common/ai` 安装结构、主入口或安装模板，也不要因为本机没有游戏而阻止 launch、授权、文明选择、参数创作、validate 或 build。
+
+## 冻结官方基线
+
+当前冻结基线是 `official/raw/Promisory` 的 38 个 `.per`，`adjusted/Promisory/` 必须与之逐字节一致。build、分享包和安装的模块数量都按这个目录清点，不要写死 36。
+
+`extremebuildings3.per` 与 `extremebuildings4.per` 是新增的整文件固定模块，不进入挖空模板。已挖空的仍是 17 个模块、1715 个动态参数和 580 个固定项。
+
+`adjusted/cloze/migration/requires-answer.json` 只列 10 个必须重答的落点参数：3 个伐木屋配额改为计 `wood-building`，2 个采矿营配额改为计 `gold-building`，5 个磨坊配额改为计 `food-building`。缺其中任一答案时渲染失败。其余 1705 个旧动态参数保持原答卷。不要猜测这 10 个值，也不要把文件里的 `official_value` 或迁移前的旧答案写进去。
 
 ## 已有作品登记
 
@@ -138,12 +146,12 @@ python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifac
 ```
 
 该入口会自己识别：
-- 当前分享包：根目录有 `manifest.json`，内部为 `<脚本名>/` + 36 个 PER；
-- 旧式脚本 ZIP：没有 manifest，但存在唯一的 36-PER 脚本目录；
+- 当前分享包：根目录有 `manifest.json`，内部为 `<脚本名>/` 加上当前冻结基线的全部 PER（现在是 38 个）；以前的分享包仍可以是 36 个 PER；
+- 旧式脚本 ZIP：没有 manifest，但存在唯一的 36 或 38 个 PER 的脚本目录；
 - 旧式可安装 ZIP：`resources/_common/ai/<脚本名>.ai/.per/<脚本名>/`；
-- 原生脚本目录：目录内正好 36 个 PER。
+- 原生脚本目录：目录内正好是以前的 36 个 PER，或当前冻结基线的全部 PER。
 
-识别依据是**36 个 PER 的文件名和 SHA-256 内容指纹**，不是 ZIP 文件名。相同脚本被重新压缩、移动或再次登记时更新同一条作品记录，不重复造一条。
+识别依据是这套 PER 的文件名和 SHA-256 内容指纹，不是 ZIP 文件名。相同脚本被重新压缩、移动或再次登记时更新同一条作品记录，不重复造一条。其他模块数量不会被当成已完成作品。
 
 旧包自身无法证明的历史信息（模型、Agent、模式、文明、创作日期等）保持“未知”，不得根据文件名、聊天习惯或当前模型猜测。只有当前 Agent 能从原创作会话中直接证明某些信息时，才可额外写一个 JSON，例如：
 
@@ -221,12 +229,12 @@ python -X utf8 -B adjusted/web-author/web_session.py install --project <名称> 
 python -X utf8 -B adjusted/web-author/web_session.py install --project <名称> --game-root "<AoE2DE根目录>" --confirm-install
 ```
 
-安装命令支持本轮选择的原生脚本或分享脚本包。它只读游戏自带 `resources/_common/drs/gamedata_x2/PromiDE.per2` 和 `resources/_common/ai/Promisory`，不修改官方文件；仅用它们核对游戏版本并生成自定义 AI 的加载入口。实际写入位置必须是 **`<AoE2DE>/resources/_common/ai`**，不得把个人存档、模组缓存、用户资料目录或“看起来像 AI 目录”的路径当作成功安装。
+安装命令支持本轮选择的原生脚本或分享脚本包。它只读游戏自带 `resources/_common/drs/gamedata_x2/PromiDE.per2` 和 `resources/_common/ai/Promisory`，不修改官方文件；仅用它们核对游戏版本并生成自定义 AI 的加载入口。安装器只改写指向官方 `Promisory` 的加载行。合法的相对 `(include "ailib/...")` 保持原样，也不因此放宽“游戏版本必须与冻结基线一致”的检查。实际写入位置必须是 **`<AoE2DE>/resources/_common/ai`**，不得把个人存档、模组缓存、用户资料目录或“看起来像 AI 目录”的路径当作成功安装。
 
 成功安装后必须同时存在并通过校验：
 - `<脚本名>.ai`：空标记文件；
 - `<脚本名>.per`：主入口，所有官方 `Promisory\...` 加载都已改写为 `<脚本名>\...`；
-- `<脚本名>/`：36 个本轮已构建 `.per` 模块，内容哈希与构建产物一致。
+- `<脚本名>/`：当前冻结官方基线的全部本轮已构建 `.per` 模块，内容哈希与构建产物一致。
 
 如果同名 AI 已存在，安装器先备份到本项目 `install-backups/` 再覆盖。游戏版本与仓库冻结官方基线不一致时停止安装，不能强行混用。安装失败不影响已经完成的创作和 build。
 
@@ -234,11 +242,11 @@ python -X utf8 -B adjusted/web-author/web_session.py install --project <名称> 
 
 AoE2 DE Update 185872（2026-09-22）之后，游戏可能在进入对局时把 AI 玩家名重新显示成文明领袖名，即使自定义 AI 本身已经正确加载。直接安装器因此还会在 `resources/_common/xs` 生成一个仅用于显示名称的 XS 兼容文件，并在自定义主 `.per` 开局调用 `xsSetPlayerName`，目标名字就是本轮脚本名；这不改变策略参数或官方 AI 文件。安装回执中的 `scoreboard_name`、`scoreboard_name_method`、`scoreboard_name_xs` 用于复核这一层。
 
-若游戏内仍显示文明领袖名，先确认安装回执包含 `scoreboard_name_method=xsSetPlayerName`，再核对大厅实际选中的 AI 类型、同名 `.ai/.per`、36 模块、XS 文件和游戏日志。不要先解释成“脚本其实没加载”或“领袖名是正常现象”。**静态安装校验不能代替真实游戏记分板实测。** 除非用户另外明确要求，不自动启动游戏或代替用户操作大厅。
+若游戏内仍显示文明领袖名，先确认安装回执包含 `scoreboard_name_method=xsSetPlayerName`，再核对大厅实际选中的 AI 类型、同名 `.ai/.per`、全部模块、XS 文件和游戏日志。不要先解释成“脚本其实没加载”或“领袖名是正常现象”。**静态安装校验不能代替真实游戏记分板实测。** 除非用户另外明确要求，不自动启动游戏或代替用户操作大厅。
 
 ## 用量与结束
 
-**只有本轮手动开启 Token 测试计量时**，才查看 next.usage_task、next.usage_connection 和最新授权回执（以 usage_connection.authorized 为准，撤回后不能沿用冻结 request 的旧值）。**不要让用户选择或绑定用量会话。** 用户在第一步授权后，后台自动识别唯一的本轮活跃主会话；主代理如果掌握当前宿主或子代理的精确 session ID，可自行通过 usage bind 登记，不在聊天里询问用户。存在多个无法证明归属的候选时保持计量缺口并继续创作，不按“最近会话”猜测，也不把检测到安装目录当作已采集。用户选择“本轮不计量”时不得读取自动 usage 来源。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 用项目 Hook 归属当前 conversation，并把 stop 事件里的父代理 token 入账：input_tokens 已含缓存读写，同一 generation_id 只记 stop，不与 afterAgentResponse 相加，也不读取 bubble.tokenCount 或按上下文占用估算。默认“当前 Agent”且已授权时同样记录。子代理 token 不在 stop 里，覆盖保持部分。已有 Hook 合计的 conversation 不再叠加 Team Admin Usage Events。用户选择 Agent 不构成自动计量成功。
+**只有本轮手动开启 Token 测试计量时**，才查看 next.usage_task、next.usage_connection 和最新授权回执（以 usage_connection.authorized 为准，撤回后不能沿用冻结 request 的旧值）。**不要让用户选择或绑定用量会话。** 用户在第一步授权后，后台自动识别唯一的本轮活跃主会话；主代理如果掌握当前宿主或子代理的精确 session ID，可自行通过 usage bind 登记，不在聊天里询问用户。存在多个无法证明归属的候选时保持计量缺口并继续创作，不按“最近会话”猜测，也不把检测到安装目录当作已采集。用户选择“本轮不计量”时不得读取自动 usage 来源。可使用 GitHub ccusage 的受控、按会话导出的 JSON 快照，通过 usage --action ccusage 导入；只能用真实记录，不能自己编造快照。Cursor IDE 用项目 Hook 归属当前 conversation，并把 stop 事件里的父代理 token 入账：input_tokens 已含缓存读写，同一 generation_id 只记 stop，不与 afterAgentResponse 相加，也不读取 bubble.tokenCount 或按上下文占用估算。subagentStart 只保存 subagent_id 与 parent_conversation_id；subagentStop 带整数 token 且能对上该父子关系时另计，对不上就保持缺口。默认“当前 Agent”且已授权时同样记录。已有 Hook 合计的 conversation 不再叠加 Team Admin Usage Events。用户选择 Agent 不构成自动计量成功。
 
 用量来自已绑定本项目的宿主实际 usage 或显式上报。上下文/工作流版本号不是模型 token。没有数据显示未采集；不按字数估算、不补零、不把并行无关任务算进来。子代理必须有可验证的会话或 usage 来源绑定；未能覆盖全部作者/审查调用时保持 PARTIAL。见计量说明登记来源、补报和封账。
 
@@ -249,3 +257,15 @@ python -X utf8 -B adjusted/web-author/web_session.py usage --project <名称> --
 python -X utf8 -B adjusted/web-author/web_session.py finish --project <名称>
 ```
 单纯关闭浏览器或结束会话不代表交付或用量完整。作品页的“开发报告”标签可一键生成两个 Markdown：`creation-report.md` 是页面可直接查看/复制的主报告；`technical-details.md` 合并完整问题/反馈、参数诊断、阶段与调用用量、构建详情、事件时间线和日志摘要。开发报告本身不要额外打 ZIP；仅当用户输出方式选择分享脚本包时，脚本交付生成 ZIP。finish 时还会自动保留最终两份报告。报告不能把未执行的游戏验证写成通过。最终聊天只需简短报告参数交付、实际用量覆盖和未验证部分。
+
+## 创作包保存与整理
+
+一轮创作包就是 `adjusted/.local/author-projects/<名称>/` 这一个目录。分享脚本包 ZIP 只是其中的脚本交付，不能代替创作包。创作包不进入 git，也不要复制到仓库根目录或其他路径。
+
+`launch` 时选定的目录名就是这轮的架位，之后不要改名、不要并进别的轮次、不要复用旧目录。目录名用能辨认的新英文短名；游戏里的名字仍只用网页确定的脚本名，两者不必相同。
+
+`finish` 之后才算这轮已保存。保存时留在原目录，至少要还在：`project.json`、`answers/`、`author-input/`、`author-session/`、`submissions/`、`delivery/`、`development/reports/` 里本轮的 `creation-report.md` 与 `technical-details.md`，以及 `authoring/metrics`。不要为了“收拾干净”删掉答卷、交付、报告或用量账本。仓库根目录不要留下 `tmp_*.py` 或其他临时分析文件。分析草稿写入 `adjusted/.local/tmp/`；本包自己的 `tmp/` 只放这一轮的会话材料。
+
+每轮 `finish` 后，用本包 `project.json` 里的真实字段更新 `adjusted/.local/author-projects/CATALOG.md` 一行：目录名、脚本名、文明、输出方式、状态、build 标识。缺哪项就空着，不要编。这个目录清单同样只留在 `.local`，不提交。
+
+只有用户点名某一轮时才删除该目录。不要连同 `.active.lock`、`ui-token-revision`、`cursor-hook-events.sqlite3`、文明选择记录或其他创作包一起删。未 `finish` 的包保持原样，不要提前归档或宣布已保存。

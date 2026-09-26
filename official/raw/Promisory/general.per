@@ -132,7 +132,7 @@
 	(goal landnomad yes)
 (or	(up-compare-goal temporary-goal2 <= 25)
 (or	(game-time >= 48); back-up; 55
-	(building-type-count-total lumber-camp >= 1)))
+	(building-type-count-total wood-building >= 1)))
 =>
 	(set-goal 511 0)
 	(up-full-reset-search)
@@ -167,7 +167,7 @@
 	(disable-self)); end jump
 (defrule
 	(goal landnomad yes)
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 	(dropsite-min-distance wood s:> sn-maximum-wood-drop-distance); chop wood at any distance
 	(strategic-number sn-maximum-wood-drop-distance g:< map-size)
 =>
@@ -192,7 +192,7 @@
 	(game-time < 180)
 	(unit-type-count-total villager >= 1)
 	(building-type-count-total town-center <= 0)
-	(building-type-count-total lumber-camp <= 0)
+	(building-type-count-total wood-building <= 0)
 (or	(strategic-number sn-number-explore-groups < 100)
 	(strategic-number sn-minimum-civilian-explorers < 99))
 =>
@@ -212,7 +212,7 @@
 ;	(game-time < 480)
 	(building-type-count town-center <= 0)
 (or	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1))
+	(building-type-count-total wood-building >= 1))
 (or	(strategic-number sn-number-explore-groups != 1)
 	(strategic-number sn-percent-civilian-explorers != 0))
 =>
@@ -274,7 +274,7 @@
 	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance);); test
 	(up-compare-goal mysheep < 1)
 	(up-compare-goal total-food-amount < 100); 50
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(wood-amount >= 120)
 =>
 	(up-reset-scouts)
@@ -291,7 +291,7 @@
 (or	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance);(dropsite-min-distance deer-hunting <= 30)
 (or	(up-compare-goal mysheep >= 2)
 (or	(up-compare-goal total-food-amount >= 50)
-	(building-type-count-total mill >= 1))));)
+	(building-type-count-total food-building >= 1))));)
 	(strategic-number sn-percent-civilian-explorers >= 99)
 =>
 	(set-strategic-number sn-number-explore-groups 1)
@@ -303,7 +303,7 @@
 
 (defrule
 	(goal nomaden yes)
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 =>
 	(up-reset-scouts)
 	(set-strategic-number sn-number-explore-groups 1)
@@ -318,7 +318,7 @@
 (defrule
 	(goal nomaden yes)
 	(building-type-count-total town-center <= 0)
-(or	(building-type-count lumber-camp >= 1)
+(or	(building-type-count wood-building >= 1)
 	(wood-amount >= tc-100-wood))
 	(wood-amount >= housetc-cost)
 	(stone-amount >= tc-stone)
@@ -355,7 +355,7 @@
 (defrule
 	(goal nomaden yes)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total mill >= 1)
+	(building-type-count-total food-building >= 1)
 	(strategic-number sn-number-explore-groups != 1)
 =>
 	(up-reset-scouts)
@@ -383,32 +383,32 @@
 	(game-time > 5)
 	(up-gaia-type-count-total c: wood >= 15)
 	(building-type-count-total town-center <= 0)
-	(building-type-count-total lumber-camp <= 0)
+	(building-type-count-total wood-building <= 0)
 	(wood-amount >= 100)
-	(building-available lumber-camp)
-;	(can-build lumber-camp)
+	(building-available wood-building)
+;	(can-build wood-building)
 =>
 	(set-goal landnomad 3)
 	(set-strategic-number sn-wood-gatherer-percentage 100)
 	(chat-local-to-self "Vills met.")); split
 
 (defrule
-	(up-pending-placement c: lumber-camp)
+	(up-pending-placement c: wood-building)
 	(timer-triggered fivesec)
 ;(or	(goal landnomad yes)
 ;(or
 	(goal landnomad 3)
 ;	(goal nomaden yes)))
 	(game-time < 180)
-	(building-type-count-total lumber-camp < 1)
+	(building-type-count-total wood-building < 1)
 =>
 ;	(up-modify-sn sn-camp-max-distance g:= map-size)
 	(chat-local-to-self "Resetting lc-placement.")
-	(up-reset-placement c: lumber-camp)
+	(up-reset-placement c: wood-building)
 	(disable-self))
 (defrule
 	(timer-triggered fivesec)
-	(building-type-count-total lumber-camp <= 0)
+	(building-type-count-total wood-building <= 0)
 	(game-time >= 45)
 	(goal landnomad 3)
 =>
@@ -416,12 +416,12 @@
 	(set-escrow-percentage wood 0)
 	(set-goal escrowing 0)
 	(chat-local-to-self "Resetting lc-placement.")
-	(up-reset-placement c: lumber-camp))
+	(up-reset-placement c: wood-building))
 
 
 (defrule
 	(goal migration-state 1)
-	(building-type-count-total lumber-camp <= 0)
+	(building-type-count-total wood-building <= 0)
 	(wood-amount < campdock-cost)
 (or	(wood-amount < 125)
 	(and	(building-type-count-total dock <= 0)
@@ -437,8 +437,8 @@
 (and	(goal landnomad 3)
 (and	(up-gaia-type-count-total c: wood >= 15)
 (and	(building-type-count-total town-center <= 0)
-(and	(building-type-count-total lumber-camp <= 0)
-(and	(up-pending-objects c: lumber-camp <= 0)
+(and	(building-type-count-total wood-building <= 0)
+(and	(up-pending-objects c: wood-building <= 0)
 	(up-compare-flag escrow-flag2 != 16777216))))))))
 =>
 	(up-jump-rule 9))
@@ -515,8 +515,8 @@
 (defrule
 	(resource-found wood)
 	(goal temporary-goal4 1)
-(not	(up-pending-placement c: lumber-camp))
-	(can-build lumber-camp)
+(not	(up-pending-placement c: wood-building))
+	(can-build wood-building)
 	(game-time > 30)
 =>
 ;	(chat-local-to-self "WWWWWWWWWWWW.")
@@ -526,17 +526,17 @@
 	(set-strategic-number sn-placement-zone-size 3); 2
 	(up-modify-sn sn-placement-zone-size g:+ temporary-goal)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
-	(up-build place-point 0 c: lumber-camp)); end jump
+	(up-build place-point 0 c: wood-building)); end jump
 
 (defrule
 	(goal landnomad 3)
-	(building-type-count-total lumber-camp < 1)
+	(building-type-count-total wood-building < 1)
 =>
 	(set-goal buildlumber no)
 	(disable-self))
 (defrule
 	(goal landnomad 3)
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 =>
 	(up-modify-sn sn-maximum-food-drop-distance c:max 16); 20
 	(set-strategic-number sn-maximum-wood-drop-distance 30)
@@ -568,11 +568,11 @@
 	(up-reset-placement c: town-center))
 (defrule
 	(building-type-count-total town-center < 1)
-	(building-type-count lumber-camp >= 1)
+	(building-type-count wood-building >= 1)
 	(can-build town-center)
 =>
 	(up-full-reset-search)
-	(up-find-local c: lumber-camp c: 1)
+	(up-find-local c: wood-building c: 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object object-point-x)
 	(up-lerp-tiles object-point-x center-x c: -2); 1
@@ -748,7 +748,7 @@
 	(building-type-count-total house <= 0)
 	(can-build house)
 =>
-	(up-set-placement-data my-player-number lumber-camp c: 1)
+	(up-set-placement-data my-player-number wood-building c: 1)
 	(set-strategic-number sn-placement-zone-size 3); 2
 	(up-build place-control 0 c: house)
 	(disable-self))
@@ -1346,6 +1346,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland)
 	(up-filter-exclude -1 actionid-attack orderid-explore warship-class); 4:-1
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-filter-exclude -1 actionid-convert orderid-relic -1)
 	(up-find-local c: monastery-class c: 240)
 ;	(up-remove-objects search-local object-data-class == packed-trebuchet-class)
@@ -1380,6 +1381,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 -1 orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-filter-exclude -1 -1 orderid-relic -1)
 	(up-find-local c: monastery-class c: 240)
 	(up-set-target-point position-self-x)
@@ -1396,6 +1398,8 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 -1 orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-filter-exclude -1 -1 orderid-relic -1)
 	(up-find-local c: monastery-class c: 240)
 	(up-set-target-point position-self-x)
@@ -1592,6 +1596,7 @@
 	(up-filter-include cmdid-military -1 -1 on-mainland)
 	(up-filter-exclude -1 actionid-attack orderid-explore warship-class); 4:-1
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-filter-exclude -1 actionid-convert orderid-relic -1)
 	(up-find-local c: monastery-class c: 240)
 ;	(up-remove-objects search-local object-data-class == packed-trebuchet-class)
@@ -1635,6 +1640,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 -1 orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-filter-exclude -1 -1 orderid-relic -1)
 	(up-find-local c: monastery-class c: 240)
 	(up-set-target-point position-self-x)
@@ -1651,6 +1657,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 -1 orderid-explore -1)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-filter-exclude -1 -1 orderid-relic -1)
 	(up-find-local c: monastery-class c: 240)
 	(up-set-target-point position-self-x)
@@ -1757,8 +1764,10 @@
 	(up-modify-sn sn-preferred-trade-distance c:min 120)
 	(up-modify-sn sn-preferred-trade-distance c:max 60))
 (defrule
-	(unit-type-count-total 178 <= 0)
-	(unit-type-count-total 205 <= 0)
+	(or(and(unit-type-count-total 178 <= 0)
+	(unit-type-count-total 205 <= 0));LAG!
+	(or(up-compare-sn sn-twenty-turns != 9)
+	(up-compare-sn turn-time-estimate > 400)))
 =>
 	(up-jump-rule 21))
 (defrule
@@ -2406,9 +2415,9 @@
 	(true)
 =>
 	(up-full-reset-search)
-	(up-find-remote c: lumber-camp c: 32)
+	(up-find-remote c: wood-building c: 32)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-remote c: lumber-camp c: 32)
+	(up-find-status-remote c: wood-building c: 32)
 	(up-remove-objects search-remote object-data-map-zone-id g:!= migration-zone)
 	(up-get-search-state local-total)
 ;	(up-chat-data-to-self "remote-total7: %d" g: remote-total)
@@ -2453,8 +2462,8 @@
 	(up-build place-point escrow-state c: town-center)
 	(up-jump-rule 3))
 (defrule
-(or	(up-pending-objects c: lumber-camp >= 1)
-	(up-pending-placement c: lumber-camp))
+(or	(up-pending-objects c: wood-building >= 1)
+	(up-pending-placement c: wood-building))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -2463,11 +2472,11 @@
 	(up-compare-goal remote-total <= 0)
 ;	(not	(building-available town-center)))
 	(up-compare-goal temporary-goal7 <= 0)
-;	(building-type-count-total lumber-camp <= 0)
+;	(building-type-count-total wood-building <= 0)
 ;	(building-type-count-total town-center <= 0)
 =>
 	(chat-to-player my-player-number "LC.3")
-	(up-add-object-cost c: lumber-camp c: 1)
+	(up-add-object-cost c: wood-building c: 1)
 	(up-modify-flag escrow-flag2 c:+ 16777216)
 	(up-full-reset-search)
 	(up-filter-include -1 -1 -1 off-mainland)
@@ -2486,7 +2495,7 @@
 	(up-compare-goal remote-total >= 2); 1
 (or	(up-point-explored migration-point-x != explored-no)
 	(up-compare-goal remote-total >= 4)); 2
-	(up-can-build escrow-state c: lumber-camp)
+	(up-can-build escrow-state c: wood-building)
 =>
 	(chat-to-player my-player-number "LC.3.2")
 	(up-set-target-object search-remote c: 0)
@@ -2495,7 +2504,7 @@
 	(up-set-target-point building-point-x)
 	(set-strategic-number sn-placement-zone-size 24)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
-	(up-build place-point escrow-state c: lumber-camp)); end jump
+	(up-build place-point escrow-state c: wood-building)); end jump
 (defrule
 	(true)
 =>
@@ -2508,10 +2517,10 @@
 	(up-remove-objects search-local object-data-action == actionid-build)
 	(up-remove-objects search-local object-data-action == actionid-gather)
 ;	(up-remove-objects search-local object-data-index >= 1); 1
-	(up-find-remote c: lumber-camp c: 16)
+	(up-find-remote c: wood-building c: 16)
 	(up-find-remote c: town-center c: 16)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-remote c: lumber-camp c: 16)
+	(up-find-status-remote c: wood-building c: 16)
 	(up-find-status-remote c: town-center-foundation c: 16)
 	(up-remove-objects search-remote object-data-map-zone-id g:== starting-zone)
 	(up-remove-objects search-remote object-data-map-zone-id g:!= migration-zone))
@@ -2526,7 +2535,7 @@
 	(up-compare-goal excessWood >= 1)
 	(up-compare-goal excessStone >= 1)
 =>
-	(up-remove-objects search-remote object-data-type == lumber-camp)
+	(up-remove-objects search-remote object-data-type == wood-building)
 	(up-get-search-state local-total))
 (defrule
 	(up-compare-goal local-total >= 1)
@@ -2590,10 +2599,10 @@
 	(up-remove-objects search-remote object-data-map-zone-id g:== starting-zone)
 	(up-filter-exclude -1 actionid-research orderid-research -1)
 	(up-find-local c: town-center c: 16)
-	(up-find-local c: mill c: 16)
+	(up-find-local c: food-building c: 16)
 	(up-filter-status c: status-pending c: list-active)
 	(up-find-status-local c: town-center-foundation c: 16)
-	(up-find-status-local c: mill c: 16)
+	(up-find-status-local c: food-building c: 16)
 	(up-remove-objects search-local object-data-map-zone-id g:!= starting-zone)
 	(up-remove-objects search-local object-data-map-zone-id g:== migration-zone)
 ;	(up-chat-data-to-player my-player-number "starting-zone: %d" g: starting-zone)
@@ -2606,13 +2615,13 @@
 (or	(up-compare-const scenario-game != 1)
 	(building-type-count-total town-center >= 2))
 =>
-	(chat-local-to-self "Deleting old town-centers and mills.")
+	(chat-local-to-self "Deleting old town-centers and food-buildings.")
 	(up-target-point 0 action-stop -1 -1);	(up-reset-building 1 c: town-center)
 	(up-modify-goal relocating c:max 1)
 	(up-target-point 0 action-delete -1 -1))
 (defrule
 (or	(up-compare-const instant-dock == 1)
-	(and	(building-type-count-total mill <= 0)
+	(and	(building-type-count-total food-building <= 0)
 		(building-type-count-total town-center <= 0)))
 (or (and	(building-type-count-total dock >= 1)
 		(building-type-count dock <= 0))
@@ -3156,8 +3165,8 @@
 (defrule
 ; tlj	(timer-triggered scout)
 (nand	(players-building-count every-enemy >= 1)
-	(and	(up-compare-goal drushtarget != lumber-camp)
-		(up-compare-goal drushtarget != mining-camp)))
+	(and	(up-compare-goal drushtarget != wood-building)
+		(up-compare-goal drushtarget != gold-building)))
 (or	(players-building-count every-enemy <= 0)
 (or	(and	(goal position-goal flank);
 		(up-point-distance point-x saved-point-x >= 35))
@@ -3194,8 +3203,8 @@
 	(goal scouting yes)
 	(goal drushmicro yes)
 	(players-current-age target-player <= dark-age);
-	(up-compare-goal drushtarget != lumber-camp);(up-compare-goal drushtarget == 0)
-	(up-compare-goal drushtarget != mining-camp)
+	(up-compare-goal drushtarget != wood-building);(up-compare-goal drushtarget == 0)
+	(up-compare-goal drushtarget != gold-building)
 	(goal inseln no)
 	(players-building-count target-player >= 1)
 (or	(up-compare-goal targetdistance < 60)
@@ -3720,7 +3729,7 @@
 (or	(goal buildlumber no)
 (or	(game-time >= 600)
 (or	(up-timer-status threesec == timer-running)
-	(and	(building-type-count lumber-camp >= 1)
+	(and	(building-type-count wood-building >= 1)
 		(and	(dropsite-min-distance wood <= 20)
 			(dropsite-min-distance wood s:<= sn-maximum-wood-drop-distance))))))
 =>
@@ -3826,8 +3835,8 @@
 (or	(game-time >= 1800)
 (or	(up-compare-goal gl-threat-time < 6000)
 (or	(unit-type-count spearman-line <= 0)
-(or	(building-type-count mining-camp <= 0)
-(or	(building-type-count lumber-camp <= 0)
+(or	(building-type-count gold-building <= 0)
+(or	(building-type-count wood-building <= 0)
 	(up-compare-const diff-fp != 1))))))))
 =>
 	(up-jump-rule 12))
@@ -3861,9 +3870,9 @@
 	(up-get-point position-object temporary-point-x)
 	(up-set-target-point temporary-point-x)
 	(up-filter-distance c: -1 c: 6)
-	(up-find-remote c: mining-camp c: 1)
-	(up-find-remote c: lumber-camp c: 1)
-	(up-find-remote c: mill c: 1))
+	(up-find-remote c: gold-building c: 1)
+	(up-find-remote c: wood-building c: 1)
+	(up-find-remote c: food-building c: 1))
 (defrule
 	(up-compare-goal temporary-goal9 g:< temporary-goal)
 	(up-set-target-object search-local g: temporary-goal9)
@@ -3886,14 +3895,14 @@
 	(true)
 =>
 	(up-full-reset-search)
-	(set-goal temporary-goal mining-camp)
-	(set-goal temporary-goal5 lumber-camp)
-	(set-goal temporary-goal6 mill)
+	(set-goal temporary-goal gold-building)
+	(set-goal temporary-goal5 wood-building)
+	(set-goal temporary-goal6 food-building)
 	(set-goal temporary-goal8 0)
 	(set-goal temporary-goal10 -1)
-	(up-get-fact building-type-count mining-camp temporary-goal2)
-	(up-get-fact building-type-count lumber-camp temporary-goal3)
-	(up-get-fact building-type-count mill temporary-goal4)
+	(up-get-fact building-type-count gold-building temporary-goal2)
+	(up-get-fact building-type-count wood-building temporary-goal3)
+	(up-get-fact building-type-count food-building temporary-goal4)
 	(set-goal temporary-goal11 800)
 	(up-find-local g: temporary-goal g: temporary-goal2))
 (defrule; end neg jump
@@ -3929,8 +3938,8 @@
 	(up-find-local g: temporary-goal g: temporary-goal2)
 	(up-jump-rule -3))
 (defrule
-(or	(goal temporary-goal mining-camp)
-	(goal temporary-goal lumber-camp))
+(or	(goal temporary-goal gold-building)
+	(goal temporary-goal wood-building))
 (or	(up-compare-goal temporary-goal3 >= 1)
 	(up-compare-goal temporary-goal4 >= 1))
 	(up-compare-goal temporary-goal11 > -20);sanity check
@@ -4091,6 +4100,7 @@
 	(up-filter-include cmdid-military -1 -1 -1)
 	(up-filter-exclude -1 -1 orderid-explore warship-class)
 	(up-find-local c: all-units-class c: 240)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
 	(up-remove-objects search-local object-data-action == actionid-attack)
 	(up-remove-objects search-local object-data-action == actionid-build); Serjeants
 	(up-remove-objects search-local object-data-order == orderid-build)
@@ -4441,8 +4451,8 @@
 	(up-jump-rule 4)
 )
 (defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
+	(unit-type-count cutting-unit > 0)
+	(research-completed cutting-tech)
 =>
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number 0)
@@ -4465,22 +4475,22 @@
 
 
 (defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
+	(unit-type-count cutting-unit > 0)
+	(research-completed cutting-tech)
 =>
 	(up-get-point-distance point2-x point-x temporary-goal4)
 )
 
 ;Backwards jump here (-2)
 (defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)	
+	(unit-type-count cutting-unit > 0)
+	(research-completed cutting-tech)	
 	(up-compare-goal temporary-goal4 > 3)
 	;(up-compare-goal temporary-goal3 > 0)
 	(up-point-contains point2-x c: tree-class)
 =>
 	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 1)
+	(up-find-local c: cutting-unit c: 1)
 	(up-target-point point2-x action-ground -1 stance-defensive)
 ;	(chat-to-player my-player-number "Debug: cutting tree")
 	(up-jump-rule 2)
@@ -4538,7 +4548,8 @@
 
 (defrule
 	(game-time > 30)
-	(up-compare-const diff-fp != 1)
+	(or(up-compare-const diff-fp != 1)
+	(up-compare-goal cutting-stage c:> cut-stop))
 	(strategic-number sn-trade-cut-rule-id > 0)
 	(strategic-number sn-trade-cut-rule-id < 10000)
 =>
@@ -4546,680 +4557,454 @@
 )
 
 (defrule
-(strategic-number sn-corner-cut-state > 1)
+	(game-time > 40)
+	(up-compare-const TRADE-CUT == 1)
+	(up-compare-const diff-fp == 1)
+	(unit-type-count cutting-unit > 0)
+	(research-completed cutting-tech)
 =>
-(up-jump-rule 8)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
-	(set-strategic-number sn-focus-player-number 0)
-	;(up-get-point position-self position-self-x);comment out when we copy to promi
-	(up-get-point position-corner temporary-point-x)
-	(up-copy-point point2-x position-self-x)
-	(up-copy-point point-x temporary-point-x)
-	(set-goal temporary-goal3 255)
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-get-point-distance point2-x point-x temporary-goal4)
-)
-
-;Backwards jump ends (-4)
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-=>
-	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 1)
-;	(up-target-point point2-x action-ground -1 stance-defensive)
-	
-;	(up-jump-rule 2)
-	(up-set-target-object search-local c: 0)
-	(up-get-point position-object temporary-point-x)
-	(up-get-point-distance point2-x temporary-point-x temporary-goal5)
-)
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-	(up-compare-goal temporary-goal5 < 4)
-=>
-	(up-lerp-tiles temporary-point-x position-self-x c: 5)
-	(up-target-point temporary-point-x action-move -1 stance-defensive)
-	;(chat-to-player my-player-number "Maybe stuck. Backing up")
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-	(up-compare-goal temporary-goal5 >= 4)
-=>
-	(up-target-point point2-x action-ground -1 stance-defensive)
-	(up-jump-rule 2)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(not(up-point-contains point2-x c: tree-class))
-	(up-compare-goal temporary-goal3 > 0)
-=>
-	(up-modify-goal temporary-goal3 c:- 1)
-	(up-lerp-tiles point2-x point-x c: 1)
-	(up-jump-rule -4)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-full-reset-search)
-	(up-find-local c: villager c: 1)
-	(up-set-target-object search-local c: 0)
-)
-
-(defrule
-
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(strategic-number sn-corner-cut-state < 2)
-	; (or(and(timer-triggered one-min)(up-path-distance point-x 1 < 65535));experiment with reducing lag
-	; (and(timer-triggered one-min)
-	; (up-path-distance point-x 0 < 65535))) ;too laggy unfortunately
-	(up-point-contains point-x != tree-class)
-	(up-point-explored point-x != explored-no)
-=>
-	(set-strategic-number sn-corner-cut-state 2);1st set of cuts completed
-	;(chat-to-player my-player-number "Debug: Cut to corner successful, moving onto next stage")
-)
-
-;Stage two - rotate 6 tiles and bound point to widen the cut
-
-(defrule
-(strategic-number sn-corner-cut-state != 2)
-=>
-(up-jump-rule 8)
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
-	(set-strategic-number sn-focus-player-number 0)
-	;(up-get-point position-self position-self-x);comment out when we copy to promi
-	(up-get-point position-corner temporary-point-x)
-	(up-copy-point point2-x position-self-x)
-	(up-copy-point point-x temporary-point-x)
-	(up-get-point position-center point3-x)
-	(up-cross-tiles point-x point3-x c: 6)
-	(up-cross-tiles point2-x point3-x c: 4)
-	(up-bound-point point-x point-x)
-	(up-bound-point point2-x point2-x)
-	(set-goal temporary-goal3 255)
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-get-point-distance point2-x point-x temporary-goal4)
-)
-
-;Backwards jump ends (-4)
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-=>
-	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 1)
-;	(up-target-point point2-x action-ground -1 stance-defensive)
-	
-;	(up-jump-rule 2)
-	(up-set-target-object search-local c: 0)
-	(up-get-point position-object temporary-point-x)
-	(up-get-point-distance point2-x temporary-point-x temporary-goal5)
-)
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-	(up-compare-goal temporary-goal5 < 4)
-=>
-	(up-lerp-tiles temporary-point-x position-self-x c: 5)
-	(up-target-point temporary-point-x action-move -1 stance-defensive)
-	;(chat-to-player my-player-number "Maybe stuck. Backing up")
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-	(up-compare-goal temporary-goal5 >= 4)
-=>
-	(up-target-point point2-x action-ground -1 stance-defensive)
-	(up-jump-rule 2)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(not(up-point-contains point2-x c: tree-class))
-	(up-compare-goal temporary-goal3 > 0)
-=>
-	(up-modify-goal temporary-goal3 c:- 1)
-	(up-lerp-tiles point2-x point-x c: 1)
-	(up-jump-rule -4)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-full-reset-search)
-	(up-find-local c: villager c: 1)
-	(up-set-target-object search-local c: 0)
-)
-;End jump (2)
-(defrule
-;	(up-path-distance point-x 0 < 65535);this is the ideal check but it is too bad on performance
-	(up-point-explored point-x != explored-no)
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(strategic-number sn-corner-cut-state < 3)
-;	(up-can-build-line 0 point-x c: market)
-	(not(up-point-contains point-x c: tree-class)) ;reached the end
-=>
-	(set-strategic-number sn-corner-cut-state 3);2nd set of cuts completed
-	;(chat-to-player my-player-number "Gap widened, moving onto next stage")
-)
-
-
-(defrule
-(strategic-number sn-corner-cut-state != 3)
-=>
-(up-jump-rule 8)
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
-	(set-strategic-number sn-focus-player-number 0)
-	;(up-get-point position-self position-self-x);comment out when we copy to promi
-	(up-get-point position-corner temporary-point-x)
-	(up-copy-point point2-x position-self-x)
-	(up-copy-point point-x temporary-point-x)
-	(up-get-point position-center point3-x)
-	(up-cross-tiles point-x point3-x c: -6)
-	(up-cross-tiles point2-x point3-x c: -4)
-	(up-bound-point point-x point-x)
-	(up-bound-point point2-x point2-x)
-	(set-goal temporary-goal3 255)
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-get-point-distance point2-x point-x temporary-goal4)
-)
-
-;Backwards jump ends (-4)
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-=>
-	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 1)
-;	(up-target-point point2-x action-ground -1 stance-defensive)
-	
-;	(up-jump-rule 2)
-	(up-set-target-object search-local c: 0)
-	(up-get-point position-object temporary-point-x)
-	(up-get-point-distance point2-x temporary-point-x temporary-goal5)
-)
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-	(up-compare-goal temporary-goal5 < 4)
-=>
-	(up-lerp-tiles temporary-point-x position-self-x c: 5)
-	(up-target-point temporary-point-x action-move -1 stance-defensive)
-	;(chat-to-player my-player-number "Maybe stuck. Backing up")
-)
-
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(up-point-contains point2-x c: tree-class)
-	(up-compare-goal temporary-goal5 >= 4)
-=>
-	(up-target-point point2-x action-ground -1 stance-defensive)
-	(up-jump-rule 2)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal4 > 3)
-	(not(up-point-contains point2-x c: tree-class))
-	(up-compare-goal temporary-goal3 > 0)
-=>
-	(up-modify-goal temporary-goal3 c:- 1)
-	(up-lerp-tiles point2-x point-x c: 1)
-	(up-jump-rule -4)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-full-reset-search)
-	(up-find-local c: villager c: 1)
-	(up-set-target-object search-local c: 0)
-)
-;End jump (2)
-(defrule
-	(up-path-distance point-x 0 < 65535)
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(strategic-number sn-corner-cut-state < 3)
-;	(up-can-build-line 0 point-x c: market)
-	(not(up-point-contains point-x c: tree-class)) ;reached the end
-=>
-	(set-strategic-number sn-corner-cut-state 4);2nd set of cuts completed
-	;(chat-to-player my-player-number "Gap widened the other direction, moving onto next stage")
-)
-
-
-;End jump (8)
-;Stage 4 - cut large enclave in corner to place markets
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(strategic-number sn-corner-cut-state != 4)
-=>
-	(up-jump-rule 3)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-get-point point-x position-corner)
-	(up-full-reset-search)
-	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
-	(set-strategic-number sn-focus-player-number 0)
-	(up-set-target-point point-x)
-	(up-filter-distance c: 0 c: 12)
-	(up-find-local c: mangonel-line c: 1)
-	(up-filter-status c: status-ready c: list-active)
-	(up-find-resource c: wood c: 239)
-	(up-clean-search search-remote -1 search-order-asc)
-	(up-clean-search search-remote object-data-distance search-order-asc)
-)
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-remove-objects search-remote -1 < 3)
-	(up-set-target-object search-remote c: 0)
-	(up-get-point position-object temporary-point-x)
-	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 2)
-	(up-target-point temporary-point-x action-ground -1 stance-defensive)
-	(up-filter-status c: status-ready c: list-active)
-	(up-filter-distance c: 0 c: 12)
-)
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(not(up-find-resource c: wood c: 30)) ;<30 trees remaining
-=>
-	(set-strategic-number sn-corner-cut-state 5)
-	;(chat-to-player my-player-number "Corner cut: completed, place 2nd market")
-	(up-set-attack-stance mangonel-line c: stance-aggressive)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-sn sn-thousand-rule-pass == 999)
-	(up-compare-sn sn-corner-cut-state > 2)
-	(up-compare-sn sn-corner-cut-state <= 4)
-	
-=>
-	;(chat-to-player my-player-number "Perodic reset, moving onto next stage")
-	(up-reset-unit c: mangonel-line)
-	(up-modify-goal sn-corner-cut-state c:+ 1)
-)
-
-#load-if-defined AMAZON-TUNNEL-MAP
-(defrule
-	(strategic-number sn-corner-cut-state == 5)
-=>
-	(set-strategic-number sn-corner-cut-state 6)
-	(chat-to-player my-player-number "State number 6")
+	(set-goal cutting-stage cut-start)
 	(disable-self)
 )
 
 
 (defrule
-	(strategic-number sn-corner-cut-state == 6)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
+	(unit-type-count cutting-unit > 0)
+	(up-compare-const TRADE-CUT == 1)
+	(research-completed cutting-tech)
+	(up-compare-goal cutting-stage c:<= cut-stop)
+	(or(timer-triggered two-mins)
+	(up-group-size c: cutting-group < 1))
 =>
-	(up-get-point position-center temporary-point-x)
-	(up-get-point position-center point2-x)
-	(up-get-point position-corner point-x)
-	(up-get-point-distance temporary-point-x point-x temporary-goal)
-	(up-cross-tiles temporary-point-x point-x g: temporary-goal)
-	(up-get-fact player-number my-player-number temporary-goal2)
+	(up-modify-group-flag 0 c: cutting-group)
+	(up-reset-group c: cutting-group)
+	(up-full-reset-search)
+	(up-find-local c: cutting-unit c: 2)
+	(up-create-group 0 0 c: cutting-group)
+	(up-modify-group-flag 1 c: cutting-group)
+	;(chat-local-to-self "Creating onager group")
+)
+
+(defrule
+	(up-group-size c: cutting-group > 0)
+	(unit-type-count cutting-unit > 0)
+	(goal cutting-stage 0)
+=>
+   (up-full-reset-search)
+   ;(up-get-point position-border point-x) doesn't work
+   (up-bound-point point-x position-self-x)
+   (up-set-group search-local c: cutting-group)
+   ;(up-send-flare closest-edge-x)
+   ;(up-send-flare closest-corner-x)
+   (up-set-target-object search-local c: 0)
+   (up-bound-point point5-x closest-edge-x)
+   (set-goal temporary-goal3 80)
+)
+(defrule
+   (unit-type-count-total cutting-unit > 0)
+   (up-modify-goal temporary-goal2 g:= cutting-stage)
+   (up-modify-goal temporary-goal2 c:mod 2)
+   (up-compare-goal temporary-goal2 == 1)
+=>
+   (up-full-reset-search)
+   ;(up-get-point position-border point-x) doesn't work
+   (up-bound-point point-x closest-edge-x)
+   (up-set-group search-local c: cutting-group)
+   ;(up-send-flare closest-edge-x)
+   ;(up-send-flare closest-corner-x)
+   (up-set-target-object search-local c: 0)
+   (up-bound-point point5-x closest-corner-x)
+   (set-goal temporary-goal3 175)
 )
 
 
 (defrule
-	(strategic-number sn-corner-cut-state == 6)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
+   (unit-type-count-total cutting-unit > 0)
+   (up-modify-goal temporary-goal2 g:= cutting-stage)
+   (up-modify-goal temporary-goal2 c:mod 2)
+   (up-compare-goal temporary-goal2 == 0)
+	(up-compare-goal cutting-stage != 0)
 =>
-	(up-modify-goal temporary-goal2 c:* 2)
-	(up-lerp-tiles temporary-point-x point2-x g: temporary-goal2)
-;	(up-modify-goal temporary-goal2 c:* -1)
-	(up-lerp-tiles point-x point2-x g: temporary-goal2)
-	(up-bound-point point-x point-x)
-	(up-bound-point point2-x point2-x)
-	(up-bound-point temporary-point-x temporary-point-x)
-;	(up-send-flare point-x)
-;	(up-send-flare temporary-point-x)
-	(set-goal temporary-goal3 255)
+   (up-full-reset-search)
+   ;(up-get-point position-border point-x) doesn't work
+   (up-bound-point point-x closest-edge-x)
+   (up-set-group search-local c: cutting-group)
+   ;(up-send-flare closest-edge-x)
+   ;(up-send-flare second-closest-corner-x)
+   (up-bound-point point5-x second-closest-corner-x)
+   (up-set-target-object search-local c: 0)
+   (set-goal temporary-goal6 -1)
+   (set-goal temporary-goal3 200)
+)
+
+;When cutting stage > 2, we modify the ultimate target point to be 6 tiles further inwards
+(defrule
+   (unit-type-count-total cutting-unit > 0)
+   (up-compare-goal cutting-stage > 2)
+   (up-modify-goal temporary-goal5 g:= cutting-stage)
+   (up-modify-goal temporary-goal5 c:- 2)
+   (up-modify-goal temporary-goal5 c:* 4)
+=>
+   ;(up-get-point position-border point-x) doesn't work
+   (up-modify-goal point5-x g:max temporary-goal5)
+   (up-modify-goal point5-y g:max temporary-goal5)
+   (up-get-point position-map-size point2-x)
+   (up-modify-goal point2-x g:- temporary-goal5)
+   (up-modify-goal point2-y g:- temporary-goal5)
+   (up-modify-goal point5-x g:min point2-x)
+   (up-modify-goal point5-y g:min point2-y)
+   (up-modify-goal point-x g:max temporary-goal5)
+   (up-modify-goal point-y g:max temporary-goal5)
+   (up-modify-goal point-x g:min point2-x)
+   (up-modify-goal point-x g:min point2-y)
+   (set-goal temporary-goal3 175)
+   (up-set-target-point point-x)
+)
+
+(defrule 
+   (unit-type-count cutting-unit > 0)
+=>
+   ;(up-send-flare point-x)
+   ;(up-send-flare point5-x)
+	(up-modify-goal temporary-goal3 c:max 75)
+)
+
+
+	
+(defrule
+   (up-compare-goal pause-cutting-rule-timer > 0)
+=>
+   (up-modify-goal pause-cutting-rule-timer c:- 1)
+   (up-jump-rule 5)
+)
+
+(defrule
+   (up-set-target-object search-local c: 0)
+   (up-point-explored point5-x != explored-no)
+   (up-point-contains point5-x c: tree-class)
+   (up-point-distance point5-x point-x < 6)
+=>
+	(up-get-object-data object-data-id cutter-id)
+   (up-set-target-point point5-x)
+   (up-reset-search 0 0 1 1)
+   (up-reset-filters)
+   (up-filter-distance c: -1 c: 7)
+   (up-find-resource c: wood c: 40)
+   (up-target-objects 0 action-default -1 -1)
+	(set-goal temporary-goal4 45678)
+   (up-jump-rule 4)
+)
+(defrule
+   (up-set-target-object search-local c: 0)
+   (up-point-contains point-x c: tree-class)
+   (up-object-data object-data-distance > 11);15
+=>
+   (up-reset-search 0 0 1 1)
+   (up-get-point position-object point4-x)
+   (up-lerp-percent point4-x point-x c: 90);75
+   (set-strategic-number sn-keystates 0)
+   (up-target-point 0 action-move formation-stagger stance-defensive)
+	;(chat-to-player 1 "Going towards wood")
+	(set-goal temporary-goal4 45678)
+   (up-jump-rule 3)
 )
 
 
 (defrule
-	(strategic-number sn-corner-cut-state == 6)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-point-contains point-x c: tree-class)
+   (up-set-target-object search-local c: 0)
+   (up-point-contains point-x c: tree-class)
+   ;(up-object-target-data object-data-class != tree-class)
+   ;(up-object-data object-data-order == -1)
+   (up-object-data object-data-target != tree-class)
+   (or(player-in-game any-human)
+   (up-point-explored point-x != explored-no))
+=>
+	(up-get-object-data object-data-id cutter-id)
+   (up-reset-search 0 0 1 1)
+   (up-get-point-contains point-x temporary-goal6 c: tree-class)
+   (up-bound-point point2-x point-x)
+   (up-lerp-tiles point2-x center-x c: 3)
+   (up-bound-point point3-x point-x)
+   (up-lerp-tiles point3-x center-x c: 6)
+   (set-strategic-number sn-keystates 0);1
+   ;(up-target-point point-x action-ground -1 stance-stand-ground)
+   (up-add-object-by-id search-remote g: temporary-goal6)
+   (up-target-objects 0 action-default formation-stagger stance-stand-ground)
+	(set-goal temporary-goal4 45678)
+	;(up-target-point point-x action-ground formation-stagger stance-defensive)
+   ;(up-send-flare point-x)
+)
+
+(defrule
+   (up-set-target-object search-local c: 0)
+   (up-point-contains point2-x c: tree-class)
+   (up-point-contains point-x c: tree-class)
+   (or(up-point-explored point2-x != explored-no)
+   (player-in-game any-human))
+
+ ;  (up-object-data object-data-target != tree-class)
+=>
+
+	(up-get-object-data object-data-id cutter-id)
+   ;(up-target-point point2-x action-ground -1 stance-stand-ground)
+   (up-reset-search 0 0 1 1)
+   (up-get-point-contains point2-x temporary-goal6 c: tree-class)
+	(set-goal temporary-goal4 45678)
+   (up-add-object-by-id search-remote g: temporary-goal6)
+	(set-strategic-number sn-keystates 0);1
+   (up-target-objects 0 action-default formation-stagger stance-stand-ground)
+	;(up-target-point point2-x action-ground formation-stagger stance-defensive)
+   ;(up-send-flare point2-x)
+)
+
+(defrule
+   (up-set-target-object search-local c: 0)
+   (up-point-contains point3-x c: tree-class)
+   (up-point-contains point-x c: tree-class)
+   (or(up-point-explored point3-x != explored-no)
+   (player-in-game any-human))
+=>
+
+	(up-get-object-data object-data-id cutter-id)
+   ;(up-target-objects point3-x action-ground -1 stance-stand-ground)
+   (up-reset-search 0 0 1 1)
+	(set-goal temporary-goal4 45678)
+	(set-strategic-number sn-keystates 0);1
+   (up-remove-objects search-local -1 >= 1)
+   (up-get-point-contains point3-x temporary-goal6 c: tree-class)
+   (up-add-object-by-id search-remote g: temporary-goal6)
+   (up-target-objects 0 action-default formation-stagger stance-stand-ground)
+	;(up-target-point point3-x action-ground formation-stagger stance-defensive)
+   ;(up-send-flare point3-x)
+)
+
+(defrule
+   (not(up-point-contains point-x c: tree-class))
+   (unit-type-count cutting-unit > 0)
+   (up-compare-goal cutting-stage > -1)
+   (up-compare-goal temporary-goal3 > 0)
+=>
+   (up-lerp-tiles point-x point5-x c: 1)
+   (up-modify-goal temporary-goal3 c:- 1)
+   (up-set-target-point point-x)
+   ;(up-send-flare point-x)
+   (up-jump-rule -6)
+)
+
+(defrule
+	(timer-triggered thirtysec)
+	(not(goal temporary-goal4 45678))
+	(up-group-size c: cutting-group > 0)
+	(up-compare-goal pause-cutting-rule-timer < 1)
 =>
 	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 2)
-	(up-target-point point-x action-ground -1 stance-defensive)
-	(up-jump-rule 2)
+	(up-set-group search-local c: cutting-group)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-set-target-point temporary-point-x)
+	(up-lerp-tiles temporary-point-x point5-x c: 3)
+	(up-filter-distance c: 2 c: 10)
+	(up-find-resource c: wood c: 240)
+	(up-set-target-point point5-x)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-remove-objects search-local -1 > 0)
+	(up-target-objects 0 action-default -1 -1)
+	;(chat-to-player my-player-number "Backup 4: Target closest tree near onager nearest to corner if we get stuck")
+)
+(defrule
+	(up-point-explored point5-x != explored-no)
+	(not(up-point-contains point5-x c: tree-class))
+	(up-compare-goal cutting-stage > 1)
+=>
+	(up-bound-point point4-x point5-x)
+	(up-lerp-tiles point4-x closest-edge-x c: 7)
 )
 
+(defrule
+   (up-point-explored point5-x != explored-no)
+   (not(up-point-contains point5-x c: tree-class))
+   (up-compare-goal cutting-stage > -1)
+	(or(and(up-point-explored point4-x != explored-no)
+	(not(up-point-contains point5-x c: tree-class)))
+	(timer-triggered two-mins))
+	(or(not(map-type arena))
+	(timer-triggered two-mins))
+=>
+   (up-modify-goal cutting-stage c:+ 1)
+)
+
+#load-if-defined ARENA-MAP
 
 (defrule
-	(strategic-number sn-corner-cut-state == 6)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal3 > 0)
+	(timer-triggered fifteensec)
+	(up-group-size c: cutting-group > 0)
 =>
-	(up-lerp-tiles point-x temporary-point-x c: 1)
-	(up-bound-point point-x point-x)
-	(up-modify-goal temporary-goal3 c:- 1)
+	(up-full-reset-search)
+	(up-set-target-point point5-x)
+	(up-filter-distance c: -1 c: 35)
+	(set-goal remote-total 0)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-set-group search-local c: cutting-group)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object point3-x)
+)
+
+(defrule
+	(timer-triggered fifteensec)
+	(player-valid focus-player)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: building-class c: 40)
+	(up-get-search-state local-total)
+)
+(defrule
+	(timer-triggered fifteensec)
+	(player-valid focus-player)
+	(strategic-number sn-focus-player-number <= max-players)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
 	(up-jump-rule -2)
 )
-
-
+   
 (defrule
-	(strategic-number sn-corner-cut-state == 6)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-	(not(up-point-contains temporary-point-x c: tree-class))
+	(timer-triggered fifteensec)
+	(or(up-compare-goal remote-total > 0)
+	(up-point-distance point3-x enemy-x < 30))
 =>
-	(set-strategic-number sn-corner-cut-state 7)
-;	(enable-timer 45 150)
-	(disable-self)
-)
-
-
-(defrule
-	(strategic-number sn-corner-cut-state == 7)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-get-point position-center temporary-point-x)
-	(up-get-point position-center point2-x)
-	(up-get-point position-corner point-x)
-	(up-get-point-distance temporary-point-x point-x temporary-goal)
-	(up-cross-tiles temporary-point-x point-x g: temporary-goal)
-	(up-get-fact player-number my-player-number temporary-goal2)
-)
-
-
-(defrule
-	(strategic-number sn-corner-cut-state == 7)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-modify-goal temporary-goal2 c:* 2)
-	(up-lerp-tiles temporary-point-x point2-x g: temporary-goal2)
-	(up-lerp-tiles temporary-point-x point2-x c: 3)
-;	(up-modify-goal temporary-goal2 c:* -1)
-	(up-lerp-tiles point-x point2-x g: temporary-goal2)
-	(up-lerp-tiles point-x point2-x c: 3)
-	(up-bound-point point-x point-x)
-	(up-bound-point point2-x point2-x)
-	(up-bound-point temporary-point-x temporary-point-x)
-;	(up-send-flare point-x)
-;	(up-send-flare temporary-point-x)
-	(set-goal temporary-goal3 255)
-)
-
-
-(defrule
-	(strategic-number sn-corner-cut-state == 7)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-point-contains point-x c: tree-class)
-=>
-	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 2)
-	(up-target-point point-x action-ground -1 stance-defensive)
-	(up-jump-rule 2)
-)
-
-
-(defrule
-	(strategic-number sn-corner-cut-state == 7)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-	(up-compare-goal temporary-goal3 > 0)
-=>
-	(up-lerp-tiles point-x temporary-point-x c: 1)
-	(up-bound-point point-x point-x)
-	(up-modify-goal temporary-goal3 c:- 1)
-	(up-jump-rule -2)
-)
-
-
-(defrule
-	(strategic-number sn-corner-cut-state == 7)
-	(unit-type-count-total mangonel-line > 0)
-	(research-completed ri-onager)
-	(not(up-point-contains temporary-point-x c: tree-class))
-=>
-	(set-strategic-number sn-corner-cut-state 8)
-	(enable-timer 45 150)
-	(disable-self)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(strategic-number sn-corner-cut-state != 8)
-=>
-	(up-jump-rule 2)
-)
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-get-point point-x position-corner)
-	(up-get-point point2-x position-center)
-	(up-get-point-distance point-x point2-x temporary-goal)
-	(up-cross-tiles point-x point2-x g: temporary-goal)
-	(up-bound-point point-x point-x)
-	(up-full-reset-search)
-	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
-	(set-strategic-number sn-focus-player-number 0)
-	(up-set-target-point point-x)
-	(up-filter-distance c: 0 c: 12)
-	(up-find-local c: mangonel-line c: 1)
-	(up-filter-status c: status-ready c: list-active)
-	(up-find-resource c: wood c: 239)
-	(up-clean-search search-remote -1 search-order-asc)
-	(up-clean-search search-remote object-data-distance search-order-asc)
-)
-
-
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-=>
-	(up-remove-objects search-remote -1 < 3)
-	(up-set-target-object search-remote c: 0)
-	(up-get-point position-object temporary-point-x)
-	(up-full-reset-search)
-	(up-find-local c: mangonel-line c: 2)
-	(up-target-point temporary-point-x action-ground -1 stance-defensive)
-	(up-filter-status c: status-ready c: list-active)
-	(up-filter-distance c: 0 c: 12)
+	(up-modify-goal cutting-stage c:+ 1)
+	;(chat-to-player my-player-number "We are cutting to an enemy, change direction")
 )
 
 #end-if
 
-#load-if-defined COMMENT-OUT
-(defrule
-	(unit-type-count mangonel-line > 0)
-	(research-completed ri-onager)
-	(not(up-find-resource c: wood c: 30)) ;<30 trees remaining
-=>
-	(set-strategic-number sn-corner-cut-state 8)
-	(chat-to-player my-player-number "Corner cut: completed, place 2nd market")
-	(up-set-attack-stance mangonel-line c: stance-aggressive)
-)
-#end-if
 
 (defrule
-	(timer-triggered 45)
-	(strategic-number sn-corner-cut-state == 8)
+   (true)
 =>
-	(disable-timer 45)
-	(up-reset-unit c: mangonel-line)
-	(up-set-attack-stance mangonel-line c: stance-aggressive)
-	(set-strategic-number sn-corner-cut-state 9)
-	(disable-self)
+   (set-goal temporary-goal6 -1)
+   (set-strategic-number sn-keystates 0)
 )
-;(defrule
-;	(true)
-;=>
-;	(up-chat-data-to-player my-player-number "State %d" s: sn-corner-cut-state)
-;)
+
 
 (defrule
-	(or(or(up-compare-sn sn-thousand-rule-pass == 200)
-	(up-compare-sn sn-thousand-rule-pass == 400))
-	(or(up-compare-sn sn-thousand-rule-pass == 600)
-	(up-compare-sn sn-thousand-rule-pass == 800)))
-	(strategic-number sn-corner-cut-state == 3)
-	(not(up-point-contains point-x c: tree-class))
+   ;(timer-triggered fifteensec)
+   (unit-type-count-total cutting-unit > 0)
+   (up-set-target-object search-local c: 0)
 =>
-	(set-strategic-number sn-corner-cut-state 4)
+   (up-get-point position-object point2-x)
 )
 
 (defrule
-	(strategic-number sn-corner-cut-state == 3)
-
+   (timer-triggered threesec)
+   (up-point-distance point-x point2-x < 3)
+   (up-point-contains point-x c: tree-class)
+   (up-compare-goal pause-cutting-rule-timer < 1)
 =>
-	(enable-timer 45 300)
-	(disable-self)
+   (up-reset-search 0 0 1 1)
+   (up-lerp-tiles point2-x position-self-x c: 3)
+   (up-target-point point2-x action-move formation-stagger stance-stand-ground)
+   (set-goal pause-cutting-rule-timer 4)
+   ;(chat-to-all "Stuck: Backing up 3")
+   (up-jump-rule 4)
+)
+(defrule
+   (timer-triggered threesec)
+	(up-point-distance point3-x point2-x < 3)
+	(up-point-contains point3-x c: tree-class)
+   (up-compare-goal pause-cutting-rule-timer < 1)
+=>
+   (up-reset-search 0 0 1 1)
+   (up-lerp-tiles point2-x position-self-x c: 3)
+   (up-target-point point2-x action-move formation-stagger stance-stand-ground)
+   (set-goal pause-cutting-rule-timer 4)
+   ;(chat-to-all "Stuck: Backing up 1")
+   (up-jump-rule 3)
 )
 
 (defrule
-	(timer-triggered 45)
-	(strategic-number sn-corner-cut-state == 3)
+   (timer-triggered one-min)
+	(goal backup-direction -1)
+   (unit-type-count-total cutting-unit > 0)
+   (up-set-target-object search-local c: 0)
+   (or(up-point-distance point2-x previous-mangonel-point-x < 4);5
+   (or(up-object-data object-data-target == building-class)
+   (and(up-object-data object-data-move-x g:== position-self-x)
+   (up-object-data object-data-move-y g:== position-self-y))))
+   (up-compare-goal pause-cutting-rule-timer < 1)
 =>
-	(set-strategic-number sn-corner-cut-state 4)
-	(disable-timer 45)
-	(disable-self)
+   (up-full-reset-search)
+	(up-modify-goal backup-direction c:* -1)
+   (up-reset-search 0 0 1 1)
+   ;(up-find-local c: cutting-unit c: 40)
+	(up-set-group search-local c: cutting-group)
+	(up-set-target-object search-local c: 0)
+   (set-strategic-number sn-keystates 0)
+   ;(up-target-objects 0 action-stop formation-box stance-stand-ground)
+   (up-get-point position-object point2-x)
+   (up-lerp-tiles point2-x position-self-x c: 5)
+   (up-bound-point point2-x point2-x)
+   (up-target-point point2-x action-move formation-box stance-stand-ground)
+   (set-goal pause-cutting-rule-timer 5)
+)
+(defrule
+   (timer-triggered one-min)
+	(goal backup-direction 1)
+   (unit-type-count-total cutting-unit > 0)
+   (up-set-target-object search-local c: 0)
+   (or(up-point-distance point2-x previous-mangonel-point-x < 4);5
+   (or(up-object-data object-data-target == building-class)
+   (and(up-object-data object-data-move-x g:== position-self-x)
+   (up-object-data object-data-move-y g:== position-self-y))))
+   (up-compare-goal pause-cutting-rule-timer < 1)
+=>
+   (up-full-reset-search)
+	(up-modify-goal backup-direction c:* -1)
+   (up-reset-search 0 0 1 1)
+   ;(up-find-local c: cutting-unit c: 40)
+	(up-set-group search-local c: cutting-group)
+	(up-set-target-object search-local c: 0)
+   (set-strategic-number sn-keystates 0)
+   ;(up-target-objects 0 action-stop formation-box stance-stand-ground)
+   (up-get-point position-object point2-x)
+   (up-lerp-tiles point2-x point-x c: 7)
+   (up-bound-point point2-x point2-x)
+   (up-target-point point2-x action-move formation-box stance-stand-ground)
+   (set-goal pause-cutting-rule-timer 5)
+)
+
+
+(defrule
+   (timer-triggered one-min)
+   (unit-type-count-total cutting-unit > 0)
+   (up-set-target-object search-local c: 0)
+=>
+   (up-bound-point previous-mangonel-point-x point2-x)
 )
 
 (defrule
-	(not(up-timer-status 45 == timer-running))
-	(strategic-number sn-corner-cut-state == 4)
+	(unit-type-count-total cutting-unit > 0)
 =>
-	(enable-timer 45 150)
-	(disable-self)
+	(up-full-reset-search)
+	(up-set-group search-local c: cutting-group)
+	(up-remove-objects search-local object-data-attack-stance != stance-aggressive)
+	(up-target-objects 0 action-stop formation-stagger stance-stand-ground)
 )
 
-(defrule
-	(timer-triggered 45)
-	(strategic-number sn-corner-cut-state == 4)
-=>
-	(set-strategic-number sn-corner-cut-state 5)
-	(disable-timer 45)
-	(disable-self)
-)
 (defrule
 	(true)
 =>
 	(up-get-rule-id temporary-goal)
 	(up-modify-sn sn-trade-cut-rule-id g:= temporary-goal)
+)
+
+(defrule
+	(timer-triggered two-mins)
+	(up-group-size c: cutting-group > 0)
+	(up-compare-goal cutting-stage c:> cut-stop)
+=>
+	(up-reset-group c: cutting-group)
+	(up-reset-unit c: mangonel-line)
+	(up-set-attack-stance cutting-unit c: stance-aggressive)
 )
 
 (defrule
@@ -5593,7 +5378,7 @@
 ;Unfortunately DUC dark age interferes with this code
 ; (defrule
 ; 	(wood-amount > 130)
-; 	(building-type-count-total lumber-camp > 0)
+; 	(building-type-count-total wood-building > 0)
 ; 	(map-type four-lakes)
 ; 	(building-type-count-total town-center > 0)
 ; 	(building-type-count-total dock < 1)
@@ -5611,7 +5396,7 @@
 
 (defrule
 	(wood-amount > 120)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(map-type four-lakes)
 	(timer-triggered threesec)
 	(game-time < 360)
@@ -5632,7 +5417,7 @@
 )
 (defrule
 	(wood-amount > 140)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(map-type kawasan)
 	(map-size tiny)
 ;	(timer-triggered threesec)
@@ -5657,15 +5442,15 @@
 
 
 (defrule
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 	(civ-selected 42)
 =>
 	(up-modify-goal temporary-goal9 s:= sn-focus-player-number)
 	(up-full-reset-search)
-	(up-find-local c: mill c: 1)
+	(up-find-local c: food-building c: 1)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(up-modify-sn sn-focus-player-number c:= my-player-number)
-	(up-find-remote c: mill c: 1)
+	(up-find-remote c: food-building c: 1)
 	;(up-set-target-object search-local c: 0)
 	;(up-get-point position-object temporary-point-x)
 	;(up-target-point temporary-point-x action-gather -1 -1)
@@ -5677,15 +5462,15 @@
 (defrule
     (true)
 =>
-    (up-get-fact building-type-count mill temporary-goal)
-    (up-get-fact building-type-count mill temporary-goal2)
+    (up-get-fact building-type-count food-building temporary-goal)
+    (up-get-fact building-type-count food-building temporary-goal2)
     (up-modify-goal temporary-goal c:- 1)
     (set-goal temporary-goal3 3)
 )
 ;End negative jump (-2)
 (defrule
     (unit-type-count-total livestock-class > 0)
-    (nand(building-type-count-total mill > 1)
+    (nand(building-type-count-total food-building > 1)
     (unit-type-count-total livestock-class > 10))
     (civ-selected 42);skiv
 ;    (timer-triggered threesec)
@@ -5695,7 +5480,7 @@
     (up-find-local c: livestock-class c: 20)
     (up-modify-goal temporary-goal7 s:= sn-focus-player-number) 
     (up-modify-sn sn-focus-player-number c:= my-player-number)
-    (up-find-remote c: mill g: temporary-goal2)
+    (up-find-remote c: food-building g: temporary-goal2)
     (up-set-target-object search-remote g: temporary-goal)
     (up-target-objects 1 action-garrison -1 -1)
     (up-modify-sn sn-focus-player-number g:= temporary-goal7)
@@ -5714,7 +5499,7 @@
 )
 (defrule
     (unit-type-count-total livestock-class > 10)
-    (building-type-count mill > 1)
+    (building-type-count food-building > 1)
     (civ-selected 42)
 =>
     (up-full-reset-search)
@@ -5723,17 +5508,17 @@
     (up-find-local c: livestock-class c: 20)
     (up-modify-goal temporary-goal7 s:= sn-focus-player-number) 
     (up-modify-sn sn-focus-player-number c:= my-player-number)
-	(up-find-remote c: mill c: 1)
+	(up-find-remote c: food-building c: 1)
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point3-x)
 	(up-set-target-point point3-x)
 	(up-reset-search 0 0 1 1)
 	(up-reset-filters)
 	(up-filter-range -1 10 4 -1)
-    (up-find-remote c: mill c: 1)
+    (up-find-remote c: food-building c: 1)
     (up-set-target-object search-remote c: 0)
     (up-target-objects 0 action-garrison -1 -1)
-	(up-gather-inside c: mill c: 1)
+	(up-gather-inside c: food-building c: 1)
     (up-modify-sn sn-focus-player-number g:= temporary-goal7)
 ;	(chat-to-player my-player-number "This rule is firing")
 )
@@ -5742,7 +5527,7 @@
 (defrule
 	(up-compare-goal temporary-goal9 > 0)
 	(up-compare-goal temporary-goal9 <= 10)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 	(civ-selected 42)
 =>
 	(up-modify-sn sn-focus-player-number g:= temporary-goal9)
@@ -5807,7 +5592,7 @@
     (civ-selected 42)
 =>
 	(up-full-reset-search)
-    (up-find-local c: lumber-camp c: 10)
+    (up-find-local c: wood-building c: 10)
 ;    (up-clean-search search-local -1 search-order-asc)
     (up-clean-search search-local -1 search-order-desc)
     (up-set-target-object search-local c: 0)
@@ -5835,13 +5620,13 @@
 
 (defrule
 	(civ-selected 42)
-	(building-type-count-total mill > 0)
-	(building-type-count mill < 1)
+	(building-type-count-total food-building > 0)
+	(building-type-count food-building < 1)
 	(unit-type-count-total livestock-class > 2)
 =>
 	(up-full-reset-search)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: mill c: 1)
+	(up-find-status-local c: food-building c: 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object point-x)
 	(up-set-target-point point-x)
@@ -6412,7 +6197,7 @@
 	(unit-type-count-total livestock-class > 1)
 	(building-type-count town-center > 0)
 	(game-time > 15)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 =>
 	(up-full-reset-search)
 	(enable-timer 48 15)
@@ -6428,7 +6213,7 @@
 	(up-set-target-object search-local c: 0)
 	(building-type-count town-center > 0)
 	(up-set-target-object search-local c: 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 =>
 	(up-copy-point point-x position-self-x)
 	(up-modify-goal point-x c:+ 9)
@@ -6450,7 +6235,7 @@
 	(up-set-target-object search-local c: 0)
 	(building-type-count town-center > 0)
 	(up-set-target-object search-local c: 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 =>
 	(up-copy-point point-x position-self-x)
 	(up-modify-goal point-x c:- 9)
@@ -6467,7 +6252,7 @@
 	(up-set-target-object search-local c: 0)
 	(building-type-count town-center > 0)
 	(up-set-target-object search-local c: 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 =>
 	(up-copy-point point-x position-self-x)
 	(up-modify-goal point-y c:- 9)
@@ -6482,7 +6267,7 @@
 	(unit-type-count-total livestock-class > 1)
 	(game-time > 15)
 	(building-type-count town-center > 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(timer-triggered 48)
 =>
 	(up-full-reset-search)
@@ -6499,7 +6284,7 @@
 	(game-time > 15)
 	(up-set-target-object search-local c: 0);check we actually found something
 	(building-type-count town-center > 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(timer-triggered 48)
 	(up-compare-goal temporary-goal > 0)
 =>
@@ -6559,7 +6344,7 @@
 	(up-set-target-object search-remote c: 0)
 	(up-get-point position-object point-x)
 	(up-lerp-tiles point-x position-self-x c: -2);for some reason position-focus is off a few tiles, usually in player's direction
-	(up-chat-data-to-player my-player-number "Considering sending sheep to player %d" s: sn-focus-player-number)
+	;(up-chat-data-to-player my-player-number "Considering sending sheep to player %d" s: sn-focus-player-number)
 	(up-modify-sn sn-focus-player-number g:= temporary-goal7)
 	(up-jump-rule 1)
 )
@@ -6588,7 +6373,7 @@
 	(up-full-reset-search)
 	(up-find-local c: livestock-class c: 2)
 	(up-target-point point-x action-move -1 -1)
-	(up-chat-data-to-player my-player-number "Sending sheep to point %d" g: point-x)
+	;(up-chat-data-to-player my-player-number "Sending sheep to point %d" g: point-x)
 	(set-strategic-number sn-disable-sheep-micro yes)
 	(enable-timer 49 190)
 	(disable-self)
@@ -6835,6 +6620,8 @@
 	(set-goal ducscouting no)
 )
 
+
+
 (defrule
 	(up-compare-goal force-scout-rotation > 0)
 	(timer-triggered threesec)
@@ -6866,7 +6653,8 @@
 	(set-goal force-scout-rotation -1)
 )
 (defrule
-	(up-compare-goal totalboars > 1)
+	(or(up-compare-goal totalboars > 1)
+	(up-compare-goal boar-2-id >  0))
 	(up-compare-goal totalsheep > 1)
 	(up-compare-goal forage-count > 1)
 	(up-gaia-type-count c: forage-bush-class > 0)
@@ -6884,7 +6672,7 @@
     (up-set-target-object search-local c: 0)
     (up-get-point position-object point-x)
     (up-set-target-point point-x)
-    (up-filter-distance c: 2 c: 12)
+    (up-filter-distance c: 2 c: 13);12
 )
 
 (defrule
@@ -7044,7 +6832,7 @@
 	(xs-script-call "FindAdjacentAngle")
 	;(up-send-flare input-point-x)
 	(up-modify-goal input-angleRad c:+ 3141);1000(1.5pi)
-	(up-chat-data-to-player my-player-number "Attempting to rotate by %d miliradians" g: input-angleRad)
+	;(up-chat-data-to-player my-player-number "Attempting to rotate by %d miliradians" g: input-angleRad)
 	(xs-script-call "RotateByAngleNoConvert")
 	(set-goal force-scout-rotation 14);154turns
 	(up-bound-point input-point-x input-point-x)
@@ -7336,7 +7124,7 @@
 	(up-full-reset-search)
 	(up-set-target-point starting-villager-position-x)
 	(up-filter-distance c: -1 c: 9)
-	(up-delete-objects c: lumber-camp c: 5000)
+	(up-delete-objects c: wood-building c: 5000)
 	(up-find-local c: villager-class c: 10)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
 	(up-modify-sn sn-focus-player-number c:= my-player-number)

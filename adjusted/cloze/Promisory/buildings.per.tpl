@@ -1,17 +1,22 @@
 ;(load "Promisory\extremeBuildings") not stable enough for inclusion in this update
 
+(defrule
+	(goal peformance-skip yes)
+=>
+	(up-jump-direct g: end-of-buildings-per)
+)
 
 #load-if-defined CRATER-MAP ;this needs to be ahead of the regular 2nd LC rule to override it
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
+	(building-type-count-total wood-building < 2)
 	(building-type-count-total town-center > 0)
 	(current-age == dark-age)
 	(game-time < 720)
 	(cc-players-unit-type-count 0 snow-pine-tree > 0)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(up-full-reset-search)
 	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
@@ -24,14 +29,14 @@
 )
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
+	(building-type-count-total wood-building < 2)
 	(building-type-count-total town-center > 0)
 	(current-age == dark-age)
 	(game-time < 720)
 	(cc-players-unit-type-count 0 snow-pine-tree > 0)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(up-set-target-point position-self-x)
 	(up-clean-search search-remote -1 search-order-asc)
@@ -43,32 +48,32 @@
 
 ;End jump (-2)
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
+	(building-type-count-total wood-building < 2)
 	(building-type-count-total town-center > 0)
 	(current-age == dark-age)
 	(game-time < 720)
 	(game-time > 30)
 	(cc-players-unit-type-count 0 413 > 0)
-	(can-build lumber-camp)
-	(up-can-build-line 0 point-x c: lumber-camp)
+	(can-build wood-building)
+	(up-can-build-line 0 point-x c: wood-building)
 =>
-	(up-build-line point-x point-x c: lumber-camp)
+	(up-build-line point-x point-x c: wood-building)
 	;(chat-local-to-self "Place custom LC")
 	(up-jump-rule 1)
 )
 
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
+	(building-type-count-total wood-building < 2)
 	(building-type-count-total town-center > 0)
 	(current-age == dark-age)
 	(game-time < 720)
 	(cc-players-unit-type-count 0 413 > 0)
-	(can-build lumber-camp)
+	(can-build wood-building)
 	(game-time > 30)
 	(up-compare-goal temporary-goal3 > 0)
 =>
@@ -81,6 +86,81 @@
 
 #end-if
 ;3684
+
+
+(defrule
+	(up-pending-objects c: settlement > 0)
+=>
+	(up-full-reset-search)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: settlement c: 1)
+	(up-remove-objects search-local object-data-hitpoints > 600)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 c: 5)
+	(up-filter-status c: status-ready c: list-active)
+	(up-find-resource c: tree-class c: 5)
+	(up-find-resource c: deer-class c: 5)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: gold c: 5)
+	(up-find-resource c: stone c: 5)
+	(up-find-resource c: forage-bush-class c: 5)
+	(up-filter-status c: status-down c: list-active)
+	(up-find-resource c: tree-class c: 5)
+	(up-get-search-state local-total)
+)
+
+(defrule
+	(up-pending-objects c: settlement > 0)
+	(up-set-target-object search-local c: 0)
+	(up-compare-goal remote-total < 3)
+	(or(up-compare-goal remote-total < 4)
+	(building-type-count-total settlement > 10))
+	(building-type-count-total settlement < 22)
+=>
+	(up-target-point point-x action-delete -1 -1)
+	(up-delete-objects c: settlement c: 10)
+	(up-reset-placement c: settlement)
+	(set-strategic-number sn-preferred-settlement-placement -1)
+	(set-goal lock-settlement-placement yes)
+	(set-goal temporary-goal 54323)
+	(up-modify-sn sn-camp-max-distance c:+ 3)
+	;(chat-local-to-self "Rubbish settlement placement: try again")
+)
+
+(defrule
+	(up-pending-objects c: settlement > 0)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 6)
+	(up-find-local c: settlement c: 1)
+	(up-get-search-state local-total)
+)
+
+(defrule
+	(up-pending-objects c: settlement > 0)
+	(up-set-target-object search-local c: 0)
+	(up-compare-goal local-total > 0)
+=>
+	(up-target-point 0 action-delete -1 -1)
+	(up-delete-objects c: settlement c: 10)
+	(up-reset-placement c: settlement)
+	(set-strategic-number sn-preferred-settlement-placement -1)
+	(set-goal lock-settlement-placement yes)
+	(set-goal temporary-goal 54323)
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+	;(chat-local-to-self "Rubbish settlement placement 2: try again")
+)
+
+(defrule
+	(can-build settlement)
+	(goal temporary-goal 54323)
+=>
+	(build settlement)
+	(up-jump-rule 100)
+)
 
 
 ;Can-build settlement now works correctly, so it's now important to include it to preserve the build queue
@@ -97,7 +177,7 @@
 	(resource-found food)
 	(or(building-type-count-total settlement < 1)
 	(and(dropsite-min-distance food > 4)
-	(game-time > 150)))
+	(game-time > 115)));150
 	(building-type-count-total settlement < {{BUILDINGS_SETTLEMENT_002}})
 	(or(game-time > 90)
 	(unit-type-count-total villager-forager > 0))
@@ -140,7 +220,7 @@
 	(up-gaia-type-count c: boar-class < 1)))
 	(game-time > 20)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total settlement < {{BUILDINGS_SETTLEMENT_004}})
+	(building-type-count-total settlement < {{BUILDINGS_SETTLEMENT_004}});2
 	(up-pending-objects c: settlement < 1)
 =>
 	(set-strategic-number sn-preferred-settlement-placement 6);forage
@@ -165,37 +245,87 @@
 	(build settlement)
 )
 
+
+(defrule
+	(can-build settlement)
+	(up-pending-objects c: settlement < 1)
+	(building-type-count-total settlement > 3)
+	(dropsite-min-distance gold > 4)
+	(dropsite-min-distance gold < 255)
+	(building-type-count-total settlement < 19)
+=>
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-modify-goal temporary-goal6 s:= sn-camp-max-distance);sn-max-TS
+	(up-modify-goal temporary-goal6 c:+ 6)
+	(up-modify-goal temporary-goal6 c:max 16)
+	(up-filter-distance c: 6 g: temporary-goal6)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: gold c: 10)
+	(up-clean-search search-remote object-data-distance search-order-desc)
+	(set-goal temporary-goal2 87654)
+)
+
+(defrule	
+	(goal temporary-goal2 87654)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-lerp-tiles point-x position-self-x c:- 3)
+	(up-get-point position-object point-x)
+	(set-goal temporary-goal3 7)
+	(set-goal temporary-goal2 87655)
+)
+
+(defrule
+	(goal temporary-goal2 87655)
+	(up-can-build-line 0 point-x c: settlement)
+=>
+	(up-build-line point-x point-x c: settlement)
+	(up-jump-rule 1)
+)
+
+
+(defrule
+	(goal temporary-goal2 87655)
+	(up-compare-goal temporary-goal3 > 0)
+=>
+	(up-modify-goal temporary-goal3 c:- 1)
+	(up-lerp-tiles point-x position-self-x c: 1)
+	(up-jump-rule -2)
+)
+
+
 (defrule
 	(goal migration-state 1)
 =>
 	(up-jump-rule 3))
 (defrule
-	(up-pending-objects c: lumber-camp <= 0)
+	(up-pending-objects c: wood-building <= 0)
 	(resource-found wood)
 	(building-type-count-total town-center <= 0)
-;	(building-type-count lumber-camp <= 0)
+;	(building-type-count wood-building <= 0)
 	(game-time >= 180)
 	(wood-amount < tc-wood)
 	(dropsite-min-distance wood >= 6)
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 	(nand(death-match-game)
 	(game-time < 400))
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 2)
-	(build lumber-camp))
+	(build wood-building))
 (defrule
-	(up-pending-objects c: mining-camp <= 0)
+	(up-pending-objects c: gold-building <= 0)
 	(resource-found stone)
 	(building-type-count-total town-center <= 0)
-;	(building-type-count mining-camp <= 0)
+;	(building-type-count gold-building <= 0)
 (or	(wood-amount >= tc-100-wood)
-	(building-type-count-total lumber-camp >= 1))
+	(building-type-count-total wood-building >= 1))
 	(stone-amount < tc-stone)
 	(dropsite-min-distance stone >= 6)
 	(dropsite-min-distance stone g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 2)
@@ -225,6 +355,22 @@
 	(timer-triggered two-mins)
 	(up-pending-objects c: town-center < 1)
 	(can-build town-center)
+=>
+	(build town-center)
+)
+
+(defrule
+	(or(starting-resources == ultra-high-resources)
+	(death-match-game))
+	(wood-amount < 20000)
+	(can-build town-center)
+	(wood-amount > 5000)
+	;(stone-amount > 700)
+	(game-time < 1200)
+	(building-type-count-total town-center < 8)
+	(building-type-count-total town-center-foundation < 6)
+	(up-pending-objects c: town-center < 6)
+	(unit-type-count villager > 13)
 =>
 	(build town-center)
 )
@@ -711,9 +857,9 @@
 =>
 ;	(chat-local-to-self "Deleting buildings for space.")
 	(up-assign-builders c: wonder c: 100)
-	(up-delete-objects c: mill c: 32767)
-	(up-delete-objects c: lumber-camp c: 32767)
-	(up-delete-objects c: mining-camp c: 32767)
+	(up-delete-objects c: food-building c: 32767)
+	(up-delete-objects c: wood-building c: 32767)
+	(up-delete-objects c: gold-building c: 32767)
 	(up-delete-objects c: blacksmith c: 32767)
 	(up-delete-objects c: market c: 32767)
 	(up-delete-objects c: monastery c: 32767)
@@ -829,7 +975,7 @@
 (defrule
 	(can-build dock)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 =>
 	(build dock)
 	(up-jump-rule 7))
@@ -909,7 +1055,7 @@
 (defrule
 	(can-build port)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 =>
 	(build port)
 	(up-jump-rule 7))
@@ -1071,15 +1217,15 @@
 	(up-reset-placement c: house))
 
 
-(defrule ;this rule is necessary because going mill first causes the AI to get housed when 1st LC is built with only 2 headroom
+(defrule ;this rule is necessary because going food-building first causes the AI to get housed when 1st LC is built with only 2 headroom
     (civ-selected 42)
     (wood-amount > 80)
     (housing-headroom < 4)
     (game-time < 400)
     (up-pending-objects c: house < 1)
     (building-type-count-total house < 4)
-    (building-type-count-total mill > 0)
-    (building-type-count-total lumber-camp < 1)
+    (building-type-count-total food-building > 0)
+    (building-type-count-total wood-building < 1)
 	(building-type-count-total town-center > 0)
     (can-build house)
     (building-type-count house > 0)
@@ -1722,7 +1868,7 @@
 (defrule
 (or	(game-time < 4)
 (or	(up-compare-goal camp-walls >= 1)
-(or	(building-type-count mining-camp <= 0)
+(or	(building-type-count gold-building <= 0)
 (or	(and	(unit-type-count villager-gold <= 0)
 		(unit-type-count villager-stone <= 0))
 (or	(up-compare-goal targetdistance >= 100); 126
@@ -1755,9 +1901,9 @@
 	(set-strategic-number sn-focus-player-number 0)
 	(up-full-reset-search))
 (defrule
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 =>
-	(up-find-local c: mining-camp c: 1)
+	(up-find-local c: gold-building c: 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object point-x)
 	(up-copy-point point3-x point-x)
@@ -1774,7 +1920,7 @@
 ;	(up-chat-data-to-player my-player-number "remote-total: %d" g: remote-total)
 )
 (defrule
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 	(up-compare-goal remote-total >= 1)
 	(up-compare-goal local-total >= 1)
 =>
@@ -1790,7 +1936,7 @@
 	(up-get-point-distance saved-point-x point2-x temporary-goal7)
 	(up-get-point-distance object-point-x point2-x temporary-goal8))
 (defrule
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 	(up-compare-goal remote-total >= 1)
 	(up-compare-goal local-total >= 1)
 	(up-compare-goal temporary-goal5 g:<= temporary-goal6)
@@ -1801,7 +1947,7 @@
 	(up-full-reset-search)
 	(up-filter-distance c: -1 c: 2))
 (defrule
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 	(up-compare-goal remote-total >= 1)
 	(up-compare-goal local-total >= 1)
 	(up-compare-goal temporary-goal6 g:<= temporary-goal5)
@@ -1813,7 +1959,7 @@
 	(up-full-reset-search)
 	(up-filter-distance c: -1 c: 2))
 (defrule
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 	(up-compare-goal remote-total >= 1)
 	(up-compare-goal local-total >= 1)
 	(up-compare-goal temporary-goal7 g:<= temporary-goal5)
@@ -1825,7 +1971,7 @@
 	(up-full-reset-search)
 	(up-filter-distance c: -1 c: 2))
 (defrule
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 	(up-compare-goal remote-total >= 1)
 	(up-compare-goal local-total >= 1)
 	(up-compare-goal temporary-goal8 g:<= temporary-goal5)
@@ -1837,7 +1983,7 @@
 	(up-full-reset-search)
 	(up-filter-distance c: -1 c: 2))
 (defrule
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 	(up-compare-goal remote-total >= 1)
 	(up-compare-goal local-total >= 1)
 	(up-compare-goal temporary-goal4 >= 1); 2
@@ -1887,7 +2033,7 @@
 	(up-find-resource c: gold c: 8);(up-find-remote c: gold-mine c: 8)
 	(up-find-resource c: stone c: 8);(up-find-remote c: stone-mine c: 8)
 	(up-find-local c: palisade-wall c: 1)
-	(up-find-local c: mining-camp c: 1)
+	(up-find-local c: gold-building c: 1)
 	(up-filter-status c: status-pending c: list-active)
 	(up-find-status-local c: palisade-wall c: 1)
 	(up-get-search-state local-total)
@@ -1909,7 +2055,7 @@
 	(up-jump-rule 1))
 (defrule
 	(goal temporary-goal3 269923)
-;(nor	(up-point-contains point-x c: mining-camp)
+;(nor	(up-point-contains point-x c: gold-building)
 ;(or	(up-point-contains point-x c: tree-class)
 ;(or	(up-point-contains point-x c: gold-mine-class)
 ;(or	(up-point-contains point-x c: stone-mine-class)
@@ -1966,7 +2112,7 @@
 	(up-compare-goal camp-walls >= 32767)
 	(up-timer-status threesec != timer-running)
 	(building-type-count palisade-wall >= 1)
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 ;(or	(unit-type-count villager-gold >= 1)
 ;(or	(unit-type-count villager-stone >= 1)
 ;(or	(strategic-number sn-gold-gatherer-percentage >= 1)
@@ -1981,7 +2127,7 @@
 	(up-modify-goal temporary-goal s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
 	(up-full-reset-search)
-	(up-find-remote c: mining-camp c: 16)
+	(up-find-remote c: gold-building c: 16)
 	(set-goal temporary-goal2 0))
 (defrule
 	(goal temporary-goal6 1248812)
@@ -2018,12 +2164,10 @@
 	(up-modify-goal temporary-goal s:= sn-target-player-number); to prevent further bugs
 	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)); should be an enemy
 
-
-
 #load-if-not-defined INFINITE-RESOURCES-START
 (defrule
 (or	(building-type-count-total town-center <= 0)
-	(up-pending-objects c: lumber-camp >= 1))
+	(up-pending-objects c: wood-building >= 1))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -2031,23 +2175,23 @@
 	(resource-found wood)
 	(dropsite-min-distance wood > 5)
 	(dropsite-min-distance wood g:< map-size)
-;(or	(building-type-count-total mill >= 1)
+;(or	(building-type-count-total food-building >= 1)
 ;	(goal buildmill no))
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 	(strategic-number sn-camp-max-distance <= 30)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	;(chat-local-to-self "Wood far away: New camp.")
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
 	(up-modify-sn sn-camp-max-distance c:+ 4)
 ;	(up-modify-sn sn-camp-max-distance g:min map-size)
-	(build lumber-camp)); end jump
+	(build wood-building)); end jump
 #end-if
 #load-if-defined ARABIA-MAP ;temp fix for arabia until it gets switched to one with closer wood
 
 (defrule
-	(building-type-count-total lumber-camp < 1)
+	(building-type-count-total wood-building < 1)
 	(building-type-count-total town-center > 0)
 	(game-time < 600)
 	(not(death-match-game))
@@ -2081,23 +2225,23 @@
 (or(and(death-match-game)
 	(game-time < 600))
 (or	(building-type-count-total town-center <= 0)
-(or	(building-type-count-total lumber-camp >= 1)
+(or	(building-type-count-total wood-building >= 1)
 	(game-time < 30))))
 =>
 	(up-jump-rule 2))
 (defrule
-	(up-pending-objects c: lumber-camp <= 0)
-(not	(up-pending-placement c: lumber-camp))
+	(up-pending-objects c: wood-building <= 0)
+(not	(up-pending-placement c: wood-building))
 	(goal buildlumber yes)
 	(resource-found wood)
 	(dropsite-min-distance wood >= 10); 12
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	;(chat-local-to-self "No stragglers: New camp.")
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)); end jump
+	(build wood-building)); end jump
 (defrule
 (or	(resource-found wood)
 	(and	(wood-amount >= 400)
@@ -2107,34 +2251,34 @@
 	(building-type-count-total barracks >= 1))
 	(strategic-number sn-current-age <= dark)
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 	(or(current-age >= castle-age)
-	(up-pending-objects c: lumber-camp < 1));new addition
+	(up-pending-objects c: wood-building < 1));new addition
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)
+	(build wood-building)
 ;	(disable-self)
 ); end jump
 (defrule
 	(resource-found wood)
 	(goal buildlumber yes)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp < 1)
+	(building-type-count-total wood-building < 1)
 	(unit-type-count villager-wood >= 1)
 (or	(up-compare-goal mysheep >= 1)
 	(up-set-target-by-id g: current-boar))
 	(up-compare-goal excessWood >= housecamp-cost)
 	(strategic-number sn-current-age <= dark)
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 	(nand(death-match-game)
 	(game-time < 400))
 	(game-time > 40)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)
+	(build wood-building)
 ;	(disable-self)
 )
 
@@ -2147,7 +2291,7 @@
 )
 
 (defrule
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 	(dropsite-min-distance wood < 5)
 	(goal strategy drush)
 	(building-type-count-total barracks <= 0)
@@ -2159,7 +2303,7 @@
 (or	(dropsite-min-distance wood < 5)
 	(strategic-number sn-wood-gatherer-percentage < 5))
 (or	(game-time < 30)
-	(and	(building-type-count-total lumber-camp >= 1)
+	(and	(building-type-count-total wood-building >= 1)
 		(and	(unit-type-count villager-wood < 3)
 			(and	(civilian-population < up-max-civ)
 				(and	(population < max-civ-pop)
@@ -2168,10 +2312,10 @@
 	(up-jump-rule 6))
 (defrule
 (or	(up-compare-goal buildlumber != yes)
-(or	(building-type-count-total mill <= 0)
+(or	(building-type-count-total food-building <= 0)
 (or	(building-type-count-total town-center <= 0)
-(or	(up-pending-objects c: lumber-camp >= 1)
-	(building-type-count-total lumber-camp >= 2)))))
+(or	(up-pending-objects c: wood-building >= 1)
+	(building-type-count-total wood-building >= 2)))))
 =>
 	(up-jump-rule 5))
 (defrule
@@ -2180,32 +2324,32 @@
 (or	(up-compare-goal excessWood >= housecamp-cost)
 (or	(up-pending-objects c: house >= 1)
 	(unit-type-count-total villager >= 16))))
-(or	(building-type-count-total mill >= 1)
+(or	(building-type-count-total food-building >= 1)
 	(goal buildmill no))
-	(building-type-count-total lumber-camp < 1)
-	(can-build lumber-camp)
+	(building-type-count-total wood-building < 1)
+	(can-build wood-building)
 	(or(building-type-count-total town-center < 1)
 	(game-time > 40))
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp))
+	(build wood-building))
 (defrule
 	(resource-found wood)
 	(game-time > 90); scout
 (or	(housing-headroom >= firstlc-housing)
 (or	(up-pending-objects c: house >= 1)
 	(up-compare-goal excessWood >= housecamp-cost)))
-	(building-type-count-total mill >= 1)
+	(building-type-count-total food-building >= 1)
 (or	(building-type-count-total dock >= 1)
 	(building-type-count-total port >= 1))
 (or	(strategic-number sn-current-age == dark)
-	(building-type-count-total mining-camp >= 1))
-	(can-build lumber-camp)
+	(building-type-count-total gold-building >= 1))
+	(can-build wood-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp))
+	(build wood-building))
 (defrule
 (or	(and	(housing-headroom < 6)
 		(up-compare-goal excessWood < housecamp-cost))
@@ -2221,24 +2365,24 @@
 (defrule
 	(goal buildlumber yes)
 	(resource-found wood)
-	(building-type-count-total mill >= 1)
+	(building-type-count-total food-building >= 1)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp == 1)
+	(building-type-count-total wood-building == 1)
 (or	(strategic-number sn-current-age <= dfeudal); == dark)
-	(building-type-count-total mining-camp >= 1))
+	(building-type-count-total gold-building >= 1))
 	(dropsite-min-distance wood >= 0)
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)); end jumps
+	(build wood-building)); end jumps
 
 (defrule
 (or	(up-compare-goal buildlumber != yes)
 (or	(unit-type-count villager-wood < 6)
 (or	(building-type-count-total town-center <= 0)
-	(building-type-count-total lumber-camp >= 3))))
+	(building-type-count-total wood-building >= 3))))
 =>
 	(up-jump-rule 3))
 (defrule
@@ -2246,7 +2390,7 @@
 	(strategic-number sn-current-age <= castlea)
 	(up-research-status c: imperial-age <= research-unavailable)
 	(dropsite-min-distance wood < 5)
-	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total wood-building >= 2)
 	(up-compare-goal excessWood < fiprep-cost)
 	(building-type-count-total siege-workshop <= 0)
 	(building-type-count-total monastery <= 0)
@@ -2260,12 +2404,12 @@
 	(up-compare-goal excessWood >= 425))))
 	(dropsite-min-distance wood >= 3); 4
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 	(game-time > 30)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp))
+	(build wood-building))
 (defrule
 	(strategic-number sn-current-age == feudal)
 	(resource-found wood)
@@ -2276,11 +2420,11 @@
 	(up-research-status c: ri-double-bit-axe >= research-pending)
 	(dropsite-min-distance wood >= 0)
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)
+	(build wood-building)
 	(disable-self)); end jumps
 
 ;Center walling
@@ -2510,25 +2654,25 @@
 )
 #load-if-not-defined INFINITE-RESOURCES-START
 (defrule
-	(up-pending-objects c: lumber-camp == 0)
+	(up-pending-objects c: wood-building == 0)
 	(goal buildlumber yes)
 	(resource-found wood)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center >= 1)
 (or	(up-compare-goal strategy-type == feudal-war)
-	(building-type-count-total lumber-camp < {{BUILDINGS_LUMBER_CAMP_013}}))
+	(building-type-count-total wood-building < {{BUILDINGS_LUMBER_CAMP_013}}))
 	(strategic-number sn-current-age <= fcastlea)
 	(unit-type-count villager-wood >= 6)
 	(dropsite-min-distance wood > 4); 5
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp))
+	(build wood-building))
 
 (defrule
-	(up-pending-objects c: lumber-camp == 0)
+	(up-pending-objects c: wood-building == 0)
 	(resource-found wood)
 ;	(strategic-number sn-military-superiority >= 0)
 	(goal underattack no)
@@ -2536,18 +2680,18 @@
 	(up-compare-goal relocating <= no)
 	(game-time < 3600)
 ;	(goal buildlumber yes)
-;	(building-type-count-total mill >= 1)
+;	(building-type-count-total food-building >= 1)
 	(game-time >= 1500); 2100
-(or	(building-type-count-total lumber-camp < {{BUILDINGS_LUMBER_CAMP_014}})
+(or	(building-type-count-total wood-building < {{BUILDINGS_LUMBER_CAMP_014}})
 	(game-time >= 1800)); 3000
-	(building-type-count-total lumber-camp < {{BUILDINGS_LUMBER_CAMP_015}})
+	(building-type-count-total wood-building < {{BUILDINGS_LUMBER_CAMP_015}})
 	(unit-type-count villager-wood >= 15); 6
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ; tl	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp))
+	(build wood-building))
 
 (defrule
 (or	(up-compare-goal buildlumber != yes)
@@ -2558,46 +2702,46 @@
 	(goal strategy fast-imp)
 	(strategic-number sn-current-age <= castlea)
 	(dropsite-min-distance wood < 5)
-	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total wood-building >= 2)
 	(up-compare-goal excessWood < fiprep-cost)
 	(building-type-count-total siege-workshop <= 0)
 	(building-type-count-total monastery <= 0)
 =>
 	(up-jump-rule 5))
 (defrule
-	(up-pending-objects c: lumber-camp == 0)
+	(up-pending-objects c: wood-building == 0)
 	(resource-found wood)
-	(building-type-count-total mill > 0)
-; test	(building-type-count-total lumber-camp < 100)
+	(building-type-count-total food-building > 0)
+; test	(building-type-count-total wood-building < 100)
 (or	(up-compare-goal strategy-type <= feudal-war)
 (or	(goal strategy sling)
 (or	(dropsite-min-distance wood > 5)
 	(strategic-number sn-current-age >= fcastlea)))); castlea
 	(dropsite-min-distance wood > 3)
 	(dropsite-min-distance wood g:< map-size)
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp))
+	(build wood-building))
 (defrule
-; tl	(up-pending-objects c: lumber-camp <= 0)
+; tl	(up-pending-objects c: wood-building <= 0)
 	(goal rebuildcamp yes)
 	(resource-found wood)
 	(dropsite-min-distance wood >= 0)
 	(dropsite-min-distance wood g:< map-size)
-	(building-type-count-total lumber-camp < timer-lcs)
+	(building-type-count-total wood-building < timer-lcs)
 (or	(unit-type-count 219 >= 1);Dead Lumberjacks
 	(unit-type-count 228 >= 1))
-	(can-build lumber-camp)
+	(can-build wood-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1); lower fail percentage for camps
 	(set-strategic-number sn-dropsite-separation-distance 10);
-	(build lumber-camp)
+	(build wood-building)
 	(set-goal rebuildcamp no)
 	(enable-timer rebuild-camp 306)
 	(enable-timer upwood 180); test
-	;(chat-local-to-self "Building emergency lumber-camp.")
+	;(chat-local-to-self "Building emergency wood-building.")
 )
 (defrule
 	(timer-triggered upwood)
@@ -2607,13 +2751,13 @@
 	(game-time >= 60)
 	(dropsite-min-distance wood >= 0)
 	(dropsite-min-distance wood g:< map-size); 128?
-	(building-type-count-total lumber-camp < timer-lcs)
-	(can-build lumber-camp)
+	(building-type-count-total wood-building < timer-lcs)
+	(can-build wood-building)
 =>
 	(disable-timer upwood)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)
+	(build wood-building)
 	(enable-timer upwood 150)
 	(up-jump-rule 2))
 (defrule
@@ -2624,13 +2768,13 @@
 	(game-time >= 60)
 	(dropsite-min-distance wood >= 0)
 	(dropsite-min-distance wood g:< map-size); 128?
-	(building-type-count-total lumber-camp < timer-lcs)
-	(can-build lumber-camp)
+	(building-type-count-total wood-building < timer-lcs)
+	(can-build wood-building)
 =>
 	(disable-timer upwood)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)
+	(build wood-building)
 	(enable-timer upwood 180)
 	(up-jump-rule 1))
 (defrule
@@ -2642,13 +2786,13 @@
 	(strategic-number sn-current-age >= feudal)
 	(dropsite-min-distance wood >= 0)
 	(dropsite-min-distance wood g:< map-size); 128?
-	(building-type-count-total lumber-camp < timer-lcs)
-	(can-build lumber-camp)
+	(building-type-count-total wood-building < timer-lcs)
+	(can-build wood-building)
 =>
 	(disable-timer upwood)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4)
-	(build lumber-camp)
+	(build wood-building)
 	(enable-timer upwood 240)); end jumps
 #end-if
 
@@ -2656,8 +2800,8 @@
 #load-if-not-defined INFINITE-RESOURCES-START
 #load-if-not-defined ULTRA-RESOURCES-START
 (defrule
-	(can-build lumber-camp)
-	(building-type-count-total lumber-camp < 1)
+	(can-build wood-building)
+	(building-type-count-total wood-building < 1)
 	;(wood-amount > 215)
 	(unit-type-count-total villager-wood > 1)
 =>
@@ -2675,10 +2819,10 @@
 	(or(up-compare-goal temporary-goal > 8)
 	(and(game-time > 500)
 	(up-compare-goal temporary-goal > 6)))
-	(can-build lumber-camp)
+	(can-build wood-building)
 	;(wood-amount > 200)
 	(unit-type-count-total villager-wood > 1)
-	(building-type-count-total lumber-camp < 1)
+	(building-type-count-total wood-building < 1)
 	(or(building-type-count-total town-center > 0)
 	(wood-amount < 275))
 	(or(game-time > 400)
@@ -2686,9 +2830,9 @@
 	(game-time > 270)))
 	(or(goal buildlumber yes)
 	(game-time > 450))
-	(up-pending-objects c: lumber-camp < 1)
+	(up-pending-objects c: wood-building < 1)
 =>
-	(build lumber-camp)
+	(build wood-building)
 ;	(chat-to-player my-player-number "Debug: Lumbercamp backup 1 triggered")
 )
 #end-if
@@ -2700,13 +2844,13 @@
 	(game-time > 480)
 	(goal landnomad no)
 	(food-amount > 500)
-	(can-build lumber-camp)
+	(can-build wood-building)
 	(wood-amount > 200)
-	(up-pending-objects c: lumber-camp < 1)
-	(nand(building-type-count-total mill > 0)
+	(up-pending-objects c: wood-building < 1)
+	(nand(building-type-count-total food-building > 0)
 	(building-type-count-total barracks > 0))
 =>
-	(build lumber-camp)
+	(build wood-building)
 ;	(chat-to-player my-player-number "Debug: Lumbercamp backup 2 triggered")
 )
 
@@ -2731,56 +2875,56 @@
 =>
 	(up-jump-rule 5))
 (defrule
-;	(up-pending-objects c: mining-camp == 0)
+;	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(goal map land)
-   	(building-type-count-total lumber-camp >= 2)
-   	(building-type-count-total mill >= 1)
+   	(building-type-count-total wood-building >= 2)
+   	(building-type-count-total food-building >= 1)
 	(unit-type-count-total villager >= 20)
 (or	(up-research-status c: feudal-age >= research-pending)
 (or	(unit-type-count-total villager >= 24)
 	(up-compare-goal total-food-amount >= feudal-food))); feudal-f2
-	(building-type-count-total mining-camp < 1)
+	(building-type-count-total gold-building < 1)
 	(dropsite-min-distance gold > 3); 5
 	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-want-m-camp yes)
 (set-strategic-number sn-camp-type gold))
 (defrule
-;	(up-pending-objects c: mining-camp == 0)
+;	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(goal map land)
-   	(building-type-count-total lumber-camp >= 1)
-   	(building-type-count-total mill >= 1)
+   	(building-type-count-total wood-building >= 1)
+   	(building-type-count-total food-building >= 1)
 (or	(strategic-number sn-current-age >= dfeudal)
 (or	(building-type-count-total barracks >= 1)
 (or	(unit-type-count-total villager >= darkvills)
 	(up-compare-goal total-food-amount >= 700))))
 ; tl	(up-compare-goal total-food-amount >= feudal-f2); 440
-	(building-type-count-total mining-camp < 1)
+	(building-type-count-total gold-building < 1)
 	(dropsite-min-distance gold > 3); 5
 	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-want-m-camp yes)
 (set-strategic-number sn-camp-type gold))
 (defrule
-;	(up-pending-objects c: mining-camp == 0)
+;	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(goal map land)
-   	(building-type-count-total lumber-camp >= 2)
+   	(building-type-count-total wood-building >= 2)
 	(strategic-number sn-current-age >= feudal)
 	(building-type-count-total barracks >= 1)
 	(unit-type-count-total villager >= 22)
 	(up-compare-goal total-food-amount >= feudal-f2); 440
 ;	(goal underattack no)
-	(building-type-count-total mining-camp < 1)
+	(building-type-count-total gold-building < 1)
 	(dropsite-min-distance gold > 3); 5
 	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
@@ -2788,36 +2932,36 @@
 (set-strategic-number sn-camp-type gold)
 	(disable-self))
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(goal map water)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1)
 (or	(strategic-number sn-current-age >= dfeudal)
 (or	(up-compare-goal excessWood >= 185)
 (or (building-type-count-total dock >= 1)
 	(building-type-count-total port >= 1))))
-	(building-type-count-total mining-camp < 1)
+	(building-type-count-total gold-building < 1)
 	(dropsite-min-distance gold > 3); 5
 	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-want-m-camp yes)
 (set-strategic-number sn-camp-type gold))
 (defrule
-;	(up-pending-objects c: mining-camp == 0)
+;	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(strategic-number sn-current-age >= dfeudal)
 	(building-type-count-total barracks >= 1)
 	(unit-type-count-total villager >= 22)
 	(goal underattack no)
-	(building-type-count-total mining-camp < 4)
-	(building-type-count-total mining-camp >= 1); -total
+	(building-type-count-total gold-building < 4)
+	(building-type-count-total gold-building >= 1); -total
 	(dropsite-min-distance stone < 5)
 	(dropsite-min-distance gold > 5)
 	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
@@ -2830,10 +2974,10 @@
 
 ;#load-if-not-defined GOLD-RUSH-MAP
 ;(defrule
-;(or	(building-type-count-total lumber-camp >= 2)
+;(or	(building-type-count-total wood-building >= 2)
 ;	(strategic-number sn-current-age >= dfeudal))
 ;	(building-type-count-total town-center >= 1)
-;	(building-type-count-total mining-camp < 1)
+;	(building-type-count-total gold-building < 1)
 ;	(strategic-number sn-camp-max-distance < 30)
 ;=>
 ;	(set-strategic-number sn-camp-max-distance 30)
@@ -2842,7 +2986,7 @@
 ;#end-if
 
 (defrule
-;(or	(building-type-count-total lumber-camp >= 2)
+;(or	(building-type-count-total wood-building >= 2)
 ;tc+40	(strategic-number sn-current-age >= dfeudal))
 	(resource-found wood);
 	(building-type-count-total town-center >= 1)
@@ -2854,11 +2998,11 @@
 	(up-modify-sn sn-camp-max-distance c:+ 1)
 	(up-jump-rule 2))
 (defrule
-(or	(building-type-count-total lumber-camp >= 2)
+(or	(building-type-count-total wood-building >= 2)
 	(strategic-number sn-current-age >= dfeudal))
 	(resource-found gold);
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total mining-camp < 1)
+	(building-type-count-total gold-building < 1)
 	(dropsite-min-distance gold > 3); 5
 	(dropsite-min-distance gold < 40)
 	(dropsite-min-distance gold s:>= sn-camp-max-distance)
@@ -2871,8 +3015,8 @@
 	(strategic-number sn-current-age >= fcastlea)
 	(resource-found stone);
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mining-camp < 4)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total gold-building < 4)
 	(dropsite-min-distance stone > 5)
 	(dropsite-min-distance stone < 40); 35
 	(dropsite-min-distance stone s:>= sn-camp-max-distance)
@@ -2882,17 +3026,17 @@
 
 #load-if-not-defined INFINITE-RESOURCES-START
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1)
 	(strategic-number sn-gold-gatherer-percentage >= 1)
-;testo	(building-type-count-total mining-camp <= 2)
-	(building-type-count-total mining-camp >= 1)
+;testo	(building-type-count-total gold-building <= 2)
+	(building-type-count-total gold-building >= 1)
 	(dropsite-min-distance gold > 8)
 	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-want-m-camp yes)
@@ -2906,7 +3050,7 @@
 =>
 	(up-jump-rule 2))
 (defrule
-	(up-pending-objects c: mining-camp <= 0)
+	(up-pending-objects c: gold-building <= 0)
 	(resource-found gold)
 	(goal rebuildcamp yes)
 	(building-type-count town-center >= 1)
@@ -2915,7 +3059,7 @@
 (or	(unit-type-count-total 229 >= 1); dead miners
 	(unit-type-count-total 221 >= 1))
 	(strategic-number sn-gold-gatherer-percentage >= 1)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1); lower fail percentage for camps
 	(set-strategic-number sn-dropsite-separation-distance 10)
@@ -2923,10 +3067,10 @@
 (set-strategic-number sn-camp-type gold)
 	(set-goal rebuildcamp no)
 	(enable-timer rebuild-camp 306)
-; tl	(chat-local-to-self "Building emergency mining-camp. 1")
+; tl	(chat-local-to-self "Building emergency gold-building. 1")
 )
 (defrule; almost useless for now
-	(up-pending-objects c: mining-camp <= 0)
+	(up-pending-objects c: gold-building <= 0)
 	(resource-found stone)
 	(goal rebuildcamp yes)
 	(building-type-count town-center >= 1)
@@ -2934,7 +3078,7 @@
 	(dropsite-min-distance stone g:< map-size)
 (or	(unit-type-count-total 229 >= 1); dead miners
 	(unit-type-count-total 221 >= 1))
-	(can-build mining-camp)
+	(can-build gold-building)
 	(strategic-number sn-stone-gatherer-percentage >= 1)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1); lower fail percentage for camps
@@ -2943,7 +3087,7 @@
 (set-strategic-number sn-camp-type stone)
 	(set-goal rebuildcamp no)
 	(enable-timer rebuild-camp 306)
-; tl	(chat-local-to-self "Building emergency mining-camp. 2"); end jump
+; tl	(chat-local-to-self "Building emergency gold-building. 2"); end jump
 )
 
 
@@ -2952,8 +3096,8 @@
 	(game-time > 2200)
 	(dropsite-min-distance gold > 4)
 	(dropsite-min-distance gold < 255)
-	(can-build mining-camp)
-	(building-type-count-total mining-camp < 6)
+	(can-build gold-building)
+	(building-type-count-total gold-building < 6)
 	(building-type-count-total town-center > 0)
 =>
 	(up-full-reset-search)
@@ -2970,8 +3114,8 @@
 	(game-time > 2200)
 	(dropsite-min-distance gold > 4)
 	(dropsite-min-distance gold < 255)
-	(can-build mining-camp)
-	(building-type-count-total mining-camp < 6)
+	(can-build gold-building)
+	(building-type-count-total gold-building < 6)
 	(building-type-count-total town-center > 0)
 	(up-compare-goal remote-total > 0)
 =>
@@ -2981,7 +3125,7 @@
 
 
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found stone)
 	(goal dreitc no)
 	(stone-amount < tc-stone)
@@ -2989,19 +3133,19 @@
 	(goal underattack no)
 	(strategic-number sn-current-age >= fcastlea)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 	(strategic-number sn-stone-gatherer-percentage >= 1)
-; test	(building-type-count-total mining-camp < 2)
+; test	(building-type-count-total gold-building < 2)
 	(dropsite-min-distance stone > 5)
 	(dropsite-min-distance stone g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-want-m-camp yes)
 (set-strategic-number sn-camp-type stone))
 
 ;(defrule
-;	(up-pending-objects c: mining-camp == 0)
+;	(up-pending-objects c: gold-building == 0)
 ;	(resource-found stone)
 ;	(building-type-count-total town-center < 5)
 ;	(goal milunits no)
@@ -3009,32 +3153,32 @@
 ;	(strategic-number sn-current-age >= fcastlea)
 ;;	(building-type-count-total monastery >= 1)
 ;	(building-type-count-total town-center >= 1)
-;	(building-type-count-total lumber-camp >= 1)
-;; test	(building-type-count-total mining-camp < 2)
+;	(building-type-count-total wood-building >= 1)
+;; test	(building-type-count-total gold-building < 2)
 ;	(dropsite-min-distance stone > 5)
 ;	(dropsite-min-distance stone g:< map-size)
-;	(can-build mining-camp)
+;	(can-build gold-building)
 ;=>
 ;	(set-strategic-number sn-want-m-camp yes)
 ; (set-strategic-number sn-camp-type gold))
 
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found stone)
 	(dropsite-min-distance stone > 3)
-	(building-type-count-total mining-camp > 0)
-	(building-type-count-total mining-camp < {{BUILDINGS_MINING_CAMP_017}})
+	(building-type-count-total gold-building > 0)
+	(building-type-count-total gold-building < {{BUILDINGS_MINING_CAMP_017}})
 	(building-type-count-total town-center > 0)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(goal strategy castledrop)
 	(goal fastcastledrop yes)
 =>
 	(set-strategic-number sn-want-m-camp yes)
 	(set-strategic-number sn-camp-type stone)
-	(build mining-camp)
+	(build gold-building)
 )
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found stone)
 	(strategic-number sn-current-age >= fcastlea)
 (or	(up-compare-goal strategy == castledrop)
@@ -3043,31 +3187,31 @@
 	(up-compare-goal total-stone-amount < castle-stone)
 	(strategic-number sn-stone-gatherer-percentage >= 1)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1); 2
-;	(building-type-count-total mining-camp >= 1)
-	(building-type-count-total mining-camp < 4)
+	(building-type-count-total wood-building >= 1); 2
+;	(building-type-count-total gold-building >= 1)
+	(building-type-count-total gold-building < 4)
 	(dropsite-min-distance stone > 5)
 	(dropsite-min-distance stone g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-want-m-camp yes)
 (set-strategic-number sn-camp-type stone))
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found stone)
 	(up-compare-goal strategy == sling)
 	(strategic-number sn-stone-gatherer-percentage >= 1)
 	(strategic-number sn-current-age >= dfeudal)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mining-camp >= 1)
-	(building-type-count-total mining-camp < 4)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total gold-building >= 1)
+	(building-type-count-total gold-building < 4)
 (or	(up-compare-goal excessWood >= marketcamp-cost)
 	(building-type-count-total market >= 1))
 	(dropsite-min-distance stone > 5)
 	(dropsite-min-distance stone g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-want-m-camp yes)
@@ -3075,16 +3219,16 @@
 
 #load-if-defined TINY-MAP
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 (or	(game-time >= 2400)
-	(building-type-count mining-camp >= 2))
+	(building-type-count gold-building >= 2))
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mining-camp < 14)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total gold-building < 14)
 	(dropsite-min-distance gold > 6)
 	(dropsite-min-distance gold g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
@@ -3093,20 +3237,20 @@
 
 
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found stone)
 ;(or	(game-time >= 3300)
 (or	(strategic-number sn-current-age >= imperial)
-	(building-type-count mining-camp >= 3));)
+	(building-type-count gold-building >= 3));)
 (or	(goal dreitc yes)
 	(stone-amount < tc-stone))
 	(building-type-count-total town-center >= 1)
-; tl	(building-type-count-total lumber-camp >= 1)
+; tl	(building-type-count-total wood-building >= 1)
 	(building-type-count-total monastery >= 1)
-	(building-type-count-total mining-camp < 13)
+	(building-type-count-total gold-building < 13)
 	(dropsite-min-distance stone > 6)
 	(dropsite-min-distance stone g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
@@ -3114,17 +3258,17 @@
 (set-strategic-number sn-camp-type stone))
 #else
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 ;(or	(game-time >= 2400)
 (or	(strategic-number sn-current-age >= imperial)
-	(building-type-count mining-camp >= 2));)
+	(building-type-count gold-building >= 2));)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mining-camp < 25)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total gold-building < 25)
 	(dropsite-min-distance gold > 5)
 	(dropsite-min-distance gold g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
@@ -3132,17 +3276,17 @@
 (set-strategic-number sn-camp-type gold))
 
 (defrule
-	(up-pending-objects c: mining-camp == 0)
+	(up-pending-objects c: gold-building == 0)
 	(resource-found stone)
 (or	(game-time >= 3300)
-	(building-type-count mining-camp >= 3))
+	(building-type-count gold-building >= 3))
 	(building-type-count-total town-center >= 1)
-; tl	(building-type-count-total lumber-camp >= 1)
+; tl	(building-type-count-total wood-building >= 1)
 	(building-type-count-total monastery >= 1)
-	(building-type-count-total mining-camp < 22)
+	(building-type-count-total gold-building < 22)
 	(dropsite-min-distance stone > 6)
 	(dropsite-min-distance stone g:< map-size)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
@@ -3153,16 +3297,16 @@
 (defrule
 (or	(goal strategy stonewall)
 	(strategic-number sn-gold-gatherer-percentage >= 24)); test
-;	(up-pending-objects c: mining-camp == 0)
+;	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(building-type-count-total town-center >= 3)
 	(strategic-number sn-current-age >= imperial)
 	(strategic-number sn-gold-gatherer-percentage >= 1)
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mining-camp < 5)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total gold-building < 5)
 	(dropsite-min-distance gold >= 0)
 	(dropsite-min-distance gold s:<= sn-camp-max-distance)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 3); 4
@@ -3173,22 +3317,22 @@
 (or	(strategic-number sn-camp-max-distance < 26)
 (or	(and	(game-time < 1800)
 		(unit-type-count-total villager < 48))
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 	(building-type-count-total town-center <= 0)))))
 =>
 	(up-jump-rule 1))
 (defrule
-;	(up-pending-objects c: mining-camp == 0)
+;	(up-pending-objects c: gold-building == 0)
 	(resource-found gold)
 	(strategic-number sn-gold-gatherer-percentage >= 12);	(strategic-number sn-gold-gatherer-percentage >= 1)
 (or	(and	(building-type-count-total town-center >= 3)
-		(building-type-count-total mining-camp < 3))
+		(building-type-count-total gold-building < 3))
 	(up-research-status c: imperial-age == research-pending))
 	(building-type-count-total monastery >= 1)
-	(building-type-count-total mining-camp < 4)
+	(building-type-count-total gold-building < 4)
 	(dropsite-min-distance gold >= 0)
 	(dropsite-min-distance gold s:<= sn-camp-max-distance)
-	(can-build mining-camp)
+	(can-build gold-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-dropsite-separation-distance 4); 6
@@ -3197,8 +3341,8 @@
 
 
 (defrule
-    (nor(can-build mining-camp)
-    (up-pending-objects c: mining-camp > 0))
+    (nor(can-build gold-building)
+    (up-pending-objects c: gold-building > 0))
 =>
     (set-strategic-number sn-want-m-camp no)
 )
@@ -3258,7 +3402,7 @@
     (up-reset-search 1 1 0 0)
     (up-reset-filters)
     (up-filter-distance c: -1 c: 8)
-    (up-find-local c: mining-camp c: 2)
+    (up-find-local c: gold-building c: 2)
     (up-find-local c: town-center c: 2)
     (up-get-search-state local-total)
     (up-modify-goal local-total c:* -20)
@@ -3296,104 +3440,62 @@
 
 (defrule
     (goal temporary-goal7 23456)
-    (up-can-build-line 0 point-x c: mining-camp)
+    (up-can-build-line 0 point-x c: gold-building)
 	(or(stone-amount < 100)
 	(building-type-count-total town-center > 0))
 	(up-point-zone position-self-x g:== temporary-goal5)
 	(up-set-target-by-id g: position-self-id)
 	(up-path-distance point-x 0 < 75);necessary to avoid a bug where the camp will be placed in a random gap on BF
 =>
-    (up-build-line point-x point-x c: mining-camp)
+    (up-build-line point-x point-x c: gold-building)
 	(set-goal sn-want-m-camp no)
 )
 
 (defrule
 	(strategic-number sn-want-m-camp == yes)
-	(can-build mining-camp)
+	(can-build gold-building)
 	(or(stone-amount < 100)
 	(building-type-count-total town-center > 0))
-	(up-pending-objects c: mining-camp < 1)
+	(up-pending-objects c: gold-building < 1)
 	(nand(stone-amount > 100)
 	(nand(goal strategy r-flush)
 	(nand(game-time < 900)
 	(strategic-number sn-camp-type == stone))))
 =>
-	(build mining-camp)
+	(build gold-building)
 	(set-strategic-number sn-want-m-camp no)
 )
 
 (defrule
 	(strategic-number sn-want-m-camp == yes)
-	(can-build mining-camp)
+	(can-build gold-building)
 	(building-type-count-total town-center > 0)
-	(up-pending-objects c: mining-camp < 1)
+	(up-pending-objects c: gold-building < 1)
 	(game-time > 150)
 	(or(game-time > 2650)
-	(building-type-count-total mining-camp < 1))
-	(building-type-count-total mining-camp < {{BUILDINGS_MINING_CAMP_019}})
+	(building-type-count-total gold-building < 1))
+	(building-type-count-total gold-building < {{BUILDINGS_MINING_CAMP_019}})
 =>
-	(build mining-camp)
+	(build gold-building)
 	(set-strategic-number sn-want-m-camp no)
 )
 
-(defrule
-	(can-build settlement)
-	(up-pending-objects c: settlement < 1)
-	(building-type-count-total settlement > 3)
-	(dropsite-min-distance gold > 4)
-	(dropsite-min-distance gold < 255)
-	(building-type-count-total settlement < 13)
-=>
-	(up-full-reset-search)
-	(up-set-target-point position-self-x)
-	(up-modify-goal temporary-goal6 s:= sn-maximum-town-size)
-	(up-modify-goal temporary-goal6 c:+ 6)
-	(up-filter-distance c: 6 s: temporary-goal6)
-	(up-filter-status c: status-resource c: list-active)
-	(up-find-resource c: gold c: 10)
-	(up-clean-search search-remote object-data-distance search-order-desc)
-	(set-goal temporary-goal2 87654)
-)
-
-(defrule	
-	(goal temporary-goal2 87654)
-	(up-set-target-object search-remote c: 0)
-=>
-	(up-get-point position-object point-x)
-	(set-goal temporary-goal3 5)
-	(set-goal temporary-goal2 87655)
-)
-
-(defrule
-	(goal temporary-goal2 87655)
-	(up-can-build-line 0 point-x c: settlement)
-=>
-	(up-build-line point-x point-x c: settlement)
-	(up-jump-rule 1)
-)
-
-(defrule
-	(goal temporary-goal2 87655)
-	(up-compare-goal temporary-goal3 > 0)
-=>
-	(up-modify-goal temporary-goal3 c:- 1)
-	(up-lerp-tiles point-x position-self-x c: 1)
-	(up-jump-rule -2)
-)
 
 
 (defrule
+	(or(building-available mule-cart)
 	(or(civ-selected incan)
 	(or(civ-selected tupi)
 	(or(civ-selected mapuche)
-	(civ-selected muisca))))
-	(building-type-count settlement < 5)
+	(civ-selected muisca)))))
+	(building-type-count settlement < 10)
+	(building-type-count mule-cart < 20)
 =>
 	(up-jump-rule 5)
 )
 (defrule
-(or	(and	(up-pending-objects c: lumber-camp <= 0)
-		(up-pending-objects c: mining-camp <= 0))
+(or	(and	(up-pending-objects c: wood-building <= 0)
+		(up-pending-objects c: gold-building <= 0))
 (or	(strategic-number sn-camp-max-distance >= 50)
 	(and	(strategic-number sn-camp-max-distance >= 25)
 		(or	(strategic-number sn-camp-max-distance g:>= targetdistance)
@@ -3403,11 +3505,11 @@
 	(up-jump-rule 4))
 (defrule
 	(resource-found wood)
-	(up-pending-objects c: lumber-camp >= 1)
+	(up-pending-objects c: wood-building >= 1)
 =>
 	(up-full-reset-search)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: lumber-camp c: 1)
+	(up-find-status-local c: wood-building c: 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object point-x)
 	(up-set-target-point point-x)
@@ -3417,7 +3519,7 @@
 	(up-get-search-state local-total))
 (defrule
 	(resource-found wood)
-	(up-pending-objects c: lumber-camp >= 1)
+	(up-pending-objects c: wood-building >= 1)
 	(up-pending-objects c: mule-cart < 1)
 	(up-compare-goal local-total >= 1)
 	(up-compare-goal remote-total <= 2)
@@ -3425,18 +3527,18 @@
 =>
 	(chat-local-to-self "Wood too far? Increasing camp distance.")
 	(up-target-point 0 action-delete -1 -1)
-	(up-reset-placement c: lumber-camp)
+	(up-reset-placement c: wood-building)
 	(set-strategic-number sn-enable-new-building-system 1)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(up-modify-sn sn-camp-max-distance c:+ 1))
 (defrule
 ;(or	(resource-found gold)
 ;tl	(resource-found stone))
-	(up-pending-objects c: mining-camp >= 1)
+	(up-pending-objects c: gold-building >= 1)
 =>
 	(up-full-reset-search)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: mining-camp c: 1)
+	(up-find-status-local c: gold-building c: 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object point-x)
 	(up-set-target-point point-x)
@@ -3451,14 +3553,14 @@
 (defrule
 (or	(resource-found gold)
 	(resource-found stone))
-	(up-pending-objects c: mining-camp >= 1) 
+	(up-pending-objects c: gold-building >= 1) 
 	(up-compare-goal local-total >= 1)
 	(up-compare-goal remote-total <= 0)
 	(up-object-data object-data-hitpoints <= 1)
 =>
 	(chat-local-to-self "Ore too far? Increasing camp distance.")
 	(up-target-point 0 action-delete -1 -1)
-	(up-reset-placement c: mining-camp)
+	(up-reset-placement c: gold-building)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-enable-new-building-system 1)
 	(up-modify-sn sn-camp-max-distance c:+ 1)); end jump
@@ -3487,21 +3589,21 @@
 
 (defrule
     (unit-type-count-total villager > 20)
-    (building-type-count-total mill > 0)
-    (building-type-count-total mill < 2)
+    (building-type-count-total food-building > 0)
+    (building-type-count-total food-building < 2)
     (building-type-count-total town-center > 0)
-    (can-build mill)
-    (up-can-build-line 0 point-x c: mill)
+    (can-build food-building)
+    (up-can-build-line 0 point-x c: food-building)
 =>
-    (up-build-line point-x point-x c: mill)
+    (up-build-line point-x point-x c: food-building)
     (up-jump-rule 1)
 )
 (defrule
     (unit-type-count-total villager > 20)
-    (building-type-count-total mill > 0)
-    (building-type-count-total mill < 2)
+    (building-type-count-total food-building > 0)
+    (building-type-count-total food-building < 2)
     (building-type-count-total town-center > 0)
-    (can-build mill)
+    (can-build food-building)
     (up-compare-goal temporary-goal3 > 0)
 =>
     (up-modify-goal temporary-goal3 c:- 1)
@@ -3513,8 +3615,8 @@
 
 (defrule
     (civ-selected 42)
-    (building-type-count-total mill < 1)
-    (can-build mill)
+    (building-type-count-total food-building < 1)
+    (can-build food-building)
 =>
     (up-full-reset-search)
     (up-set-target-point position-self-x)
@@ -3525,13 +3627,13 @@
     (civ-selected 42)
     (building-type-count-total town-center > 0)
     (timer-triggered threesec)
-    (building-type-count-total mill < 1)
+    (building-type-count-total food-building < 1)
     (resource-found food) ;unfortunately it isn't that simple - need to exclude forage from under TC
     (up-find-resource c: forage-bush-class c: 4)
     (up-gaia-type-count c: forage-bush-class >= 4)
-    (can-build mill)
+    (can-build food-building)
 =>
-    (build mill)
+    (build food-building)
  ;   (chat-local-to-self "this should only be built when forage is found :O")
 )
 
@@ -3539,13 +3641,13 @@
 	(civ-selected 42)
 	(game-time > 45)
 	(game-time < 201)
-	(can-build mill)
+	(can-build food-building)
 	(or(map-type scandanavia)
 	(cc-players-unit-type-count 0 forage-bush-class < 8))
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 =>
-	;(build mill)
+	;(build food-building)
 	(up-full-reset-search)
 	(up-set-target-point position-self-x)
 	(up-filter-status c: status-ready c: list-active)
@@ -3556,11 +3658,11 @@
 	(civ-selected 42)
 	(game-time > 45)
 	(game-time < 201)
-	(can-build mill)
+	(can-build food-building)
 	(or(map-type scandanavia)
 	(cc-players-unit-type-count 0 forage-bush-class < 8))
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(up-find-resource c: deer c: 1)
 	(up-set-target-object search-remote c: 0)
 =>
@@ -3573,15 +3675,15 @@
 	(civ-selected 42)
 	(game-time > 45)
 	(game-time < 201)
-	(can-build mill)
+	(can-build food-building)
 	(or(map-type scandanavia)
 	(cc-players-unit-type-count 0 forage-bush-class < 8))
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 1)
-	(up-can-build-line 0 point-x c: mill)
+	(building-type-count-total food-building < 1)
+	(up-can-build-line 0 point-x c: food-building)
 	(up-compare-goal temporary-goal3 > 0)
 =>
-	(up-build-line point-x point-x c: mill)
+	(up-build-line point-x point-x c: food-building)
 	(up-jump-rule 1)
 )
 
@@ -3589,41 +3691,41 @@
 	(civ-selected 42)
 	(game-time > 45)
 	(game-time < 201)
-	(can-build mill)
+	(can-build food-building)
 	(or(map-type scandanavia)
 	(cc-players-unit-type-count 0 forage-bush-class < 8))
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(not(up-find-remote c: deer c: 1))
 =>
-	(build mill)
+	(build food-building)
 )
 
 (defrule
 	(civ-selected 42)
 	(or(wood-amount > 125)
 	(map-type yucatan))
-	(can-build mill)
+	(can-build food-building)
 	(unit-type-count-total livestock-class > 10)
-	(building-type-count-total mill < {{BUILDINGS_MILL_022}})
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total food-building < {{BUILDINGS_MILL_022}})
+	(building-type-count-total wood-building > 1)
 	(building-type-count-total town-center > 0)
 	(unit-type-count-total villager > 12)
 =>
-	(build mill)
+	(build food-building)
 )
 
 (defrule
 	(civ-selected 42)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(building-type-count town-center > 0)
 	(game-time > 220)
-	(can-build mill)
-	(building-type-count-total mill < 1)
+	(can-build food-building)
+	(building-type-count-total food-building < 1)
 	(wood-amount > 125)
 =>
-	(up-reset-placement c: mill)
-	(build mill)
+	(up-reset-placement c: food-building)
+	(build food-building)
 )
 
 
@@ -3644,38 +3746,40 @@
 (defrule
 	(up-compare-goal remote-total > 0)
 	(up-set-target-object search-remote c: 0)
-	(can-build mill)
-	(building-type-count-total mill < 1)
+	(can-build food-building)
+	(building-type-count-total food-building < 1)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(or(up-compare-goal map != water)
 	(building-type-count-total dock > 0))
 	(or(up-compare-goal buildmill == yes)
 	(wood-amount >= 125))
+	(or(wood-amount > 125)
+	(housing-headroom > 5))
 =>
-	;(chat-to-player my-player-number "Attempting to build chicken mill")
+	;(chat-to-player my-player-number "Attempting to build chicken food-building")
 	(up-get-point position-object point-x)
 	(up-lerp-tiles point-x position-self-x c: -1)
-	(up-build-line point-x point-x c: mill)
+	(up-build-line point-x point-x c: food-building)
 	(set-goal chicken-mill yes)
 )
 
 (defrule
 	(goal chicken-mill yes)
-	(building-type-count-total lumber-camp > 1)
+	(building-type-count-total wood-building > 1)
 	(cc-players-unit-type-count 0 forage-bush-class > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
 	(current-age == dark-age)
-	(building-type-count-total mill < {{BUILDINGS_MILL_025}})
-	(up-pending-objects c: mill < 1)
+	(building-type-count-total food-building < {{BUILDINGS_MILL_025}})
+	(up-pending-objects c: food-building < 1)
 =>
-	(build mill)
+	(build food-building)
 )
 
 (defrule
 	(up-compare-goal remote-total > 0)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(game-time < 300)
 =>
 	(up-jump-rule 29)
@@ -3704,27 +3808,27 @@
 =>
 	(up-jump-rule 2))
 (defrule
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 (or	(and	(up-compare-goal buildmill != yes)
 		(wood-amount < 300))
 (or	(building-type-count town-center <= 0)
-	(building-type-count-total mill >= 1))))
+	(building-type-count-total food-building >= 1))))
 =>
 	(up-jump-rule 1))
 (defrule
-	(or(up-compare-goal remote-total > 5);If at least 5 chickens build a chicken mill instead
+	(or(up-compare-goal remote-total > 5);If at least 5 chickens build a chicken food-building instead
 (or	(and	(up-compare-goal forage-count < 1)
 		(game-time s:>= sn-home-exploration-time))
 (or	(cc-players-unit-type-count 0 forage-bush-class <= 0)
 	(map-type scandanavia))))
 (or	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance)
 	(dropsite-min-distance deer-hunting <= 30)); 30
-	(can-build mill)
+	(can-build food-building)
 =>
-	(chat-local-to-self "Scandi mill.")
+	(chat-local-to-self "Scandi food-building.")
 	(set-strategic-number sn-mill-max-distance 25)
 	(set-strategic-number sn-preferred-mill-placement 1)
-	(build mill)
+	(build food-building)
 	(up-jump-rule 12))
 (defrule
 (or	(up-compare-goal forage-count < 1)
@@ -3746,12 +3850,12 @@
 				(population-headroom >= 1))))
 (or	(up-compare-goal buildmill != yes)
 (or	(building-type-count town-center < 1)
-	(building-type-count-total mill >= 1))))
+	(building-type-count-total food-building >= 1))))
 =>
 	(up-jump-rule 10))
 (defrule
-(or	(not	(can-build mill))
-	(up-pending-placement c: mill))
+(or	(not	(can-build food-building))
+	(up-pending-placement c: food-building))
 =>
 	(up-jump-rule 9))
 (defrule
@@ -3788,7 +3892,7 @@
 	(up-modify-goal temporary-goal c:min 18))
 (defrule
 	(false);	(resource-found food)
-	(can-build mill)
+	(can-build food-building)
 =>
 	(up-full-reset-search)
 	(up-set-target-point position-self-x)
@@ -3801,7 +3905,7 @@
 	(up-set-target-point object-point-x)
 	(up-reset-filters)
 	(up-filter-distance c: -1 c: 8)
-	(up-find-local c: mill c: 1)
+	(up-find-local c: food-building c: 1)
 	(up-get-search-state local-total))
 (defrule
 	(up-compare-goal local-total <= 0)
@@ -3809,15 +3913,15 @@
 	(false);	(resource-found food)
 (or	(unit-type-count villager-forager >= 1)
 (or	(wood-amount >= 300)
-	(building-type-count-total lumber-camp >= 2)))
-	(can-build mill)
+	(building-type-count-total wood-building >= 2)))
+	(can-build food-building)
 =>
-;	(chat-local-to-self "Building mill.0")
+;	(chat-local-to-self "Building food-building.0")
 	(up-copy-point building-point-x object-point-x)
 	(up-set-target-point building-point-x)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-placement-zone-size 4)
-	(up-build place-point 0 c: mill)
+	(up-build place-point 0 c: food-building)
 	(disable-self)
 	(up-jump-rule 4))
 (defrule
@@ -3826,13 +3930,13 @@
 (or	(unit-type-count-total villager >= 20)
 (or	(unit-type-count villager-forager >= 1)
 (or	(wood-amount >= 300)
-	(building-type-count-total lumber-camp >= 2)))))
-	(can-build mill)
+	(building-type-count-total wood-building >= 2)))))
+	(can-build food-building)
 =>
-;	(chat-local-to-self "Building mill.1")
+;	(chat-local-to-self "Building food-building.1")
 	(up-modify-sn sn-mill-max-distance g:= temporary-goal);	(set-strategic-number sn-mill-max-distance 18)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
-	(build mill)
+	(build food-building)
 ;	(disable-self)
 	(up-jump-rule 3))
 (defrule
@@ -3842,13 +3946,13 @@
 (or	(unit-type-count villager-food <= 0); 5
 (or	(unit-type-count-total villager >= 18)
 (or	(wood-amount >= housecamp2-cost)
-	(building-type-count-total lumber-camp >= 1))))
-	(can-build mill)
+	(building-type-count-total wood-building >= 1))))
+	(can-build food-building)
 =>
-;	(chat-local-to-self "Building mill.2")
+;	(chat-local-to-self "Building food-building.2")
 	(up-modify-sn sn-mill-max-distance g:= temporary-goal);	(set-strategic-number sn-mill-max-distance 18)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
-	(build mill)
+	(build food-building)
 	(disable-self)
 	(up-jump-rule 2))
 (defrule
@@ -3858,13 +3962,13 @@
 (or	(unit-type-count villager-food <= 0); 5
 (or	(unit-type-count-total villager >= 19)
 (or	(wood-amount >= 220)
-	(building-type-count-total lumber-camp >= 2))))
-	(can-build mill)
+	(building-type-count-total wood-building >= 2))))
+	(can-build food-building)
 =>
-;	(chat-local-to-self "Building mill.3")
+;	(chat-local-to-self "Building food-building.3")
 	(up-modify-sn sn-mill-max-distance g:= temporary-goal);	(set-strategic-number sn-mill-max-distance 18)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
-	(build mill)
+	(build food-building)
 	(disable-self)
 	(up-jump-rule 1))
 (defrule
@@ -3873,15 +3977,15 @@
 	(unit-type-count scout-unit <= 0)
 	(up-compare-goal scouting-unit <= -1)
 (or	(unit-type-count-total villager >= 20)
-(or	(building-type-count-total lumber-camp >= 2); (building-type-count-total barracks >= 1)
+(or	(building-type-count-total wood-building >= 2); (building-type-count-total barracks >= 1)
 	(wood-amount >= 240)))
-	(can-build mill)
+	(can-build food-building)
 =>
-;	(chat-local-to-self "Building mill.4")
+;	(chat-local-to-self "Building food-building.4")
 	(set-strategic-number sn-placement-zone-size 10)
 	(up-set-placement-data my-player-number -1 c: -4)
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
-	(up-build place-control 0 c: mill)
+	(up-build place-control 0 c: food-building)
 	(disable-self)); end jumps
 
 (defrule
@@ -3890,9 +3994,9 @@
 (or	;(and
 	(up-compare-goal forage-count < 1)
 	;	(up-gaia-type-count c: forage-bush-class < 1)); test
-(or	(building-type-count-total lumber-camp < 2); 1
+(or	(building-type-count-total wood-building < 2); 1
 (or	(building-type-count-total town-center < 1)
-	(building-type-count-total mill != 1)))))
+	(building-type-count-total food-building != 1)))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -3901,14 +4005,14 @@
 	(wood-amount >= 110))
 (or	(map-type yucatan)
 	(and	(unit-type-count villager-forager >= 1); hmm
-		(sheep-and-forage-too-far))); foragers + forage too far = more berries / badly placed first mill
-	(can-build mill)
+		(sheep-and-forage-too-far))); foragers + forage too far = more berries / badly placed first food-building
+	(can-build food-building)
 =>
 ; dbg	(set-strategic-number sn-preferred-mill-placement 0)
-;	(chat-local-to-self "2nd mill for 2nd forage.")
+;	(chat-local-to-self "2nd food-building for 2nd forage.")
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 	(set-strategic-number sn-mill-max-distance 18)
-	(build mill)
+	(build food-building)
 	(disable-self)); end mini jump
 (defrule
 (or	(building-type-count-total town-center <= 0)
@@ -3922,12 +4026,12 @@
 =>
 	(up-jump-rule 3))
 (defrule
-;	(up-pending-objects c: mill <= 0)
+;	(up-pending-objects c: food-building <= 0)
 	(building-type-count-total farm >= 8)
-	(building-type-count-total mill < 16)
-	(can-build mill)
+	(building-type-count-total food-building < 16)
+	(can-build food-building)
 =>
-	(up-get-fact building-type-count-total mill temporary-goal)
+	(up-get-fact building-type-count-total food-building temporary-goal)
 	(up-get-fact building-type-count-total town-center temporary-goal2)
 	(up-get-fact building-type-count-total farm temporary-goal3)
 	(up-modify-goal temporary-goal c:max 0)
@@ -3938,11 +4042,11 @@
 	(up-modify-goal temporary-goal g:+ temporary-goal2)
 	(up-modify-goal temporary-goal c:* 8))
 (defrule
-;	(up-pending-objects c: mill <= 0)
+;	(up-pending-objects c: food-building <= 0)
 	(up-compare-goal temporary-goal3 g:>= temporary-goal)
 	(building-type-count-total farm >= 8)
-	(building-type-count-total mill < 16)
-	(can-build mill)
+	(building-type-count-total food-building < 16)
+	(can-build food-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
@@ -3951,21 +4055,21 @@
 	(up-modify-goal temporary-goal4 c:* -1)
 	(up-set-placement-data my-player-number -1 g: temporary-goal4)
 	(set-strategic-number sn-placement-zone-size 10)
-	(up-build place-control 0 c: mill)
+	(up-build place-control 0 c: food-building)
 	(disable-self)
 	(up-jump-rule 1))
 (defrule
-;	(up-pending-objects c: mill <= 0)
+;	(up-pending-objects c: food-building <= 0)
 	(up-compare-goal temporary-goal3 g:>= temporary-goal)
 	(building-type-count-total farm >= 8)
-	(building-type-count-total mill < 16)
-	(can-build mill)
+	(building-type-count-total food-building < 16)
+	(can-build food-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-mill-max-distance 18)
 	(up-modify-sn sn-mill-max-distance g:max temporary-goal4)
-	(build mill)); end jump
+	(build food-building)); end jump
 (defrule
 	(building-type-count-total town-center < 3)
 	(building-type-count-total town-center >= 1)
@@ -3975,30 +4079,30 @@
 ;	(goal strategy krush))))
 (or	(and	(building-type-count-total farm g:<= maxfarms)
 		(and	(building-type-count-total farm >= 12)
-			(building-type-count-total mill < 1)))
+			(building-type-count-total food-building < 1)))
 	(building-type-count-total farm >= 24)); 20
-	(building-type-count-total mill < {{BUILDINGS_MILL_028}})
-	(can-build mill)
+	(building-type-count-total food-building < {{BUILDINGS_MILL_028}})
+	(can-build food-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-mill-max-distance 18)
-	(build mill))
+	(build food-building))
 (defrule
 	(up-compare-goal excessWood >= 2400)
 	(food-amount >= 2400)
 	(up-research-status c: feudal-age <= research-available)
 	(strategic-number sn-current-age <= dark)
-(or	(building-type-count-total lumber-camp < 1)
+(or	(building-type-count-total wood-building < 1)
 	(building-type-count-total barracks < 1))
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total mill < 1)
-	(can-build mill)
+	(building-type-count-total food-building < 1)
+	(can-build food-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-mill-max-distance 16)
-	(build mill))
+	(build food-building))
 #load-if-defined DARK-AGE-END
 (defrule
 	(building-type-count-total town-center >= 1)
@@ -4009,19 +4113,19 @@
 (or	(goal milunits no)
 	(military-population > 20)))
 	(building-type-count-total farm >= 18)
-	(building-type-count-total mill < {{BUILDINGS_MILL_030}})
-	(can-build mill)
+	(building-type-count-total food-building < {{BUILDINGS_MILL_030}})
+	(can-build food-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-mill-max-distance 18)
-	(build mill))
+	(build food-building))
 (defrule
 	(strategic-number sn-current-age >= imperial)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1)
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1)
+	(building-type-count-total gold-building >= 1)
 	(building-type-count-total barracks < {{BUILDINGS_BARRACKS_031}})
 	(can-build barracks)
 =>
@@ -4037,19 +4141,19 @@
 (or	(goal milunits no)
 	(military-population > 20)))
 	(building-type-count-total farm >= 18)
-	(building-type-count-total mill < {{BUILDINGS_MILL_032}})
-	(can-build mill)
+	(building-type-count-total food-building < {{BUILDINGS_MILL_032}})
+	(can-build food-building)
 =>
 	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;	(set-strategic-number sn-dropsite-separation-distance 6)
 	(set-strategic-number sn-mill-max-distance 18)
-	(build mill))
+	(build food-building))
 (defrule
 	(strategic-number sn-current-age >= imperial)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1)
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1)
+	(building-type-count-total gold-building >= 1)
 	(building-type-count-total archery-range >= 1)
 	(building-type-count-total barracks < {{BUILDINGS_BARRACKS_033}})
 	(can-build barracks)
@@ -4060,9 +4164,9 @@
 (defrule
 	(strategic-number sn-current-age >= imperial)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1)
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1)
+	(building-type-count-total gold-building >= 1)
 	(building-type-count-total archery-range >= 1)
 	(building-type-count-total stable < {{BUILDINGS_STABLE_034}})
 	(can-build stable)
@@ -4071,9 +4175,9 @@
 (defrule
 	(strategic-number sn-current-age >= imperial)
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1)
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1)
+	(building-type-count-total gold-building >= 1)
 (not	(building-available archery-range))
 	(building-type-count-total barracks < {{BUILDINGS_BARRACKS_035}})
 	(can-build barracks)
@@ -4087,13 +4191,13 @@
 ;	(population > del-civ-pop))
 ;(or	(dropsite-min-distance wood > 254)
 ;	(dropsite-min-distance wood == -1))
-;	(building-type-count-total mill < 6)
-;	(can-build mill)
+;	(building-type-count-total food-building < 6)
+;	(can-build food-building)
 ;=>
 ;	(set-strategic-number sn-allow-adjacent-dropsites 1)
 ;;	(set-strategic-number sn-dropsite-separation-distance 6)
 ;	(set-strategic-number sn-mill-max-distance 18)
-;	(build mill))
+;	(build food-building))
 
 (defrule ;buffer rules (depending on load ifs too many rules could be jumped)
 	(false)
@@ -4117,7 +4221,7 @@
 (or	(building-type-count-total farm g:>= maxfarms)
 (or	(building-type-count town-center <= 0); total
 (and	(up-object-type-count-total c: mule-cart <= 0)
-	(building-type-count-total lumber-camp <= 0)))))));)
+	(building-type-count-total wood-building <= 0)))))));)
 =>
 	(up-jump-rule 3))
 (defrule
@@ -4136,7 +4240,7 @@
 =>
 	(up-modify-goal farm-goal c:max 200))
 (defrule
-	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total wood-building >= 2)
 	(up-compare-goal total-food-amount < feudal-f2); feudal-food
 	(up-pending-objects c: villager <= 0)
 	(goal trainvillager no)
@@ -4151,7 +4255,7 @@
 =>
 	(up-modify-goal farm-goal c:max 200))
 (defrule
-	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total wood-building >= 2)
 	(up-compare-goal total-food-amount < feudal-food)
 (or	(up-compare-goal excessWood >= farmmb-cost); farmcamp-cost); 335
 	(unit-type-count villager-food < 9)); 7
@@ -4169,10 +4273,10 @@
 ;	(strategic-number sn-current-age == dark)
 ;	(building-type-count-total dock <= 0)
 ;	(unit-type-count villager-food < 6)
-;;(or	(building-type-count-total mining-camp >= 1)
+;;(or	(building-type-count-total gold-building >= 1)
 ;;	(up-compare-goal excessWood >= farmcamp-cost))
 ;	(building-type-count town-center >= 1); -total
-;	(building-type-count-total lumber-camp >= 1)
+;	(building-type-count-total wood-building >= 1)
 ;	(up-gaia-type-count-total c: shore-fish-class <= 0)
 ;	(up-gaia-type-count-total c: ocean-fish-class <= 0)
 ;	(building-type-count-total farm < 6)
@@ -4208,7 +4312,7 @@
 	(strategic-number sn-current-age <= dark)
 	(up-compare-goal total-food-amount < feudal-food)
 	(building-type-count-total farm < 3)
-	(building-type-count-total mill >= 1)
+	(building-type-count-total food-building >= 1)
 	(building-type-count-total barracks >= 1)
 	(idle-farm-count <= 0); 1
 =>
@@ -4216,7 +4320,7 @@
 
 (defrule
 ;nn(or	(dropsite-min-distance wood >= 5)
-;nn(or	(building-type-count-total lumber-camp <= 0)
+;nn(or	(building-type-count-total wood-building <= 0)
 (or	(building-type-count town-center <= 0); total
 (or	(building-type-count-total farm g:>= maxfarms)
 	(idle-farm-count >= 3))););); 1
@@ -4315,7 +4419,7 @@
 (or	(and	(building-type-count-total dock >= 1)
 		(up-compare-goal excessWood < farmfish-cost))
 (or	(up-compare-goal mysheep >= 5);(up-compare-goal totalsheep >= 8)
-(or	(building-type-count-total lumber-camp < 2)
+(or	(building-type-count-total wood-building < 2)
 	(strategic-number sn-current-age != dark)))))
 =>
 	(up-jump-rule 2))
@@ -4331,7 +4435,7 @@
 =>
 	(up-modify-goal farm-goal c:max 200)); fc
 (defrule
-(or	(building-type-count-total mining-camp >= 1)
+(or	(building-type-count-total gold-building >= 1)
 	(up-compare-goal excessWood >= farmcamp-cost))
 	(unit-type-count villager-hunter <= 0)
 	(unit-type-count villager-shepherd <= 0)
@@ -4357,12 +4461,12 @@
 =>
 	(up-jump-rule 1))
 (defrule
-	(building-type-count-total lumber-camp >= 2); 1
+	(building-type-count-total wood-building >= 2); 1
 	(strategic-number sn-current-age == dark)
 ;	(up-compare-goal strategy-type == feudal-war)
 	(up-compare-goal total-food-amount < feudal-food)
 (or	(up-pending-objects c: villager >= 2); test
-(or	(building-type-count-total mining-camp >= 1)
+(or	(building-type-count-total gold-building >= 1)
 	(up-compare-goal excessWood >= farmcamp-cost)))
 	(building-type-count-total farm < 2); 3
 	(dropsite-min-distance wood < 5)
@@ -4376,9 +4480,9 @@
 (or	(building-type-count-total dock >= 1)
 (or	(building-type-count-total port >= 1); (up-compare-goal map != land)
 (or	(building-type-count town-center <= 0); total
-(or	(building-type-count-total lumber-camp <= 1)
+(or	(building-type-count-total wood-building <= 1)
 (or	(strategic-number sn-current-age > dark)
-	(building-type-count-total mining-camp < 1)))))))
+	(building-type-count-total gold-building < 1)))))))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -4401,10 +4505,10 @@
 (or	(building-type-count-total dock >= 1)
 	(building-type-count-total port >= 1))
 	(up-compare-goal excessWood >= farmfish-cost)
-(or	(building-type-count-total mining-camp >= 1)
+(or	(building-type-count-total gold-building >= 1)
 	(up-compare-goal excessWood >= farmcamp-cost))
 	(building-type-count town-center >= 1); -total
-	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total wood-building >= 2)
 ;	(building-type-count-total farm < 6)
 (or	(dropsite-min-distance wood < 5)
 	(up-compare-goal excessWood >= farmcamp-cost))
@@ -4415,8 +4519,8 @@
 
 (defrule
 	(building-type-count town-center >= 1); -total
-	(building-type-count-total lumber-camp >= 2)
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total wood-building >= 2)
+	(building-type-count-total gold-building >= 1)
 (or	(building-type-count-total barracks >= 1)
 	(goal milunits no))
 	(up-compare-goal excessWood >= flushprep-cost)
@@ -4431,8 +4535,8 @@
 #load-if-defined KHMER-CIV
 (defrule
 	(building-type-count town-center >= 1); -total
-	(building-type-count-total lumber-camp >= 2)
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total wood-building >= 2)
+	(building-type-count-total gold-building >= 1)
 	(strategic-number sn-current-age <= dfeudal)
 (or	(dropsite-min-distance wood < 5)
 	(up-compare-goal excessWood >= farmcamp-cost))
@@ -4447,7 +4551,7 @@
 
 (defrule
 	(building-type-count town-center >= 1); -total
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 	(unit-type-count-total fishing-ship < 5)
 	(strategic-number sn-current-age == dfeudal)
 	(up-compare-goal total-food-amount < castle-feco)
@@ -4465,7 +4569,7 @@
 (defrule
 (or	(building-type-count-total farm g:>= maxfarms)
 (or	(building-type-count town-center <= 0); total
-	(building-type-count-total lumber-camp <= 0)))
+	(building-type-count-total wood-building <= 0)))
 =>
 	(up-jump-rule 1))
 (defrule
@@ -4488,7 +4592,7 @@
 (or	(and	(dropsite-min-distance wood >= 5)
 		(up-compare-goal excessWood < farmcamp-cost))
 (or	(building-type-count town-center <= 0); -total
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 (or	(up-compare-goal strategy-type == feudal-war)
 	(and	(up-research-status c: ri-horse-collar < research-complete);research-pending)
 		(up-compare-goal excessWood < 235)))))); for now; 200; 135
@@ -4513,7 +4617,7 @@
 (or	(and	(dropsite-min-distance wood >= 5)
 		(up-compare-goal excessWood < farmcamp-cost))
 (or	(building-type-count town-center <= 0); -total
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 	(up-compare-goal strategy-type != feudal-war)))))))
 =>
 	(up-jump-rule 4))
@@ -4570,7 +4674,7 @@
 	(up-research-status c: ri-double-bit-axe >= research-pending)
 	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
 	(building-type-count town-center >= 1); -total
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 (or	(up-compare-goal excessWood >= farmsmith-cost)
 	(building-type-count-total blacksmith >= 1)); test
 (or	(dropsite-min-distance wood < 5)
@@ -4595,7 +4699,7 @@
 	(up-research-status c: ri-double-bit-axe >= research-pending)
 	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
 	(building-type-count town-center >= 1); -total
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 (or	(dropsite-min-distance wood < 5)
 	(up-compare-goal excessWood >= farmcamp-cost))
 	(building-type-count-total farm g:< maxfarms)
@@ -4608,10 +4712,10 @@
 (or	(goal scoutmicro no)
 (or	(goal trainhussar no)
 (or	(and	(building-type-count-total farm >= 24)
-		(and	(building-type-count-total mill < 3); 3
+		(and	(building-type-count-total food-building < 3); 3
 			(building-type-count-total town-center < 2))); 3
 (or	(building-type-count town-center <= 0); -total
-	(building-type-count-total lumber-camp <= 0)))))
+	(building-type-count-total wood-building <= 0)))))
 =>
 	(up-jump-rule 2))
 (defrule
@@ -4629,7 +4733,7 @@
 (defrule
 	(building-type-count-total stable >= 1)
 (or	(building-type-count-total farm < 16)
-	(building-type-count-total mill >= 2))
+	(building-type-count-total food-building >= 2))
 (or	(building-type-count-total archery-range >= 1)
 	(building-type-count-total blacksmith >= 1))
 (or	(building-type-count-total farm g:< maxfarms)
@@ -4641,7 +4745,7 @@
 (defrule
 	(goal strategy sling)
 	(building-type-count town-center >= 1); -total
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total wood-building >= 1)
 	(strategic-number sn-current-age >= feudal)
 (or	(up-compare-goal excessWood >= 235); 135
 	(up-research-status c: ri-horse-collar >= research-complete));research-pending)
@@ -4657,7 +4761,7 @@
 
 (defrule
 (or	(building-type-count town-center < 1); -total
-(or	(building-type-count-total lumber-camp < 1)
+(or	(building-type-count-total wood-building < 1)
 (or	(and	(dropsite-min-distance wood >= 5)
 		(up-compare-goal excessWood < farmcamp-cost))
 (or	(building-type-count-total farm g:>= maxfarms)
@@ -4713,7 +4817,7 @@
 (defrule
 (or	(and	(strategic-number sn-current-age != castlea)
 		(strategic-number sn-current-age != fcastlea))
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 (or	(building-type-count town-center <= 0); -total
 	(and	(civilian-population < up-max-civ)
 		(and	(building-type-count-total town-center <= 2)
@@ -4738,7 +4842,7 @@
 (or	(up-research-status c: ri-horse-collar == research-pending)
 (or	(up-research-status c: ri-heavy-plow == research-pending)
 (or	(strategic-number sn-current-age < castlea)
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 (or	(building-type-count town-center <= 0); -total
 	(and	(dropsite-min-distance wood >= 5)
 		(up-compare-goal excessWood < farmcamp-cost)))))))
@@ -4808,7 +4912,7 @@
 (defrule
 (or	(up-compare-goal milunits == no)
 (or	(building-type-count town-center <= 0); -total
-(or	(building-type-count-total lumber-camp <= 0); 1
+(or	(building-type-count-total wood-building <= 0); 1
 	(and	(strategic-number sn-current-age != castlea)
 		(strategic-number sn-current-age != fcastlea)))))
 =>
@@ -4842,7 +4946,7 @@
 (defrule
 (or	(strategic-number sn-current-age < feudal)
 (or	(building-type-count town-center <= 0); -total
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 	(and	(up-research-status c: ri-horse-collar < research-complete);research-pending)
 		(up-compare-goal excessWood < 235))))); 135
 =>
@@ -4884,7 +4988,7 @@
 		(up-compare-goal excessWood < farmcamp-cost))
 (or	(building-type-count-total farm g:>= maxfarms)
 (or	(building-type-count town-center <= 0); -total
-	(building-type-count-total lumber-camp <= 0))))
+	(building-type-count-total wood-building <= 0))))
 =>
 	(up-jump-rule 3))
 (defrule
@@ -4957,7 +5061,7 @@
 	(up-modify-goal temporary-goal s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number my-player-number)
 	(up-find-remote c: town-center c: 16)
-	(up-find-remote c: mill c: 16)
+	(up-find-remote c: food-building c: 16)
 	(up-remove-objects search-remote object-data-map-zone-id g:!= temporary-goal2)
 	(up-modify-sn sn-focus-player-number g:= temporary-goal)
 	(up-get-search-state local-total))
@@ -4999,7 +5103,7 @@
 	(up-jump-rule 3))
 (defrule
 	(strategic-number sn-current-age >= dfeudal)
-	(building-type-count-total mining-camp <= 0)
+	(building-type-count-total gold-building <= 0)
 	(unit-type-count villager-gold >= 2)
 	(up-compare-goal excessWood < farmcamp-cost)
 =>
@@ -5009,8 +5113,8 @@
 	(game-time < 300)
 (or	(game-time < 30)
 	(unit-type-count villager-food >= 3))
-(or	(building-type-count-total lumber-camp <= 0)
-	(building-type-count-total mill <= 0))
+(or	(building-type-count-total wood-building <= 0)
+	(building-type-count-total food-building <= 0))
 	(up-compare-goal excessWood < farmcamp-cost)
 =>
 	(set-goal farm-goal 0)
@@ -5027,8 +5131,8 @@
 	(set-goal farm-goal 0)); end jump
 #load-if-defined HAMBURGER-MAP
 (defrule
-	(building-type-count lumber-camp <= 1)
-(or	(and	(building-type-count lumber-camp <= 0)
+	(building-type-count wood-building <= 1)
+(or	(and	(building-type-count wood-building <= 0)
 		(up-compare-goal excessWood < farmcamp-cost))
 	(and	(dropsite-min-distance wood >= 20)
 		(dropsite-min-distance wood s:>= sn-maximum-wood-drop-distance)))
@@ -5036,13 +5140,23 @@
 	(set-goal farm-goal 0))
 #end-if
 
+(defrule
+	(goal island-resources-low yes)
+	(commodity-buying-price wood > 250)
+	(or(not(research-completed ri-crop-rotation))
+	(commodity-buying-price wood > 350))
+	(building-type-count-total farm > 4)
+	(up-compare-goal tradeunits > 0)
+=>
+	(set-goal farm-goal 0)
+)
 #load-if-defined CROSSROADS-MAP
 
 (defrule
 	(wood-amount < 160)
 	(building-type-count-total farm > 1)
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total wood-building < 2)
 	(game-time < 900)
 	(current-age == dark-age)
 =>
@@ -5056,8 +5170,8 @@
 (defrule
 	(wood-amount < 160)
 	(building-type-count-total farm > 1)
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total wood-building < 2)
 	(game-time < 900)
 	(current-age == dark-age)
 =>
@@ -5065,6 +5179,8 @@
 )
 
 #end-if
+
+
 (defrule
 	(goal migration-state 1)
 	(up-compare-goal relocating <= 0)
@@ -5081,7 +5197,7 @@
 (defrule
 	(up-compare-goal excessWood < farmcamp-cost)
 	(strategic-number sn-current-age == feudal)
-	(building-type-count-total lumber-camp < 3)
+	(building-type-count-total wood-building < 3)
 	(dropsite-min-distance wood >= 3)
 	(resource-found wood)
 (or	(building-type-count-total blacksmith >= 1)
@@ -5090,7 +5206,7 @@
 	(up-research-status c: ri-horse-collar >= research-pending)
 	(up-research-status c: ri-double-bit-axe >= research-pending)
 	(dropsite-min-distance wood g:< map-size)
-	(up-pending-objects c: lumber-camp <= 0)
+	(up-pending-objects c: wood-building <= 0)
 =>
 	(set-goal farm-goal 0))
 (defrule
@@ -5153,7 +5269,7 @@
 	(set-goal temporary-goal7 1))
 (defrule
 	(up-set-target-object search-local g: temporary-goal4)
-	(up-object-data object-data-type == mill)
+	(up-object-data object-data-type == food-building)
 =>
 	(set-goal temporary-goal2 1)
 	(set-goal temporary-goal3 2)
@@ -5243,9 +5359,9 @@
 	(up-compare-goal targetdistance >= 45)
 (not	(up-set-target-object search-local g: temporary-goal4))
 	(goal temporary-goal town-center)
-	(building-type-count mill >= 1)
+	(building-type-count food-building >= 1)
 =>
-	(set-goal temporary-goal mill)
+	(set-goal temporary-goal food-building)
 	(up-full-reset-search)
 	(up-find-local g: temporary-goal c: 20)
 	(set-goal temporary-goal4 0)
@@ -5270,8 +5386,8 @@
     (can-build pasture)
     (or(building-type-count-total barracks > 0)
     (wood-amount > 275))
-    (building-type-count-total lumber-camp > 0)
-    (building-type-count-total mill > 0)
+    (building-type-count-total wood-building > 0)
+    (building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
     (fe-idle-pasture-count < 1)
 =>
@@ -5842,7 +5958,7 @@
 	(goal strategy s-flush)
 	(building-type-count-total town-center >= 1)
 	(goal position-goal pocket)
-;(or	(building-type-count-total mining-camp >= 1)
+;(or	(building-type-count-total gold-building >= 1)
 ;(or	(up-compare-goal total-gold-amount >= castle-gold)
 ;	(dropsite-min-distance gold <= 5)))
 	(building-type-count-total stable >= 1)
@@ -5859,8 +5975,8 @@
 (or (building-type-count-total dock >= 3)
 	(building-type-count-total shipyard >= 3)))
 	(building-type-count-total town-center >= 1)
-	(building-type-count-total mining-camp >= 1)
-	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total gold-building >= 1)
+	(building-type-count-total wood-building >= 1)
 	(building-type-count-total blacksmith < 1)
 	(building-available blacksmith)
 	(up-compare-goal excessWood >= smith-cost)
@@ -6405,10 +6521,10 @@
 
 #load-if-defined HAMBURGER-MAP
 (defrule
-	(building-type-count lumber-camp <= 1)
+	(building-type-count wood-building <= 1)
 	(up-compare-goal excessWood < 350)
 (or	(goal position-goal pocket)
-(or	(and	(building-type-count lumber-camp <= 0)
+(or	(and	(building-type-count wood-building <= 0)
 			(up-compare-goal excessWood < 250))
 	(and	(dropsite-min-distance wood >= 20)
 		(dropsite-min-distance wood s:>= sn-maximum-wood-drop-distance))))
@@ -6419,7 +6535,7 @@
 (or	(building-type-count-total town-center <= 0)
 	(up-compare-goal excessWood < 1600))
 (or	(building-type-count-total town-center <= 0)
-(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total wood-building <= 0)
 	(and	(goal inseln no)
 		(and	(up-compare-goal increase-ts != 0)
 			(up-compare-goal excessWood < 425)))))
@@ -6948,8 +7064,8 @@
 (defrule
 (or	(up-compare-goal excessWood < mb-cost)
 (or	(up-compare-goal increase-ts != 0)
-(or	(building-type-count-total lumber-camp <= 0)
-(or	(building-type-count-total mill <= 0)
+(or	(building-type-count-total wood-building <= 0)
+(or	(building-type-count-total food-building <= 0)
 	(building-type-count-total town-center <= 0)))))
 =>
 	(up-jump-rule 9))
@@ -7045,10 +7161,10 @@
 (defrule
 	(up-compare-goal milunits != no)
 	(strategic-number sn-current-age >= dfeudal)
-(or	(building-type-count-total mining-camp >= 1)
+(or	(building-type-count-total gold-building >= 1)
 (or	(and	(or	(goal strategy s-flush)
 			(goal sk-var yes))
-		(building-type-count-total lumber-camp >= 2))
+		(building-type-count-total wood-building >= 2))
 	(up-compare-goal excessWood >= raxcamp-cost)))
 	(building-type-count-total barracks < 1)
 	(building-available barracks)
@@ -7083,7 +7199,7 @@
 	(goal strategy s-flush)
 	(building-type-count-total town-center >= 1)
 	(goal position-goal flank)
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total gold-building >= 1)
 	(building-type-count-total archery-range < 1)
 	(building-available archery-range)
 	(up-compare-goal excessWood >= mb-cost)
@@ -7510,8 +7626,8 @@
 	(building-type-count-total archery-range < 1)
 	(or(wood-amount > 375)
 	(or(and(building-type-count-total town-center > 0)
-	(and(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)))
+	(and(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)))
 	(unit-type-count-total villager > 10)))
 =>
 	(set-goal increase-ts archery-range)
@@ -7689,8 +7805,8 @@
 ;(or	(population >= up-max-civ)
 ;	(strategic-number sn-current-age >= imperial)))
 	(building-type-count-total town-center >= 1)
-(or	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1))
+(or	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1))
 	(building-type-count-total barracks < 1)
 =>
 	(set-goal increase-ts barracks)
@@ -7752,10 +7868,10 @@
 (or	(goal milunits yes)
 (or	(population >= up-max-civ)
 	(strategic-number sn-current-age >= imperial)))
-	(building-type-count-total lumber-camp >= 1)
-	(building-type-count-total mill >= 1)
+	(building-type-count-total wood-building >= 1)
+	(building-type-count-total food-building >= 1)
 	(building-type-count-total town-center >= 1)
-(or	(building-type-count-total mining-camp >= 1)
+(or	(building-type-count-total gold-building >= 1)
 	(up-compare-goal excessWood >= raxcamp-cost))
 	(building-type-count-total barracks < 1)
 =>
@@ -7766,7 +7882,7 @@
 (or	(goal milunits yes)
 (or	(population >= up-max-civ)
 	(strategic-number sn-current-age >= imperial)))
-	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total gold-building >= 1)
 	(building-type-count-total town-center >= 1)
 (or	(players-military-population any-enemy >= 2)
 	(food-amount >= 450)); 25 vils
@@ -7817,6 +7933,132 @@
 
 
 
+#load-if-defined SAXONS-CIV
+
+;Increase priority of towers if enemy also has towers, or has lots of military (particularly archers)
+(defrule
+   (can-build watch-tower)
+   (current-age >= feudal-age)
+   (building-type-count-total castle < 10)
+=>
+   (up-get-player-fact target-player building-type-count watch-tower temporary-goal)
+   (up-get-player-fact target-player military-population 0 temporary-goal3)
+   (up-modify-goal temporary-goal3 c:/ 15)
+   (up-modify-goal temporary-goal2 s:= archers)
+   (up-modify-goal temporary-goal2 c:/ 4)
+   (up-modify-goal temporary-goal g:+ temporary-goal2)
+   (up-modify-goal temporary-goal g:+ temporary-goal3)
+)
+
+(defrule
+   (current-age >= feudal-age)
+   (current-age-time > 300)
+=>
+   (up-modify-sn sn-stone-gatherer-percentage c:+ 1)
+   (up-modify-sn sn-stone-modifier-percentage c:+ 1)
+   (up-modify-sn sn-food-gatherer-percentage c:- 1)
+   (up-modify-sn sn-food-modifier-percentage c:- 1)
+   (disable-self)
+)
+;Sort all potential camp placements by distance to enemy, then check we haven't placed a tower/castle nearby already
+(defrule 
+   (can-build watch-tower)
+   (up-compare-goal temporary-goal > 0)
+   (or(building-type-count-total watch-tower < 2)
+   (building-type-count-total castle > 0))
+   (or(building-type-count-total castle > 1)
+   (building-type-count-total watch-tower < 5))
+   (or(up-compare-goal gl-threat-time > 1500)
+   (goal attacking yes))
+   (or(building-type-count-total watch-tower < 1)
+   (up-compare-goal temporary-goal > 2))
+=>
+   (up-full-reset-search)
+   (up-find-local c: lumber-camp c: 10)
+   (up-find-local c: mining-camp c: 10)
+   (up-find-local c: town-center c: 10)
+   (up-find-local c: mill c: 10)
+   (up-set-target-point enemy-x)
+   (up-clean-search search-local object-data-distance search-order-asc)
+   (set-goal temporary-goal4 40004)
+   (set-goal temporary-goal9 100);anti crash
+)
+
+(defrule
+   (goal temporary-goal4 40004) 
+   (up-set-target-object search-local c: 0)
+   (up-compare-goal temporary-goal9 > 0)
+=>
+   (up-get-point position-object point-x)
+   (up-set-target-point point-x)
+   (up-create-group 0 0 c: 19)
+   (up-full-reset-search)
+   (up-filter-distance c: -1 c: 7)
+   (up-find-local c: watch-tower c: 1)
+   (up-find-local c: castle c: 1)
+   (set-goal temporary-goal5 50005)
+   (up-get-search-state local-total)
+   (up-full-reset-search)
+   (up-set-group search-local c: 19)
+)
+
+(defrule
+   (goal temporary-goal5 50005)
+   (up-set-target-object search-local c: 0)
+   (up-compare-goal local-total > 0)
+   (up-compare-goal temporary-goal9 > 0)
+=>
+   (set-goal local-total 0)
+   (up-remove-objects search-local -1 == 0)
+   (up-modify-goal temporary-goal9 c:- 1)
+   (up-jump-rule -2)
+)
+
+(defrule
+   (goal temporary-goal5 50005)
+   (up-set-target-object search-local c: 0)
+=>
+   (up-lerp-tiles point-x enemy-x c: 2)
+   (up-lerp-tiles point-x position-self-x c:- 1)
+   (set-goal temporary-goal5 50006)
+   (set-goal temporary-goal3 8)
+)
+
+(defrule
+   (goal temporary-goal5 50006)
+   (up-set-target-object search-local c: 0)
+   (up-object-data object-data-type == town-center)
+=>
+   (up-modify-goal temporary-goal3 c:+ 5)
+   (up-lerp-tiles point-x enemy-x c: 2)
+   (up-lerp-tiles point-x position-self-x c: -1)
+)
+(defrule
+   (goal temporary-goal5 50006)
+   (up-can-build-line 0 point-x c: watch-tower)
+=>
+   (up-build-line point-x point-x c: watch-tower)
+   (up-jump-rule 2)
+)
+
+(defrule
+   (goal temporary-goal5 50006)
+   (up-compare-goal temporary-goal5 > 0)
+=>
+   (up-modify-goal temporary-goal5 c:- 1)
+   (up-lerp-tiles point-x position-self-x c: 1)
+   (up-jump-rule -2)
+)
+
+(defrule
+   (goal temporary-goal5 50006)
+   (can-build watch-tower)
+   (stone-amount > 160)
+=>
+   (build watch-tower)
+)
+
+#end-if
 
 (defrule
 (or	(and	(strategic-number sn-military-superiority <= 0)
@@ -8016,6 +8258,7 @@
 	(up-allied-goal any-ally sling-player == my-player-number)
 	(goal requestaisling yes)
 	(building-type-count-total siege-workshop < 1)
+	(can-build siege-workshop)
 =>
 	(set-goal increase-ts siege-workshop)
 	(enable-timer increase-ts-timer 7)
@@ -8258,6 +8501,7 @@
 	(up-find-remote c: lumber-camp c: 1)
 	(up-find-remote c: mining-camp c: 1)
 	(up-find-remote c: mill c: 1)
+	(up-find-remote c: settlement c: 1)
 	(up-get-search-state local-total)
 	(up-modify-goal temporary-goal g:= remote-total)
 )
@@ -8372,11 +8616,11 @@
 	(goal strategy sling)
 	(building-type-count-total watch-tower < 2)
 	(building-type-count-total watch-tower > 0)
-	(building-type-count-total mining-camp > 1)
+	(building-type-count-total gold-building > 1)
 	(can-build watch-tower)
 =>
 	(up-full-reset-search)
-	(up-find-local c: mining-camp c: 2)
+	(up-find-local c: gold-building c: 2)
 	(up-set-target-object search-local c: 1)
 	(up-get-point position-object temporary-point-x)
 	(up-get-point position-target point-x)
@@ -8388,7 +8632,7 @@
 	(goal strategy sling)
 	(building-type-count-total watch-tower < 2)
 	(building-type-count-total watch-tower > 0)
-	(building-type-count-total mining-camp > 1)
+	(building-type-count-total gold-building > 1)
 	(can-build watch-tower)
 	(up-can-build-line 0 temporary-point-x c: watch-tower)
 =>
@@ -8402,7 +8646,7 @@
 	(goal strategy sling)
 	(building-type-count-total watch-tower < 2)
 	(building-type-count-total watch-tower > 0)
-	(building-type-count-total mining-camp > 1)
+	(building-type-count-total gold-building > 1)
 	(can-build watch-tower)
 	(up-compare-goal temporary-goal3 > 0)
 =>
@@ -8416,7 +8660,7 @@
 	(goal strategy sling)
 	(building-type-count-total watch-tower < {{BUILDINGS_WATCH_TOWER_067}})
 	(building-type-count-total watch-tower > 0)
-	(building-type-count-total mining-camp > 1)
+	(building-type-count-total gold-building > 1)
 	(can-build watch-tower)
 	(up-can-build-line 0 temporary-point-x c: watch-tower)
 =>
@@ -8574,12 +8818,12 @@
 	(goal temporary-goal7 4385)
 =>
 	(up-full-reset-search)
-	(set-goal temporary-goal mining-camp)
-	(set-goal temporary-goal5 lumber-camp)
-	(set-goal temporary-goal6 mill)
-	(up-get-fact building-type-count mining-camp temporary-goal2)
-	(up-get-fact building-type-count lumber-camp temporary-goal3)
-	(up-get-fact building-type-count mill temporary-goal4)
+	(set-goal temporary-goal gold-building)
+	(set-goal temporary-goal5 wood-building)
+	(set-goal temporary-goal6 food-building)
+	(up-get-fact building-type-count gold-building temporary-goal2)
+	(up-get-fact building-type-count wood-building temporary-goal3)
+	(up-get-fact building-type-count food-building temporary-goal4)
 	(set-goal temporary-goal8 0)
 	(set-goal temporary-goal11 240);sanity check
 	(set-goal temporary-goal9 0))
@@ -8605,8 +8849,8 @@
 	(goal temporary-goal7 4385)
 (or	(up-compare-goal local-total <= 0)
 	(up-compare-goal temporary-goal8 g:> temporary-goal9))
-(or	(goal temporary-goal mining-camp)
-	(goal temporary-goal lumber-camp))
+(or	(goal temporary-goal gold-building)
+	(goal temporary-goal wood-building))
 ;(or	(up-compare-goal temporary-goal3 >= 1)
 ;	(up-compare-goal temporary-goal4 >= 1))
 	(up-compare-goal temporary-goal11 > -200);sanity check
@@ -8683,8 +8927,8 @@
 (or	(building-type-count-total town-center >= 2)
 (or	(players-building-count target-player <= 0)
 (or	(goal position-goal pocket)
-	(and	(building-type-count-total lumber-camp <= 0)
-		(building-type-count-total mining-camp <= 0)))))))
+	(and	(building-type-count-total wood-building <= 0)
+		(building-type-count-total gold-building <= 0)))))))
 =>
 	(up-jump-rule 16))
 (defrule
@@ -8738,11 +8982,11 @@
 	(up-full-reset-search)
 	(up-set-target-point position-self-x)
 	(up-filter-distance c: -1 c: 32)
-	(up-find-local c: lumber-camp c: 2)
-	(up-find-local c: mining-camp c: 2)
+	(up-find-local c: wood-building c: 2)
+	(up-find-local c: gold-building c: 2)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: lumber-camp c: 2)
-	(up-find-status-local c: mining-camp c: 2)
+	(up-find-status-local c: wood-building c: 2)
+	(up-find-status-local c: gold-building c: 2)
 	(up-get-point position-target target-point-x)
 	(up-set-target-point target-point-x)
 	(up-clean-search search-local object-data-distance search-order-asc)
@@ -8852,15 +9096,15 @@
 		(and	(building-type-count-total town-center <= 2)
 			(and	(up-compare-goal custom-civ-pop < up-max-civ)
 				(population < max-civ-pop))))
-(not	(can-build mining-camp))))
+(not	(can-build gold-building))))
 =>
 	(up-jump-rule 7))
 (defrule
 (or	(up-compare-goal excessWood < camp-cost)
 (or	(up-compare-goal increase-ts != 0)
-(or	(building-type-count-total mining-camp <= 0)
-(or	(building-type-count-total mining-camp >= 2); 3 but 2 for now
-(or	(up-pending-objects c: mining-camp >= 1)
+(or	(building-type-count-total gold-building <= 0)
+(or	(building-type-count-total gold-building >= 2); 3 but 2 for now
+(or	(up-pending-objects c: gold-building >= 1)
 (or	(strategic-number sn-gold-gatherer-percentage == 0)
 	(unit-type-count villager-gold < 10)))))))
 =>
@@ -8886,7 +9130,7 @@
 	(up-get-point position-object building-point-x)
 	(up-set-target-point building-point-x)
 	(up-filter-distance c: -1 c: 8)
-	(up-find-local c: mining-camp c: 1)
+	(up-find-local c: gold-building c: 1)
 	(up-find-local c: town-center c: 1)
 	(up-get-search-state local-total))
 (defrule
@@ -8907,7 +9151,7 @@
 =>
 	(up-jump-rule 1))
 (defrule
-	(can-build mining-camp)
+	(can-build gold-building)
 	(or(stone-amount < 100)
 	(building-type-count-total town-center > 0))
 =>
@@ -8916,7 +9160,7 @@
 	(set-strategic-number sn-allow-adjacent-dropsites 0); 1 - to be safe
 	(set-strategic-number sn-placement-zone-size 3); still testing; 4
 	(set-strategic-number sn-dropsite-separation-distance 3); necessary?
-	(up-build place-point 0 c: mining-camp))
+	(up-build place-point 0 c: gold-building))
 (defrule
 	(true)
 =>
@@ -9970,8 +10214,26 @@
 =>
 	(build-wall 2 stone-wall-line))
 #end-if
+#load-if-defined DEATH-MATCH
+(defrule
+	(goal increase-ts 0)
+	(building-count-total > 7)
+	(building-type-count-total town-center < 3)
+=>
+	(set-goal increase-ts town-center)
+)
 
+(defrule
+	(game-time < 330)
+	(building-type-count-total town-center < 2)
+	(or(building-type-count-total town-center < 3)
+	(up-pending-objects c: castle < 2))
+	(not(goal increase-ts 0))
+=>
+	(up-jump-rule 8)
+)
 
+#end-if
 (defrule
 (or	(difficulty == easiest)
 (or	(difficulty == easy)
@@ -10393,7 +10655,17 @@
 	(enable-timer increase-ts-timer 7)); end jump
 #end-if
 
-
+(defrule
+	(or(up-pending-objects c: castle > 1)
+	(up-pending-objects c: town-center > 2))
+	(or(up-pending-objects c: house < 3)
+	(building-count > 15))
+	(up-pending-objects c: house < 5)
+	(wood-amount > 1500)
+	(building-type-count-total house < 30)
+=>
+	(set-goal increase-ts house)
+)
 
 
 #load-if-not-defined DARK-AGE-END
@@ -10668,20 +10940,20 @@
 	(game-time > 300)
 	(goal relocating yes)
 	(building-type-count town-center <= 0)
-	(building-type-count mill >= 1)
+	(building-type-count food-building >= 1)
 	(building-type-count farm >= 1)
 =>
-	(chat-local-to-self "Deleting old mills.1")
-	(up-delete-objects c: mill c: 32767))
+	(chat-local-to-self "Deleting old food-buildings.1")
+	(up-delete-objects c: food-building c: 32767))
 (defrule
 	(false) ; disabled for now
 	(game-time > 300)
 	(up-compare-goal relocating >= yes)
 	(building-type-count town-center >= 1)
-	(building-type-count mill >= 1)
+	(building-type-count food-building >= 1)
 =>
 	(up-full-reset-search)
-	(up-find-local c: mill c: 32)
+	(up-find-local c: food-building c: 32)
 	(up-get-point-zone position-self-x temporary-goal)
 	(up-remove-objects search-local object-data-map-zone-id g:== temporary-goal)
 	(up-remove-objects search-local object-data-map-zone-id g:== migration-zone)
@@ -10692,29 +10964,29 @@
 	(game-time > 300)
 	(up-compare-goal relocating >= yes)
 	(building-type-count town-center >= 1)
-	(building-type-count mill >= 1)
+	(building-type-count food-building >= 1)
 =>
-	(chat-local-to-self "Deleting old mills.2")
+	(chat-local-to-self "Deleting old food-buildings.2")
 	(up-target-point 0 action-delete -1 -1))
 ;(defrule
 ;	(game-time > 300)
 ;	(goal relocating yes)
 ;	(building-type-count town-center <= 0)
 ;	(building-type-count-total town-center >= 1)
-;	(building-type-count mining-camp >= 1)
+;	(building-type-count gold-building >= 1)
 ;=>
-;	(chat-local-to-self "Deleting old mining-camps.1"); need to
-;	(up-delete-objects c: mining-camp c: 32767)
+;	(chat-local-to-self "Deleting old gold-buildings.1"); need to
+;	(up-delete-objects c: gold-building c: 32767)
 ;	(disable-self))
 ;(defrule
 ;	(game-time > 300)
 ;	(goal relocating yes)
 ;	(building-type-count town-center <= 0)
 ;	(building-type-count-total town-center >= 1)
-;	(building-type-count lumber-camp >= 1)
+;	(building-type-count wood-building >= 1)
 ;=>
-;	(chat-local-to-self "Deleting old lumber-camps.2"); rework
-;	(up-delete-objects c: lumber-camp c: 32767)
+;	(chat-local-to-self "Deleting old wood-buildings.2"); rework
+;	(up-delete-objects c: wood-building c: 32767)
 ;	(disable-self))
 (defrule
 (or	(game-time <= 30)
@@ -10725,30 +10997,30 @@
 (defrule
 	(cc-players-unit-type-count 0 gold-mine <= 0)
 	(cc-players-unit-type-count 0 stone-mine <= 0)
-	(building-type-count mining-camp >= 1)
-	(up-pending-objects c: mining-camp <= 0)
+	(building-type-count gold-building >= 1)
+	(up-pending-objects c: gold-building <= 0)
 (or	(dropsite-min-distance gold <= -1)
 	(dropsite-min-distance gold g:>= map-size)); 256
 (or	(dropsite-min-distance stone <= -1)
 	(dropsite-min-distance stone g:>= map-size)); 256
 =>
-	(chat-local-to-self "Deleting all mining-camps.")
-	(up-delete-objects c: mining-camp c: 32767)
+	(chat-local-to-self "Deleting all gold-buildings.")
+	(up-delete-objects c: gold-building c: 32767)
 	(disable-self))
 (defrule
 	(cc-players-unit-type-count 0 tree-class <= 0)
-	(building-type-count lumber-camp >= 1)
-	(up-pending-objects c: lumber-camp <= 0)
+	(building-type-count wood-building >= 1)
+	(up-pending-objects c: wood-building <= 0)
 (or	(dropsite-min-distance wood <= -1)
 	(dropsite-min-distance wood g:>= map-size)); 256
 =>
-	(chat-local-to-self "Deleting all lumber-camps.")
-	(up-delete-objects c: lumber-camp c: 32767)
+	(chat-local-to-self "Deleting all wood-buildings.")
+	(up-delete-objects c: wood-building c: 32767)
 	(disable-self)); end jump
 
 (defrule
 (or	(up-timer-status one-min != timer-triggered)
-(or	(building-type-count mining-camp <= 4); 5
+(or	(building-type-count gold-building <= 4); 5
 	(and	(dropsite-min-distance gold >= 13)
 		(dropsite-min-distance stone >= 13))))
 ;!	(dropsite-min-distance gold >= 0)
@@ -10759,7 +11031,7 @@
 	(true)
 =>
 	(up-full-reset-search)
-	(up-find-local c: mining-camp c: 5)
+	(up-find-local c: gold-building c: 5)
 	(up-remove-objects search-local object-data-researching == 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object temporary-point-x)
@@ -10777,14 +11049,14 @@
 	(up-compare-goal remote-total <= 0)
 	(up-set-target-object search-local c: 0)
 =>
-	(chat-local-to-self "Promisory mining-camp.")
-;	;(chat-to-player every-ally "Promisory mining-camp.")
+	(chat-local-to-self "Promisory gold-building.")
+;	;(chat-to-player every-ally "Promisory gold-building.")
 ;	(up-send-flare temporary-point-x)
 	(up-remove-objects search-local object-data-index >= 1)
 	(up-target-point 0 action-delete -1 -1)); end jump
 (defrule
 (or	(up-timer-status one-min != timer-triggered)
-(or	(building-type-count lumber-camp <= 7); 8
+(or	(building-type-count wood-building <= 7); 8
 	(dropsite-min-distance wood >= 13)))
 ;!	(dropsite-min-distance wood >= 0)
 =>
@@ -10793,7 +11065,7 @@
 	(true)
 =>
 	(up-full-reset-search)
-	(up-find-local c: lumber-camp c: 8)
+	(up-find-local c: wood-building c: 8)
 	(up-remove-objects search-local object-data-researching == 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object temporary-point-x)
@@ -10808,18 +11080,18 @@
 	(up-compare-goal remote-total <= 0)
 	(up-set-target-object search-local c: 0)
 =>
-	(chat-local-to-self "Promisory lumber-camp.")
-;	;(chat-to-player every-ally "Promisory lumber-camp.")
+	(chat-local-to-self "Promisory wood-building.")
+;	;(chat-to-player every-ally "Promisory wood-building.")
 ;	(up-send-flare temporary-point-x)
 	(up-remove-objects search-local object-data-index >= 1)
 	(up-target-point 0 action-delete -1 -1)); end jump
 (defrule
 	(timer-triggered MSuperiority)
 	(building-type-count town-center >= 1)
-	(building-type-count mill >= 1)
+	(building-type-count food-building >= 1)
 =>
 	(up-full-reset-search)
-	(up-find-local c: mill c: 1)
+	(up-find-local c: food-building c: 1)
 	(up-set-target-object search-local c: 0)
 	(up-get-point position-object temporary-point-x)
 	(up-set-target-point temporary-point-x)
@@ -10836,9 +11108,9 @@
 	(up-compare-goal remote-total <= 0)
 	(timer-triggered MSuperiority)
 	(building-type-count town-center >= 1)
-	(building-type-count mill >= 1)
+	(building-type-count food-building >= 1)
 =>
-	(chat-local-to-self "Deleting old mills.3")
+	(chat-local-to-self "Deleting old food-buildings.3")
 	(up-remove-objects search-local object-data-researching == 1)
 	(up-remove-objects search-local object-data-index >= 1)
 	(up-target-point 0 action-delete -1 -1))
@@ -10846,8 +11118,8 @@
 	(goal relocating yes);	(timer-triggered MSuperiority)
 	(game-time > 600)
 	(building-type-count town-center >= 1)
-; tl(or	(building-type-count lumber-camp >= 1)
-; tl	(building-type-count mining-camp >= 1))
+; tl(or	(building-type-count wood-building >= 1)
+; tl	(building-type-count gold-building >= 1))
 =>
 	(chat-local-to-self "Deleting old camps.")
 	(up-full-reset-search)
@@ -10858,8 +11130,8 @@
 	(up-modify-goal temporary-goal c:max 70)
 	(up-modify-goal temporary-goal c:+ 10); 8
 	(up-filter-distance g: temporary-goal c: -1)
-	(up-find-local c: lumber-camp c: 32)
-	(up-find-local c: mining-camp c: 32)
+	(up-find-local c: wood-building c: 32)
+	(up-find-local c: gold-building c: 32)
 	(up-remove-objects search-local object-data-researching == 1)
 	(up-target-point 0 action-delete -1 -1))
 #end-if
@@ -10894,18 +11166,6 @@
 	(up-delete-distant-farms g: temporary-goal))
 
 (defrule
-(taunt-detected my-player-number 199)
-(up-compare-goal increase-ts != 0)
-=>
-(up-chat-data-to-player my-player-number "Building queue: %d." g: increase-ts)
-(acknowledge-taunt my-player-number 199))
-(defrule
-(taunt-detected any-ally 198)
-(up-compare-goal increase-ts != 0)
-=>
-(up-chat-data-to-player every-ally "Building queue: %d." g: increase-ts)
-(acknowledge-taunt every-ally 198))
-(defrule
 (or	(and	(unit-type-count villager-builder g:>= villagercount)
 		(up-compare-const inf-game != 1))
 	(unit-type-count villager <= 0))
@@ -10915,11 +11175,7 @@
 ;	(up-chat-data-to-self "Not enough builders: %d" g: increase-ts)
 	(set-goal increase-ts 0)
 	(disable-timer increase-ts-timer))
-(defrule
-(taunt-detected my-player-number 201)
-=>
-(up-chat-data-to-player my-player-number "current-boar: %d." g: current-boar)
-(acknowledge-taunt my-player-number 201))
+
 
 
 (defrule
@@ -10969,7 +11225,7 @@
 (or	(resource-found wood)
 	(dropsite-min-distance wood s:<= sn-camp-max-distance))
 =>
-	(set-strategic-number sn-town-center-placement lumber-camp)); mining-camp
+	(set-strategic-number sn-town-center-placement lumber-camp)); gold-building
 (defrule
 	(building-type-count-total town-center >= 2)
 	(building-type-count-total town-center <= 3)
@@ -10986,7 +11242,7 @@
 (or	(resource-found food)
 	(dropsite-min-distance food s:<= sn-mill-max-distance))
 =>
-	(set-strategic-number sn-town-center-placement mill)); lumber-camp; end jump
+	(set-strategic-number sn-town-center-placement mill)); wood-building; end jump
 
 
 (defrule
@@ -11027,8 +11283,8 @@
 
 (defrule
 	(game-time < 100)
-	(building-type-count-total lumber-camp < 1)
-	(building-type-count-total mill < 1)
+	(building-type-count-total wood-building < 1)
+	(building-type-count-total food-building < 1)
 	(unit-type-count-total villager < 10)
 	(up-compare-goal increase-ts > 0)
 	(up-compare-goal increase-ts != house)
@@ -11058,9 +11314,9 @@
 	(can-build archery-range)
 	(current-age == feudal-age)
 	(building-type-count-total archery-range < 1)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(building-type-count-total town-center > 0)
-	(or(building-type-count mill > 0)
+	(or(building-type-count food-building > 0)
 	(wood-amount > 250))
 =>
 	(set-goal increase-ts archery-range)
@@ -11073,7 +11329,12 @@
 #load-if-not-defined BLACK-FOREST-MAP
 ;#load-if-not-defined CUSTOM-MAP
 #load-if-defined DIFFICULTY-EXTREME
-(load "Promisory\extremebuildings2")
+;(load "Promisory\extremebuildings2")
+
+#load-if-defined DEATH-MATCH
+(load "Promisory\extremebuildings4")
+#end-if
+(load "Promisory\extremebuildings3")
 #end-if
 ;#end-if
 #end-if
@@ -11130,11 +11391,11 @@
 	(set-goal increase-ts 2));	(set-goal increase-ts 0)
 (defrule
 	(goal increase-ts donjon)
-	(building-type-count mill >= 1)
+	(building-type-count food-building >= 1)
 	(can-build donjon)
 =>
 	(set-strategic-number sn-ignore-tower-elevation 0)
-	(up-set-placement-data my-player-number mill c: 1)
+	(up-set-placement-data my-player-number food-building c: 1)
 	(set-strategic-number sn-placement-zone-size 8)
 	(up-build place-control 0 c: donjon)
 	(disable-self)
@@ -11169,7 +11430,7 @@
 (defrule
 	(goal increase-ts market)
 	(up-pending-objects c: market == 0)
-	(building-type-count lumber-camp >= 1)
+	(building-type-count wood-building >= 1)
 	(strategic-number sn-current-age <= feudal)
 	(goal defend no)
 	(goal underattack no)
@@ -11179,7 +11440,7 @@
 =>
 ;	(chat-local-to-self "Attempting to place market.")
 	(set-strategic-number sn-placement-zone-size 7); 8
-	(up-set-placement-data my-player-number lumber-camp c: 2)
+	(up-set-placement-data my-player-number wood-building c: 2)
 	(up-build place-control 0 c: market)
 	(set-goal increase-ts 2);	(set-goal increase-ts 0)
 	(up-jump-rule 1)); end jump
@@ -11217,7 +11478,7 @@
 (defrule
 	(goal increase-ts blacksmith)
 	(up-pending-objects c: blacksmith == 0)
-	(building-type-count lumber-camp >= 1)
+	(building-type-count wood-building >= 1)
 	(strategic-number sn-current-age <= castlea)
 	(goal defend no)
 	(goal underattack no)
@@ -11227,7 +11488,7 @@
 =>
 ;	(chat-local-to-self "Attempting to place blacksmith.")
 	(set-strategic-number sn-placement-zone-size 7); 8
-	(up-set-placement-data my-player-number lumber-camp c: 2)
+	(up-set-placement-data my-player-number wood-building c: 2)
 	(up-build place-control 0 c: blacksmith)
 	(set-goal increase-ts 2);	(set-goal increase-ts 0)
 	(up-jump-rule 1))
@@ -11252,7 +11513,7 @@
 	(up-find-local c: town-center c: 10)
 	(up-remove-objects search-local -1 == 0);don't consider starting TC
 	(up-find-local c: mule-cart c: 20)
-	(up-find-local c: mill c: 10)
+	(up-find-local c: food-building c: 10)
 	(up-get-search-state local-total)
 	(up-modify-goal temporary-goal g:= local-total)
 	(generate-random-number 1000)
@@ -11365,7 +11626,7 @@
 
 (defrule
 	(goal increase-ts stable)
-	(building-type-count mining-camp >= 1)
+	(building-type-count gold-building >= 1)
 	(strategic-number sn-current-age <= feudal)
 	(up-research-status c: castle-age <= research-unavailable)
 	(gold-amount >= castle-gold)
@@ -11377,7 +11638,7 @@
 =>
 ;	(chat-local-to-self "Attempting to place stable.")
 	(set-strategic-number sn-placement-zone-size 7); 8
-	(up-set-placement-data my-player-number mining-camp c: 2)
+	(up-set-placement-data my-player-number gold-building c: 2)
 	(up-build place-control 0 c: stable)
 	(set-goal increase-ts 2);	(set-goal increase-ts 0)
 	(up-jump-rule 1))
@@ -11453,22 +11714,22 @@
 )
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
-	(building-type-count-total barracks > 0) ;get 2nd mill after barracks so as to not interfere with existing build orders
-	(can-build mill)
+	(building-type-count-total food-building < 2)
+	(building-type-count-total barracks > 0) ;get 2nd food-building after barracks so as to not interfere with existing build orders
+	(can-build food-building)
 =>
 	(up-copy-point temporary-point-x position-self-x)
 )
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
-	(building-type-count-total barracks > 0) ;get 2nd mill after barracks so as to not interfere with existing build orders
-	(can-build mill)
+	(building-type-count-total food-building < 2)
+	(building-type-count-total barracks > 0) ;get 2nd food-building after barracks so as to not interfere with existing build orders
+	(can-build food-building)
 =>
 	(up-modify-goal temporary-goal s:= sn-focus-player-number)
 	(set-strategic-number sn-focus-player-number 0)
@@ -11481,73 +11742,73 @@
 	(up-find-resource c: deep-fish-salmon c: 1)
 	(up-find-resource c: deep-fish-snapper c: 1)
 	(up-set-target-object search-remote c: 0)
-	(up-get-point position-object temporary-point-x) ;get the point of a deep fish, iterate mill placement towards tc
+	(up-get-point position-object temporary-point-x) ;get the point of a deep fish, iterate food-building placement towards tc
 )
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
-	(building-type-count-total barracks > 0) ;get 2nd mill after barracks so as to not interfere with existing build orders
-	(can-build mill)
+	(building-type-count-total food-building < 2)
+	(building-type-count-total barracks > 0) ;get 2nd food-building after barracks so as to not interfere with existing build orders
+	(can-build food-building)
 	=>
-	(chat-local-to-self "Debug: 2nd mill search active")
+	(chat-local-to-self "Debug: 2nd food-building search active")
 ;	(up-send-flare temporary-point-x)
 )
-;First check that 2nd mill is actually necessary
+;First check that 2nd food-building is actually necessary
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
+	(building-type-count-total food-building < 2)
 	(building-type-count-total barracks > 0) 
-	(can-build mill)
+	(can-build food-building)
 =>
-	(up-find-local c: mill c: 1)
+	(up-find-local c: food-building c: 1)
 	(up-set-target-object search-local c: 0)	
 	(up-get-point position-object point2-x);hope this is temporary goal, investigate later
-	(up-get-point-distance temporary-point-x point2-x temporary-goal2) ; this saves the distance between 1st mill and deep fish
+	(up-get-point-distance temporary-point-x point2-x temporary-goal2) ; this saves the distance between 1st food-building and deep fish
 )
 
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
+	(building-type-count-total food-building < 2)
 	(building-type-count-total barracks > 0) 
-	(up-compare-goal temporary-goal2 > 4) ;check if 2nd mill actually needed
-	(can-build mill)
+	(up-compare-goal temporary-goal2 > 4) ;check if 2nd food-building actually needed
+	(can-build food-building)
 =>
 	(set-goal temporary-goal3 6)
 )
 
 ;Backwards jump here
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
+	(building-type-count-total food-building < 2)
 	(building-type-count-total barracks > 0) 
 	(up-compare-goal temporary-goal2 > 4)
-	(can-build mill)
-	(up-can-build-line 0 temporary-point-x c: mill)
+	(can-build food-building)
+	(up-can-build-line 0 temporary-point-x c: food-building)
 =>
-	(up-build-line temporary-point-x temporary-point-x c: mill)
-	(chat-local-to-self "Debug: Successful mill placement?")
+	(up-build-line temporary-point-x temporary-point-x c: food-building)
+	(chat-local-to-self "Debug: Successful food-building placement?")
 	(up-jump-rule 2)
 )
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
+	(building-type-count-total food-building < 2)
 	(building-type-count-total barracks > 0) 
 	(up-compare-goal temporary-goal2 > 4)
 	(up-compare-goal temporary-goal3 > 0)
-	(can-build mill)
+	(can-build food-building)
 =>
 	(up-lerp-tiles temporary-point-x position-self-x c: 1)
 	(up-modify-goal temporary-goal3 c: -1)
@@ -11560,16 +11821,16 @@
 
 
 (defrule
-	(building-type-count-total lumber-camp > 0)
-	(building-type-count-total mill > 0)
+	(building-type-count-total wood-building > 0)
+	(building-type-count-total food-building > 0)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total mill < 2)
+	(building-type-count-total food-building < 2)
 	(building-type-count-total barracks > 0) 
 	(up-compare-goal temporary-goal2 > 4)
-	(can-build mill)
+	(can-build food-building)
 =>
-	(build mill)
-	(chat-local-to-self "Debug: Mill placement probably failed")
+	(build food-building)
+	(chat-local-to-self "Debug: food-building placement probably failed")
 )
 ;End forwards jump (8)
 #end-if
@@ -11661,7 +11922,7 @@
 (or	(goal increase-ts stable)
 	(goal increase-ts monastery))))
 =>
-	(up-chat-data-to-self text-no-resources-construction g: increase-ts)
+	;(up-chat-data-to-self text-no-resources-construction g: increase-ts)
 	(set-goal increase-ts 0)
 	(disable-timer increase-ts-timer))
 (defrule
@@ -11673,7 +11934,7 @@
 	(and	(up-compare-goal excessWood < smith-cost)
 		(goal increase-ts blacksmith))))
 =>
-	(up-chat-data-to-self text-no-resources-construction g: increase-ts)
+	;(up-chat-data-to-self text-no-resources-construction g: increase-ts)
 	(set-goal increase-ts 0)
 	(disable-timer increase-ts-timer))
 (defrule
@@ -11684,7 +11945,7 @@
 			(civ-selected briton)))
 	(stone-amount < tc-stone)))
 =>
-	(up-chat-data-to-self text-no-resources-construction g: increase-ts)
+	;(up-chat-data-to-self text-no-resources-construction g: increase-ts)
 	(set-goal increase-ts 0)
 	(disable-timer increase-ts-timer))
 (defrule
@@ -11695,7 +11956,7 @@
 	(and	(goal increase-ts castle)
 		(stone-amount < castle-stone))))
 =>
-	(up-chat-data-to-self text-no-resources-construction g: increase-ts)
+	;(up-chat-data-to-self text-no-resources-construction g: increase-ts)
 	(set-goal increase-ts 0)
 	(disable-timer increase-ts-timer))
 (defrule
@@ -11703,7 +11964,7 @@
 		(and	(up-compare-goal excessWood < 75)
 			(stone-amount < 175)))
 =>
-	(up-chat-data-to-self text-no-resources-construction g: increase-ts)
+	;(up-chat-data-to-self text-no-resources-construction g: increase-ts)
 	(set-goal increase-ts 0)
 	(disable-timer increase-ts-timer))
 (defrule
@@ -11715,7 +11976,7 @@
 (or	(stone-amount < 250)
 	(gold-amount < 250)))))
 =>
-	(up-chat-data-to-self text-no-resources-construction g: increase-ts)
+	;(up-chat-data-to-self text-no-resources-construction g: increase-ts)
 	(set-goal increase-ts 0)
 	(disable-timer increase-ts-timer))
 (defrule
@@ -11777,7 +12038,7 @@
 ;	(goal inseln yes))
 ;	(strategic-number sn-maximum-town-size < 60)
 =>
-	(up-chat-data-to-player my-player-number text-max-town-size s: sn-maximum-town-size)
+	;(up-chat-data-to-player my-player-number text-max-town-size s: sn-maximum-town-size)
 	(enable-timer increase-ts-timer 7)
 	(set-goal increase-ts 0)
 	(up-modify-sn sn-maximum-town-size c:+ 1)); end jump
@@ -11961,7 +12222,7 @@
 #load-if-not-defined DEATH-MATCH
 ;try simple fix first, also look into DUCing the scout to the center 
 (defrule
-	(building-type-count lumber-camp > 0) ;let the first be placed naturally
+	(building-type-count wood-building > 0) ;let the first be placed naturally
 	(strategic-number sn-camp-max-distance < 40)
 =>
 	(set-strategic-number sn-camp-max-distance 40)
@@ -12065,100 +12326,52 @@
 #end-if
 #end-if
 
-(defrule	
-	(strategic-number sn-corner-cut-state >= 3)
-	(can-build market)
-	(building-type-count-total market < 6)
-	(building-type-count-total town-center > 0)
-	
-=>
-	(up-get-point position-corner temporary-point-x)
-	(set-goal temporary-goal3 10)
-)
-;Backwards jump ends (-2)
 (defrule
-	(strategic-number sn-corner-cut-state >= 3)
-	(can-build market)
-	(building-type-count-total town-center > 0)
-	(up-can-build-line 0 temporary-point-x c: market)
-	(building-type-count-total market < 6)
-=>
-	(up-build-line temporary-point-x temporary-point-x c: market)
-	(up-jump-rule 1)
-)
-
-
-(defrule	
-	(strategic-number sn-corner-cut-state >= 3)
-	(can-build market)
-	(building-type-count-total market < 6)
-	(building-type-count-total town-center > 0)
-	(up-compare-goal temporary-goal3 > 0)
-=>
-	(up-lerp-tiles temporary-point-x position-self-x c: 1)
-	(up-modify-goal temporary-goal3 c:- 1)
-	(up-jump-rule -2)
-)
-
-
-;Forwards jump ends (1)
-(defrule
-	(strategic-number sn-corner-cut-state >= 4)
+	(up-compare-goal cutting-stage < 2)
+	(not(can-build market))
 	(building-type-count-total market > 3)
-	(building-type-count-total town-center > 0)
-	(wood-amount > 200)
-	(can-build market)
-	(unit-type-count-total trade-cart > twenty-pop)
+	(up-pending-objects c: market > 0)
 =>
-	(delete-building market) ;1.0c command so ignores foundations
-	(delete-building market)
-	(disable-self)
+	(up-jump-rule 5)
 )
 
-
 (defrule
-	(timer-triggered two-mins)
-	(strategic-number sn-corner-cut-state >= 3)
-	(can-build market)
-	(building-type-count-total market < 6)
-	(building-type-count-total town-center > 0)
-	(wood-amount > 300)
+	(building-type-count-total market < 4)
+	(up-get-fact player-number 0 temporary-goal)
+	(up-modify-goal temporary-goal c:mod 2)
+	(up-compare-goal temporary-goal == 0)
 =>
-	(up-get-point position-corner point-x)
-	(up-get-point position-center point2-x)
-	(up-bound-point point-x point-x)
-	(set-goal temporary-goal3 7)
+	(set-goal temporary-goal3 10)
+	(up-bound-point point-x closest-corner-x)
 )
 
-;Jump ends (-2)
 (defrule
-	(timer-triggered two-mins)
-	(strategic-number sn-corner-cut-state >= 3)
-	(can-build market)
-	(building-type-count-total market < 6)
-	(building-type-count-total town-center > 0)
-	(wood-amount > 300)
+	(building-type-count-total market < 4)
+	(up-get-fact player-number 0 temporary-goal)
+	(up-modify-goal temporary-goal c:mod 2)
+	(up-compare-goal temporary-goal == 1)
+=>
+	(set-goal temporary-goal3 10)
+	(up-bound-point point-x second-closest-corner-x)
+)
+
+(defrule
 	(up-can-build-line 0 point-x c: market)
+	(building-type-count-total market < 5)
+	(up-pending-objects c: market < 1)
+	(up-compare-goal cutting-stage > 2)
 =>
 	(up-build-line point-x point-x c: market)
 	(up-jump-rule 1)
 )
 
-
 (defrule
-	(timer-triggered two-mins)
-	(strategic-number sn-corner-cut-state >= 3)
-	(can-build market)
-	(building-type-count-total market < 6)
-	(building-type-count-total town-center > 0)
-	(wood-amount > 300)
 	(up-compare-goal temporary-goal3 > 0)
 =>
-	(up-lerp-tiles point-x point2-x c: 2)
 	(up-modify-goal temporary-goal3 c:- 1)
+	(up-lerp-tiles point-x closest-edge-x c: 1)
 	(up-jump-rule -2)
 )
-;Jump ends (1)
 	
 ;TO-DO (low priority) investigate going up with market + blacksmith in michi
 ;Also look into khmer start, atm it builds a farm before LC which is cool but questionable
@@ -12376,8 +12589,8 @@
 #load-if-defined POLES-CIV
 
 (defrule
-	(can-build mining-camp)
-	(building-type-count-total mining-camp < 2)
+	(can-build gold-building)
+	(building-type-count-total gold-building < 2)
 	(resource-found stone)
 	(current-age >= feudal-age)
 	(up-research-status c: castle-age != 1)
@@ -12394,7 +12607,7 @@
 	(can-build dock)
 	(map-type kawasan)
 	(building-type-count-total dock < 1)
-	(or(building-type-count-total lumber-camp > 0)
+	(or(building-type-count-total wood-building > 0)
 	(wood-amount > 251))
 	(building-type-count-total town-center > 0)
 	(game-time < 700)
@@ -12406,7 +12619,7 @@
 	(can-build port)
 	(map-type kawasan)
 	(building-type-count-total port < 1)
-	(or(building-type-count-total lumber-camp > 0)
+	(or(building-type-count-total wood-building > 0)
 	(wood-amount > 226))
 	(building-type-count-total town-center > 0)
 	(game-time < 700)
@@ -12433,7 +12646,7 @@
 
 (defrule
 	(xnor(wood-amount < 250);only jump if both are true or false
-	(building-type-count-total lumber-camp < 1))
+	(building-type-count-total wood-building < 1))
 =>
 
 ;	(chat-local-to-self "jumping 4")
@@ -12451,7 +12664,7 @@
 	(building-type-count-total dock < 1)
 	(building-type-count-total port < 1)
 	(or(wood-amount > 250)
-	(building-type-count-total lumber-camp > 0))
+	(building-type-count-total wood-building > 0))
 =>
 	(up-full-reset-search)
 	(up-modify-goal point-x c:= -1)
@@ -12466,7 +12679,7 @@
 	(building-type-count-total dock < 1)
 	(building-type-count-total port < 1)
 	(or(wood-amount > 250)
-	(building-type-count-total lumber-camp > 0))
+	(building-type-count-total wood-building > 0))
 =>
 	(up-full-reset-search)
 	(up-filter-status c: status-gather c: list-active)
@@ -12485,7 +12698,7 @@
 ;	(up-point-terrain point-x 2);beach terrain
 	(building-type-count-total dock < 1)
 	(or(wood-amount > 250)
-	(building-type-count-total lumber-camp > 0))
+	(building-type-count-total wood-building > 0))
 =>
 	(chat-local-to-self "DUC build successful")
 	(up-build-line point-x point-x c: dock)
@@ -12500,7 +12713,7 @@
 	(wood-amount > 125)
 	(building-type-count-total port < 1)
 	(or(wood-amount > 250)
-	(building-type-count-total lumber-camp > 0))
+	(building-type-count-total wood-building > 0))
 =>
 	(up-build-line point-x point-x c: port)
 	(up-jump-rule 1)
@@ -12513,7 +12726,7 @@
 	(up-compare-goal point-x != -1)
 	(up-compare-goal temporary-goal3 > 0)
 	(or(wood-amount > 250)
-	(building-type-count-total lumber-camp > 0))
+	(building-type-count-total wood-building > 0))
 =>
 	(generate-random-number 5)
 	(up-get-fact random-number 0 temporary-goal)
@@ -12542,7 +12755,7 @@
 	(goal increase-ts 0)
 	(can-build dock)
 	(or(wood-amount > 250)
-	(building-type-count-total lumber-camp > 0));new addition
+	(building-type-count-total wood-building > 0));new addition
 =>
 	(build dock)) ;end jumps (-5 to -7)
 
@@ -12559,7 +12772,7 @@
 	(goal increase-ts 0)
 	(can-build port)
 	(or(wood-amount > 250)
-	(building-type-count-total lumber-camp > 0));new addition
+	(building-type-count-total wood-building > 0));new addition
 =>
 	(build port));end jumps (-7 to -9)
 
@@ -13109,9 +13322,59 @@
 	(set-goal lock-settlement-placement no)
 	(up-jump-rule 1)
 )
+
 (defrule
 	(timer-triggered threesec)
 =>
 	(set-strategic-number sn-preferred-settlement-placement -1)
 )
 
+(defrule
+	(building-available settlement)
+	(dropsite-min-distance gold < 255)
+	(cc-players-unit-type-count 0 gold > 3)
+	(building-type-count-total settlement > 7)
+	(building-type-count-total settlement < 27)
+	(up-get-fact building-type-count settlement temporary-goal)
+	(up-modify-goal temporary-goal c:mod 5)
+	(up-compare-goal temporary-goal == 3)
+=>
+	(set-strategic-number sn-preferred-settlement-placement 4)
+)
+
+
+(defrule
+	(building-available settlement)
+	(dropsite-min-distance stone < 255)
+	(cc-players-unit-type-count 0 stone > 3)
+	(or(building-type-count settlement == 6)
+	(building-type-count settlement == 16))
+=>
+	(set-strategic-number sn-preferred-settlement-placement 5)
+)
+
+
+
+(defrule
+	(building-available settlement)
+	;(strategic-number sn-preferred-settlement-placement != 4)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 8)
+)
+
+#load-if-defined DEATH-MATCH
+
+(defrule
+	(game-time < 150)
+=>
+	(up-modify-sn sn-maximum-town-size c:min 10)
+)
+
+#end-if
+
+(defrule
+	(true)
+=>
+	(up-get-rule-id end-of-buildings-per)
+)

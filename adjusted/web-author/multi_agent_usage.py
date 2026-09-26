@@ -991,7 +991,7 @@ class MultiAgentUsage:
             else:
                 code, message, action = "CURSOR_HOOK_PROJECT_WAITING", "正在等待项目 Hook 自动关联当前 Cursor conversation；无需手动绑定。", "check_requirements"
         elif self.selected_agent in {"auto", "cursor"} and bound and cursor_hook_recorded:
-            code, message, action = "RECORDED_PARTIAL", "已记录 Cursor stop Hook 的父代理 token；子代理不在该计数内，也不会与 Admin 事件相加。", "check_requirements"
+            code, message, action = "RECORDED_PARTIAL", "已记录 Cursor stop Hook 的父代理 token；带 parent_conversation_id 的子代理 token 另计，无法证明归属的子代理仍不在覆盖内，也不与 Admin 事件相加。", "check_requirements"
         elif self.selected_agent == "cursor" and bound and not cursor_admin_configured and any(g["code"] == "CURSOR_HOOK_USAGE_WAITING" for g in gaps):
             code, message, action = "WAITING_FOR_USAGE", "已绑定当前 Cursor conversation；本轮 stop Hook 尚未带回 token。", "check_requirements"
         elif self.selected_agent == "cursor" and bound:

@@ -24,7 +24,7 @@
 | OpenAI Codex | rollout 的累计 token_count 差值 | 优先继承当前 thread ID；否则唯一的本轮活跃主会话自动绑定；旧会话扣除创作前基线，spawn 子会话按 parent→child 证据自动纳入 |
 | Claude Code | 项目 session JSONL 的 assistant usage | 唯一的本轮活跃项目会话自动绑定；无法唯一确认时保留缺口，不要求用户选择 |
 | Gemini CLI | chat 文件的消息 tokens | 主 Agent 能证明当前 session 时自动登记；按 total 区分缓存/tool/thoughts；无法证明时保留缺口 |
-| Cursor IDE | 项目 Hook 自动归属当前项目 conversation；`stop` 事件中的父代理 token 直接入账 | 需已授权且 Hook 生效。`input_tokens` 已含缓存读写，只记 `stop`，不与 `afterAgentResponse` 相加。子代理不在该计数内。有 Admin API 时也不再把同一 conversation 的官方事件叠加进来 |
+| Cursor IDE | 项目 Hook 自动归属当前项目 conversation；`stop` 的父代理 token 直接入账；`subagentStop` 只有在事件或先前 `subagentStart` 给出 `parent_conversation_id` 且带整数 token 时另计 | 需已授权且 Hook 生效。`input_tokens` 已含缓存读写，同一 generation 只记 `stop`，不与 `afterAgentResponse` 相加。无父子证据的子代理保持缺口。已有 Hook 合计的 conversation 不再叠加 Admin 事件 |
 | Cursor SDK | 显式导入最终 RunResult.usage / getUsage() | format=cursor-sdk；只接收本轮 finished/error/cancelled 的真实 usage，不把运行中累计快照相加 |
 | OpenCode | SQLite 按 session_id 先筛选，或 storage/message/<session> | 主 Agent 自动登记可证明的 session；支持缓存及 reasoning；不扫全账户消息 |
 | GitHub Copilot CLI | 本轮专用本地 OTel 文件的 chat span | 配置 AOE2_COPILOT_USAGE_FILE；主 Agent 自动登记可证明的 conversation ID；忽略 invoke_agent 父汇总 |
@@ -33,7 +33,7 @@
 | Windsurf / Trae / Augment | 本轮真实 usage 显式导入 | 尚未核实稳定、按项目归属的 IDE 本地消耗接口；不宣称自动接通 |
 | 其他 Agent | agent-usage / 提供商最终响应导入 | 必须有本轮真实来源和稳定事件 ID |
 
-以上是已实现的格式支持及合成测试范围，不是所有 Agent 的本机实测认证。Cursor IDE 的本机 bubble.tokenCount 已不再作为用量来源。仓库改用 Cursor 官方 Hook 的稳定 conversation_id 与 Team Admin Usage Events 的 conversationId 做 join；只有官方事件返回的 input/output/cache token 才进入账本。contextTokensUsed、contextUsagePercent 和 promptTokenBreakdown.estimatedTokens 仍全部排除。无 Admin API 权限时保持未采集，或导入本轮 Cursor SDK RunResult.usage / getUsage()。
+以上是已实现的格式支持及合成测试范围，不是所有 Agent 的本机实测认证。Cursor IDE 的本机 bubble.tokenCount 已不再作为用量来源。仓库改用 Cursor 官方 Hook 的稳定 conversation_id 记录 `stop` token，并在 `subagentStart`/`subagentStop` 能证明 `parent_conversation_id` 时另计子代理 token。无父子证据时不猜测。已由 Hook 入账的 conversation 不再叠加 Team Admin Usage Events。contextTokensUsed、contextUsagePercent 和 promptTokenBreakdown.estimatedTokens 仍全部排除。没有 Hook token、也没有 Admin API 时保持未采集，或导入本轮 Cursor SDK RunResult.usage / getUsage()。
 
 ## 会话绑定与连接提示
 

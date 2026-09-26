@@ -241,6 +241,39 @@ class HostUsageTests(unittest.TestCase):
         auto.sync()
         self.assertEqual(self.meter.report()['tokens']['total_tokens'],18)
 
+    def test_proven_subagent_tokens_add_once_and_unlinked_tokens_stay_out(self):
+        active=active_project_path(self.workspace);active.parent.mkdir(parents=True,exist_ok=True)
+        active.write_text(json.dumps({'schema':'aoe2-cursor-active-project-v1','project_id':'synthetic',
+            'project':str(self.project),'agent':'cursor','usage_authorized':True}),encoding='utf-8')
+        root=self.workspace.resolve()
+        cursor_root='/' + root.drive + root.as_posix().split(':',1)[1] if root.drive else root.as_posix()
+        common={'workspace_roots':[cursor_root],'model':'fixture-model','task':'PRIVATE_TASK','summary':'PRIVATE_SUMMARY'}
+        self.assertTrue(record_hook_payload({**common,'hook_event_name':'subagentStart','conversation_id':'parent-conv',
+            'parent_conversation_id':'parent-conv','subagent_id':'child-1'},self.workspace,observed_at=self.start+1))
+        self.assertTrue(record_hook_payload({**common,'hook_event_name':'subagentStop','conversation_id':'child-conv',
+            'subagent_id':'child-1','generation_id':'gen-child','inputTokens':7,'outputTokens':3,
+            'cacheReadTokens':1,'reasoningTokens':2},self.workspace,observed_at=self.start+2))
+        self.assertTrue(record_hook_payload({**common,'hook_event_name':'subagentStop','conversation_id':'orphan',
+            'subagent_id':'child-unknown','generation_id':'gen-orphan','input_tokens':99,'output_tokens':9},
+            self.workspace,observed_at=self.start+3))
+        raw=hook_db_path(self.workspace).read_bytes()
+        self.assertNotIn(b'PRIVATE_TASK',raw)
+        self.assertNotIn(b'PRIVATE_SUMMARY',raw)
+        result=collect_cursor_hook_usage(self.workspace,self.workspace,['parent-conv'],self.start)
+        self.assertEqual(len(result['items']),1)
+        self.assertEqual(result['items'][0]['usage']['input_tokens'],7)
+        self.assertEqual(result['items'][0]['usage']['output_tokens'],3)
+        self.assertEqual(result['items'][0]['usage']['cached_input_tokens'],1)
+        self.assertEqual(result['items'][0]['usage']['reasoning_output_tokens'],2)
+        self.assertEqual(result['items'][0]['usage']['total_tokens'],10)
+        self.cursor([])
+        auto=self.auto('cursor',[])
+        auto.bind({'cursor':['parent-conv']})
+        auto.sync()
+        self.assertEqual(self.meter.report()['tokens']['total_tokens'],10)
+        auto.sync()
+        self.assertEqual(self.meter.report()['tokens']['total_tokens'],10)
+
     def test_selected_cursor_does_not_inherit_codex_environment(self):
         with patch.dict(os.environ, {'CODEX_THREAD_ID': 'unrelated-codex-thread', 'AOE2_USAGE_DISABLE_AUTO': '0'}):
             meter = MeterAdapter(self.project, {'project_id': 'synthetic', 'source_sha256': 'source',

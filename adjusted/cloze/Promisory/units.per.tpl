@@ -1,4 +1,11 @@
 (defrule
+	(goal peformance-skip yes)
+	(strategic-number sn-turn-count > 5)
+=>
+	(up-jump-direct g: end-of-units-per)
+)
+
+(defrule
 	(true)
 =>
 	(set-goal traintransport no)
@@ -131,6 +138,22 @@
 	(unit-type-count-total transport-ship < 1)
 =>
 	(set-goal traintransport yes))
+
+#load-if-defined UP-ALLY-IN-GAME
+
+(defrule
+	(or(map-type islands)
+	(map-type pacific-islands))
+	(population > 120)
+	(can-train transport-ship)
+	(unit-type-count-total transport-ship < 1)
+=>
+	(set-goal traintransport yes)
+	(train transport-ship)
+	(disable-self)
+)
+
+#end-if
 ;=========================================================
 ; Villagers
 ;=========================================================
@@ -185,7 +208,7 @@
 (not	(civ-selected khmer))
 	(up-compare-goal enemyState <= dark)
 	(up-compare-goal strategy-type <= feudal-war)
-	(building-type-count-total barracks <= 0);	(building-type-count-total lumber-camp <= 1)
+	(building-type-count-total barracks <= 0);	(building-type-count-total wood-building <= 1)
 	(wood-amount < mb-cost); 100
 	(goal maa-var yes)
 	(up-compare-goal strategy-type2 != water)
@@ -550,6 +573,22 @@
 	(strategic-number sn-current-age >= fcastlea)
 =>
 	(set-goal trainvillager yes))
+
+(defrule
+	(current-age == feudal-age)
+	(food-amount > 600)
+	(unit-type-count-total villager < 50)
+	(players-current-age every-enemy < castle-age)
+	(food-amount < 700)
+	(up-set-target-by-id g: position-self-id)
+	(up-research-status c: ri-wheel-barrow != research-pending)
+	(or(up-pending-objects c: villager-class < 1)
+	(and(up-pending-objects c: villager-class < 2)
+	(up-object-data object-data-progress-value > 90)))
+=>
+	(set-goal trainvillager yes)
+	(disable-self)
+) 
 ;=========================================================
 (defrule
 	(goal trainvillager yes)
@@ -821,6 +860,20 @@
 	(up-compare-goal tradeunits < 60); 90
 =>
 	(set-goal traincog yes)); end jump
+
+(defrule
+	(goal island-resources-low yes)
+	(up-compare-goal tradeunits < 90)
+=>
+	(set-goal traincog yes)
+)
+
+(defrule
+	(goal island-resources-low yes)
+	(unit-type-count-total trade-cart < 25)
+=>
+	(set-goal traincart yes)
+)
 
 (defrule
 (or	(and	(players-building-type-count every-ally market == 0)
@@ -1362,6 +1415,23 @@
 	(set-goal trainmangonel yes)); end jump
 #end-if
 
+#load-if-defined SAXONS-CIV
+(defrule
+   (or(strategic-number archers > 5)
+   (or(players-unit-type-count any-enemy scorpion-line > 5)
+   (gold-amount > 500)))
+   (current-age == imperial-age)
+   (current-age-time > 100)
+   (unit-type-count-total mangonel-line < 25)
+   (or(research-completed ri-onager)
+   (unit-type-count-total mangonel-line < 6))
+   (or(research-completed ri-northmens-fury)
+   (unit-type-count-total mangonel-line < 10))
+=>
+   (set-goal trainmangonel yes)
+)
+
+#end-if
 
 
 
@@ -1866,6 +1936,34 @@
 =>
 	(set-goal trainmangonel yes)
 )
+
+(defrule
+	(up-compare-const TRADE-CUT == yes)
+	(or(gold-amount > 650)
+	(current-age-time > 600))
+	(up-compare-goal cutting-stage < 4)
+	(unit-type-count-total mangonel-line < 2)
+	(or(unit-type-count-total trade-cart > 5)
+	(death-match-game))
+=>
+	(set-goal trainmangonel yes)
+)
+
+(defrule
+	(or(up-compare-const TRADE-CUT == yes)
+	(goal temporary-goal10 76543))
+	(or(gold-amount > 650)
+	(current-age-time > 600))
+	(up-compare-goal cutting-stage < 4)
+	(unit-type-count-total mangonel-line < 2)
+	(or(unit-type-count-total trade-cart > 5)
+	(death-match-game))
+	(unit-type-count-total cutting-unit < 1)
+	(can-train cutting-unit)
+=>
+	(train cutting-unit)
+)
+
 (defrule
 	(goal milunits yes)
 	(up-research-status c: ri-siege-onager < research-pending)
@@ -1982,6 +2080,186 @@
 #end-if
 #end-if
 
+
+#load-if-defined VARANGIANS-CIV
+
+(defrule
+   (or(not(goal position-goal pocket))
+   (current-age == imperial-age))
+   (building-type-count-total archery-range > 0)
+   (or(and(players-unit-type-count target-player knight-line > 3)
+   (unit-type-count-total knight-line < 2))
+   (strategic-number spears > 5))
+=>
+   (set-goal traincavarcher yes)
+   )
+
+(defrule
+   (strategic-number spears > 10)
+   (nand(current-age == castle-age)
+   (goal position-goal pocket))
+   (unit-type-count-total scorpion-line < 10)
+=>
+   (set-goal trainscorpion yes)
+)
+
+(defrule
+   (unit-type-count-total knight-line < 1)
+   (current-age-time > 15)
+   (strategic-number cavalry > 3)
+   (unit-type-count-total varangian-guard-line < 5)
+   (or(current-age == castle-age)
+   (current-age-time < 500))
+=>
+   (set-goal trainadditionalinf yes)
+)
+
+(defrule
+   (goal milunits yes)
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (strategic-number archers < 8)
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+   (or(unit-type-count-total varangian-guard < 10)
+   (research-completed ri-elite-varangian-guard))
+=>
+   (set-goal trainadditionalinf yes)
+)
+
+(defrule
+   (goal milunits yes)
+   (current-age == imperial-age)
+   (gold-amount > 375)
+   (or(strategic-number spears < 25)
+   (gold-amount > 950))
+   (building-type-count castle < 2)
+=>
+   (set-goal trainknight yes)
+)
+
+(defrule
+   (strategic-number spears < 10)
+   (current-age == imperial-age)
+   (gold-amount < 300)
+   (food-amount > 880)
+   (unit-type-count-total scout-cavalry-line < 20)
+=>
+   (set-goal trainhussar yes)
+)
+
+(defrule
+   (goal milunits yes)
+   (or(strategic-number spears < 20)
+   (gold-amount > 850))
+   (gold-amount > 300)
+=>
+   (set-goal trainunique yes)
+)
+
+#end-if
+#load-if-defined SAXONS-CIV
+#load-if-not-defined UP-POCKET-POSITION
+(defrule
+   (players-unit-type-count target-player knight-line > 1)
+   (current-age == castle-age)
+   (unit-type-count-total villager-gold > 3)
+   (unit-type-count-total monk < 12)
+=> 
+   (set-goal trainmonk yes)
+)
+#end-if
+(defrule
+   (or(gold-amount > 1000)
+   (and(research-completed ri-clerical-recruitment)
+   (current-age == castle-age)))
+   (unit-type-count-total monk < 10)
+=>
+   (set-goal trainmonk yes)
+)
+
+(defrule
+   (players-unit-type-count any-enemy bombard-cannon > 1);these 9+4 monks should be really powerful against non-turk ones
+   (not(players-civ any-enemy turkish))
+   (unit-type-count-total monk < 8)
+=>
+   (set-goal trainmonk yes)
+)
+
+(defrule
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (strategic-number archers < 8)
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+=>
+   (set-goal trainchamp yes)
+)
+
+(defrule
+   (or(strategic-number archers > 3)
+   (unit-type-count-total my-unique-unit-line < 1))
+   (or(strategic-number infantry < 5)
+   (unit-type-count-total my-unique-unit-line < 10))
+=>
+   (set-goal trainunique yes)
+)
+
+
+(defrule
+   (goal milunits yes)
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (strategic-number archers < 8)
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+=>
+   (set-goal trainchamp yes)
+)
+
+(defrule
+   (unit-type-count-total knight-line < 1)
+   (current-age-time > 15)
+   (strategic-number cavalry > 3)
+   (unit-type-count-total varangian-guard-line < 5)
+   (or(current-age == castle-age)
+   (current-age-time < 500))
+=>
+   (set-goal trainadditionalinf yes)
+)
+
+(defrule
+   (strategic-number infantry > 20)
+   (strategic-number skirms < 30)
+   (or(unit-type-count-total villager-gold > 5)
+   (unit-type-count-total trade-cart > 15))
+=>
+   (set-goal traincavarcher yes)
+)
+
+
+#end-if
+
+
+
+
+#load-if-defined SAXONS-CIV
+(defrule
+   (building-type-count-total castle > 1)
+   (strategic-number cavalry > 4)
+   (unit-type-count-total my-unique-unit-line < 40)
+   (or(research-completed my-unique-unit-upgrade)
+   (unit-type-count-total my-unique-unit-line < 10))
+=>
+   (set-goal trainunique yes)
+)
+#end-if
 
 #load-if-defined BYZANTINE-CIV
 (defrule
@@ -2995,7 +3273,7 @@
 =>
 	(up-jump-rule 6)); 7
 (defrule
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(wood-amount < 110)
 (or	(unit-type-count-total villager >= 21); 22
 (or	(unit-type-count villager-forager >= 1)
@@ -3093,7 +3371,7 @@
 	(map-type four-lakes))
 	(unit-type-count-total fishing-ship < 2)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(population-cap != 25)
 	(game-time < 2400)
 	(not(town-under-attack))
@@ -3104,7 +3382,7 @@
 ;sometimes the AI gets stuck despite finding main wood as it overbooms fish and runs out of initial wood/stragglers
 (defrule
 	(unit-type-count-total fishing-ship > 3)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building < 2)
 	(building-type-count-total dock > 0)
 	(current-age == dark-age)
 	(wood-amount < 177)
@@ -3404,7 +3682,7 @@
 	(up-jump-rule 6))
 (defrule
 	(goal paphosciv yes)
-	(building-type-count-total mill < 1)
+	(building-type-count-total food-building < 1)
 	(wood-amount < 110)
 (or	(unit-type-count-total villager >= 21); 22
 (or	(unit-type-count villager-forager >= 1)
@@ -3495,7 +3773,7 @@
 	(map-type four-lakes))
 	(unit-type-count-total fishing-ship < 2)
 	(building-type-count-total town-center > 0)
-	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total wood-building > 0)
 	(population-cap != 25)
 	(game-time < 2400)
 	(not(town-under-attack))
@@ -3507,7 +3785,7 @@
 (defrule
 	(goal paphosciv yes)
 	(unit-type-count-total fishing-ship > 3)
-	(building-type-count-total lumber-camp < 2)
+	(building-type-count-total wood-building < 2)
 	(building-type-count-total port > 0)
 	(current-age == dark-age)
 	(wood-amount < 177)
@@ -3956,6 +4234,18 @@
 =>
     (train warrior-priest)
 )
+
+#load-if-defined SAXONS-CIV
+(defrule
+   (or(gold-amount > 700)
+   (unit-type-count-total monk < 4))
+   (players-unit-type-count target-player bombard-cannon > 1)
+   (unit-type-count-total mangonel-line > 5)
+   (unit-type-count-total monk < 8)
+=>
+   (set-goal trainmonk yes)
+)
+#end-if
 #load-if-not-defined DIFFICULTY-EASIEST
 #load-if-not-defined DIFFICULTY-EASY
 #load-if-not-defined DIFFICULTY-MODERATE
@@ -4206,6 +4496,15 @@
 #end-if; di
 #end-if; ff
 #end-if; iculty (for now)
+
+(defrule
+	(goal island-resources-low yes)
+	(or(gold-amount > 2500)
+	(up-compare-goal tradeunits > 40))
+	(gold-amount > 1200)
+=>
+	(set-goal trainmonk yes)
+)
 ;=========================================================
 ; Knights
 ;=========================================================
@@ -4433,6 +4732,16 @@
 	(up-compare-goal temporary-goal >= temporary-goal3)
 =>
 	(set-goal trainknight yes)
+)
+
+(defrule
+	(goal island-resources-low yes)
+	(up-compare-goal tradeunits > 19)
+	(gold-amount > 700)
+	(food-amount > 800)
+=>
+	(set-goal trainknight yes)
+	(set-goal traineagle yes)
 )
 ;=========================================================
 ; Pikes
@@ -5494,7 +5803,7 @@
 	(strategic-number siege < 3)
 	(strategic-number skirms < 12)
 	(strategic-number husks < 3)
-	(unit-type-count-total cavalry-archer-line < 33)
+	(unit-type-count-total cavalry-archer-class < 33)
 =>
 	(set-goal traincavarcher yes))
 
@@ -6021,7 +6330,7 @@
 	(set-goal trainarcher no))
 
 (defrule
-	(unit-type-count-total cavalry-archer-line < 15)
+	(unit-type-count-total cavalry-archer-class < 15)
 (or	(players-unit-type-count target-player infantry-class > 10)
 	(players-unit-type-count target-player war-chariot > 3))
 =>
@@ -6213,7 +6522,7 @@
 	(strategic-number camels <= 24)
 	(strategic-number husks <= 20)
 	(strategic-number archers <= 32)
-	(unit-type-count-total cavalry-archer-line < 48)
+	(unit-type-count-total cavalry-archer-class < 48)
 =>
 	(set-goal traincavarcher yes))
 (defrule
@@ -6224,7 +6533,7 @@
 (or	(strategic-number husks >= 8)
 	(strategic-number archers >= 10))))
 	(strategic-number sn-current-age <= castlea)
-	(unit-type-count-total cavalry-archer-line < 7)
+	(unit-type-count-total cavalry-archer-class < 7)
 =>
 	(set-goal traincavarcher yes))
 (defrule
@@ -6234,7 +6543,7 @@
 (or	(strategic-number camels > 19)
 (or	(strategic-number husks >= 11)
 	(strategic-number archers >= 15))))
-	(unit-type-count-total cavalry-archer-line < 11)
+	(unit-type-count-total cavalry-archer-class < 11)
 =>
 	(set-goal traincavarcher yes))
 (defrule
@@ -6244,7 +6553,7 @@
 (or	(strategic-number husks >= 14)
 (or	(strategic-number camels > 24)
 	(strategic-number archers >= 15))))
-	(unit-type-count-total cavalry-archer-line < 15)
+	(unit-type-count-total cavalry-archer-class < 15)
 =>
 	(set-goal traincavarcher yes))
 (defrule
@@ -6254,7 +6563,7 @@
 (or	(strategic-number husks >= 17)
 (or	(strategic-number camels > 29)
 	(strategic-number archers >= 25))))
-	(unit-type-count-total cavalry-archer-line < 20)
+	(unit-type-count-total cavalry-archer-class < 20)
 =>
 	(set-goal traincavarcher yes))
 (defrule
@@ -6264,7 +6573,7 @@
 (or	(strategic-number husks >= 20)
 (or	(strategic-number camels > 34)
 	(strategic-number archers >= 25))))
-	(unit-type-count-total cavalry-archer-line < 28)
+	(unit-type-count-total cavalry-archer-class < 28)
 =>
 	(set-goal traincavarcher yes))
 (defrule
@@ -6274,14 +6583,14 @@
 (or	(strategic-number husks >= 20)
 (or	(strategic-number camels > 39)
 	(strategic-number archers >= 40))))
-	(unit-type-count-total cavalry-archer-line < 40)
+	(unit-type-count-total cavalry-archer-class < 40)
 =>
 	(set-goal traincavarcher yes))
 (defrule
 	(goal milunits yes)
 	(strategic-number infantry >= 40)
 	(strategic-number husks < 30)
-	(unit-type-count-total cavalry-archer-line < 55)
+	(unit-type-count-total cavalry-archer-class < 55)
 =>
 	(set-goal traincavarcher yes))
 (defrule
@@ -6292,9 +6601,53 @@
 	(strategic-number camels < 29)
 	(strategic-number siege < 10)
 	(strategic-number archers < 40)
-	(unit-type-count-total cavalry-archer-line < 60)
+	(unit-type-count-total cavalry-archer-class < 60)
 =>
 	(set-goal traincavarcher yes)); end jump
+
+#load-if-defined FRANKISH-CIV
+
+(defrule
+	(or(current-age == castle-age)
+	(or(goal trainarcher yes)
+	(gold-amount > 950)))
+	(research-completed ri-ordonnance-companies)
+	(unit-type-count-total mounted-crossbowman-line < 15)
+	(strategic-number skirms < 15)
+	(players-unit-type-count every-enemy camel-line < 5)
+	(or(unit-type-count-total villager-gold > 4)
+	(unit-type-count-total trade-cart > 4))
+=>
+	(set-goal trainarcher no)
+	(set-goal traincavarcher yes)
+)
+;Generally HC/TA will be better inf counters but MC could do well vs double melee compositions
+(defrule
+	(or(unit-type-count-total mounted-crossbowman-line < 7)
+	(research-completed ri-heavy-mounted-crossbowman))
+	(unit-type-count-total mounted-crossbowman-line < 13)
+	(or(unit-type-count-total mounted-crossbowman-line < 2)
+	(research-completed ri-ordonnance-companies))
+	(strategic-number infantry > 5)
+	(strategic-number cavalry > 5)
+	(strategic-number skirms < 5)
+=>
+	(set-goal traincavarcher yes)
+)
+
+(defrule
+	(current-age == castle-age)
+	(goal trainarcher yes)
+	(strategic-number archers < 5)
+	(or(current-age-time > 600)
+	(strategic-number sn-current-age >= cimperial))
+	(unit-type-count-total mounted-crossbowman-line < 20)
+=>
+	(set-goal trainarcher no)
+	(set-goal traincavarcher yes)
+)
+
+#end-if
 ;(defrule
 ;	(goal milunits yes)
 ;(nor	(strategic-number skirms > 29)
@@ -6303,7 +6656,7 @@
 ;(or	(players-unit-type-count focus-player cavalry-archer-line >= 6)
 ;	(gold-amount > 200))
 ;	(gold-amount > 100)
-;	(unit-type-count-total cavalry-archer-line < 20)
+;	(unit-type-count-total cavalry-archer-class < 20)
 ;=>
 ;	(set-goal traincavarcher yes))
 ;=========================================================
@@ -7291,6 +7644,21 @@
 	(unit-type-count-total militiaman-line < 20)
 =>
 	(set-goal trainhoplite yes))
+#load-if-defined DANES-CIV
+(defrule
+   (unit-type-count-total knight-line < 1)
+   (current-age-time > 15)
+   (strategic-number cavalry > 3)
+   (unit-type-count-total varangian-guard-line < 5)
+   (or(current-age == castle-age)
+   (current-age-time < 500))
+   (building-type-count-total castle < 2)
+=>
+   (set-goal trainadditionalinf yes)
+)
+
+#end-if
+
 
 
 (defrule
@@ -7339,6 +7707,17 @@
     (set-goal trainchamp yes)
     )
 
+(defrule
+	(unit-available champi-line)
+	(game-time < 480)
+	(food-amount < 450)
+	(food-amount > 110)
+	(unit-type-count-total champi-line < 4)
+	(goal strategy drush)
+	(current-age == dark-age)
+=>
+	(set-goal trainchamp yes)
+)
 (defrule
 	(unit-available champi-line)
 	(or(strategic-number skirms > 5)
@@ -7573,6 +7952,26 @@
 =>
 	(set-goal trainchamp yes)
 )
+
+
+#load-if-defined DANES-CIV
+
+
+(defrule
+   (goal milunits yes)
+   (nand(goal position-goal pocket)
+   (current-age-time < 300))
+   (current-age == imperial-age)
+   (or(strategic-number archers < 8)
+   (and(food-amount > 900)
+   (gold-amount > 900)))
+   (players-unit-type-count every-enemy teutonic-knight-line < 5)
+   (players-unit-type-count every-enemy jaguar-man-line < 5)
+   (players-unit-type-count every-enemy cataphract-line < 5)
+=>
+   (set-goal trainchamp yes)
+)
+#end-if
 
 #load-if-defined WU-CIV
 
@@ -8139,6 +8538,17 @@
 ;	(strategic-number spears < 45)
 ;=>
 ;	(set-goal trainhussar yes))
+
+(defrule
+	(goal island-resources-low yes)
+	(or(up-compare-goal tradeunits < 20)
+	(food-amount > 2000))
+	(food-amount > 1000)
+	(or(food-amount > 1500)
+	(up-pending-objects c: scout-cavalry-line < 3))
+=>
+	(set-goal trainhussar yes)
+)
 (defrule
 	(goal milunits yes)
 (or	(up-compare-goal tradeunits < 19)
@@ -8727,6 +9137,8 @@
 	(unit-type-count-total spearman-line < 2)
 =>
 	(set-goal trainpike yes)); end jump
+
+;(load "Promisory\merge2")
 ;=========================================================
 ; R-Flush.
 ;=========================================================
@@ -8777,7 +9189,7 @@
 	(set-goal trainknight yes))
 ;=========================================================
 (defrule
-(or	(and	(up-pending-objects c: lumber-camp <= 0)
+(or	(and	(up-pending-objects c: wood-building <= 0)
 		(and	(dropsite-min-distance wood > 4); 5
 			(wood-amount < pk-buffer-wc)))
 	(and	(current-age >= castle-age)
@@ -8787,7 +9199,7 @@
 	(up-jump-rule 9))
 (defrule
 (or	(goal allowspears no)
-	(and	(building-type-count-total mining-camp <= 0)
+	(and	(building-type-count-total gold-building <= 0)
 		(and	(unit-type-count villager-gold >= 1)
 			(and	(dropsite-min-distance gold > 5)
 				(wood-amount < pk-buffer-wc)))))
@@ -8889,6 +9301,23 @@
 	(military-population >= 18));); 14
 =>
 	(set-goal trainpike yes))
+
+#load-if-defined DEATH-MATCH
+
+(defrule
+	(food-amount > 2000)
+	(wood-amount > 2000)
+	(game-time < 500)
+	(goal trainchamp no)
+	(goal trainpike no)
+	(goal traineagle no)
+	(goal trainadditionalinf no)
+	(building-type-count barracks > 0)
+=>
+	(set-goal trainpike yes)
+)
+
+#end-if
 (defrule
 ;	(goal milunits r-flush)
 	(goal sk-var yes)
@@ -8925,7 +9354,7 @@
 	(up-jump-rule 5))
 (defrule
 (or	(goal sk-var yes)
-(or	(and	(up-pending-objects c: lumber-camp <= 0)
+(or	(and	(up-pending-objects c: wood-building <= 0)
 		(and	(dropsite-min-distance wood > 4); 5
 			(wood-amount < ar-buffer-wc)))
 	(and	(current-age >= castle-age)
@@ -8937,7 +9366,7 @@
 (or	(and	(research-available castle-age)
 		(and	(up-compare-goal total-food-amount >= 450)
 			(gold-amount < ar-buffer-g2)))
-	(and	(building-type-count-total mining-camp <= 0)
+	(and	(building-type-count-total gold-building <= 0)
 		(and	(unit-type-count villager-gold >= 1)
 			(and	(dropsite-min-distance gold > 5)
 				(wood-amount < ar-buffer-wc)))))
@@ -9009,7 +9438,7 @@
 =>
 	(up-jump-rule 9))
 (defrule
-(or	(and	(up-pending-objects c: lumber-camp <= 0)
+(or	(and	(up-pending-objects c: wood-building <= 0)
 		(and	(dropsite-min-distance wood > 4); 5
 			(wood-amount < sk-buffer-wc)))
 	(and	(current-age >= castle-age)
@@ -9018,7 +9447,7 @@
 =>
 	(up-jump-rule 8))
 (defrule
-	(and	(building-type-count-total mining-camp <= 0)
+	(and	(building-type-count-total gold-building <= 0)
 		(and	(unit-type-count villager-gold >= 1)
 			(and	(dropsite-min-distance gold > 5)
 				(wood-amount < sk-buffer-wc))))
@@ -9091,7 +9520,7 @@
 		(strategic-number sn-military-superiority >= 1))
 (or	(strategic-number sn-military-superiority >= 3); 4
 	(and	(strategic-number sn-gold-gatherer-percentage >= 1)
-		(and	(building-type-count-total mining-camp <= 0)
+		(and	(building-type-count-total gold-building <= 0)
 			(and	(dropsite-min-distance gold > 5)
 				(wood-amount < sk-buffer-wc))))))
 =>
@@ -9385,12 +9814,14 @@
 ;hm	(strategic-number teamsuperiority >= 0)
 =>
 	(set-goal trainknight yes)); end jump
+
+
 ;=========================================================
 ; CA-Rush.
 ;=========================================================
 (defrule
 (or	(up-compare-goal strategy != ca-rush)
-	(and	(building-type-count-total mining-camp <= 0)
+	(and	(building-type-count-total gold-building <= 0)
 		(and	(unit-type-count villager-gold >= 1)
 			(and	(dropsite-min-distance gold > 5)
 				(wood-amount < ca-buffer-w)))))
@@ -9408,7 +9839,7 @@
 =>
 	(up-jump-rule 4))
 (defrule
-(or	(and	(up-pending-objects c: lumber-camp <= 0)
+(or	(and	(up-pending-objects c: wood-building <= 0)
 		(and	(dropsite-min-distance wood > 4); 5
 			(wood-amount < ca-buffer-w)))
 	(and	(current-age >= castle-age)
@@ -9915,6 +10346,90 @@
 =>
 	(set-goal trainhussar no))
 
+#load-if-defined DANES-CIV
+(defrule
+   (current-age == imperial-age)
+=>
+   (set-goal trainknight no)
+)
+
+#end-if
+#load-if-defined FOUR-LAKES-MAP
+(defrule
+	(or(goal traincaravel yes)
+	(or(goal trainlongboat yes)
+	(or(goal trainturtle yes)
+	(or(goal trainhulk yes)
+	(or(goal traingalley yes)
+	(goal trainfire yes))))))
+	(building-type-count dock > 0)
+	(warboat-count > 0)
+=>
+	(up-modify-goal sn-focus-player-number g:= temporary-goal)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-full-reset-search)
+	(up-find-local c: dock c: 5)
+	(up-set-target-object search-local c: 0)
+	(up-filter-distance c: -1 c: 25)
+	(set-goal remote-total 0)
+	(set-goal temporary-goal2 9432)
+)
+(defrule
+	(goal temporary-goal2 9432)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+)
+(defrule
+	(goal temporary-goal2 9432)
+	(player-valid focus-player)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: dock c: 1)
+)
+
+(defrule
+	(goal temporary-goal2 9432)
+	(up-compare-sn sn-focus-player-number < max-players)
+	(player-valid focus-player)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(goal temporary-goal2 9432)
+	(building-type-count dock > 1)
+	(up-set-target-object search-local c: 0)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-remove-objects search-local -1 == 0)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(goal temporary-goal2 9432)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-get-search-state local-total)
+)
+
+(defrule
+	(goal temporary-goal2 9432)
+	(up-compare-goal remote-total < 1)
+=>
+	(set-goal trainhulk no)
+	(set-goal traingalley no)
+	(set-goal trainfire no)
+	(set-goal traincaravel no)
+	(set-goal trainturtle no)
+	(set-goal trainlongboat no)
+)
+
+#end-if
+
 #load-if-not-defined AZTEC-CIV
 #load-if-not-defined CELTIC-CIV
 #load-if-not-defined ETHIOPIAN-CIV
@@ -10068,6 +10583,55 @@
 #end-if
 #end-if
 
+#load-if-defined DEATH-MATCH
+
+(defrule
+	(food-amount > 2000)
+	(gold-amount > 2000)
+	(goal trainknight no)
+	(goal trainhussar no)
+	(goal traincamel no)
+	(goal trainbattle no)
+	(game-time < 500)
+=>
+	(set-goal trainknight yes)
+)
+
+(defrule
+	(food-amount > 2000)
+	(wood-amount > 2000)
+	(game-time < 500)
+	(goal trainchamp no)
+	(goal trainpike no)
+	(goal trainadditionalinf no)
+	(goal trainbattle no)
+=>
+	(set-goal trainpike yes)
+	(set-goal trainchamp yes)
+)
+
+(defrule
+	(wood-amount > 2000)
+	(gold-amount > 2000)
+	(game-time < 500)
+	(goal traincavarcher no)
+	(goal trainarcher no)
+	(goal trainskirm no)
+	(goal trainhandcannon no)
+=>
+	(set-goal traincavarcher yes)
+)
+
+(defrule
+	(strategic-number sn-military-superiority > 0)
+	(unit-type-count-total battering-ram-line < 1)
+	(goal trainscorpion no)
+	(game-time < 600)
+=>
+	(set-goal trainram yes)
+)
+
+#end-if
 (defrule
     (civ-selected tupi)
     (goal milunits yes)
@@ -10093,6 +10657,22 @@
     (set-goal trainpike no)
     (set-goal trainadditionalinf yes)
 )
+
+(defrule
+	(unit-available varangian-guard)
+	(goal trainpike yes)
+	(gold-amount > 250)
+	(or(research-completed ri-elite-varangian-guard)
+	(unit-type-count-total varangian-guard-line < 6))
+	(nand(civ-selected viking)
+	(and(building-type-count castle > 0)
+	(up-research-status c: my-second-unique-research < research-pending)))
+	(unit-type-count-total varangian-guard-line < 25)
+=>
+	(set-goal trainpike no)
+	(set-goal trainadditionalinf yes)
+)
+
 
 
 (defrule
@@ -10843,12 +11423,7 @@
 #end-if
 ;#load-if-not-defined DIFFICULTY-MODERATE
 
-(defrule
-	(taunt-detected 1 214)
-=>
-	(fe-break-point 1 c:== 1 -1)
-	(acknowledge-taunt 1 214)
-)
+
 (defrule
 	(cc-players-building-type-count 0 dock > 0)
 	(game-time > 1800)
@@ -10869,6 +11444,13 @@
 	(train trade-cog)
 	)
 
+(defrule
+	(goal trainvillager yes)
+	(goal island-resources-low yes)
+	(unit-type-count-total villager > 40)
+=>
+	(set-goal trainvillager no)
+)
 #load-if-not-defined DIFFICULTY-HARD
 #load-if-not-defined DIFFICULTY-HARDEST
 #load-if-not-defined DIFFICULTY-EXTREME
@@ -10883,6 +11465,7 @@
 	(up-compare-goal my-cpop g:>= target-cpop)
 =>
 	(set-goal trainvillager no))
+
 (defrule
 (or	(goal traincart yes)
 	(goal traincog yes))
@@ -10947,6 +11530,13 @@
 	(goal traincart yes)
 =>
 	(set-goal traincart no))
+
+(defrule
+	(goal traincart yes)
+	(up-timer-status pause-trading == timer-running)
+=>
+	(set-goal traincart no)
+)
 #load-if-not-defined ALL-TECHS-ENABLED
 (defrule
 	(goal trainpike yes)
@@ -11328,6 +11918,20 @@
 #end-if
 
 (defrule
+	(goal island-resources-low yes)
+	(wood-amount < 200)
+=>
+	(set-goal trainunique no)
+	(set-goal trainarcher no)
+	(set-goal trainskirm no)
+	(set-goal traincavarcher no)
+	(set-goal trainslinger no)
+	(set-goal trainpike no)
+	(set-goal traingalley no)
+	(set-goal trainhulk no)
+	(set-goal trainfire no)
+)
+(defrule
 	(goal milunits yes)
 ;	(goal strategy usual)
 	(goal position-goal flank)
@@ -11546,7 +12150,7 @@
 (or	(dropsite-min-distance wood g:>= map-size)
 (or	(dropsite-min-distance wood <= -1)
 	(and	(or	(building-type-count town-center >= 1)
-			(building-type-count lumber-camp >= 1))
+			(building-type-count wood-building >= 1))
 		(dropsite-min-distance wood >= 30))))
 =>
 	(up-modify-flag delete-flag c:+ 1)
@@ -11899,6 +12503,8 @@
 =>
 	(up-modify-flag delete-flag c:+ 128)); end jumps
 ;=========================================================
+
+
 (defrule
 	(up-compare-flag delete-flag == 1)
 	(unit-type-count villager >= 1)
@@ -12014,6 +12620,107 @@
 	(up-target-point 0 action-delete -1 -1))
 
 
+(defrule
+	(timer-triggered fifteensec)
+	(unit-type-count trade-cart > 0)
+=>
+	(up-full-reset-search)
+	(up-find-local c: trade-cart c: 60)
+	;(up-get-precise-time 0 temporary-goal2)
+	(up-get-fact game-time 0 temporary-goal2)
+	(up-modify-goal temporary-goal2 c:* 1000)
+	(up-modify-goal temporary-goal2 c:max 15000)
+	(up-modify-goal temporary-goal2 c:min 2147283647)
+	(up-modify-goal temporary-goal2 c:- 10000)
+
+	(up-get-object-data object-data-action-time temporary-goal)
+	;(up-chat-data-to-player my-player-number "action time %d" g: temporary-goal)
+	;(up-chat-data-to-player my-player-number "action time comparator %d" g: temporary-goal2)
+	(up-remove-objects search-local object-data-action-time g:> temporary-goal2)
+	(up-modify-goal temporary-goal g:- temporary-goal2)
+	(up-reset-group c: temporary-group)
+	(up-create-group 0 0 c: temporary-group)
+)
+
+(defrule
+	(timer-triggered fifteensec) 
+	(unit-type-count trade-cart > 0)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-object-data object-data-id temporary-goal5)
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 40)
+	(up-find-local c: mangonel-line c: 2)
+	(up-remove-objects search-local object-data-id g:== cutter-id)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 5)
+	(up-find-resource c: wood c: 20)
+	(up-target-objects 0 action-default -1 -1);action-ground
+	(up-full-reset-search)
+	(up-set-group search-local c: temporary-group)
+	;(chat-to-player my-player-number "Deleting wood near stuck trade.")
+	(set-goal temporary-goal10 76543)
+)
+
+(defrule
+	(timer-triggered fifteensec)
+	(unit-type-count trade-cart > 0)
+	(up-set-target-object search-local c: 0)
+	(up-modify-goal temporary-goal2 g:- 15000)
+	(up-object-data object-data-action-time g:< temporary-goal2)
+	(building-type-count-total town-center > 1)
+=>
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-filter-exclude -1 actionid-research orderid-research -1)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 4)
+	(up-find-local c: house c: 5)
+	(up-find-local c: market c: 5)
+	(up-find-local c: mining-camp c: 5)
+	(up-find-local c: lumber-camp c: 5)
+	(up-find-local c: blacksmith c: 5)
+	(up-find-local c: university c: 5)
+	(up-find-local c: barracks c: 5)
+	(up-find-local c: market c: 5)
+	(up-find-local c: archery-range c: 5)
+	(up-find-local c: stable c: 5)
+	(up-find-local c: siege-workshop c: 5)
+	(set-goal temporary-goal6 94456)
+)
+
+(defrule
+	(goal temporary-goal6 94456)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-point position-object point2-x)
+	(up-target-point point2-x action-delete -1 -1)
+	;(chat-to-player my-player-number "Deleting building near stuck trade.")
+	(up-full-reset-search)
+)
+
+(defrule
+	(timer-triggered fifteensec)
+	(unit-type-count trade-cart > 0)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local c: temporary-group)
+)
+(defrule
+	(timer-triggered fifteensec)
+	(unit-type-count trade-cart > 0)
+	(up-set-target-object search-local c: 0)
+	(up-modify-goal temporary-goal2 c:- 40000);-30000
+	(up-object-data object-data-action-time g:< temporary-goal2)
+	;(up-object-data object-data-class == trade-cart-class)
+=>
+	(up-get-point position-object point-x)
+	(up-target-point point-x action-delete -1 -1)
+	;(chat-to-player my-player-number "Trying to delete trade units")
+	(enable-timer pause-trading 90)
+)
 
 
 
@@ -12624,7 +13331,7 @@
     (unit-available champi-warrior))
     (can-train champi-runner)
     (food-amount > 95)
-	 (or(unit-type-count-total champi-line < 3)
+	 (or(unit-type-count-total champi-line < 4)
     (or(and(current-age == feudal-age)
     (unit-type-count-total champi-runner < {{UNITS_CHAMPI_RUNNER_013}}))
     (or(and(current-age >= castle-age)
@@ -12854,9 +13561,41 @@
 	(up-remove-objects search-local object-data-index >= 1)
 	(up-get-search-state local-total)
 	(up-target-point 0 action-train c: spearman-line)
-	(set-goal temporary-goal3 1579198))
-
+	(set-goal temporary-goal3 1579198)
+)
 #end-if
+
+(defrule
+   (goal trainpike yes)
+   (current-age >= castle-age)
+   (or(unit-type-count-total villager-gold > 5)
+   (unit-type-count-total trade-cart > 10))
+   (or(gold-amount > 650)
+   (or(research-completed ri-halberdier)
+   (and(current-age == castle-age)
+   (gold-amount > 200))))
+   (unit-type-count-total varangian-guard < 25)
+   (or(unit-type-count-total varangian-guard < 10)
+   (research-completed ri-elite-varangian-guard))
+=>
+   (set-goal trainpike no)
+   (train varangian-guard)
+)
+
+(defrule
+   (goal trainadditionalinf yes)
+   (unit-available varangian-guard)
+=>
+   (train varangian-guard-line)
+)
+
+(defrule
+   (goal traincavarcher yes)
+	(can-train mounted-crossbowman-line)
+	(unit-available mounted-crossbowman-line)
+=>
+   (train mounted-crossbowman-line)
+)
 
 (defrule
 	(goal trainpike yes)
@@ -13784,3 +14523,9 @@
 	(can-train spartan-king)
 =>
     (train spartan-king))
+
+(defrule
+	(true)
+=>
+	(up-get-rule-id end-of-units-per)
+)
