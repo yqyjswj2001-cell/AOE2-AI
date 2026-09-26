@@ -1,6 +1,6 @@
 # 网页参数创作
 
-由 AOE2-AI-STUDIO 迁入的本地创作工具。本版流程：授权 → 对局 → 文明 → 打法 → 作品。每步只显示对应内容，打法页直接开始；作品页分为生成进度、完整用量、开发报告三个平级视图。
+由 AOE2-AI-STUDIO 迁入的本地创作工具。本版流程：可选测试功能 → 对局 → 文明 → 设置 → 作品。Token 计量默认关闭；普通创作不读取宿主 usage。只有手动打开测试开关时才显示 Agent 授权与 Token 结果页。
 
 生成简报、编辑简报、简报确认和旧 permit 门槛已移除。网页不直接调用模型 API；需要宿主代理按 [skill](../skills/aoe2-web-author/SKILL.md) 保持执行。
 
@@ -13,7 +13,7 @@ python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-a
 python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai --until start --timeout 600
 ```
 
-启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `watch` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：用量授权、选模式、选文明盾徽、设置、开始创作。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。授权页默认由当前 Agent 确认身份；设置页选择脚本名和输出方式。脚本名同时作为创作名、游戏大厅 AI 类型名和进入对局后的显示名，三者必须一致。输出方式为原生脚本或分享脚本包。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
+启动会输出实际 URL 并尝试打开默认浏览器；这只负责打开页面，不代表代理应控制浏览器。网页设置默认由用户完成，主代理通过 `watch` 等待提交；除非用户明确要求代理代操作，否则不要调用 Computer Use、浏览器自动化或视觉点击工具。网页按五步前进：可选测试、选模式、选文明盾徽、设置、开始创作。第一步的 Token 测试计量默认关闭，直接下一步即可；只有手动开启时才选择 Agent 并授权。悬停/键盘焦点预览资料，点击立即固定文明；也能让 AI 选择。设置页选择脚本名和输出方式。脚本名同时作为创作名、游戏大厅 AI 类型名和进入对局后的显示名，三者必须一致。输出方式为原生脚本或分享脚本包。当前按标准版无额外 DLC 开放 42 文明；特殊机制作为打法素材，优先减少重复选择。[选择标准与官方版本依据](CIVILIZATION_SELECTION.md)。等待/验证/渲染/结束命令见 skill；`--help` 提供实际参数。Python 标准库即可运行服务。
 
 作者仍需根据卡片与事实填写参数。本地服务不是文件系统沙箱：源码隔离依靠仅向新作者交付隔离输入包，并限制作者读取范围。
 
@@ -24,6 +24,7 @@ python -X utf8 -B adjusted/web-author/web_session.py watch --project my-first-ai
 - ../tests/web_author/：合成流程和计量测试。
 - ../.local/author-projects/<名称>/：本轮 author-input、author-session、submissions、answers、delivery、logs、tmp、project.json、.author-web-session.json 和 authoring/metrics。
 - ../.local/web-author-migration/：来源快照、备份、日志、验证证据与临时材料。
+- ../.local/tmp/：Agent 一次性分析脚本和中间文件；禁止把 `tmp_*.py` 写到仓库根目录。
 
 作者输入由现有 build_strategy_input.py 生成；只含动态卡片、空答卷和冻结基础事实。官方原件、固定代码、模板及参考值不通过网页发送。交付采用现有 renderer，不改变固定/动态分类。
 
@@ -47,7 +48,7 @@ python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifac
 
 针对 2026-09-22 的 AoE2 DE Update 185872 后进入对局可能重新显示文明领袖名的情况，直接安装还会生成一个名字兼容 XS 到 `resources/_common/xs`，主 AI 入口在开局通过 `xsSetPlayerName` 把当前 AI 玩家名设回脚本名。该文件只负责显示名称，不参与策略决策。
 
-[用量与时间计量](METERING.md) 保留真实来源、未知值与覆盖缺口。仅声明本次测试实际覆盖的行为，不能从合成测试推断所有宿主的真实调用都已计入。
+[用量与时间计量](METERING.md) 是可选开发测试功能，默认关闭。开启时仍只保留真实来源、未知值与覆盖缺口；关闭时不读取宿主 usage、不创建自动采集连接，也不在结果页显示 Token 标签。
 
 作品页“开发报告”标签提供“生成创作报告”，先预览，用户主动点击才下载。每次只生成两个 Markdown：`creation-report.md` 是可直接复制给开发的主报告；`technical-details.md` 合并完整问题/反馈、参数诊断、usage 调用、构建详情、事件时间线和日志摘要。报告本身不额外打 ZIP。原始计量数据库和项目事件文件仍留在项目目录供程序复查；finish 时自动保存最终两份报告。作者或主代理可用 `web_session.py feedback` 随时登记 issue / suggestion / note，避免修复后的问题从最终状态里消失。
 
