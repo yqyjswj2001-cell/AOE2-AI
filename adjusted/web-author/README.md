@@ -40,6 +40,18 @@ python -X utf8 -B adjusted/web-author/web_session.py register-existing --artifac
 
 它支持当前分享包、旧式无 manifest 的 36-PER ZIP、旧式 `resources/_common/ai` 安装 ZIP，以及原生 36-PER 目录。包内无法证明的历史字段保持未知；可直接证明的历史信息可通过 `--metadata <JSON>` 补充。用 `web_session.py registry-list` 查看已登记作品。
 
+临时查看单个作品：
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py registry-show --name "GROK_FFA8"
+```
+
+局后测试记录追加到同一作品，不覆盖创作资料：
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py record-game --name "GROK_FFA8" --record "adjusted/.local/tmp/match-record.json"
+```
+
+`record-game` 适合由 Agent 根据结算截图和用户自然语言生成小型 JSON；无法从证据确认的字段应省略。每条对局记录单独保存，可查询累计局数、胜负和最近测试记录。
+
 ## 输出边界
 
 创作不依赖本机游戏。完整参数校验通过后，原生模式写出 36 个 `.per`；分享模式生成一个 `.zip`，内含同一套 36 个 `.per`、`manifest.json` 和 `README.txt`。普通 build 不读取 `PromiDE.per2`，不生成 `.ai`、主入口或游戏安装目录，也不会自动安装或启动游戏。
