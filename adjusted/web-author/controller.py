@@ -18,6 +18,7 @@ from civilizations import content_profile, eligible_rows, selection_context
 from agent_catalog import agent_catalog, normalize_agent
 from development_report import DevelopmentJournal, DevelopmentReportError, generate_reports, report_file
 from cursor_admin_usage import active_project_path
+from work_registry import RegistryError, register_completed_project
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -925,6 +926,16 @@ class Controller:
                     **build_extra,
                 }
                 self.data.update(build=build, status="completed")
+                try:
+                    registry = register_completed_project(self.project, self.data)
+                    self.data["registry"] = registry
+                    self._dev_event("workflow", "work_registered", "info", "作品已自动登记。",
+                                    {"work_id": registry["work_id"], "script_name": registry["script_name"],
+                                     "duplicate": registry["duplicate"]})
+                except (OSError, ValueError, RegistryError) as exc:
+                    self.data["registry"] = {"ok": False, "error": str(exc)}
+                    self._dev_event("workflow", "work_registration_failed", "error", "作品自动登记失败。",
+                                    {"error": str(exc)})
                 self.data["revision"] += 1
                 self._save()
                 self._dev_event("workflow", "build_completed", "info", "脚本生成完成。",
