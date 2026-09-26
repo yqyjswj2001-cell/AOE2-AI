@@ -570,7 +570,9 @@ class Controller:
                 "preflight": self.preflight(),
                 "usage_authorization": self.data.get("usage_authorization"),
                 "usage_access": {
-                    "consent_required": True,
+                    "consent_required": False,
+                    "metering_opt_in": True,
+                    "metering_default_enabled": False,
                     "cursor_admin_configured": bool(os.environ.get("CURSOR_ADMIN_API_KEY")),
                     "copilot_telemetry_configured": bool(os.environ.get("AOE2_COPILOT_USAGE_FILE")),
                 }}
