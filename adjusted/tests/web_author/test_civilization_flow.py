@@ -46,7 +46,10 @@ class CivilizationFlowTests(unittest.TestCase):
         return {"project_id": state["project_id"], "expected_revision": state["revision"], **extra}
 
     def start(self, civilization="auto"):
-        return self.app.start(self.payload(mode="ffa8", civilization=civilization, script_name="Fixture"))
+        if not self.app.data.get("usage_authorization"):
+            self.app.authorize_usage(self.payload(agent="auto", usage_authorized=True))
+        return self.app.start(self.payload(mode="ffa8", civilization=civilization, script_name="Fixture",
+                                           agent="auto", usage_authorized=True))
 
     def choose(self, civilization="Mongols"):
         return self.app.choose_civilization(self.payload(civilization=civilization,
