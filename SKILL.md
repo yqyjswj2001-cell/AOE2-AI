@@ -17,4 +17,6 @@ description: 使用完整 AOE2-AI 仓库启动网页创作 AI，或登记以前�
 
 作者只提交参数增量，由程序合并完整答卷；完成自己的策略检查后用 `submit_answers.py --complete` 标记完成。主代理使用宿主完成通知或长时 `watch --until answers` 等待，不反复读取整份 next。创作不要求本机安装游戏，也不检查 `PromiDE.per2`；用户在网页选择“原生脚本”或“分享脚本包”，完整校验通过后按所选格式交付。 网页确定的脚本名是唯一名称来源；后续安装时大厅 AI 类型名和对局显示名都必须与它完全一致。
 
+**临时文件规则：Agent 不得在仓库根目录创建或遗留 `tmp_*.py` 等分析草稿。需要临时 Python/JSON/文本时统一写入 `adjusted/.local/tmp/`，任务结束后清理；这些临时文件不是 Skill 正式内容。**
+
 运行产物仅放 adjusted/.local/author-projects/。实际创作数量由本轮 manifest 决定；保留未知 token 和未覆盖来源。`build` 的“原生脚本”输出 36 个 `.per`；“分享脚本包”输出一个 `.zip`，内含同一套 36 个 `.per`、清单和说明。普通 build 不生成 `.ai`、游戏安装目录或入口文件。只有用户明确要求“直接安装到本机游戏”时，才按详细流程执行 `web_session.py install --confirm-install`；该命令必须写入真实 `<AoE2DE>/resources/_common/ai`，生成同名 `.ai`、主 `.per` 和 36 模块并验证后，才能报告安装成功。
