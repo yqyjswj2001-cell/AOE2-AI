@@ -12,6 +12,12 @@ description: 在 AOE2-AI 中启动本地网页完成模式、文明和输出设�
 
 主代理和作者如果需要临时 Python 分析脚本、JSON 中间数据或一次性调试文件，只能写到 `adjusted/.local/tmp/`（可按本轮项目再建子目录）。**禁止在仓库根目录或 Skill 目录创建 `tmp_*.py`、`tmp_*.json` 等草稿。** 临时文件不属于交付物，任务结束后应清理；不要提交到 Git。
 
+发现历史遗留的仓库根目录 `tmp_*.py` 时，可执行：
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py cleanup-temp
+```
+该命令不会直接删除，而是移动到 `adjusted/.local/tmp/recovered-<时间>/`。
+
 ## 开始与等待
 
 仅在用户要求实际创作时启动；迁移、安装 skill 或只读评估不是开始创作。正常创作只使用当前 main 的文件和流程，不扫描或接续历史 PR、Draft PR、feature/codex 分支；只有用户明确要求仓库维护或历史回溯时才查看它们。
