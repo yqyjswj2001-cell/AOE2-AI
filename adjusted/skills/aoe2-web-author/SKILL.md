@@ -163,6 +163,51 @@ python -X utf8 -B adjusted/web-author/web_session.py registry-list
 
 统一作品库位于 `adjusted/.local/ai-registry/works.sqlite3`。这是本地运行数据，不提交到 Git。以后通过本 Skill 新生成的作品在 `build` 成功后自动登记到同一个库；旧作品才需要使用这个迁移入口。
 
+## 临时查看作品信息
+
+用户只是想“看一下某个 AI 的登记信息”“看看最近测试了几局”时，**只读查询，不修改作品库**：
+
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py registry-show --name "<脚本名>"
+```
+
+如果用户给的是 `work_id`：
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py registry-show --work-id "<work-id>"
+```
+
+忘记名字时先用 `registry-list`。同一脚本名存在多个不同内容版本时，程序会拒绝猜测并返回候选 `work_id`，再用明确版本查看。
+
+## 局后登记
+
+用户打完一局后，可以直接发送**结算截图 + 自然语言补充**。不要让用户手工填写 JSON、Excel 或数据库字段。主代理从截图和用户文字中提取能够直接确认的信息，把小型记录写到 `adjusted/.local/tmp/<本轮>/match-record.json`，再执行：
+
+```powershell
+python -X utf8 -B adjusted/web-author/web_session.py record-game --name "<脚本名>" --record "<match-record.json>"
+```
+
+如果同名存在多个不同版本，使用明确的 `--work-id`，不要默认选最新版本。
+
+记录可包含：`played_at`、`mode`、`map`、`civilization`、`outcome`（win/loss/draw/unknown）、`result`、`placement`、`players`、`duration_seconds`、`score`、`notes`、`issues`、`evidence`、`opponents`、`allies`。例如：
+
+```json
+{
+  "mode": "ffa8",
+  "map": "Arabia",
+  "civilization": "Magyars",
+  "placement": 3,
+  "players": 8,
+  "duration_seconds": 3142,
+  "score": 18240,
+  "notes": "用户反馈城堡时代出兵有一次明显停顿。",
+  "issues": ["城堡时代军队生产短暂停顿"],
+  "evidence": ["用户提供的局后结算截图"]
+}
+```
+
+**看不出来的字段不要猜，直接省略。** 截图中能确认脚本名时优先用对局显示名（它应与创作脚本名一致）；截图没有脚本名且当前对话也无法唯一确定作品时，只问一次用户是哪一个 AI。局后记录是追加测试历史，不覆盖作品本身的模型、文明、构建指纹等创作资料。完全相同的记录重复提交会自动去重。
+
+
 ## 直接安装到本机游戏（仅用户明确要求）
 
 普通创作和 `build` 永远不自动安装，也不要求本机有游戏。**只有用户明确说“直接装进游戏”“安装到我的 AoE2DE”或同等明确授权时**，才允许在成功 `build` 之后执行外部游戏目录写入：

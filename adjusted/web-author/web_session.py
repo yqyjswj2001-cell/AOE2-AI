@@ -287,14 +287,21 @@ def main(argv=None):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "install", "register-existing", "registry-list", "cleanup-temp", "phase", "feedback", "report", "finish", "usage"):
+    for name in ("launch", "serve", "wait", "watch", "next", "handoff", "preflight", "choose-civilization", "validate", "build", "install", "register-existing", "registry-list", "registry-show", "record-game", "cleanup-temp", "phase", "feedback", "report", "finish", "usage"):
         sub = commands.add_parser(name)
-        if name not in {"register-existing", "registry-list", "cleanup-temp"}:
+        if name not in {"register-existing", "registry-list", "registry-show", "record-game", "cleanup-temp"}:
             sub.add_argument("--project", required=True)
             sub.add_argument("--test-project", action="store_true", help="Explicit synthetic project inside temporary storage")
         if name == "register-existing":
             sub.add_argument("--artifact", type=Path, required=True, help="Existing AOE2-AI ZIP or script directory")
             sub.add_argument("--metadata", type=Path, help="Optional JSON with directly known historical facts")
+        if name in {"registry-show", "record-game"}:
+            identity = sub.add_mutually_exclusive_group(required=True)
+            identity.add_argument("--name", help="Exact registered script name")
+            identity.add_argument("--work-id", help="Exact registry work_id")
+        if name == "record-game":
+            sub.add_argument("--record", type=Path, required=True,
+                             help="JSON extracted from the finished match; unknown fields should be omitted")
         if name in {"launch", "serve"}:
             sub.add_argument("--port", type=int, default=0)
             sub.add_argument("--agent", help="Actual host ID; records identity, never grants consent")
@@ -326,15 +333,19 @@ def main(argv=None):
             sub.add_argument("--payload", type=Path)
     args = parser.parse_args(argv)
     try:
-        if args.command in {"register-existing", "registry-list", "cleanup-temp"}:
+        if args.command in {"register-existing", "registry-list", "registry-show", "record-game", "cleanup-temp"}:
             if args.command == "cleanup-temp":
                 result = cleanup_root_temp_scripts()
                 print(json.dumps(result, ensure_ascii=False, indent=2), flush=True)
                 return 0
-            from work_registry import register_artifact, list_works
+            from work_registry import list_works, record_game, register_artifact, show_work
             if args.command == "register-existing":
                 metadata = parse_json(args.metadata.read_bytes()) if args.metadata else None
                 result = register_artifact(args.artifact, metadata=metadata)
+            elif args.command == "registry-show":
+                result = show_work(name=args.name, work_id=args.work_id)
+            elif args.command == "record-game":
+                result = record_game(parse_json(args.record.read_bytes()), name=args.name, work_id=args.work_id)
             else:
                 result = {"ok": True, "works": list_works()}
             print(json.dumps(result, ensure_ascii=False, indent=2), flush=True)

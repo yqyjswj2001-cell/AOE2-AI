@@ -13,7 +13,7 @@ HERE = Path(__file__).resolve().parents[2] / "web-author"
 sys.path.insert(0, str(HERE))
 
 import work_registry
-from work_registry import recognize_artifact, register_artifact, list_works
+from work_registry import RegistryError, list_works, recognize_artifact, record_game, register_artifact, show_work
 from web_session import main as web_session_main
 
 
@@ -104,6 +104,69 @@ class WorkRegistryTests(unittest.TestCase):
         self.assertEqual(found["script_name"], "RAW_AI")
         self.assertEqual(found["artifact_kind"], "raw_scripts")
 
+    def test_game_records_append_without_overwriting_work(self):
+        registered = register_artifact(self.share_zip(), db_path=self.db, metadata={"agent": "grok"})
+        first = record_game({
+            "played_at": "2026-09-26T20:15:00+08:00",
+            "mode": "ffa8",
+            "map": "Arabia",
+            "civilization": "Magyars",
+            "outcome": "win",
+            "placement": 1,
+            "players": 8,
+            "duration_seconds": 3120,
+            "score": 18432,
+            "notes": "Scout pressure worked; late-game food floated.",
+            "issues": ["Castle-age army production paused once."],
+            "evidence": ["post-game screenshot supplied in the test conversation"],
+        }, name="OLD_AI", db_path=self.db)
+        second = record_game({
+            "outcome": "loss", "placement": 5, "players": 8,
+            "notes": "Lost the forward base early.",
+        }, work_id=registered["work_id"], db_path=self.db)
+        view = show_work(name="OLD_AI", db_path=self.db)
+        self.assertEqual(first["script_name"], "OLD_AI")
+        self.assertEqual(second["work_id"], registered["work_id"])
+        self.assertEqual(view["work"]["agent"], "grok")
+        self.assertEqual(view["match_summary"], {"total": 2, "wins": 1, "losses": 1, "draws": 0})
+        self.assertEqual(len(view["matches"]), 2)
+        self.assertEqual(view["matches"][1]["record"]["map"], "Arabia")
+        self.assertIn("Castle-age army production paused once.", view["matches"][1]["issues"])
+
+    def test_identical_game_record_is_deduplicated(self):
+        register_artifact(self.share_zip(), db_path=self.db)
+        record = {"outcome": "win", "placement": 1, "players": 8, "score": 10000}
+        one = record_game(record, name="OLD_AI", db_path=self.db)
+        two = record_game(record, name="OLD_AI", db_path=self.db)
+        self.assertFalse(one["duplicate"])
+        self.assertTrue(two["duplicate"])
+        self.assertEqual(one["match_id"], two["match_id"])
+        self.assertEqual(show_work(name="OLD_AI", db_path=self.db)["match_summary"]["total"], 1)
+
+    def test_same_script_name_with_multiple_versions_requires_work_id(self):
+        first = self.share_zip("SAME_AI", "v1.zip")
+        register_artifact(first, db_path=self.db)
+        changed = dict(self.modules)
+        changed["module0.per"] = b"; VERSION TWO\n"
+        old_modules = self.modules
+        try:
+            self.modules = changed
+            second = self.share_zip("SAME_AI", "v2.zip")
+            second_registered = register_artifact(second, db_path=self.db)
+        finally:
+            self.modules = old_modules
+        with self.assertRaisesRegex(RegistryError, "Multiple registered versions"):
+            show_work(name="SAME_AI", db_path=self.db)
+        view = show_work(work_id=second_registered["work_id"], db_path=self.db)
+        self.assertEqual(view["work"]["script_name"], "SAME_AI")
+
+    def test_game_record_rejects_guessed_or_unstructured_fields(self):
+        register_artifact(self.share_zip(), db_path=self.db)
+        with self.assertRaisesRegex(RegistryError, "unsupported fields"):
+            record_game({"made_up_rating": "S"}, name="OLD_AI", db_path=self.db)
+        with self.assertRaisesRegex(RegistryError, "placement cannot exceed"):
+            record_game({"placement": 9, "players": 8}, name="OLD_AI", db_path=self.db)
+
     def test_web_session_has_standalone_registration_entry(self):
         sentinel = {"ok": True, "registered": True, "script_name": "OLD_AI"}
         with patch.object(work_registry, "register_artifact", return_value=sentinel) as mocked:
@@ -112,11 +175,29 @@ class WorkRegistryTests(unittest.TestCase):
         mocked.assert_called_once()
         self.assertEqual(mocked.call_args.args[0], self.root / "missing.zip")
 
+    def test_web_session_exposes_view_and_game_record_entries(self):
+        record_file = self.root / "match.json"
+        record_file.write_text(json.dumps({"outcome": "win", "placement": 1, "players": 8}), encoding="utf-8")
+        with patch.object(work_registry, "show_work", return_value={"ok": True, "work": {"script_name": "OLD_AI"}}) as show:
+            code = web_session_main(["registry-show", "--name", "OLD_AI"])
+        self.assertEqual(code, 0)
+        show.assert_called_once_with(name="OLD_AI", work_id=None)
+        with patch.object(work_registry, "record_game", return_value={"ok": True, "registered": True}) as game:
+            code = web_session_main(["record-game", "--name", "OLD_AI", "--record", str(record_file)])
+        self.assertEqual(code, 0)
+        game.assert_called_once()
+        self.assertEqual(game.call_args.kwargs, {"name": "OLD_AI", "work_id": None})
+        self.assertEqual(game.call_args.args[0]["placement"], 1)
+
     def test_skill_documents_existing_package_entry(self):
         skill = (Path(__file__).resolve().parents[2] / "skills/aoe2-web-author/SKILL.md").read_text(encoding="utf-8")
         self.assertIn("register-existing", skill)
         self.assertIn("已有作品登记", skill)
         self.assertIn("不重新创作", skill)
+        self.assertIn("registry-show", skill)
+        self.assertIn("record-game", skill)
+        self.assertIn("结算截图", skill)
+        self.assertIn("看不出来的字段不要猜", skill)
 
 
 if __name__ == "__main__":
