@@ -1,13 +1,13 @@
 ---
 name: aoe2-web-author
-description: 使用完整 AOE2-AI 仓库启动本地网页，先让用户选择实际 Agent 并授权本轮自动计量，再等待用户完成模式、文明与设置；随后由独立作者填写动态策略参数、检查和生成 PER 模块。用于下载并使用本仓库、打开网页创作 AI 等请求。
+description: 使用完整 AOE2-AI 仓库启动网页创作 AI，或登记以前已经完成的 AOE2 AI 脚本包。新创作由独立作者填写动态策略参数、检查和生成 PER；旧作品可直接识别 ZIP/脚本目录并登记，不重新创作。
 ---
 
 # AOE2-AI 创作入口
 
 本技能依赖完整仓库。以本文件所在目录为仓库根，确认 adjusted/web-author/web_session.py、adjusted/tools/build_strategy_input.py 和 adjusted/knowledge/facts/ 均存在。缺失时重新获取完整仓库，不能只复制本文件。
 
-主代理必须读取并执行唯一的 [详细创作流程](adjusted/skills/aoe2-web-author/SKILL.md)。这是现成的参数创作工具，不是继续挖空、重新分类或重写官方 AI 的任务。正常创作只以当前 main 工作树为准；不要自行检查、恢复或续写历史 PR、Draft PR、feature/codex 分支，除非用户明确要求仓库维护或历史回溯。
+主代理必须读取并执行唯一的 [详细创作流程](adjusted/skills/aoe2-web-author/SKILL.md)。 用户明确要求登记以前已经完成的脚本包时，同样读取详细流程中的“已有作品登记”，直接使用 `register-existing`，不要启动新的创作项目。这是现成的参数创作工具，不是继续挖空、重新分类或重写官方 AI 的任务。正常创作只以当前 main 工作树为准；不要自行检查、恢复或续写历史 PR、Draft PR、feature/codex 分支，除非用户明确要求仓库维护或历史回溯。
 
 **创作启动没有游戏前置条件。禁止在 `launch` 前检查 AoE2DE、`PromiDE.per2`、Steam 目录或安装模板；朋友电脑未安装游戏也必须正常开启网页和创作。**
 
