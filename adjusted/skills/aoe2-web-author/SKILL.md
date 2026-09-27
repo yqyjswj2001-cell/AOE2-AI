@@ -5,6 +5,10 @@ description: 在 AOE2-AI 中启动本地网页完成模式、文明和输出设�
 
 # 网页参数创作
 
+## 比赛条件必读
+
+先读 [比赛地图、开局与终局规则](../../knowledge/competition/README.md)。七张官方QS地图、标准随机地图基础玩法、自定义场景承载方式以及60/90/120游戏分钟的变化均在此；这是主办方比赛条件，不是官方默认比赛规则。新作者包自动导出 `competition/README.md` 和 `competition/rules.json`，`task.json.competition_context` 给出路径与哈希。作者选文明及填参数前先读这些副本；不得向隔离作者开放仓库固定源码。已有项目没有资料副本时明确记为缺失，不静默修改冻结输入。当前网页未选择具体地图，`selected_map=null`，不得将示例阿拉伯场景当成本轮地图。3v3/ffa4的比赛政策尚未定义，不借用1v1/2v2/4v4/ffa8的规则。
+
 仓库根目录从 SKILL.md 所在目录向上三级取得。主入口：`adjusted/web-author/web_session.py`。
 服务、用量说明：[../../web-author/README.md](../../web-author/README.md)、[../../web-author/METERING.md](../../web-author/METERING.md)。
 

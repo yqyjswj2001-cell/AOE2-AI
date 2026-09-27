@@ -22,6 +22,8 @@ python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-a
 
 ## 当前范围
 
+- [比赛条件资料](adjusted/knowledge/competition/README.md)：七张官方QS地图、官方快速开局与自定义场景的区别、60/90/120游戏分钟规则和部署边界；新作者包自动携带，作者选文明/填参数前必读。规则覆盖1v1/2v2/4v4/ffa8，当前网页未确定具体比赛地图。
+
 - 1715 个动态参数由新上下文作者填写；580 个已审查候选恢复为官方固定值。
 - 作者只接收策略卡、空答卷和基础事实，不接收固定实现或官方答案。
 - 默认 AI 自主选文明，限制为标准版 42 文明，鼓励有战术理由的多样选择。
@@ -36,6 +38,7 @@ python -X utf8 -B adjusted/web-author/web_session.py launch --project my-first-a
 - adjusted/Promisory/：与官方一致的工作基线，禁止直接创作。
 - adjusted/cloze/：模板、主代理参考答案、分类、作者卡片和空答卷。
 - adjusted/knowledge/facts/：9 份冻结基础资料，随仓库分发。
+- adjusted/knowledge/competition/：主办方比赛规则资料与机器摘要，独立于九份冻结游戏事实；不包含执行器或游戏场景。
 - adjusted/tools/、adjusted/web-author/：工具、服务、页面和计量。
 - adjusted/tests/：机械检查与合成测试。
 - adjusted/.local/：运行项目、日志、备份、证据和临时产物；由 .gitignore 排除，不上传。

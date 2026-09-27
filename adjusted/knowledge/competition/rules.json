@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "policy_id": "official-qs-cross-mode",
+  "updated": "2026-09-27",
+  "modes": [
+    "1v1",
+    "2v2",
+    "4v4",
+    "ffa8"
+  ],
+  "map_pool": {
+    "operation": "include_without_removing_existing_maps",
+    "catalog": "Host official map snapshot; not bundled here",
+    "maps": [
+      {
+        "map_id": "aoe2-map:190",
+        "name_zh": "QS 阿拉伯",
+        "name_en": "QS Arabia"
+      },
+      {
+        "map_id": "aoe2-map:191",
+        "name_zh": "QS 强化空地",
+        "name_en": "QS Fortified Clearing"
+      },
+      {
+        "map_id": "aoe2-map:192",
+        "name_zh": "QS 林中空地",
+        "name_en": "QS Glade"
+      },
+      {
+        "map_id": "aoe2-map:193",
+        "name_zh": "QS 游牧",
+        "name_en": "QS Nomad"
+      },
+      {
+        "map_id": "aoe2-map:194",
+        "name_zh": "QS 符文石",
+        "name_en": "QS Runestones"
+      },
+      {
+        "map_id": "aoe2-map:195",
+        "name_zh": "QS 竞技场",
+        "name_en": "QS Arena"
+      },
+      {
+        "map_id": "aoe2-map:196",
+        "name_zh": "QS 黑森林",
+        "name_en": "QS Black Forest"
+      }
+    ],
+    "community_maps_allowed": false,
+    "admission": "user_approved",
+    "runtime_qualification": "Unverified"
+  },
+  "endgame": {
+    "adoption_scope": "all_four_modes",
+    "clock": "game_seconds",
+    "first_pressure_at": 3600,
+    "second_pressure_at": 5400,
+    "building_bonus_multipliers": [
+      2,
+      4
+    ],
+    "ban_new_buildings_and_farms_at_second_stage": true,
+    "existing_foundations_may_finish": true,
+    "eliminated_player_objects_removed": true,
+    "eliminated_players_excluded_from_future_statistics": true,
+    "sudden_death": {
+      "status": "timeout_ranking_user_confirmed_exact_tie_pending",
+      "entry_at": 5400,
+      "entry_applies_to_all_modes": true,
+      "early_final_two_trigger": false,
+      "metric": "new_unit_deaths",
+      "elimination_threshold": 100,
+      "team_counter_scope": "whole_team_sum",
+      "ffa_counter_scope": "individual_player",
+      "exclude_buildings": true,
+      "exclude_pre_entry_counts": true,
+      "timeout_policy": {
+        "duration_game_seconds": 1800,
+        "deadline_game_seconds": 7200,
+        "ranking": [
+          {
+            "metric": "new_unit_deaths",
+            "order": "ascending"
+          },
+          {
+            "metric": "new_enemy_unit_kills",
+            "order": "descending"
+          }
+        ],
+        "counter_scope": "individual_for_1v1_ffa_whole_team_for_2v2_4v4",
+        "exclude_pre_entry_counts": true,
+        "exclude_buildings": true,
+        "exact_tie_policy": null
+      },
+      "simultaneous_elimination_policy": null
+    },
+    "reveal_at_second_stage": true
+  },
+  "deployment": {
+    "policy_synchronized": true,
+    "block_new_cross_mode_endgame_release_until_confirmed": true,
+    "remaining_blockers": [
+      "exact_tie_and_simultaneous_elimination_policy",
+      "runtime_adapter_implementation_and_validation"
+    ],
+    "ffa8_candidate": {
+      "scenario": "FFA8_QS_ARABIA_ENDGAME.aoe2scenario",
+      "evidence_date": "2026-09-18",
+      "static_roundtrip": "PASS",
+      "xs_syntax": "PASS",
+      "installed_hash_matches": true,
+      "runtime": "Unverified",
+      "sha256": "cda698aefdff97df8b4246fde8f6d1aad9a1246b502e98be38c1c1b7572069a6"
+    },
+    "all_four_mode_adapters_verified": false,
+    "historical_shared_status_date": "2026-09-15",
+    "candidate_status_note": "FFA8 candidate updated 2026-09-18; historical installation receipt only, current installed state not rechecked."
+  },
+  "snapshot_note": "Authoring information only; no game runtime adapter included. Shared policy 2026-09-15 plus FFA8 evidence 2026-09-18.",
+  "opening": {
+    "base_game_mode": "standard_random_map",
+    "map_variant": "official_quick_start",
+    "extra_villagers": 6,
+    "endgame_carrier": "custom_scenario_required",
+    "battle_royale": false,
+    "empire_wars": false,
+    "selected_map": null,
+    "lobby_settings": "must_be_frozen_per_match",
+    "resource_snapshot_scope": "FFA8 candidate only: wood170 food110 gold100 stone200, 9 villagers each"
+  },
+  "unsupported_policy_modes": [
+    "3v3",
+    "ffa4"
+  ],
+  "official_source": "https://www.ageofempires.com/news/a-sneak-peek-at-new-content-coming-to-age-of-empires-ii-definitive-edition/"
+}

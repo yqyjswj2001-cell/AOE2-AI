@@ -5,6 +5,8 @@ description: 使用完整 AOE2-AI 仓库启动网页创作 AI，或登记以前�
 
 # AOE2-AI 创作入口
 
+比赛条件先读 [地图、官方QS开局与60/90/120分钟规则](adjusted/knowledge/competition/README.md)。新作者输入包自动携带同一份资料和哈希，task.json 指向必读副本；选文明、填参数前必须读取。资料列出七张QS图和四模式规则，但不代表场景已实机通过；本轮地图未选定时不得猜测。3v3/ffa4不自动套用四模式规则。
+
 本技能依赖完整仓库。以本文件所在目录为仓库根，确认 adjusted/web-author/web_session.py、adjusted/tools/build_strategy_input.py 和 adjusted/knowledge/facts/ 均存在。缺失时重新获取完整仓库，不能只复制本文件。
 
 主代理必须读取并执行唯一的 [详细创作流程](adjusted/skills/aoe2-web-author/SKILL.md)。 用户明确要求登记以前已经完成的脚本包时，同样读取详细流程中的“已有作品登记”，直接使用 `register-existing`，不要启动新的创作项目。 用户临时查看作品信息或登记局后测试时，也直接使用详细流程中的作品库入口：查看用 `registry-show`，结算截图/自然语言登记用 `record-game`；这两种操作都不重新创作。这是现成的参数创作工具，不是继续挖空、重新分类或重写官方 AI 的任务。正常创作只以当前 main 工作树为准；不要自行检查、恢复或续写历史 PR、Draft PR、feature/codex 分支，除非用户明确要求仓库维护或历史回溯。

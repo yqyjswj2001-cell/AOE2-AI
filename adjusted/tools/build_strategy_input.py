@@ -27,6 +27,9 @@ def build(out: Path) -> dict:
     payload["PARAMETER_CONSTRAINTS.json"] = (
         json.dumps(make_author_constraints(catalog), ensure_ascii=False, indent=2) + "\n"
     ).encode("utf-8")
+    # Public match conditions, separate from frozen game facts and parameter answers.
+    for name in ("README.md", "rules.json"):
+        payload["competition/" + name] = (ROOT / "adjusted/knowledge/competition" / name).read_bytes()
     assets = {
         "README.md": "adjusted/cloze/CREATOR_START.md",
         "ANSWER_CONSTRAINTS.md": "adjusted/cloze/ANSWER_CONSTRAINTS.md",

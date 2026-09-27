@@ -483,7 +483,21 @@ class Controller:
         submissions.mkdir(exist_ok=True)
         writer = safe_path(directory / "submit_answers.py")
         writer.write_bytes(safe_path(HERE / "submit_answers.py").read_bytes())
+        rules_name = "competition/rules.json"
+        rules_available = rules_name in manifest["files"] and "competition/README.md" in manifest["files"]
+        rules = parse_json((root / rules_name).read_bytes()) if rules_available else {}
+        competition = {
+            "available": rules_available,
+            "read_first": str(root / "competition/README.md") if rules_available else None,
+            "rules_file": str(root / rules_name) if rules_available else None,
+            "rules_sha256": manifest["files"].get(rules_name),
+            "policy_applies_to_selected_mode": self.data["request"]["mode"] in rules.get("modes", []),
+            "selected_map": None,
+            "runtime": "Unverified",
+            "note": "Match conditions are not a runtime adapter. Do not guess missing map/lobby settings; legacy inputs are not retroactively rewritten.",
+        }
         task = {"schema": "aoe2-author-task-v1", "project_id": self.data["project_id"],
+                "competition_context": competition,
                 "task_sha256": self.data["task_sha256"], "input_sha256": self.data["input_sha256"],
                 "expected_revision": self.data["revision"], "request": self.data["request"],
                 "civilization_selection": self._selection_state(), "eligible_civilizations": self.civilizations,
@@ -493,6 +507,7 @@ class Controller:
                 "answer_modules": sorted(Path(n).stem for n in manifest["files"] if n.startswith("answers/")),
                 "instructions": [
                     "Read only this task, the isolated input, the local writer, and your own submissions/answers.",
+                    "Read competition_context.read_first before choosing civilization or parameters when available. Apply the policy only to its declared modes; 3v3/ffa4 remain unspecified. Unknown match settings stay unknown.",
                     "Do not read fixed PER, templates, classification, official answers or other projects.",
                     "When civilization is auto, choose first; all answers must remain null until host freezes the choice.",
                     "Query strategy cards by group, decide values, write a small patch under submissions and run the local writer.",
