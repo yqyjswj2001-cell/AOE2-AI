@@ -525,14 +525,25 @@
     text('progressTitle', state.status === 'completed' ? '生成完成' : state.status === 'invalid' ? '参数修正' : '参数进度');
     const p = state.progress || {};
     const filled = integer(p.filled) ? p.filled : null, total = integer(p.total) && p.total > 0 ? p.total : null;
-    text('fillCount', number(filled) + ' / ' + number(total) + ' 项参数');
-    text('progressPercent', filled !== null && total !== null && filled <= total ? Math.floor(filled / total * 100) + '%' : '—');
-    if (filled !== null && total !== null && filled <= total) {
+    const progressKnown = filled !== null && total !== null && filled <= total;
+    if (state.status === 'configuring') {
+      text('fillCount', '尚未开始');
+      text('progressPercent', '—');
+    } else if (progressKnown) {
+      text('fillCount', number(filled) + ' / ' + number(total) + ' 项参数');
+      text('progressPercent', Math.floor(filled / total * 100) + '%');
+    } else {
+      text('fillCount', '参数进度暂时无法读取');
+      text('progressPercent', '—');
+      rememberDeveloperIssue('answer_progress', '当前项目参数进度缺失或格式无效。');
+    }
+    if (progressKnown) {
       $('fillProgress').max = total; $('fillProgress').value = filled;
       $('fillProgress').setAttribute('aria-valuetext', '已填写 ' + filled + ' 项，共 ' + total + ' 项');
     } else {
       $('fillProgress').removeAttribute('value');
-      $('fillProgress').setAttribute('aria-valuetext', '填写进度未知');
+      $('fillProgress').removeAttribute('max');
+      $('fillProgress').setAttribute('aria-valuetext', state.status === 'configuring' ? '尚未开始填写参数' : '参数进度暂时无法读取');
     }
     const errors = Array.isArray(p.errors) ? p.errors.length : integer(p.errors) ? p.errors : null;
     const validation = state.status === 'configuring' ? '尚未开始。' :
@@ -664,7 +675,10 @@
     });
   }
   async function doRefresh() {
-    const results = await Promise.allSettled([api('/api/state'), api('/api/author/usage'),
+    const readUsage = usageMeterEnabled() || state?.request?.usage_authorized === true ||
+      state?.usage_authorization?.authorized === true || !!state?.usage_authorization?.revoked_at;
+    const results = await Promise.allSettled([api('/api/state'),
+      readUsage ? api('/api/author/usage') : Promise.resolve(null),
       catalogReady ? Promise.resolve({civilizations:catalog}) : api('/api/civilizations'),
       agentsReady ? Promise.resolve({agents}) : api('/api/agents')]);
     if (results[2].status === 'fulfilled' && Array.isArray(results[2].value.civilizations)) { catalog = results[2].value.civilizations; catalogReady = true; }
@@ -686,12 +700,16 @@
         rememberDeveloperIssue('state_refresh', results[0].reason?.message || message);
         syncActions();
       }
-      if (results[1].status === 'fulfilled') renderUsage(results[1].value);
-      else if (results[0].status === 'fulfilled' && results[0].value.usage) renderUsage(results[0].value.usage);
-      else {
-        text('usageState', '用量暂不可用');
-        text('usageCoverage', '暂时无法读取用量。');
-        rememberDeveloperIssue('usage_refresh', results[1].reason?.message || '用量读取失败。');
+      if (readUsage) {
+        if (results[1].status === 'fulfilled' && results[1].value) renderUsage(results[1].value);
+        else if (results[0].status === 'fulfilled' && results[0].value.usage) renderUsage(results[0].value.usage);
+        else {
+          text('usageState', '用量暂不可用');
+          text('usageCoverage', '暂时无法读取用量。');
+          rememberDeveloperIssue('usage_refresh', results[1].reason?.message || '用量读取失败。');
+        }
+      } else {
+        lastUsage = null;
       }
     } catch (error) {
       online = false; networkError = !stopped;

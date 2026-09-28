@@ -26,6 +26,7 @@ def main():
              'usage':usage,'progress':{'filled':0,'total':1715},
              'usage_connection':{'status':'NOT_AUTHORIZED','can_revoke':False}}
     posts, consents, errors, checks, downloads = [], [], [], [], []
+    reads = {'usage': 0}
     flags = {'offline':False}
 
     def route(req):
@@ -34,7 +35,9 @@ def main():
             if flags['offline']: req.abort('connectionrefused')
             else: req.fulfill(json=copy.deepcopy(state))
             return
-        if path == '/api/author/usage': req.fulfill(json=copy.deepcopy(usage)); return
+        if path == '/api/author/usage':
+            reads['usage'] += 1
+            req.fulfill(json=copy.deepcopy(usage)); return
         if path == '/api/civilizations': req.fulfill(json=civs); return
         if path == '/api/agents': req.fulfill(json={'agents':agents}); return
         if path == '/api/usage/authorize':
@@ -174,6 +177,8 @@ def main():
             state['progress'] = {'filled':1029,'total':1715}
             page.locator('#refreshButton').click()
             page.wait_for_function("document.querySelector('#progressPercent').textContent === '60%'")
+            assert page.locator('#fillCount').inner_text() == '1,029 / 1,715 项参数'
+            assert reads['usage'] == 0, 'Token 计量关闭时不应请求 usage 接口'
             no_overflow(page,'progress')
             page.screenshot(path=str(OUT/'05-progress-desktop.png'),full_page=True)
             assert page.locator('#usageResultTab').is_hidden()
@@ -201,9 +206,10 @@ def main():
             assert page.locator('#meterStatus').inner_text() == 'Agent 正在接入'
             assert len(posts) == 1
             assert not errors, errors
-            checks = ['token test metering is off by default and only authorizes after manual opt-in',
+            checks = ['token test metering is off by default, does not poll usage, and only authorizes after manual opt-in',
                 'no default game mode; AI/random special shields plus 42 real shields; search, hover and keyboard selection',
                 'project-scoped draft and offline recovery; required raw/share output choice; direct start exactly once',
+                'parameter progress remains readable from state while token metering is disabled',
                 'progress, usage, report are separate flat views; disabled past steps',
                 'unknown counters stay unknown; synthetic totals and revocation retain data',
                 'report preview does not auto-download; explicit download works',
