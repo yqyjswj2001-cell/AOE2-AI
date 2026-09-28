@@ -35,10 +35,10 @@ class CivilizationFlowTests(unittest.TestCase):
         env = patch.dict(os.environ, {"AOE2_USAGE_DISABLE_AUTO": "1"})
         env.start()
         self.addCleanup(env.stop)
-        history = patch("controller.selection_context", side_effect=lambda rows, identity:
-                        selection_context(rows, identity, history_root=Path(self.temp.name) / "history"))
-        history.start()
-        self.addCleanup(history.stop)
+        free_choice = patch("controller.selection_context", side_effect=lambda rows, identity:
+                            selection_context(rows, identity))
+        free_choice.start()
+        self.addCleanup(free_choice.stop)
         self.app = Controller(self.project, engine=self.engine, meter_factory=MeterAdapter)
 
     def payload(self, **extra):
@@ -65,6 +65,9 @@ class CivilizationFlowTests(unittest.TestCase):
         frozen = dict(self.app.data["task_request"])
         self.assertEqual((state["status"], before["phase"]), ("selecting", "1"))
         self.assertIsNone(state["civilization_selection"]["choice"])
+        self.assertEqual(state["civilization_selection"]["selection_method"], "free_choice_from_full_eligible_pool")
+        self.assertEqual(set(state["civilization_selection"]["eligible_ids"]), {"Portuguese", "Mongols", "Vikings"})
+        self.assertNotIn("suggested", state["civilization_selection"])
         self.assertEqual(self.app.next()["next_action"], "choose_civilization")
         self.assertTrue(self.app.next()["choice_contract"]["answers_must_remain_null"])
         self.assertTrue((self.project / "author-input/manifest.json").exists())

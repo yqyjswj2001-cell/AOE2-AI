@@ -1,22 +1,18 @@
-"""Edition eligibility and varied recommendations; reads project metadata only."""
-from collections import Counter
+"""Standard-edition eligibility and unrestricted AI civilization choice."""
 from pathlib import Path
-import hashlib
 import json
-import math
 
 HERE = Path(__file__).resolve().parent
 PROFILE_FILE = HERE / "standard-edition.json"
-PROJECTS = HERE.parents[1] / "adjusted/.local/author-projects"
-POLICY_ID = "distinct-playstyles-v1"
+POLICY_ID = "free-choice-v1"
 GUIDANCE = [
-    "用文明特色塑造一套可辨认、能落地的打法；胜负能力与观赏性共同考虑。",
-    "不要把熟悉程度、资料好算或通用加成当作选文明的加分项。",
-    "特殊资源、单位或经济机制是创作素材：先查本包事实，再用现有参数表达；不要求重写机制，也不要求一次用尽所有特色。",
-    "先比较推荐候选中三种不同文明的打法切入点，选最适合本场条件和偏好的一个；相近时优先近期较少选择的文明。",
-    "推荐不是禁选表；全部合资格文明都可选，推荐外选择也须有具体战术理由，不能只说熟悉或稳妥。",
-    "用一两句说明所选文明的关键特色及其怎样影响资源或兵力安排；这是选择依据，不生成简报、不等待用户再次批准。",
-    "真实资料缺口须核实或保留未知；不能编造加成、强度、可执行能力或历史出场记录。"
+    "根据本轮游戏模式、competition profile、地图条件和你想设计的打法，从全部合资格文明中自由选择。",
+    "系统不提供推荐候选、不按历史使用次数排序，也不要求先比较固定数量的文明。",
+    "不需要为了形式把全部文明逐个深度研究；可以先形成打法方向，再按需查询你主动考虑的文明事实。",
+    "文明特色是创作素材：用事实核对资源、兵种和特殊机制，再用现有动态参数表达。",
+    "不要因为更熟悉、资料更好算或实现更省事就默认优先某文明；也不要为了追求冷门而刻意回避合适文明。",
+    "最终用一两句说明所选文明为什么适合本轮条件和你的打法；这是选择依据，不生成简报、不等待用户再次批准。",
+    "真实资料缺口须核实或保留未知；不能编造加成、强度或可执行能力。"
 ]
 
 def _profile():
@@ -41,57 +37,19 @@ def eligible_rows(rows):
         raise ValueError("Civilization catalog does not match the allowed standard-edition names")
     return [dict(mapped[key]) for key in allowed]
 
-def _recent(history_root, current_id, allowed):
-    root = Path(history_root)
-    if not root.exists():
-        return [], False, 0
-    if root.resolve() != root.absolute():
-        raise ValueError("History root cannot redirect through a link")
-    records, skipped, identities = [], 0, set()
-    for path in root.glob("*/project.json"):
-        try:
-            if path.resolve() != path.absolute() or path.stat().st_size > 1024 * 1024:
-                skipped += 1
-                continue
-            doc = json.loads(path.read_text(encoding="utf-8-sig"))
-            identity = doc.get("project_id")
-            if not identity or identity == current_id or identity in identities:
-                continue
-            request = doc.get("request") or {}
-            civilization = request.get("civilization")
-            if civilization not in allowed:
-                continue
-            choice = doc.get("civilization_choice") or {}
-            stamp = choice.get("selected_at", path.stat().st_mtime)
-            if not isinstance(stamp, (int, float)) or isinstance(stamp, bool) or not math.isfinite(stamp):
-                stamp = path.stat().st_mtime
-            records.append((stamp, identity, civilization))
-            identities.add(identity)
-        except (OSError, ValueError, TypeError, AttributeError):
-            skipped += 1
-    return sorted(records, reverse=True)[:42], True, skipped
+def selection_context(rows, project_id, history_root=None):
+    """Return the full eligible pool without recommendations or history-based bias.
 
-def selection_context(rows, project_id, history_root=PROJECTS):
+    history_root is retained only for call-site compatibility and is deliberately ignored.
+    """
     if not isinstance(project_id, str) or not project_id:
         raise ValueError("A stable project identity is required")
     ids = [row["id"] for row in rows]
     if not ids or len(set(ids)) != len(ids):
         raise ValueError("Eligible civilization rows must be nonempty and unique")
-    history, available, skipped = _recent(history_root, project_id, set(ids))
-    counts = Counter(row[2] for row in history)
-    def order(row):
-        tie = hashlib.sha256((POLICY_ID + ":" + project_id + ":" + row["id"]).encode()).hexdigest()
-        return counts[row["id"]], tie
-    ordered = sorted(rows, key=order)
     return {
         "policy_id": POLICY_ID,
         "eligible_ids": ids,
-        "suggested": [{"id": row["id"], "name": row["name"], "recent_selections": counts[row["id"]]}
-                      for row in ordered[:6]],
-        "history_scope": "仅本仓库网页项目最近42次已确定文明的创作记录；不是游戏出场率或胜率",
-        "history_available": available,
-        "observed_selections": len(history),
-        "skipped_metadata": skipped,
-        "selection_method": "prefer_less_used_then_project_seeded_order",
+        "selection_method": "free_choice_from_full_eligible_pool",
         "choice_guidance": GUIDANCE,
     }

@@ -62,9 +62,9 @@ python -X utf8 -B adjusted/web-author/web_session.py usage --project <名称> --
 
 按 [文明选择规则](../../web-author/CIVILIZATION_SELECTION.md) 执行。资格由 next 返回的标准版允许池决定：42 个文明，包含官方免费并入的前三个资料片，未购买额外 DLC。事实库有 53 个文明不代表都可选。
 
-收到 choose_civilization 动作后，先执行 `web_session.py handoff --project <名称>`。以 fork_turns="none" 创建作者，只交回执中的 task_file 及其中许可路径；自动生成的 task.json 已包含完整本轮条件、42项允许池和推荐候选，不要手抄或漏传。不给固定源码或旧作品。让同一作者先读候选相关事实与卡片，再选文明；固定执行机制不需要作者重写，特殊加成应作为打法素材，不能仅因不熟悉或不好算而回避。
+收到 choose_civilization 动作后，先执行 `web_session.py handoff --project <名称>`。以 fork_turns="none" 创建作者，只交回执中的 task_file 及其中许可路径；自动生成的 task.json 已包含完整本轮条件和全部 42 项允许池，不要手抄或漏传。不给固定源码或旧作品。
 
-推荐候选来自近期较少选择的文明；先比较其中三种不同打法，给出最终文明和一两句具体战术理由。仍可从全部合资格文明中选择，用户手动指定时不重选。不得伪造文明加成或历史使用频率。
+**AI 自主选文明时完全自由选择。** 不生成 6 个推荐候选，不按历史使用次数排序，也不要求先比较固定 3 个文明。作者根据本轮游戏模式、competition profile、地图条件和自己想设计的打法，从全部 42 个合资格文明中直接决定。为了节省 Token，不要求逐一深读 42 个文明；作者可以先形成打法方向，再按需查询自己主动考虑的文明事实。最终给出文明和一两句具体战术理由即可。历史文明使用记录不得进入作者选择上下文或影响选择。用户手动指定时不重选。
 
 作者先只将选择写入本项目 tmp/civilization-choice.json，保留 next 决策快照的 expected_revision：
 ```json
